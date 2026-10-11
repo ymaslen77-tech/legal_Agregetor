@@ -9,8 +9,8 @@ const targetProblemHref = "/problems/semya-i-deti/brak-zags-i-smena-familii/";
 const targetDocumentHref = "/documents/zayavlenie-v-zags/";
 
 const familyProblems = legalProblems.filter(({ categorySlug }) => categorySlug === "semya-i-deti");
-assert.equal(familyProblems.length, 24);
-assert.equal(new Set(familyProblems.map(({ slug }) => slug)).size, 24);
+assert.equal(familyProblems.length, 29);
+assert.equal(new Set(familyProblems.map(({ slug }) => slug)).size, 29);
 assert.ok(navigatorDocuments.some(({ slug }) => slug === "zayavlenie-v-zags"));
 assert.equal(ZAGS_SCENARIO_KEYS.length, 4);
 assert.equal("templateSlug" in navigatorDocuments[0], false);

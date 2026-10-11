@@ -83,7 +83,7 @@ export async function getRelatedQuestionsForContext(context: RelatedQuestionsCon
   // Build a candidate pool from the WHOLE question base by matching the page's
   // primary tags / search phrases (with synonyms), then score those. This avoids
   // ranking only an arbitrary recent window of questions.
-  const searchTerms = expandPhrases([...(context.searchPhrases ?? []), ...context.primaryTags]);
+  const searchTerms = expandPhrases([...(context.candidatePhrases ?? []), ...(context.searchPhrases ?? []), ...context.primaryTags]);
   const candidates = await getQuestionsMatchingPhrases(searchTerms, 200);
   if (candidates.length) return getRelatedQuestions(context, candidates, options);
 

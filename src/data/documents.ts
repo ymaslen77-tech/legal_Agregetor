@@ -23,6 +23,7 @@ import { INTERNATIONAL_FAMILY_DISPUTES_DOCUMENT } from "@/data/international-fam
 import { RELATIVE_CHILD_CONTACT_DOCUMENT } from "@/data/relative-child-contact-document";
 import { EMANCIPATION_DOCUMENT } from "@/data/emancipation-document";
 import { LABOR_DOCUMENTS } from "@/data/labor-documents";
+import { FAMILY_ADDITIVE_DOCUMENTS } from "@/data/family-additive-documents";
 
 export type DocumentFaqItem = {
   question: string;
@@ -312,6 +313,7 @@ SURROGACY_ORIGIN_DOCUMENT,
 INTERNATIONAL_FAMILY_DISPUTES_DOCUMENT,
 RELATIVE_CHILD_CONTACT_DOCUMENT,
 EMANCIPATION_DOCUMENT,
+...FAMILY_ADDITIVE_DOCUMENTS,
 ...LABOR_DOCUMENTS
 ];
 

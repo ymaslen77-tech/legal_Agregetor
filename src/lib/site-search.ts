@@ -2,6 +2,7 @@ import { legalCategories } from "@/data/legal-categories";
 import { navigatorDocuments } from "@/data/documents";
 import { legalPages } from "@/data/legal-pages";
 import { legalProblems } from "@/data/legal-problems";
+import { PROBLEM_QNA_CONTEXTS } from "@/data/related-questions-context";
 import { LABOR_CATEGORY_SLUG, LABOR_MANUAL_ACCEPTANCE_INTENTS } from "@/data/labor-routes";
 import type { LegalProblemRiskLevel, LegalProblemUrgency } from "@/data/legal-problems";
 import { navigatorTools } from "@/data/tools";
@@ -296,6 +297,7 @@ export function getSiteSearchIndex(extraResults: SiteSearchResult[] = []): SiteS
         problem.seoDescription,
         ...problem.documents,
         ...problem.relatedQuestionTopics,
+        ...(PROBLEM_QNA_CONTEXTS[problem.slug]?.aliases ?? []),
         ...problem.relatedLawyerSpecializations
       ]
       },
@@ -319,7 +321,8 @@ export function getSiteSearchIndex(extraResults: SiteSearchResult[] = []): SiteS
           problem.shortAnswer,
           ...problem.steps,
           ...problem.documents,
-          ...problem.relatedQuestionTopics
+          ...problem.relatedQuestionTopics,
+          ...(PROBLEM_QNA_CONTEXTS[problem.slug]?.aliases ?? [])
         ]
       }
     ]),
@@ -638,8 +641,6 @@ function isConflictingResult(result: SearchableResult, normalizedQuery: string, 
   // Точное совпадение названия — сильный прямой сигнал, домен-конфликт не применяем.
   if (result.normalizedTitle === normalizedQuery) return false;
 
-  if (isUnsupportedChildRouteQuery(normalizedQuery) && getResultDomains(result).has("family")) return true;
-
   if (isGuardianshipRouteResult(result.href) && isExcludedGuardianshipQuery(normalizedQuery)) return true;
   if (isGuardianshipRouteResult(result.href) && isChildGuardianshipQuery(normalizedQuery)) return false;
   if (isParentsChildRouteResult(result.href) && isExcludedParentsChildQuery(normalizedQuery)) return true;
@@ -745,16 +746,6 @@ function isChildGuardianshipQuery(normalizedQuery: string) {
     "номинальный счет опекуна",
     "орган опеки отказал",
     "орган опеки не отвечает"
-  ].some((marker) => normalizedQuery.includes(marker));
-}
-
-function isUnsupportedChildRouteQuery(normalizedQuery: string) {
-  return ((normalizedQuery.includes("лишен") || normalizedQuery.includes("лишит")) && normalizedQuery.includes("родитель")) || [
-    "установить отцовство",
-    "оспорить отцовство",
-    "выезд ребенка за границу",
-    "сменить имя ребенку",
-    "сменить фамилию ребенку"
   ].some((marker) => normalizedQuery.includes(marker));
 }
 
