@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { FamilyAdditiveDocumentHelper } from "@/components/documents/FamilyAdditiveDocumentHelper";
 import { JsonLd } from "@/components/JsonLd";
+import { getFamilyAdditiveLegalRules } from "@/data/family-additive-legal-review";
 import type { FamilyAdditiveRoute, FamilyAdditiveScenario } from "@/data/family-additive-routes";
 import type { NavigatorDocument } from "@/data/documents";
 import { breadcrumbJsonLd } from "@/lib/jsonld";
@@ -10,6 +11,7 @@ import { absoluteUrl } from "@/lib/seo";
 export function FamilyAdditiveDocumentPage({ document, route, scenario }: { document: NavigatorDocument; route: FamilyAdditiveRoute; scenario: FamilyAdditiveScenario }) {
   const documentPath = `/documents/${document.slug}/`;
   const problemPath = `/problems/semya-i-deti/${route.problemSlug}/?scenario=${scenario.key}`;
+  const legalRules = getFamilyAdditiveLegalRules(route.problemSlug);
   const breadcrumbs = [{ name: "Главная", path: "/" }, { name: "Документы", path: "/documents/" }, { name: document.title, path: documentPath }];
   const jsonLd = { "@context": "https://schema.org", "@type": "WebPage", name: document.title, description: document.shortDescription, url: absoluteUrl(documentPath) };
   return <>
@@ -29,6 +31,12 @@ export function FamilyAdditiveDocumentPage({ document, route, scenario }: { docu
         <Fact title="Срок и расходы" items={[scenario.term, scenario.fee]} />
       </section>
       <div className="mt-6 border-l-4 border-amber-400 bg-amber-50 p-4 text-sm leading-6 text-amber-950">{scenario.warning}</div>
+      <section className="mt-10 border-t border-line pt-7">
+        <h2 className="text-2xl font-semibold text-ink">Проверенные правовые основания</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-zinc-600">Нормы помогают проверить применимый порядок, требования и ограничения. Их применение зависит от подтверждённых обстоятельств и документов.</p>
+        <div className="mt-5 grid gap-5">{legalRules.map((rule) => <article key={rule.id} className="border-l-2 border-line pl-4"><h3 className="font-semibold text-ink">{rule.act}, {rule.article}</h3><p className="mt-1 text-sm leading-6 text-zinc-700">{rule.statement}</p><p className="mt-1 text-xs leading-5 text-zinc-500">Граница применения: {rule.limitation}</p><a href={rule.url} target="_blank" rel="noreferrer" className="mt-2 inline-flex min-h-11 items-center font-semibold text-trust underline underline-offset-4 focus:ring-2 focus:ring-trust/30">Официальный источник</a></article>)}</div>
+        <p className="mt-4 text-xs leading-5 text-zinc-500">Последняя правовая сверка: {formatDate(document.lastReviewedAt ?? route.legalReviewDate)}.</p>
+      </section>
       <div className="mt-7"><FamilyAdditiveDocumentHelper routeSlug={route.problemSlug} scenarioKey={scenario.key} /></div>
       <Link href={problemPath} className="mt-6 inline-flex min-h-11 items-center font-semibold text-trust underline underline-offset-4 focus:outline-none focus:ring-2 focus:ring-trust/30">Вернуться к порядку действий</Link>
     </article>
@@ -37,4 +45,8 @@ export function FamilyAdditiveDocumentPage({ document, route, scenario }: { docu
 
 function Fact({ items, title }: { items: string[]; title: string }) {
   return <section className="border-t-4 border-zinc-300 bg-white p-5 shadow-sm"><h2 className="text-lg font-semibold text-ink">{title}</h2><ul className="mt-3 grid gap-2 text-sm leading-6 text-zinc-700">{items.map((item) => <li key={item}>- {item}</li>)}</ul></section>;
+}
+
+function formatDate(value: string) {
+  return value.split("-").reverse().join(".");
 }

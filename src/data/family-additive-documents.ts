@@ -7,7 +7,7 @@ export const FAMILY_ADDITIVE_DOCUMENTS: NavigatorDocument[] = Object.values(FAMI
     title: scenario.documentTitle,
     category: "Семья и дети",
     documentType: scenario.documentType,
-    shortTitle: scenario.shortTitle,
+    shortTitle: scenario.documentTitle,
     titleAccusative: scenario.documentTitle,
     documentTypeAccusative: scenario.documentType,
     shortIntro: scenario.choiceDescription,

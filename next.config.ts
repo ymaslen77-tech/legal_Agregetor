@@ -13,6 +13,10 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   trailingSlash: true,
   skipTrailingSlashRedirect: true,
+  experimental: {
+    cpus: 1,
+    staticGenerationMaxConcurrency: 1
+  },
   images: {
     remotePatterns: [
       {
