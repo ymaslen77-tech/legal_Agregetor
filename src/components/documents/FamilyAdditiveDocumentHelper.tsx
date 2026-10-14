@@ -16,6 +16,7 @@ import { createFamilyAdditivePdfBlob } from "@/lib/family-additive-pdf";
 import { validateFamilyAdditiveScenario, type FamilyAdditiveDecision, type FamilyAdditiveValues } from "@/lib/family-additive-validator";
 
 type ReviewStatus = "idle" | "submitting" | "success" | "withdrawing" | "withdrawn" | "error";
+type ReviewReceipt = { leadId: string; withdrawalToken: string; versionId: string };
 
 export function FamilyAdditiveDocumentHelper({ routeSlug, scenarioKey }: { routeSlug: FamilyAdditiveRouteSlug; scenarioKey: string }) {
   const scenario = getFamilyAdditiveScenario(routeSlug, scenarioKey);
@@ -32,7 +33,9 @@ export function FamilyAdditiveDocumentHelper({ routeSlug, scenarioKey }: { route
   const [reviewOpen, setReviewOpen] = useState(false);
   const [reviewStatus, setReviewStatus] = useState<ReviewStatus>("idle");
   const [reviewMessage, setReviewMessage] = useState("");
-  const [reviewReceipt, setReviewReceipt] = useState<{ leadId: string; withdrawalToken: string } | null>(null);
+  const [reviewReceipt, setReviewReceipt] = useState<ReviewReceipt | null>(null);
+  // Keep withdrawal credentials for earlier PDFs while this tab stays open.
+  const [reviewReceipts, setReviewReceipts] = useState<ReviewReceipt[]>([]);
   const issueByField = useMemo(() => new Map(issues.map((issue) => [issue.field, issue.message])), [issues]);
 
   function updateField(name: string, value: string) {
@@ -115,7 +118,11 @@ export function FamilyAdditiveDocumentHelper({ routeSlug, scenarioKey }: { route
       if (!response.ok) throw new Error(result?.message || "Не удалось передать PDF на проверку.");
       sendAnalyticsEvent({ type: "DOCUMENT_REVIEW_REQUEST_CREATED", sourcePage: window.location.pathname, targetType: "FAMILY_ADDITIVE_OUTCOME", targetId: decision.outcomeKey, payload: { routeSlug, scenarioKey } });
       setReviewStatus("success");
-      if (result?.id && result.withdrawalToken) setReviewReceipt({ leadId: result.id, withdrawalToken: result.withdrawalToken });
+      if (result?.id && result.withdrawalToken) {
+        const receipt = { leadId: result.id, withdrawalToken: result.withdrawalToken, versionId: documentResult.versionId };
+        setReviewReceipt(receipt);
+        setReviewReceipts((current) => [...current, receipt]);
+      }
       setReviewMessage("Заявка принята и ожидает назначения юриста. PDF и контакты не публикуются.");
       form.reset();
     } catch (error) {
@@ -124,15 +131,26 @@ export function FamilyAdditiveDocumentHelper({ routeSlug, scenarioKey }: { route
     }
   }
 
-  async function withdrawReviewConsent() {
-    if (!reviewReceipt) return;
+  async function withdrawReviewConsent(receipt: ReviewReceipt | null = reviewReceipt) {
+    if (!receipt) return;
     setReviewStatus("withdrawing");
-    const response = await fetch(`/api/leads/${encodeURIComponent(reviewReceipt.leadId)}/document-review/`, { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token: reviewReceipt.withdrawalToken }) });
-    const result = (await response.json().catch(() => null)) as { message?: string } | null;
-    if (!response.ok) { setReviewStatus("error"); setReviewMessage(result?.message || "Не удалось отозвать согласие."); return; }
-    setReviewStatus("withdrawn");
-    setReviewReceipt(null);
-    setReviewMessage(result?.message || "Согласие отозвано, PDF удалён.");
+    setReviewMessage("");
+    try {
+      const response = await fetch(`/api/leads/${encodeURIComponent(receipt.leadId)}/document-review/`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: receipt.withdrawalToken })
+      });
+      const result = (await response.json().catch(() => null)) as { message?: string } | null;
+      if (!response.ok) throw new Error(result?.message || "Не удалось отозвать согласие.");
+      setReviewStatus("withdrawn");
+      setReviewReceipt((current) => current?.leadId === receipt.leadId ? null : current);
+      setReviewReceipts((current) => current.filter((item) => item.leadId !== receipt.leadId));
+      setReviewMessage(result?.message || "Согласие отозвано, PDF удалён.");
+    } catch (error) {
+      setReviewStatus("error");
+      setReviewMessage(error instanceof Error ? error.message : "Не удалось отозвать согласие.");
+    }
   }
 
   return (
@@ -175,6 +193,16 @@ export function FamilyAdditiveDocumentHelper({ routeSlug, scenarioKey }: { route
 
         {reviewOpen ? <ReviewForm status={reviewStatus} message={reviewMessage} hasReceipt={Boolean(reviewReceipt)} onSubmit={submitForReview} onWithdraw={withdrawReviewConsent} /> : null}
       </div> : null}
+      {reviewReceipts.length ? <section className="mt-6 border-t border-line pt-5" aria-label="Отзыв согласия для ранее отправленных PDF">
+        <h3 className="text-lg font-semibold text-ink">Ранее отправленные версии PDF</h3>
+        <p className="mt-2 text-sm text-zinc-600">Вы можете отозвать согласие для каждой отправленной версии независимо от текущего документа. Данные доступны, пока открыта эта вкладка.</p>
+        <div className="mt-3 grid gap-3">
+          {reviewReceipts.map((receipt) => <div key={receipt.leadId} className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-line p-3">
+            <span className="break-all text-xs text-zinc-700">Версия: {receipt.versionId}</span>
+            <button type="button" disabled={reviewStatus === "withdrawing"} onClick={() => void withdrawReviewConsent(receipt)} className="min-h-11 rounded-md border border-line bg-white px-3 text-sm font-semibold text-ink disabled:opacity-60">Отозвать согласие и удалить PDF</button>
+          </div>)}
+        </div>
+      </section> : null}
       {notice ? <p className="mt-4 text-sm text-zinc-700" role="status">{notice}</p> : null}
     </section>
   );
