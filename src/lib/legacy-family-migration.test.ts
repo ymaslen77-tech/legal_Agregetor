@@ -70,6 +70,14 @@ const emergency = createLegacyFamilyDocumentResult({
 });
 assert.equal(emergency, null, "a dangerous urgent case cannot create a PDF-ready result");
 
+const missingPermission = createLegacyFamilyDocumentResult({
+  routeSlug: "test", scenarioKey: "uncertain", documentSlug: "test-document",
+  reviewedAt: "2026-10-14", draft: "Текст без разрешения на PDF",
+  source: "DETERMINISTIC",
+  decision: { documentTitle: "Неопределённый результат", resultKind: "courtDraft" }
+});
+assert.equal(missingPermission, null, "missing PDF permission must fail closed");
+
 const legalReview = createLegacyFamilyDocumentResult({
   routeSlug: "mezhdunarodnye-semeynye-spory",
   scenarioKey: "child", documentSlug: "mezhdunarodnyy-semeynyy-spor-list-dannyh",
