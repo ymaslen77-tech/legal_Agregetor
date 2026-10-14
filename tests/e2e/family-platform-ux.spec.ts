@@ -34,29 +34,19 @@ test("document preparation keeps scenario and opens a new tab", async ({ page })
   await expect(link).toHaveAttribute("href", /variant=court/);
 });
 
-test("family tools expose deterministic calculations and official court search", async ({ page }) => {
-  await page.goto("/tools/family-state-duty/");
-  await page.getByLabel("Вид требования").selectOption("property");
-  await page.getByLabel("Цена имущественного требования, руб.").fill("750000");
-  await expect(page.getByText(/Итого к оплате: 20\s*000/)).toBeVisible();
-  await expect(page.getByText("15 000 ₽ + 2% суммы свыше 500 000 ₽", { exact: true })).toBeVisible();
-  await expect(page.getByText(/Тип: secondary/).first()).toBeVisible();
-
-  await page.getByLabel("Вид требования").selectOption("alimony");
-  await expect(page.getByText(/Итого к оплате: 0.*применяется льгота/)).toBeVisible();
-
-  await page.goto("/tools/court-finder/");
-  await expect(page.getByRole("link", { name: /Найти суд и проверить подсудность/ })).toHaveAttribute("href", "https://sudrf.ru/index.php?id=300");
-
-  await page.goto("/tools/where-to-file/");
-  await page.getByLabel("Что требуется").selectOption("fssp");
-  await expect(page.getByRole("link", { name: /Открыть официальный сервис ФССП/ })).toHaveAttribute("href", "https://fssp.gov.ru/iss/ip");
+test("tools catalog exposes only implemented tools and a working route", async ({ page }) => {
+  await page.goto("/tools/");
+  await expect(page.getByRole("heading", { name: "Доступные инструменты" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Калькулятор срока отмены судебного приказа/ })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Калькулятор госпошлины/ })).toHaveCount(0);
+  await page.goto("/tools/sudebnyy-prikaz-deadline/");
+  await expect(page.getByRole("heading", { level: 1, name: "Калькулятор срока отмены судебного приказа" })).toBeVisible();
 });
 
-test("new catalog and tools fit supported mobile widths", async ({ page }) => {
+test("documents catalog and implemented tools fit supported mobile widths", async ({ page }) => {
   for (const width of [320, 375]) {
     await page.setViewportSize({ width, height: 900 });
-    for (const path of ["/documents/", "/tools/family-state-duty/"]) {
+    for (const path of ["/documents/", "/tools/sudebnyy-prikaz-deadline/"]) {
       await page.goto(path);
       expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
     }
