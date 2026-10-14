@@ -24,11 +24,10 @@ for (const route of routes) {
   assert.match(route.legalReviewedAt ?? "", /^\d{4}-\d{2}-\d{2}$/, `${route.problemSlug}: missing source review date`);
   assert.equal(getLegalRouteV1(route.categorySlug, route.problemSlug)?.problemSlug, route.problemSlug);
 
-  if (route.migrationStatus === "LEGACY") {
+  if (route.source === "legacy-family") {
     assert.equal(route.categorySlug, "semya-i-deti");
+    assert.equal(route.migrationStatus, "SCENARIO_MAPPED_V1");
     assert.ok(LEGACY_FAMILY_ROUTE_SLUGS.includes(route.problemSlug as (typeof LEGACY_FAMILY_ROUTE_SLUGS)[number]));
-    assert.equal(route.scenarios.length, 0, `${route.problemSlug}: legacy scenario mappings must not be invented`);
-    continue;
   }
 
   assert.ok(route.scenarios.length > 0, `${route.problemSlug}: scenarios required`);
@@ -53,10 +52,12 @@ for (const route of routes) {
   }
 }
 
-const legacy = routes.filter((route) => route.migrationStatus === "LEGACY");
+const legacy = routes.filter((route) => route.source === "legacy-family");
+assert.equal(routes.filter((route) => route.migrationStatus === "LEGACY").length, 0, "All legacy routes must have an explicit scenario map");
 assert.deepEqual(new Set(legacy.map((route) => route.problemSlug)), new Set(LEGACY_FAMILY_ROUTE_SLUGS));
 assert.equal(routes.filter((route) => route.source === "labor").length, 14);
 assert.equal(routes.filter((route) => route.source === "family-additive").length, 5);
+assert.equal(legacy.length, 24);
 
 for (const category of legalCategories) {
   const problems = routes.filter((route) => route.categorySlug === category.slug);
@@ -78,5 +79,5 @@ assert.equal(Object.keys(LEGAL_ROUTE_GROUPS).length, categories.size);
 assert.equal(getLegalRouteV1("semya-i-deti", "route-does-not-exist"), null);
 
 console.log(
-  `LEGAL_ROUTE_STANDARD_V1: ${routes.length} routes, ${routes.filter((route) => route.migrationStatus === "ADAPTED_V1").length} adapted, ${legacy.length} tracked legacy. Category coverage and scenario/document references verified.`
+  `LEGAL_ROUTE_STANDARD_V1: ${routes.length} routes, ${routes.filter((route) => route.migrationStatus === "ADAPTED_V1").length} adapted, ${legacy.length} scenario-mapped legacy. Category coverage and scenario/document references verified.`
 );
