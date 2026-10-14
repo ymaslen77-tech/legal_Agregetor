@@ -5,6 +5,8 @@ import { Download, Pencil, ShieldCheck } from "lucide-react";
 import { useMemo, useState, type FormEvent } from "react";
 import { LegalReviewLawyers } from "@/components/lawyers/LegalReviewLawyers";
 import { DocumentResultSummary } from "@/components/documents/DocumentResultSummary";
+import { DocumentVersionHistory } from "@/components/documents/DocumentVersionHistory";
+import { addDocumentVersion } from "@/lib/document-version-history";
 import { OfficialCourtHelp } from "@/components/forms/OfficialCourtHelp";
 import { DOCUMENT_REVIEW_RETENTION_DAYS } from "@/data/document-review-policy";
 import { FAMILY_ADDITIVE_LEGAL_REVIEWED_AT, getFamilyAdditiveLegalRules } from "@/data/family-additive-legal-review";
@@ -26,6 +28,7 @@ export function FamilyAdditiveDocumentHelper({ routeSlug, scenarioKey }: { route
   const [values, setValues] = useState<FamilyAdditiveValues>({});
   const [decision, setDecision] = useState<FamilyAdditiveDecision | null>(null);
   const [documentResult, setDocumentResult] = useState<DocumentResultV1 | null>(null);
+  const [versions, setVersions] = useState<Array<{ documentResult: DocumentResultV1; payload: { decision: FamilyAdditiveDecision; values: FamilyAdditiveValues } }>>([]);
   const documentText = documentResult?.documentText ?? "";
   const [editOpen, setEditOpen] = useState(false);
   const [issues, setIssues] = useState<Array<{ field: string; message: string }>>([]);
@@ -61,6 +64,7 @@ export function FamilyAdditiveDocumentHelper({ routeSlug, scenarioKey }: { route
     });
     setDocumentResult(generated);
     setDecision(result);
+    setVersions((history) => addDocumentVersion(history, { documentResult: generated, payload: { decision: result, values: { ...values } } }));
     setIssues([]);
     setEditOpen(false);
     setReviewOpen(false);
@@ -68,6 +72,20 @@ export function FamilyAdditiveDocumentHelper({ routeSlug, scenarioKey }: { route
     setReviewMessage("");
     setReviewReceipt(null);
     setNotice("Новая версия сформирована из подтверждённых вами данных.");
+  }
+
+  function openVersion(versionId: string) {
+    const snapshot = versions.find((item) => item.documentResult.versionId === versionId);
+    if (!snapshot) return;
+    setDocumentResult(snapshot.documentResult);
+    setDecision(snapshot.payload.decision);
+    setValues({ ...snapshot.payload.values });
+    setEditOpen(false);
+    setReviewOpen(false);
+    setReviewReceipt(null);
+    setReviewStatus("idle");
+    setReviewMessage("");
+    setNotice("Открыта предыдущая версия результата; PDF будет создан именно из неё.");
   }
 
   async function createPdf() {
@@ -193,6 +211,7 @@ export function FamilyAdditiveDocumentHelper({ routeSlug, scenarioKey }: { route
 
         {reviewOpen ? <ReviewForm status={reviewStatus} message={reviewMessage} hasReceipt={Boolean(reviewReceipt)} onSubmit={submitForReview} onWithdraw={withdrawReviewConsent} /> : null}
       </div> : null}
+      <DocumentVersionHistory versions={versions.map((item) => item.documentResult)} currentVersionId={documentResult?.versionId ?? null} onSelect={openVersion} />
       {reviewReceipts.length ? <section className="mt-6 border-t border-line pt-5" aria-label="Отзыв согласия для ранее отправленных PDF">
         <h3 className="text-lg font-semibold text-ink">Ранее отправленные версии PDF</h3>
         <p className="mt-2 text-sm text-zinc-600">Вы можете отозвать согласие для каждой отправленной версии независимо от текущего документа. Данные доступны, пока открыта эта вкладка.</p>
