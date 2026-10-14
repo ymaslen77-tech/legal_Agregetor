@@ -1,14 +1,17 @@
 import type { ReactNode } from "react";
+import { SaveLegalDocumentButton } from "@/components/documents/SaveLegalDocumentButton";
 import type { DocumentResultV1 } from "@/lib/document-result-contract";
 
 export function DocumentResultSummary({
   result,
   label,
-  children
+  children,
+  archiveDisabled = false
 }: {
   result: DocumentResultV1;
   label?: string;
   children?: ReactNode;
+  archiveDisabled?: boolean;
 }) {
   return (
     <section className="border-l-4 border-amber-400 bg-amber-50 p-4 text-amber-950" aria-label="Юридический статус документа">
@@ -24,6 +27,7 @@ export function DocumentResultSummary({
       </p>
       <p className="mt-2 break-all text-xs">ID версии: {result.versionId}</p>
       {children}
+      <SaveLegalDocumentButton key={result.versionId} result={result} disabled={archiveDisabled} />
     </section>
   );
 }
