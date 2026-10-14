@@ -103,6 +103,39 @@ export function createFamilyAdditiveDocumentResult(input: {
   });
 }
 
+export function createFamilyAIDraftDocumentResult(input: {
+  routeSlug: string;
+  scenarioKey: string;
+  documentSlug: string;
+  documentTitle: string;
+  documentText: string;
+  usedRuleIds: string[];
+  placeholders: string[];
+  legalReviewedAt: string;
+  versionId?: string;
+  createdAt?: string;
+}): DocumentResultV1 {
+  return documentResultSchema.parse({
+    contractVersion: DOCUMENT_RESULT_CONTRACT_VERSION,
+    versionId: input.versionId ?? crypto.randomUUID(),
+    createdAt: input.createdAt ?? new Date().toISOString(),
+    categorySlug: "semya-i-deti",
+    routeSlug: input.routeSlug,
+    scenarioKey: input.scenarioKey,
+    documentSlug: input.documentSlug,
+    resultKind: "DRAFT",
+    source: "AI_DRAFT",
+    documentTitle: input.documentTitle,
+    documentText: input.documentText,
+    usedRuleIds: input.usedRuleIds,
+    placeholders: input.placeholders,
+    legalRegistryReviewedAt: input.legalReviewedAt,
+    generatorVersion: "family-ai-1",
+    filingReady: false,
+    requiresLegalReview: true
+  });
+}
+
 /** Metadata only — never copy draft text, input facts, API keys, or contact details. */
 export function documentResultReviewMetadata(result: DocumentResultV1) {
   return {
