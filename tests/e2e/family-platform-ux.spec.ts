@@ -48,7 +48,7 @@ test("documents catalog and implemented tools fit supported mobile widths", asyn
     await page.setViewportSize({ width, height: 900 });
     for (const path of ["/documents/", "/tools/sudebnyy-prikaz-deadline/"]) {
       await page.goto(path);
-      expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth), JSON.stringify(await page.evaluate(() => [...document.querySelectorAll("body *")].filter((el) => { const box = el.getBoundingClientRect(); return box.width > 0 && (box.right > document.documentElement.clientWidth + 1 || box.left < -1); }).slice(0, 12).map((el) => ({ tag: el.tagName, className: typeof el.className === "string" ? el.className.slice(0, 100) : "", text: el.textContent?.trim().slice(0, 65), right: Math.round(el.getBoundingClientRect().right) }))))).toBe(false);
     }
   }
 });
