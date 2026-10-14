@@ -15,6 +15,7 @@ export function createGuardianshipDocumentResult(input: {
   draft: string;
   versionId?: string;
   createdAt?: string;
+  source?: DocumentResultV1["source"];
 }): DocumentResultV1 | null {
   const { decision, scenarioKey, draft } = input;
   if (!decision.pdfAvailable || decision.resultKind === "urgent" || decision.outcomeKey === "unresolved") {
@@ -37,7 +38,7 @@ export function createGuardianshipDocumentResult(input: {
     scenarioKey,
     documentSlug: GUARDIANSHIP_SCENARIOS[scenarioKey].documentSlug,
     resultKind: kind[decision.resultKind],
-    source: "DETERMINISTIC",
+    source: input.source ?? "DETERMINISTIC",
     documentTitle: decision.documentTitle,
     documentText: buildGuardianshipPdfText(decision, draft),
     usedRuleIds: [],
