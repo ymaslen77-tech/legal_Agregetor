@@ -20,7 +20,7 @@ concurrency:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 40
     services:
       postgres:
         image: postgres:16
@@ -73,12 +73,10 @@ jobs:
           exit 1
       - name: Install Chromium for route acceptance
         run: npx playwright install --with-deps chromium
-      - name: Run guardianship route acceptance
+      - name: Run all family and labor route acceptance
         env:
           E2E_SUBMIT_REVIEW: "true"
-        run: npm run test:e2e:guardianship
-      - name: Run parents and child route acceptance
-        run: npm run test:e2e:parents-child
+        run: npx playwright test --workers=2
       - name: Confirm withdrawn review PDF was deleted
         run: test -z "$(find "$LEAD_ATTACHMENT_STORAGE_ROOT" -type f -name '*.pdf' -print -quit 2>/dev/null)"
       - name: Generate and inspect guardianship PDFs
