@@ -7,6 +7,7 @@ import { breadcrumbJsonLd } from "@/lib/jsonld";
 import { buildMetadata } from "@/lib/seo";
 import { getLegalCategory, legalCategories } from "@/data/legal-categories";
 import { getProblemsByCategory } from "@/data/legal-problems";
+import { getLegalRouteGroups } from "@/data/legal-route-groups";
 import { LABOR_CATEGORY_SLUG, LABOR_POPULAR_ROUTE_SLUGS } from "@/data/labor-routes";
 
 type PageProps = { params: Promise<{ category: string }> };
@@ -46,7 +47,7 @@ export default async function ProblemCategoryPage({ params }: PageProps) {
   const problems = getProblemsByCategory(categorySlug);
   const popularSlugs = new Set<string>(LABOR_POPULAR_ROUTE_SLUGS);
   const popularProblems = categorySlug === LABOR_CATEGORY_SLUG ? problems.filter((problem) => popularSlugs.has(problem.slug)) : [];
-  const remainingProblems = categorySlug === LABOR_CATEGORY_SLUG ? problems.filter((problem) => !popularSlugs.has(problem.slug)) : problems;
+  const routeGroups = getLegalRouteGroups(categorySlug);
   const breadcrumbs = [
     { name: "Главная", path: "/" },
     { name: "Правовой навигатор", path: "/problems/" },
@@ -73,12 +74,21 @@ export default async function ProblemCategoryPage({ params }: PageProps) {
           </div>
         </section> : null}
 
-        <section className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-semibold text-ink">{popularProblems.length ? "Остальные трудовые ситуации" : "Жизненные ситуации"}</h2>
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
-            {remainingProblems.map((problem) => <ProblemCard key={problem.slug} problem={problem} />)}
-          </div>
-        </section>
+        {routeGroups.map((group) => {
+          const visibleProblems = problems.filter((problem) =>
+            group.problemSlugs.includes(problem.slug) && !popularSlugs.has(problem.slug)
+          );
+          if (!visibleProblems.length) return null;
+          return (
+            <section key={group.id} id={group.id} className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
+              <h2 className="text-2xl font-semibold text-ink">{group.title}</h2>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-zinc-600">{group.description}</p>
+              <div className="mt-6 grid gap-4 md:grid-cols-2">
+                {visibleProblems.map((problem) => <ProblemCard key={problem.slug} problem={problem} />)}
+              </div>
+            </section>
+          );
+        })}
       </main>
     </>
   );
