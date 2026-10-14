@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { legalDraftRequestSchema } from "@/lib/legal-draft-contract";
 import { buildLegalDraftPrompts, validateLegalDraftModelResult } from "@/lib/legal-draft-generation";
+import { verifyFamilyLegalDraftRequest } from "@/lib/family-draft-trusted-rules";
 import {
   checkRateLimit, clientKey, readJsonWithLimit, rejectCrossOrigin,
   payloadTooLargeResponse, RequestPayloadTooLargeError
@@ -25,6 +26,13 @@ export async function POST(request: Request) {
   const parsed = legalDraftRequestSchema.safeParse(input);
   if (!parsed.success) return NextResponse.json({ ok: false, message: "Проверьте сведения и повторите попытку." }, { status: 400 });
 
+  let trustedInput;
+  try {
+    trustedInput = verifyFamilyLegalDraftRequest(parsed.data);
+  } catch {
+    return NextResponse.json({ ok: false, message: "Сценарий и правовые основания не подтверждены серверным реестром." }, { status: 400 });
+  }
+
   if (!process.env.AI_API_KEY || !process.env.AI_BASE_URL || !process.env.AI_MODEL) {
     return NextResponse.json({ ok: false, message: "Сервис подготовки текста временно недоступен. Ваши ответы сохранены в форме." }, { status: 503 });
   }
@@ -32,7 +40,7 @@ export async function POST(request: Request) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
-    const prompts = buildLegalDraftPrompts(parsed.data);
+    const prompts = buildLegalDraftPrompts(trustedInput);
     const base = process.env.AI_BASE_URL.replace(/\/+$/, "");
     const response = await fetch(base + "/chat/completions", {
       method: "POST",
@@ -54,7 +62,7 @@ export async function POST(request: Request) {
     const text = body.choices?.[0]?.message?.content?.trim();
     if (!text) throw new Error("model_empty_response");
     const data = JSON.parse(text.replace(/^\x60\x60\x60(?:json)?\s*/i, "").replace(/\s*\x60\x60\x60$/i, ""));
-    const draft = validateLegalDraftModelResult(data, parsed.data);
+    const draft = validateLegalDraftModelResult(data, trustedInput);
     return NextResponse.json({
       ok: true,
       result: { ...draft, filingReady: false, requiresLegalReview: true, model: "configured-provider" }
