@@ -19,6 +19,7 @@ type ReviewStatus = "idle" | "submitting" | "success" | "withdrawing" | "withdra
 export function FamilyAdditiveDocumentHelper({ routeSlug, scenarioKey }: { routeSlug: FamilyAdditiveRouteSlug; scenarioKey: string }) {
   const scenario = getFamilyAdditiveScenario(routeSlug, scenarioKey);
   if (!scenario) throw new Error("Сценарий не найден.");
+  const documentSlug = scenario.documentSlug;
   const rules = getFamilyAdditiveLegalRules(routeSlug);
   const [values, setValues] = useState<FamilyAdditiveValues>({});
   const [decision, setDecision] = useState<FamilyAdditiveDecision | null>(null);
@@ -50,7 +51,7 @@ export function FamilyAdditiveDocumentHelper({ routeSlug, scenarioKey }: { route
     const text = buildFamilyAdditiveDocument(result);
     const generated = createFamilyAdditiveDocumentResult({
       decision: result,
-      documentSlug: scenario.documentSlug,
+      documentSlug,
       documentText: text,
       legalReviewedAt: FAMILY_ADDITIVE_LEGAL_REVIEWED_AT
     });
