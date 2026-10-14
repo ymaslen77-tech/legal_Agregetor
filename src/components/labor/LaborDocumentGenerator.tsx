@@ -3,12 +3,13 @@
 import { Download, ShieldCheck } from "lucide-react";
 import { FormEvent, useMemo, useState } from "react";
 import { LegalReviewLawyers } from "@/components/lawyers/LegalReviewLawyers";
+import { createLaborDocumentResult, documentResultReviewMetadata, documentResultSchema, type DocumentResultV1 } from "@/lib/document-result-contract";
 import type { LaborDocumentScenario } from "@/data/labor-documents";
 import type { LaborLegalRule } from "@/data/labor-legal-sources";
 import type { LaborDocumentResponse } from "@/lib/labor-document-contract";
 import { createLaborDocumentPdfBlob, laborDocumentFilename } from "@/lib/labor-document-export";
 
-type GeneratedVersion = LaborDocumentResponse & { answers: Record<string, string> };
+type GeneratedVersion = LaborDocumentResponse & { answers: Record<string, string>; documentResult: DocumentResultV1 };
 type Field = { key: string; label: string; hint: string };
 
 export function LaborDocumentGenerator({ document, selected, rules }: { document: { slug: string }; selected: LaborDocumentScenario; rules: LaborLegalRule[] }) {
@@ -42,9 +43,20 @@ export function LaborDocumentGenerator({ document, selected, rules }: { document
           facts: fields.map((field) => ({ key: field.key, label: field.label, value: answers[field.key].trim() }))
         })
       });
-      const body = await response.json().catch(() => null) as { result?: LaborDocumentResponse; message?: string } | null;
+      const body = await response.json().catch(() => null) as { result?: LaborDocumentResponse; documentResult?: DocumentResultV1; message?: string } | null;
       if (!response.ok || !body?.result) throw new Error(body?.message || "Не удалось сформировать документ.");
-      setVersion({ ...body.result, answers: { ...answers } });
+      const commonResult = body.documentResult
+        ? documentResultSchema.parse(body.documentResult)
+        : createLaborDocumentResult({
+          routeSlug: selected.route.slug,
+          scenarioKey: selected.scenario.key,
+          documentSlug: document.slug,
+          result: body.result
+        });
+      if (commonResult.versionId !== body.result.versionId || commonResult.documentText !== body.result.draftText || commonResult.documentSlug !== document.slug) {
+        throw new Error("Несоответствие версии документа. Попробуйте сформировать документ заново.");
+      }
+      setVersion({ ...body.result, answers: { ...answers }, documentResult: commonResult });
       setEditing(false);
       setReviewOpen(false);
       setReviewMessage("");
@@ -70,7 +82,8 @@ export function LaborDocumentGenerator({ document, selected, rules }: { document
       documentText: version.draftText,
       rules: rules.filter((rule) => version.usedRuleIds.includes(rule.id)),
       nextSteps: selected.scenario.nextSteps,
-      reviewedAt: version.legalRegistryReviewedAt
+      reviewedAt: version.legalRegistryReviewedAt,
+      versionId: version.documentResult.versionId
     });
   }
 
@@ -109,14 +122,7 @@ export function LaborDocumentGenerator({ document, selected, rules }: { document
       payload.set("consent", input.get("consent") === "on" ? "true" : "false");
       payload.set("contactTransferConsent", input.get("contactTransferConsent") === "on" ? "true" : "false");
       payload.set("structuredPayload", JSON.stringify({
-        route: selected.route.slug,
-        scenarioId: selected.scenario.key,
-        documentSlug: document.slug,
-        documentVersionId: version.versionId,
-        generatorVersion: version.generatorVersion,
-        legalRegistryReviewedAt: version.legalRegistryReviewedAt,
-        filingReady: version.filingReady,
-        requiresLegalReview: version.requiresLegalReview,
+        ...documentResultReviewMetadata(version.documentResult),
         consentTextVersion: "document-review-2026-10-05"
       }));
       payload.set("attachment", new File([blob], laborDocumentFilename(document.slug, "pdf"), { type: "application/pdf" }));
@@ -151,6 +157,7 @@ export function LaborDocumentGenerator({ document, selected, rules }: { document
         <p className="font-semibold">ПРОЕКТ — ТРЕБУЕТСЯ ЮРИДИЧЕСКАЯ ПРОВЕРКА</p>
         <h2 className="mt-2 text-2xl font-semibold">{version.documentTitle}</h2>
         <p className="mt-2 text-sm leading-6">Готовность к подаче не подтверждена. Проверьте адресат, срок, требования, расчет и приложения.</p>
+        <p className="mt-2 break-all text-xs">ID версии: {version.documentResult.versionId}</p>
       </section>
 
       <section className="mt-6 border border-line bg-white p-5" aria-labelledby="generated-document-title" data-result-section="generated-document">
