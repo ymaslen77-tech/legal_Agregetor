@@ -35,7 +35,7 @@ export function createParentsChildDocumentResult(input: {
     resultKind,
     source: input.source ?? "DETERMINISTIC",
     documentTitle: decision.documentTitle,
-    documentText: buildParentsChildPdfText({ ...decision, draftText: draft }),
+    documentText: buildParentsChildPdfText({ ...decision, filingReady: false, draftText: draft }),
     usedRuleIds: [],
     placeholders: [],
     legalRegistryReviewedAt: PARENTS_CHILD_REVIEWED_AT,
