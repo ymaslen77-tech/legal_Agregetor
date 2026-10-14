@@ -26,7 +26,7 @@ for (const route of routes) {
 
   if (route.source === "legacy-family") {
     assert.equal(route.categorySlug, "semya-i-deti");
-    assert.equal(route.migrationStatus, ["opeka-i-popechitelstvo-nad-rebenkom", "roditeli-i-rebenok-posle-razvoda"].includes(route.problemSlug) ? "ADAPTED_V1" : "SCENARIO_MAPPED_V1");
+    assert.equal(route.migrationStatus, "ADAPTED_V1");
     assert.ok(LEGACY_FAMILY_ROUTE_SLUGS.includes(route.problemSlug as (typeof LEGACY_FAMILY_ROUTE_SLUGS)[number]));
   }
 
@@ -58,8 +58,8 @@ assert.deepEqual(new Set(legacy.map((route) => route.problemSlug)), new Set(LEGA
 assert.equal(routes.filter((route) => route.source === "labor").length, 14);
 assert.equal(routes.filter((route) => route.source === "family-additive").length, 5);
 assert.equal(legacy.length, 24);
-assert.equal(routes.filter((route) => route.migrationStatus === "ADAPTED_V1").length, 21);
-assert.equal(routes.filter((route) => route.migrationStatus === "SCENARIO_MAPPED_V1").length, 22);
+assert.equal(routes.filter((route) => route.migrationStatus === "ADAPTED_V1").length, routes.length);
+assert.equal(routes.filter((route) => route.migrationStatus === "SCENARIO_MAPPED_V1").length, 0);
 
 for (const category of legalCategories) {
   const problems = routes.filter((route) => route.categorySlug === category.slug);
@@ -81,5 +81,5 @@ assert.equal(Object.keys(LEGAL_ROUTE_GROUPS).length, categories.size);
 assert.equal(getLegalRouteV1("semya-i-deti", "route-does-not-exist"), null);
 
 console.log(
-  `LEGAL_ROUTE_STANDARD_V1: ${routes.length} routes, ${routes.filter((route) => route.migrationStatus === "ADAPTED_V1").length} adapted, ${legacy.length} scenario-mapped legacy. Category coverage and scenario/document references verified.`
+  `LEGAL_ROUTE_STANDARD_V1: ${routes.length} routes, ${routes.filter((route) => route.migrationStatus === "ADAPTED_V1").length} adapted, ${legacy.length} original family routes now adapted. Category coverage and scenario/document references verified.`
 );

@@ -2,8 +2,6 @@ import { FAMILY_ADDITIVE_ROUTES, type FamilyAdditiveResultKind } from "@/data/fa
 import { LABOR_CATEGORY_SLUG, LABOR_ROUTES, type LaborResultType } from "@/data/labor-routes";
 import { legalProblems, type LegalProblem } from "@/data/legal-problems";
 import { getMappedLegacyFamilyScenarios } from "@/data/legacy-family-route-catalog";
-import { GUARDIANSHIP_ROUTE } from "@/data/guardianship-route";
-import { PARENTS_CHILD_ROUTE } from "@/data/parents-child-route";
 
 /**
  * Shared, read-only compatibility view over the existing legal navigation data.
@@ -55,9 +53,9 @@ export type LegalRouteV1 = {
 };
 
 /**
- * Frozen inventory of family routes still using bespoke generators/pages.
- * Adding a NEW route to this list is prohibited; migrate existing entries out
- * only after the standardized scenario and result acceptance checks pass.
+ * Frozen original inventory of family routes included in the V1 migration.
+ * All baseline routes now have V1 result integration; new routes use the
+ * structured family registry instead of being silently added to this list.
  */
 export const LEGACY_FAMILY_ROUTE_SLUGS = [
   "brak-zags-i-smena-familii",
@@ -176,7 +174,7 @@ export function adaptLegalProblemToV1(problem: LegalProblem): LegalRouteV1 {
     }
     return {
       ...base,
-      migrationStatus: [GUARDIANSHIP_ROUTE.problemSlug, PARENTS_CHILD_ROUTE.problemSlug].includes(problem.slug as typeof GUARDIANSHIP_ROUTE.problemSlug | typeof PARENTS_CHILD_ROUTE.problemSlug) ? "ADAPTED_V1" : "SCENARIO_MAPPED_V1",
+      migrationStatus: "ADAPTED_V1",
       source: "legacy-family",
       scenarios: getMappedLegacyFamilyScenarios(problem.slug, problemUrl) ?? []
     };

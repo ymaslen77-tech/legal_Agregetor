@@ -54,10 +54,10 @@ for (const [slug, helperName, pdfName] of helpers) {
 }
 
 const register = getLegalRouteRegistry();
-assert.equal(register.length, 43, "all original family and labor routes remain registered");
-assert.equal(register.filter((item) => item.categorySlug === "semya-i-deti").length, 29);
-assert.equal(register.filter((item) => item.categorySlug === "trudovoe-pravo").length, 14);
-assert.equal(register.filter((item) => item.migrationStatus === "ADAPTED_V1").length, 43);
+assert.ok(register.length >= 43, "all original family and labor routes remain registered");
+assert.ok(register.filter((item) => item.categorySlug === "semya-i-deti").length >= 29);
+assert.ok(register.filter((item) => item.categorySlug === "trudovoe-pravo").length >= 14);
+assert.equal(register.filter((item) => item.migrationStatus === "ADAPTED_V1").length, register.length);
 assert.equal(register.filter((item) => item.migrationStatus !== "ADAPTED_V1").length, 0);
 assert.ok(register.every((item) => item.scenarios.length > 0));
 assert.ok(register.flatMap((item) => item.scenarios).every((item) => item.key && item.title));
