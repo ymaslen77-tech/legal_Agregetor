@@ -4,6 +4,7 @@ import { Download, ShieldCheck } from "lucide-react";
 import { FormEvent, useMemo, useState } from "react";
 import { LegalReviewLawyers } from "@/components/lawyers/LegalReviewLawyers";
 import { DocumentResultSummary } from "@/components/documents/DocumentResultSummary";
+import { LegalFormField } from "@/components/documents/LegalFormField";
 import { DocumentVersionHistory } from "@/components/documents/DocumentVersionHistory";
 import { addDocumentVersion } from "@/lib/document-version-history";
 import { createLaborDocumentResult, documentResultReviewMetadata, documentResultSchema, type DocumentResultV1 } from "@/lib/document-result-contract";
@@ -186,9 +187,14 @@ export function LaborDocumentGenerator({ document, selected, rules }: { document
       <h2 id="labor-document-form-title" className="text-2xl font-semibold text-ink">{version ? "Редактирование сведений" : "Подготовка документа"}</h2>
       <p className="mt-2 text-sm leading-6 text-zinc-600">Заполните только подтвержденные сведения. Текущая сформированная версия не изменится, пока вы явно не сформируете новую.</p>
       <div className="mt-5 grid gap-5">
-        {fields.map((field) => <label key={field.key} className="grid gap-2 font-semibold text-ink">{field.label}{field.kind === "date"
-          ? <input type="date" value={answers[field.key] ?? ""} onChange={(event) => setAnswers((current) => ({ ...current, [field.key]: event.target.value }))} required className="min-h-11 w-full rounded-md border border-line px-3 py-3 font-normal text-ink outline-none focus:border-trust focus:ring-2 focus:ring-trust/20" />
-          : <textarea value={answers[field.key] ?? ""} onChange={(event) => setAnswers((current) => ({ ...current, [field.key]: event.target.value }))} rows={field.key === "circumstances" || field.key === "attachments" ? 4 : 2} className="w-full rounded-md border border-line px-3 py-3 font-normal text-ink outline-none focus:border-trust focus:ring-2 focus:ring-trust/20" />}<span className="text-xs font-normal text-zinc-500">{field.hint}</span></label>)}
+        {fields.map((field) => <LegalFormField key={field.key}
+          id={`labor-${selected.route.slug}-${selected.scenario.key}-${field.key}`}
+          label={field.label} hint={field.hint} required
+          kind={field.kind ?? "textarea"}
+          rows={field.key === "circumstances" || field.key === "attachments" ? 4 : 2}
+          value={answers[field.key] ?? ""}
+          onChange={(next) => setAnswers((current) => ({ ...current, [field.key]: next }))}
+        />)}
       </div>
       <div className="mt-6 flex flex-wrap gap-4">
         <button type="button" onClick={generate} disabled={status === "loading"} className="inline-flex min-h-11 items-center rounded-md bg-trust px-5 py-3 text-sm font-semibold text-white disabled:opacity-60">{status === "loading" ? "Формируем документ" : version ? "Сформировать новый документ" : "Сформировать документ"}</button>
