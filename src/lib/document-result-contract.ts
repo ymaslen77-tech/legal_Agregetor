@@ -20,7 +20,7 @@ export const documentResultSchema = z.object({
     "DRAFT", "AGREEMENT_DRAFT", "ENFORCEMENT_DRAFT", "OFFICIAL_FORM",
     "PREPARED_DATA", "CHECKLIST", "URGENT_INSTRUCTION", "LEGAL_REVIEW_ONLY"
   ]),
-  source: z.enum(["AI_DRAFT", "DETERMINISTIC"]),
+  source: z.enum(["AI_DRAFT", "DETERMINISTIC", "USER_EDITED"]),
   documentTitle: z.string().trim().min(1).max(300),
   documentText: z.string().min(1).max(40000),
   usedRuleIds: z.array(z.string().min(1).max(120)).max(50),
