@@ -15,7 +15,8 @@ export function useLegacyFamilyDocumentVersions<TDecision extends LegacyFamilyOu
   const [versions, setVersions] = useState<DocumentVersionEntry<Snapshot>[]>([]);
   const [activeVersionId, setActiveVersionId] = useState<string | null>(null);
   const [dirty, setDirty] = useState(false);
-  const currentEntry = versions.find((entry) => entry.documentResult.versionId === activeVersionId);
+  const visibleVersions = versions.filter((entry) => entry.documentResult.scenarioKey === config.scenarioKey && entry.documentResult.routeSlug === config.routeSlug && entry.documentResult.documentSlug === config.documentSlug);
+  const currentEntry = visibleVersions.find((entry) => entry.documentResult.versionId === activeVersionId);
   const current = currentEntry?.documentResult ?? null;
 
   function record(decision: TDecision, draft: string, values: TValues, source: DocumentResultV1["source"] = "DETERMINISTIC") {
@@ -39,7 +40,7 @@ export function useLegacyFamilyDocumentVersions<TDecision extends LegacyFamilyOu
   }
 
   function restore(versionId: string): Snapshot | null {
-    const entry = versions.find((item) => item.documentResult.versionId === versionId);
+    const entry = visibleVersions.find((item) => item.documentResult.versionId === versionId);
     if (!entry) return null;
     setActiveVersionId(versionId);
     setDirty(false);
@@ -47,7 +48,7 @@ export function useLegacyFamilyDocumentVersions<TDecision extends LegacyFamilyOu
   }
 
   return {
-    versions: versions.map((entry) => entry.documentResult),
+    versions: visibleVersions.map((entry) => entry.documentResult),
     current,
     activeVersionId,
     dirty,
