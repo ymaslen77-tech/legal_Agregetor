@@ -136,7 +136,7 @@ export function adaptLegalProblemToV1(problem: LegalProblem): LegalRouteV1 {
         outcome: LABOR_OUTCOMES[scenario.resultType],
         documentSlug: scenario.documentSlug ?? null,
         inputs: scenario.questions.map((label, index) => ({
-          key: `question-${index + 1}`,
+          key: `scenario-${index + 1}`,
           label,
           required: true,
           type: "text"
