@@ -34,8 +34,9 @@ export function createLegacyFamilyDocumentResult(input: {
       decision.outcomeKey === "unresolved") return null;
 
   const resultKind: DocumentResultV1["resultKind"] =
+    decision.resultKind === "legalReviewOnly" ? "LEGAL_REVIEW_ONLY" :
     decision.resultKind === "checklist" ? "CHECKLIST" :
-    decision.resultKind === "data-sheet" || decision.resultKind === "prepared-data" ? "PREPARED_DATA" :
+    decision.resultKind === "dataSheet" || decision.resultKind === "data-sheet" || decision.resultKind === "prepared-data" ? "PREPARED_DATA" :
     decision.resultKind === "official-form" ? "OFFICIAL_FORM" :
     !draft.trim() ? "PREPARED_DATA" :
     decision.resultKind === "agreement" ? "AGREEMENT_DRAFT" :
