@@ -110,7 +110,7 @@ export function ParentsChildDocumentHelper({ scenarioKey }: { scenarioKey: Paren
       return;
     }
     try {
-      const blob = await createParentsChildPdfBlob({ ...decision, draftText: draft }, documentResult.versionId);
+      const blob = await createParentsChildPdfBlob({ ...decision, filingReady: false, draftText: draft }, documentResult.versionId);
       downloadBlob(blob, getParentsChildPdfFilename(decision.outcomeKey));
       setMessage("PDF сформирован. Проверьте статус готовности на первой странице.");
     } catch {
@@ -148,10 +148,10 @@ export function ParentsChildDocumentHelper({ scenarioKey }: { scenarioKey: Paren
 
       {decision && decision.resultKind !== "urgent" ? (
         <div className="mt-6" aria-live="polite">
-          <div className={`border p-4 text-sm leading-6 ${decision.filingReady ? "border-emerald-200 bg-emerald-50 text-emerald-950" : "border-amber-300 bg-amber-50 text-amber-950"}`}>
+          <div className={`border p-4 text-sm leading-6 ${documentResult?.filingReady ? "border-emerald-200 bg-emerald-50 text-emerald-950" : "border-amber-300 bg-amber-50 text-amber-950"}`}>
             <p className="font-semibold">{decision.resultLabel}</p>
             <p className="mt-2"><strong>Результат:</strong> {decision.documentTitle}</p>
-            <p className="mt-2">{decision.filingReady ? "Результат можно использовать по инструкции после проверки данных." : "Результат нельзя считать готовым к подаче."}</p>
+            <p className="mt-2">{documentResult?.filingReady ? "Результат можно использовать по инструкции после проверки данных." : "Результат нельзя считать готовым к подаче."}</p>
             {decision.notices.map((notice) => <p key={notice} className="mt-2">{notice}</p>)}
             {decision.issues.length ? <ul className="mt-3 list-disc pl-5">{decision.issues.map((issue) => <li key={`${issue.field}-${issue.message}`}>{issue.message}</li>)}</ul> : null}
           </div>
