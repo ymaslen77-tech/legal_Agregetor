@@ -18,7 +18,7 @@ export default async function DocumentDetailLayout({ children, params }: Documen
   return (
     <>
       {knownMatch ? <LegalRouteJourney stage="document" title={knownMatch.route.title} problemUrl={knownMatch.route.problemUrl} scenarioUrl={knownMatch.scenario.scenarioUrl} /> : document ? <LegalRouteJourney stage="document" title={document.title} /> : null}
-      {children}
+      <div className="legal-route-shell">{children}</div>
       {document ? <DocumentRelatedQuestions document={document} /> : null}
     </>
   );
