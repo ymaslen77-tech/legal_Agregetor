@@ -134,7 +134,7 @@ test("searchable territory cascade works by keyboard and resets dependent values
   await chooseCombobox(page, "Орган опеки и попечительства", "Отдел опеки");
   await expect(page.getByText("Проект заявления для юридической проверки", { exact: true })).toBeVisible();
   await expect(page.getByText("Это не готовый официальный бланк.", { exact: false })).toBeVisible();
-  await expect(page.getByText("Иванов Иван Иванович", { exact: false })).toBeVisible();
+  await expect(page.locator("dd").filter({ hasText: "Иванов Иван Иванович" }).first()).toBeVisible();
 
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: "Скачать PDF" }).click();
