@@ -23,6 +23,8 @@ test("encrypted document archive enforces owner isolation, restoration and delet
     await other.addCookies([{ name: AUTH_COOKIE_NAME, value: otherToken, url: origin, httpOnly: true, sameSite: "Lax" }]);
     const ownerPage = await owner.newPage();
     const otherPage = await other.newPage();
+    const ownerAuthHeaders = { Origin: origin, Cookie: `${AUTH_COOKIE_NAME}=${ownerToken}` };
+    const otherAuthHeaders = { Origin: origin, Cookie: `${AUTH_COOKIE_NAME}=${otherToken}` };
 
     const documentResult = createFamilyAIDraftDocumentResult({
       routeSlug: "roditeli-i-rebenok-posle-razvoda",
@@ -33,12 +35,12 @@ test("encrypted document archive enforces owner isolation, restoration and delet
       usedRuleIds: [], placeholders: [], legalReviewedAt: "2026-10-09"
     });
     const save = await ownerPage.request.post("/api/account/documents/", {
-      headers: { Origin: origin }, data: { documentResult }
+      headers: ownerAuthHeaders, data: { documentResult }
     });
     expect(save.status(), await save.text()).toBe(201);
 
     const duplicate = await ownerPage.request.post("/api/account/documents/", {
-      headers: { Origin: origin }, data: { documentResult }
+      headers: ownerAuthHeaders, data: { documentResult }
     });
     expect(duplicate.status()).toBe(409);
 
@@ -50,30 +52,30 @@ test("encrypted document archive enforces owner isolation, restoration and delet
       await anonymous.close();
     }
 
-    const ownerList = await ownerPage.request.get("/api/account/documents/");
+    const ownerList = await ownerPage.request.get("/api/account/documents/", { headers: ownerAuthHeaders });
     expect(ownerList.status()).toBe(200);
     expect((await ownerList.json()).documents.some((d: { versionId: string }) => d.versionId === documentResult.versionId)).toBe(true);
 
-    const unauthorizedList = await otherPage.request.get("/api/account/documents/");
+    const unauthorizedList = await otherPage.request.get("/api/account/documents/", { headers: otherAuthHeaders });
     expect(unauthorizedList.status()).toBe(200);
     expect((await unauthorizedList.json()).documents).toEqual([]);
 
-    const foreignRead = await otherPage.request.get(`/api/account/documents/${documentResult.versionId}/`);
+    const foreignRead = await otherPage.request.get(`/api/account/documents/${documentResult.versionId}/`, { headers: otherAuthHeaders });
     expect(foreignRead.status()).toBe(404);
-    const foreignDelete = await otherPage.request.delete(`/api/account/documents/${documentResult.versionId}/`, { headers: { Origin: origin } });
+    const foreignDelete = await otherPage.request.delete(`/api/account/documents/${documentResult.versionId}/`, { headers: otherAuthHeaders });
     expect(foreignDelete.status()).toBe(404);
 
-    const restored = await ownerPage.request.get(`/api/account/documents/${documentResult.versionId}/`);
+    const restored = await ownerPage.request.get(`/api/account/documents/${documentResult.versionId}/`, { headers: ownerAuthHeaders });
     expect(restored.status()).toBe(200);
     expect((await restored.json()).documentResult).toEqual(documentResult);
     await ownerPage.goto("/account/documents/");
     await expect(ownerPage.getByText(documentResult.documentTitle)).toBeVisible();
 
-    const removed = await ownerPage.request.delete(`/api/account/documents/${documentResult.versionId}/`, { headers: { Origin: origin } });
+    const removed = await ownerPage.request.delete(`/api/account/documents/${documentResult.versionId}/`, { headers: ownerAuthHeaders });
     expect(removed.status()).toBe(200);
-    const noLongerExists = await ownerPage.request.get(`/api/account/documents/${documentResult.versionId}/`);
+    const noLongerExists = await ownerPage.request.get(`/api/account/documents/${documentResult.versionId}/`, { headers: ownerAuthHeaders });
     expect(noLongerExists.status()).toBe(404);
-    const deletedAgain = await ownerPage.request.delete(`/api/account/documents/${documentResult.versionId}/`, { headers: { Origin: origin, Cookie: `${AUTH_COOKIE_NAME}=${ownerToken}` } });
+    const deletedAgain = await ownerPage.request.delete(`/api/account/documents/${documentResult.versionId}/`, { headers: ownerAuthHeaders });
     expect(deletedAgain.status()).toBe(404);
   } finally {
     await Promise.allSettled([owner.close(), other.close()]);
