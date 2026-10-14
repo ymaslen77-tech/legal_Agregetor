@@ -8,7 +8,7 @@ test("documents catalog supports search, tags, reset and empty results", async (
   const search = page.getByRole("searchbox", { name: "Поиск документов" });
   await search.fill("алименты");
   await expect(page.locator("article").first()).toBeVisible();
-  await page.getByRole("button", { name: "Алименты", exact: true }).click();
+  await page.getByRole("combobox", { name: "Вид права" }).selectOption("Семейное право");
   await expect(page.locator("article").first()).toBeVisible();
 
   await search.fill("документ-которого-точно-нет");
@@ -23,7 +23,7 @@ test("problems page is concise and family cards use instruction CTA", async ({ p
   await expect(page.getByRole("heading", { name: "Доступные ситуации" })).toHaveCount(0);
 
   await page.goto("/problems/semya-i-deti/");
-  await expect(page.getByRole("link", { name: "Инструкция" }).first()).toBeVisible();
+  await expect(page.getByRole("link", { name: "Понять, что делать" }).first()).toBeVisible();
 });
 
 test("document preparation keeps scenario and opens a new tab", async ({ page }) => {
