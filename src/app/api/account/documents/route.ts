@@ -9,7 +9,8 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 const headers = { "Cache-Control": "private, no-store" };
 const MAX_VERSIONS = 100;
-const bodyLimit = 65_536;
+// The V1 contract permits 40k Unicode chars; UTF-8 Cyrillic needs ~120k bytes.
+const bodyLimit = 180_000;
 
 export async function GET() {
   const user = await getCurrentUser();
