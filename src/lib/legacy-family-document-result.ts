@@ -39,7 +39,7 @@ export function createLegacyFamilyDocumentResult(input: {
     decision.resultKind === "dataSheet" || decision.resultKind === "data-sheet" || decision.resultKind === "prepared-data" ? "PREPARED_DATA" :
     decision.resultKind === "official-form" ? "OFFICIAL_FORM" :
     !draft.trim() ? "PREPARED_DATA" :
-    decision.resultKind === "agreement" ? "AGREEMENT_DRAFT" :
+    ["agreement", "agreementDraft"].includes(decision.resultKind) ? "AGREEMENT_DRAFT" :
     decision.resultKind === "enforcement" ? "ENFORCEMENT_DRAFT" : "DRAFT";
 
   const text = [
