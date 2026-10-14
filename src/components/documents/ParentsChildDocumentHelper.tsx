@@ -58,10 +58,11 @@ export function ParentsChildDocumentHelper({ scenarioKey }: { scenarioKey: Paren
     setMessage("");
   }
 
-  function acceptGeneratedDraft(text: string) {
+  function acceptGeneratedDraft(text: string, origin: "AI_DRAFT" | "USER_EDITED") {
     if (!decision) return;
     setDraft(text);
-    recordVersion(decision, text, values, "AI_DRAFT");
+    if (origin === "AI_DRAFT") recordVersion(decision, text, values, "AI_DRAFT");
+    else setDraftDirty(text !== (activeEntry?.payload.draft ?? ""));
     setMessage("");
   }
 
