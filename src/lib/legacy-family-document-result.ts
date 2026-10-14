@@ -29,7 +29,9 @@ export function createLegacyFamilyDocumentResult(input: {
   versionId?: string;
 }): DocumentResultV1 | null {
   const { decision, draft } = input;
-  if (decision.pdfAvailable === false ||
+  // Fail closed: only an explicitly permitted PDF result can be versioned.
+  // Undefined must not be treated as permission in legacy validators.
+  if (decision.pdfAvailable !== true ||
       decision.resultKind === "urgent" ||
       decision.outcomeKey === "unresolved") return null;
 
