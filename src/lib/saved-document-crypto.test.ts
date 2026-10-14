@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { randomBytes } from "node:crypto";
 import { createFamilyAIDraftDocumentResult } from "@/lib/document-result-contract";
 import { decryptSavedDocument, encryptSavedDocument } from "@/lib/saved-document-crypto";
+import { validateSavedDocument } from "@/lib/saved-document-validation";
 
 process.env.DOCUMENT_STORAGE_KEY = randomBytes(32).toString("base64");
 const original = createFamilyAIDraftDocumentResult({
@@ -12,6 +13,10 @@ const original = createFamilyAIDraftDocumentResult({
   documentText: "Личные данные заявителя и ребёнка",
   usedRuleIds: [], placeholders: [], legalReviewedAt: "2026-10-09"
 });
+assert.equal(validateSavedDocument(original)?.versionId, original.versionId);
+assert.equal(validateSavedDocument({ ...original, scenarioKey: "unknown-scenario" }), null);
+assert.equal(validateSavedDocument({ ...original, documentSlug: "unknown-document" }), null);
+assert.equal(validateSavedDocument({ ...original, filingReady: true }), null);
 const first = encryptSavedDocument(original, "owner-A");
 const second = encryptSavedDocument(original, "owner-A");
 assert.notEqual(first, second, "Every version encryption requires a fresh nonce");
