@@ -6,9 +6,10 @@ import { useMemo, useState, type FormEvent } from "react";
 import { LegalReviewLawyers } from "@/components/lawyers/LegalReviewLawyers";
 import { OfficialCourtHelp } from "@/components/forms/OfficialCourtHelp";
 import { DOCUMENT_REVIEW_RETENTION_DAYS } from "@/data/document-review-policy";
-import { getFamilyAdditiveLegalRules } from "@/data/family-additive-legal-review";
+import { FAMILY_ADDITIVE_LEGAL_REVIEWED_AT, getFamilyAdditiveLegalRules } from "@/data/family-additive-legal-review";
 import { getFamilyAdditiveScenario, type FamilyAdditiveField, type FamilyAdditiveRouteSlug } from "@/data/family-additive-routes";
 import { sendAnalyticsEvent } from "@/lib/analytics-client";
+import { createFamilyAdditiveDocumentResult, documentResultReviewMetadata, type DocumentResultV1 } from "@/lib/document-result-contract";
 import { buildFamilyAdditiveDocument, getFamilyAdditivePdfFilename } from "@/lib/family-additive-document";
 import { createFamilyAdditivePdfBlob } from "@/lib/family-additive-pdf";
 import { validateFamilyAdditiveScenario, type FamilyAdditiveDecision, type FamilyAdditiveValues } from "@/lib/family-additive-validator";
@@ -21,7 +22,8 @@ export function FamilyAdditiveDocumentHelper({ routeSlug, scenarioKey }: { route
   const rules = getFamilyAdditiveLegalRules(routeSlug);
   const [values, setValues] = useState<FamilyAdditiveValues>({});
   const [decision, setDecision] = useState<FamilyAdditiveDecision | null>(null);
-  const [documentText, setDocumentText] = useState("");
+  const [documentResult, setDocumentResult] = useState<DocumentResultV1 | null>(null);
+  const documentText = documentResult?.documentText ?? "";
   const [editOpen, setEditOpen] = useState(false);
   const [issues, setIssues] = useState<Array<{ field: string; message: string }>>([]);
   const [notice, setNotice] = useState("");
@@ -45,8 +47,15 @@ export function FamilyAdditiveDocumentHelper({ routeSlug, scenarioKey }: { route
       setNotice("Заполните обязательные сведения. Ранее сформированный результат не изменён.");
       return;
     }
+    const text = buildFamilyAdditiveDocument(result);
+    const generated = createFamilyAdditiveDocumentResult({
+      decision: result,
+      documentSlug: scenario.documentSlug,
+      documentText: text,
+      legalReviewedAt: FAMILY_ADDITIVE_LEGAL_REVIEWED_AT
+    });
+    setDocumentResult(generated);
     setDecision(result);
-    setDocumentText(buildFamilyAdditiveDocument(result));
     setIssues([]);
     setEditOpen(false);
     setReviewOpen(false);
@@ -57,8 +66,8 @@ export function FamilyAdditiveDocumentHelper({ routeSlug, scenarioKey }: { route
   }
 
   async function createPdf() {
-    if (!decision || !documentText) throw new Error("Сначала сформируйте документ.");
-    return createFamilyAdditivePdfBlob(decision, documentText);
+    if (!decision || !documentResult) throw new Error("Сначала сформируйте документ.");
+    return createFamilyAdditivePdfBlob(decision, documentResult.documentText, documentResult.versionId);
   }
 
   async function downloadPdf() {
@@ -79,7 +88,7 @@ export function FamilyAdditiveDocumentHelper({ routeSlug, scenarioKey }: { route
 
   async function submitForReview(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!decision) return;
+    if (!decision || !documentResult) return;
     setReviewStatus("submitting");
     setReviewMessage("");
     const form = event.currentTarget;
@@ -97,7 +106,7 @@ export function FamilyAdditiveDocumentHelper({ routeSlug, scenarioKey }: { route
       payload.set("format", "online");
       payload.set("consent", input.get("consent") === "on" ? "true" : "false");
       payload.set("contactTransferConsent", input.get("contactTransferConsent") === "on" ? "true" : "false");
-      payload.set("structuredPayload", JSON.stringify({ route: routeSlug, scenarioKey, outcomeKey: decision.outcomeKey, resultKind: decision.resultKind, requiresLegalReview: decision.requiresLegalReview, resultStatus: "NOT_READY_FOR_FILING", reviewStatus: "AWAITING_LAWYER_ASSIGNMENT" }));
+      payload.set("structuredPayload", JSON.stringify({ ...documentResultReviewMetadata(documentResult), outcomeKey: decision.outcomeKey, resultStatus: "NOT_READY_FOR_FILING", reviewStatus: "AWAITING_LAWYER_ASSIGNMENT" }));
       payload.set("attachment", new File([blob], getFamilyAdditivePdfFilename(decision), { type: "application/pdf" }));
       const response = await fetch("/api/leads/", { method: "POST", body: payload });
       const result = (await response.json().catch(() => null)) as { id?: string; message?: string; withdrawalToken?: string } | null;
@@ -161,6 +170,7 @@ export function FamilyAdditiveDocumentHelper({ routeSlug, scenarioKey }: { route
         <section className="mt-6 border-t border-line pt-6">
           <h3 className="text-xl font-semibold text-ink">Итоговый результат</h3>
           <p className="mt-2 text-sm leading-6 text-zinc-700">Для скачивания и проверки используется именно текущая сформированная версия.</p>
+          {documentResult ? <p className="mt-1 break-all text-xs text-zinc-500">ID версии: {documentResult.versionId}</p> : null}
           <div className="mt-4 flex flex-wrap gap-3"><button type="button" onClick={downloadPdf} className="inline-flex min-h-11 items-center gap-2 rounded-md bg-trust px-5 py-3 text-sm font-semibold text-white hover:bg-ink"><Download className="h-4 w-4" aria-hidden="true" /> Скачать PDF</button><button type="button" onClick={() => setReviewOpen((current) => !current)} className="inline-flex min-h-11 items-center gap-2 rounded-md border border-trust px-5 py-3 text-sm font-semibold text-trust hover:bg-zinc-50"><ShieldCheck className="h-4 w-4" aria-hidden="true" /> Отправить на проверку юристу</button></div>
         </section>
 
