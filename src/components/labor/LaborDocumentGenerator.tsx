@@ -13,7 +13,7 @@ import type { LaborDocumentResponse } from "@/lib/labor-document-contract";
 import { createLaborDocumentPdfBlob, laborDocumentFilename } from "@/lib/labor-document-export";
 
 type GeneratedVersion = LaborDocumentResponse & { answers: Record<string, string>; documentResult: DocumentResultV1 };
-type Field = { key: string; label: string; hint: string };
+type Field = { key: string; label: string; hint: string; kind?: "date" | "textarea" };
 type ReviewReceipt = { leadId: string; withdrawalToken: string; versionId: string };
 
 export function LaborDocumentGenerator({ document, selected, rules }: { document: { slug: string }; selected: LaborDocumentScenario; rules: LaborLegalRule[] }) {
@@ -186,7 +186,9 @@ export function LaborDocumentGenerator({ document, selected, rules }: { document
       <h2 id="labor-document-form-title" className="text-2xl font-semibold text-ink">{version ? "Редактирование сведений" : "Подготовка документа"}</h2>
       <p className="mt-2 text-sm leading-6 text-zinc-600">Заполните только подтвержденные сведения. Текущая сформированная версия не изменится, пока вы явно не сформируете новую.</p>
       <div className="mt-5 grid gap-5">
-        {fields.map((field) => <label key={field.key} className="grid gap-2 font-semibold text-ink">{field.label}<textarea value={answers[field.key] ?? ""} onChange={(event) => setAnswers((current) => ({ ...current, [field.key]: event.target.value }))} rows={field.key === "circumstances" || field.key === "attachments" ? 4 : 2} className="w-full rounded-md border border-line px-3 py-3 font-normal text-ink outline-none focus:border-trust focus:ring-2 focus:ring-trust/20" /><span className="text-xs font-normal text-zinc-500">{field.hint}</span></label>)}
+        {fields.map((field) => <label key={field.key} className="grid gap-2 font-semibold text-ink">{field.label}{field.kind === "date"
+          ? <input type="date" value={answers[field.key] ?? ""} onChange={(event) => setAnswers((current) => ({ ...current, [field.key]: event.target.value }))} required className="min-h-11 w-full rounded-md border border-line px-3 py-3 font-normal text-ink outline-none focus:border-trust focus:ring-2 focus:ring-trust/20" />
+          : <textarea value={answers[field.key] ?? ""} onChange={(event) => setAnswers((current) => ({ ...current, [field.key]: event.target.value }))} rows={field.key === "circumstances" || field.key === "attachments" ? 4 : 2} className="w-full rounded-md border border-line px-3 py-3 font-normal text-ink outline-none focus:border-trust focus:ring-2 focus:ring-trust/20" />}<span className="text-xs font-normal text-zinc-500">{field.hint}</span></label>)}
       </div>
       <div className="mt-6 flex flex-wrap gap-4">
         <button type="button" onClick={generate} disabled={status === "loading"} className="inline-flex min-h-11 items-center rounded-md bg-trust px-5 py-3 text-sm font-semibold text-white disabled:opacity-60">{status === "loading" ? "Формируем документ" : version ? "Сформировать новый документ" : "Сформировать документ"}</button>
@@ -259,7 +261,7 @@ function buildFields(selected: LaborDocumentScenario): Field[] {
     { key: "circumstances", label: "Подтвержденные обстоятельства", hint: "Краткая хронология с датами и документами без правовых предположений." },
     { key: "requestedOutcome", label: "Просьба или требования", hint: "Что именно должен сделать адресат." },
     { key: "attachments", label: "Приложения", hint: "Каждый документ с новой строки; если приложений нет, укажите это прямо." },
-    { key: "documentDate", label: "Дата документа", hint: "В формате ДД.ММ.ГГГГ." }
+    { key: "documentDate", label: "Дата документа", hint: "Выберите дату. В генератор передаётся календарная дата в формате ГГГГ-ММ-ДД.", kind: "date" }
   ];
   return [...common, ...selected.scenario.questions.map((label, index) => ({ key: `scenario-${index + 1}`, label, hint: "Ответьте по имеющимся документам или переписке." }))];
 }
