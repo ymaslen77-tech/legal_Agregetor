@@ -106,6 +106,7 @@ test("document preserves the current version until explicit regeneration", async
   const fields = page.locator("#fill-online textarea");
   expect(await fields.count()).toBeGreaterThan(10);
   for (let index = 0; index < await fields.count(); index += 1) await fields.nth(index).fill(`Подтвержденные сведения ${index + 1}`);
+  await page.locator("#fill-online input[type=date]").fill("2026-10-14");
   await page.getByRole("button", { name: "Сформировать документ", exact: true }).click();
   await expect(page.getByText("Версия 1.", { exact: false })).toBeVisible();
   await expect(page.getByRole("button", { name: "Редактировать данные" })).toBeVisible();
