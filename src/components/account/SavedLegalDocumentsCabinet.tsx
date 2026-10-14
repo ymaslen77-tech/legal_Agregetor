@@ -36,7 +36,7 @@ export function SavedLegalDocumentsCabinet() {
   async function open(versionId: string) {
     setBusyId(versionId); setMessage("");
     try {
-      const response = await fetch(`/api/account/documents/\${encodeURIComponent(versionId)}/`, { cache: "no-store" });
+      const response = await fetch(`/api/account/documents/${encodeURIComponent(versionId)}/`, { cache: "no-store" });
       const data = await response.json() as { documentResult?: DocumentResultV1; message?: string };
       if (!response.ok || !data.documentResult) throw new Error(data.message || "Версия не найдена.");
       setSelected(data.documentResult);
@@ -48,7 +48,7 @@ export function SavedLegalDocumentsCabinet() {
     if (!window.confirm("Удалить эту сохранённую версию без возможности восстановления?")) return;
     setBusyId(versionId); setMessage("");
     try {
-      const response = await fetch(`/api/account/documents/\${encodeURIComponent(versionId)}/`, { method: "DELETE" });
+      const response = await fetch(`/api/account/documents/${encodeURIComponent(versionId)}/`, { method: "DELETE" });
       if (!response.ok) throw new Error("Не удалось удалить версию.");
       if (selected?.versionId === versionId) setSelected(null);
       await reload();
@@ -72,7 +72,7 @@ export function SavedLegalDocumentsCabinet() {
       const url = URL.createObjectURL(blob);
       const anchor = window.document.createElement("a");
       anchor.href = url;
-      anchor.download = `pravopoisk-\${selected.versionId}.pdf`;
+      anchor.download = `pravopoisk-${selected.versionId}.pdf`;
       anchor.click();
       URL.revokeObjectURL(url);
     } catch { setMessage("PDF из архивной копии сформировать не удалось."); }
@@ -94,7 +94,7 @@ export function SavedLegalDocumentsCabinet() {
         <p className="mt-1 break-all text-xs text-zinc-500">Версия: {item.versionId}</p>
         <div className="mt-3 flex flex-wrap gap-3">
           <button type="button" onClick={() => void open(item.versionId)} disabled={busyId !== null} className="min-h-11 rounded-md bg-trust px-4 py-2 text-sm font-semibold text-white disabled:opacity-60">Открыть версию</button>
-          <Link href={`/documents/\${encodeURIComponent(item.documentSlug)}/`} className="inline-flex min-h-11 items-center rounded-md border border-line px-4 py-2 text-sm font-semibold">Страница документа</Link>
+          <Link href={`/documents/${encodeURIComponent(item.documentSlug)}/`} className="inline-flex min-h-11 items-center rounded-md border border-line px-4 py-2 text-sm font-semibold">Страница документа</Link>
           <button type="button" onClick={() => void remove(item.versionId)} disabled={busyId !== null} className="min-h-11 rounded-md border border-red-300 px-4 py-2 text-sm font-semibold text-red-800 disabled:opacity-60">Удалить</button>
         </div>
       </li>)}
