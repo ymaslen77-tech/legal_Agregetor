@@ -5,6 +5,7 @@ import { Download, Pencil, ShieldCheck } from "lucide-react";
 import { useMemo, useState, type FormEvent } from "react";
 import { LegalReviewLawyers } from "@/components/lawyers/LegalReviewLawyers";
 import { DocumentResultSummary } from "@/components/documents/DocumentResultSummary";
+import { LegalFormField } from "@/components/documents/LegalFormField";
 import { DocumentVersionHistory } from "@/components/documents/DocumentVersionHistory";
 import { addDocumentVersion } from "@/lib/document-version-history";
 import { OfficialCourtHelp } from "@/components/forms/OfficialCourtHelp";
@@ -232,9 +233,16 @@ function DocumentForm({ fields, issueByField, onChange, onSubmit, submitLabel, v
 }
 
 function HelperField({ error, field, onChange, value }: { error?: string; field: FamilyAdditiveField; onChange: (name: string, value: string) => void; value: string }) {
-  const id = `family-additive-${field.name}`;
-  const className = `min-h-11 w-full rounded-md border bg-white px-3 py-2 text-base font-normal outline-none focus:border-trust focus:ring-2 focus:ring-trust/20 ${error ? "border-red-500" : "border-line"}`;
-  return <div className={`grid min-w-0 content-start gap-2 text-sm font-semibold text-ink ${field.type === "textarea" ? "sm:col-span-2" : ""}`}>{field.name === "courtName" ? <OfficialCourtHelp /> : null}<label htmlFor={id}>{field.label}{field.required ? <span aria-hidden="true" className="text-red-700"> *</span> : null}</label>{field.type === "select" ? <select id={id} value={value} onChange={(event) => onChange(field.name, event.target.value)} className={className}><option value="">Выберите вариант</option>{field.options?.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select> : field.type === "textarea" ? <textarea id={id} rows={4} value={value} onChange={(event) => onChange(field.name, event.target.value)} className={`${className} min-h-28`} /> : <input id={id} type={field.type === "court-name" ? "text" : field.type} min={field.type === "number" ? 0 : undefined} value={value} onChange={(event) => onChange(field.name, event.target.value)} className={className} />}{field.hint ? <p className="font-normal leading-5 text-zinc-500">{field.hint}</p> : null}{error ? <p className="font-normal text-red-700" role="alert">{error}</p> : null}</div>;
+  return <div className={field.type === "textarea" ? "sm:col-span-2" : ""}>
+    {field.name === "courtName" ? <OfficialCourtHelp /> : null}
+    <LegalFormField
+      id={`family-additive-${field.name}`}
+      label={field.label} value={value} onChange={(next) => onChange(field.name, next)}
+      kind={field.type === "court-name" ? "text" : field.type}
+      required={field.required ?? false} hint={field.hint} error={error}
+      options={field.options}
+    />
+  </div>;
 }
 
 function ReviewForm({ hasReceipt, message, onSubmit, onWithdraw, status }: { hasReceipt: boolean; message: string; onSubmit: (event: FormEvent<HTMLFormElement>) => void; onWithdraw: () => void; status: ReviewStatus }) {
