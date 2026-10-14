@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { JsonLd } from "@/components/JsonLd";
@@ -69,14 +70,18 @@ export default async function ProblemCategoryPage({ params }: PageProps) {
 
         {popularProblems.length ? <section className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
           <h2 className="text-2xl font-semibold text-ink">Популярные ситуации</h2>
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
-            {popularProblems.map((problem) => <ProblemCard key={problem.slug} problem={problem} />)}
+          <div className="mt-5 flex flex-wrap gap-3">
+            {popularProblems.map((problem) => (
+              <Link key={problem.slug} href={`#situation-${problem.slug}`} className="inline-flex min-h-11 items-center rounded-md border border-line bg-white px-4 py-2 text-sm font-semibold text-trust hover:border-trust focus:ring-2 focus:ring-trust/30">
+                {problem.title}
+              </Link>
+            ))}
           </div>
         </section> : null}
 
         {routeGroups.map((group) => {
           const visibleProblems = problems.filter((problem) =>
-            group.problemSlugs.includes(problem.slug) && !popularSlugs.has(problem.slug)
+            group.problemSlugs.includes(problem.slug)
           );
           if (!visibleProblems.length) return null;
           return (
@@ -84,7 +89,7 @@ export default async function ProblemCategoryPage({ params }: PageProps) {
               <h2 className="text-2xl font-semibold text-ink">{group.title}</h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-zinc-600">{group.description}</p>
               <div className="mt-6 grid gap-4 md:grid-cols-2">
-                {visibleProblems.map((problem) => <ProblemCard key={problem.slug} problem={problem} />)}
+                {visibleProblems.map((problem) => <div id={`situation-${problem.slug}`} key={problem.slug} className="scroll-mt-24"><ProblemCard problem={problem} /></div>)}
               </div>
             </section>
           );
