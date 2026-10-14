@@ -74,7 +74,9 @@ function parseTrustedRule(raw: unknown): (TrustedRule & { scenarios: string[] })
   };
 }
 
-export function verifyFamilyLegalDraftRequest(input: LegalDraftRequest): LegalDraftRequest {
+export type VerifiedFamilyDraftRequest = LegalDraftRequest & { verifiedRouteSlug: string; verifiedDocumentSlug: string };
+
+export function verifyFamilyLegalDraftRequest(input: LegalDraftRequest): VerifiedFamilyDraftRequest {
   const match = input.route.match(/^\/documents\/([^/?#]+)\/$/);
   if (!match) throw new Error("Unknown document URL");
   const documentSlug = match[1];
@@ -103,5 +105,5 @@ export function verifyFamilyLegalDraftRequest(input: LegalDraftRequest): LegalDr
   if (new Set(trustedRules.map((rule) => rule.id)).size !== trustedRules.length) throw new Error("Duplicate legal rule IDs");
   if (input.filingReady || !input.requiresLegalReview) throw new Error("Only unverified draft requests are permitted");
 
-  return { ...input, allowedLegalRules: trustedRules, filingReady: false, requiresLegalReview: true };
+  return { ...input, allowedLegalRules: trustedRules, filingReady: false, requiresLegalReview: true, verifiedRouteSlug: routes[0], verifiedDocumentSlug: documentSlug };
 }
