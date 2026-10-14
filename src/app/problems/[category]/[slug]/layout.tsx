@@ -17,7 +17,7 @@ export default async function ProblemDetailLayout({ children, params }: ProblemD
   return (
     <>
       {route ? <LegalRouteJourney stage="situation" title={route.title} problemUrl={route.problemUrl} scenarioUrl={route.scenarios.length === 1 ? route.scenarios[0].scenarioUrl : undefined} /> : null}
-      {children}
+      <div className="legal-route-shell">{children}</div>
       {problem ? <ProblemRelatedQuestions problem={problem} /> : null}
     </>
   );
