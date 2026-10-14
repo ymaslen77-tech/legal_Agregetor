@@ -42,7 +42,7 @@ const record = registry.map((route) => {
       seoMobileAndAccessibility: "BROWSER_AND_ACCESSIBILITY_REVIEW_REQUIRED",
       automatedAndLegalSignoff: "EXPERT_SIGNOFF_REQUIRED"
     },
-    routeUrl: route.problemUrl, scenarios
+    scenarios
   };
 });
 assert.ok(registry.length >= 43, "Expected baseline of 43 legal situations.");
