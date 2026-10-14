@@ -5,7 +5,7 @@ import { createLegacyFamilyDocumentResult, type LegacyFamilyOutcome } from "@/li
 import type { DocumentResultV1 } from "@/lib/document-result-contract";
 
 /** All sensitive versions live only in React memory in the active tab. */
-export function useLegacyFamilyDocumentVersions<TDecision extends LegacyFamilyOutcome, TValues>(config: {
+export function useLegacyFamilyDocumentVersions<TDecision extends LegacyFamilyOutcome, TValues extends object>(config: {
   routeSlug: string;
   scenarioKey: string;
   documentSlug: string;
