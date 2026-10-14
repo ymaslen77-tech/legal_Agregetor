@@ -12,6 +12,7 @@ import { createLaborDocumentPdfBlob, laborDocumentFilename } from "@/lib/labor-d
 
 type GeneratedVersion = LaborDocumentResponse & { answers: Record<string, string>; documentResult: DocumentResultV1 };
 type Field = { key: string; label: string; hint: string };
+type ReviewReceipt = { leadId: string; withdrawalToken: string; versionId: string };
 
 export function LaborDocumentGenerator({ document, selected, rules }: { document: { slug: string }; selected: LaborDocumentScenario; rules: LaborLegalRule[] }) {
   const fields = useMemo(() => buildFields(selected), [selected]);
@@ -23,6 +24,8 @@ export function LaborDocumentGenerator({ document, selected, rules }: { document
   const [reviewMessage, setReviewMessage] = useState("");
   const [reviewPending, setReviewPending] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
+  const [reviewReceipts, setReviewReceipts] = useState<ReviewReceipt[]>([]);
+  const [withdrawingId, setWithdrawingId] = useState<string | null>(null);
 
   async function generate() {
     const missing = fields.filter((field) => !answers[field.key]?.trim());
@@ -128,14 +131,37 @@ export function LaborDocumentGenerator({ document, selected, rules }: { document
       }));
       payload.set("attachment", new File([blob], laborDocumentFilename(document.slug, "pdf"), { type: "application/pdf" }));
       const response = await fetch("/api/leads/", { method: "POST", body: payload });
-      const body = await response.json().catch(() => null) as { message?: string } | null;
+      const body = await response.json().catch(() => null) as { id?: string; withdrawalToken?: string; message?: string } | null;
       if (!response.ok) throw new Error(body?.message || "Не удалось передать документ.");
+      if (body?.id && body.withdrawalToken) {
+        setReviewReceipts((current) => [...current, { leadId: body.id!, withdrawalToken: body.withdrawalToken!, versionId: version.documentResult.versionId }]);
+      }
       setReviewMessage("Сформированный PDF и указанные контакты приняты для назначения профильного юриста.");
       event.currentTarget.reset();
     } catch (error) {
       setReviewMessage(error instanceof Error ? error.message : "Не удалось передать документ.");
     } finally {
       setReviewPending(false);
+    }
+  }
+
+  async function withdrawReviewConsent(receipt: ReviewReceipt) {
+    setWithdrawingId(receipt.leadId);
+    setReviewMessage("");
+    try {
+      const response = await fetch(`/api/leads/${encodeURIComponent(receipt.leadId)}/document-review/`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: receipt.withdrawalToken })
+      });
+      const result = (await response.json().catch(() => null)) as { message?: string } | null;
+      if (!response.ok) throw new Error(result?.message || "Не удалось отозвать согласие.");
+      setReviewReceipts((current) => current.filter((item) => item.leadId !== receipt.leadId));
+      setReviewMessage(result?.message || "Согласие отозвано, PDF удалён.");
+    } catch (error) {
+      setReviewMessage(error instanceof Error ? error.message : "Не удалось отозвать согласие.");
+    } finally {
+      setWithdrawingId(null);
     }
   }
 
@@ -192,6 +218,16 @@ export function LaborDocumentGenerator({ document, selected, rules }: { document
 
       <LegalReviewLawyers context={{ route: `/documents/${document.slug}/`, scenario: selected.scenario.key, documentTitle: version.documentTitle }} serviceSlug="trudovye-spory" />
     </div> : null}
+    {reviewReceipts.length ? <section className="mt-8 border-t border-line pt-5" aria-label="Отзыв согласия на предыдущие PDF">
+      <h2 className="text-xl font-semibold text-ink">Ранее отправленные версии PDF</h2>
+      <p className="mt-2 text-sm text-zinc-600">Каждую ранее отправленную версию можно удалить отдельно, не меняя текущий документ. Квитанции хранятся только в открытой вкладке.</p>
+      <div className="mt-4 grid gap-3">
+        {reviewReceipts.map((receipt) => <div key={receipt.leadId} className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-line p-3">
+          <span className="break-all text-xs text-zinc-600">Версия: {receipt.versionId}</span>
+          <button type="button" onClick={() => void withdrawReviewConsent(receipt)} disabled={withdrawingId !== null} className="min-h-11 rounded-md border border-line bg-white px-4 text-sm font-semibold text-ink disabled:opacity-60">{withdrawingId === receipt.leadId ? "Удаляем PDF" : "Отозвать согласие и удалить PDF"}</button>
+        </div>)}
+      </div>
+    </section> : null}
   </section>;
 }
 
