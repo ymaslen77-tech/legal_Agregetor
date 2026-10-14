@@ -12,7 +12,7 @@ function storageKey(): Buffer {
 }
 
 function associatedData(ownerId: string, versionId: string): Buffer {
-  return Buffer.from(`saved-legal-document-v1:\${ownerId}:\${versionId}`, "utf8");
+  return Buffer.from(`saved-legal-document-v1:${ownerId}:${versionId}`, "utf8");
 }
 
 /** No plaintext document title, facts, or text is stored in the archive table. */
