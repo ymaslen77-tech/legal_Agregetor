@@ -64,8 +64,8 @@ export function GuardianshipDocumentHelper({ scenarioKey, cities }: { scenarioKe
   const activeEntry = versions.find((entry) => entry.documentResult.versionId === activeVersionId);
   const documentResult = activeEntry?.documentResult ?? null;
 
-  function recordVersion(result: GuardianshipDecision, draftText: string, answers: GuardianshipValues) {
-    const next = createGuardianshipDocumentResult({ decision: result, scenarioKey, draft: draftText });
+  function recordVersion(result: GuardianshipDecision, draftText: string, answers: GuardianshipValues, source: "DETERMINISTIC" | "USER_EDITED" = "DETERMINISTIC") {
+    const next = createGuardianshipDocumentResult({ decision: result, scenarioKey, draft: draftText, source });
     setActiveVersionId(next?.versionId ?? null);
     setDraftDirty(false);
     if (next) {
@@ -94,7 +94,7 @@ export function GuardianshipDocumentHelper({ scenarioKey, cities }: { scenarioKe
 
   function saveEditedDraft() {
     if (!decision || !draft.trim()) return;
-    recordVersion(decision, draft, values);
+    recordVersion(decision, draft, values, "USER_EDITED");
     setReviewOpen(false);
     setReviewStatus("idle");
     setReviewMessage("");
