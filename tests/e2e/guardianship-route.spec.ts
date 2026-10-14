@@ -139,7 +139,7 @@ test("searchable territory cascade works by keyboard and resets dependent values
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: "Скачать PDF" }).click();
   const download = await downloadPromise;
-  expect(download.suggestedFilename()).toBe("opeka-appointment-standard-child.pdf");
+  expect(download.suggestedFilename()).toBe("CHERNOVIK-opeka-appointment-standard-child.pdf");
   await page.getByRole("button", { name: "Проверить у юриста" }).click();
   await expect(page.getByText("очереди на назначение", { exact: false })).toBeVisible();
   await expect(page.getByText("до 30 дней", { exact: false })).toBeVisible();
