@@ -3,6 +3,7 @@
 import { Download, ShieldCheck } from "lucide-react";
 import { FormEvent, useMemo, useState } from "react";
 import { LegalReviewLawyers } from "@/components/lawyers/LegalReviewLawyers";
+import { DocumentResultSummary } from "@/components/documents/DocumentResultSummary";
 import { createLaborDocumentResult, documentResultReviewMetadata, documentResultSchema, type DocumentResultV1 } from "@/lib/document-result-contract";
 import type { LaborDocumentScenario } from "@/data/labor-documents";
 import type { LaborLegalRule } from "@/data/labor-legal-sources";
@@ -153,12 +154,9 @@ export function LaborDocumentGenerator({ document, selected, rules }: { document
     {message ? <p className={`mt-3 text-sm ${status === "error" ? "text-red-800" : "text-zinc-700"}`} role={status === "error" ? "alert" : "status"}>{message}</p> : null}
 
     {version ? <div className={editing ? "mt-10 border-t border-line pt-7" : ""} aria-live="polite">
-      <section className="border-l-4 border-amber-400 bg-amber-50 p-4 text-amber-950">
-        <p className="font-semibold">ПРОЕКТ — ТРЕБУЕТСЯ ЮРИДИЧЕСКАЯ ПРОВЕРКА</p>
-        <h2 className="mt-2 text-2xl font-semibold">{version.documentTitle}</h2>
-        <p className="mt-2 text-sm leading-6">Готовность к подаче не подтверждена. Проверьте адресат, срок, требования, расчет и приложения.</p>
-        <p className="mt-2 break-all text-xs">ID версии: {version.documentResult.versionId}</p>
-      </section>
+      <DocumentResultSummary result={version.documentResult}>
+        <p className="mt-2 text-sm">Проверьте адресат, срок, требования, расчёт и приложения.</p>
+      </DocumentResultSummary>
 
       <section className="mt-6 border border-line bg-white p-5" aria-labelledby="generated-document-title" data-result-section="generated-document">
         <h3 id="generated-document-title" className="text-xl font-semibold text-ink">Сформированный документ</h3>
