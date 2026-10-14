@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import { NextResponse } from "next/server";
+import { createLaborDocumentResult } from "@/lib/document-result-contract";
 import { getLaborDocumentScenario } from "@/data/labor-documents";
 import { getLaborRulesForArea, LABOR_LEGAL_REVIEWED_AT } from "@/data/labor-legal-sources";
 import {
@@ -66,17 +67,22 @@ export async function POST(request: Request) {
     const raw = JSON.parse(content.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, ""));
     const result = validateLaborDocumentModelResult(raw, { documentTitle: selected.scenario.resultTitle, rules });
 
-    return NextResponse.json({
-      ok: true,
-      result: {
-        ...result,
-        versionId: crypto.randomUUID(),
-        filingReady: false,
-        requiresLegalReview: true,
-        legalRegistryReviewedAt: LABOR_LEGAL_REVIEWED_AT,
-        generatorVersion: GENERATOR_VERSION
-      }
+    const version = {
+      ...result,
+      versionId: crypto.randomUUID(),
+      filingReady: false as const,
+      requiresLegalReview: true as const,
+      legalRegistryReviewedAt: LABOR_LEGAL_REVIEWED_AT,
+      generatorVersion: GENERATOR_VERSION
+    };
+    const documentResult = createLaborDocumentResult({
+      routeSlug: selected.route.slug,
+      scenarioKey: selected.scenario.key,
+      documentSlug: parsed.data.documentSlug,
+      result: version
     });
+    // Keep the existing result payload for compatibility with deployed clients.
+    return NextResponse.json({ ok: true, result: version, documentResult });
   } catch (error) {
     if (process.env.NODE_ENV !== "production") {
       console.error("Labor document generation failed:", error instanceof Error ? error.message : "unknown_error");
