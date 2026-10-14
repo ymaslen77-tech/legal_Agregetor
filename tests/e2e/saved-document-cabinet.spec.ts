@@ -73,7 +73,7 @@ test("encrypted document archive enforces owner isolation, restoration and delet
     expect(removed.status()).toBe(200);
     const noLongerExists = await ownerPage.request.get(`/api/account/documents/${documentResult.versionId}/`);
     expect(noLongerExists.status()).toBe(404);
-    const deletedAgain = await ownerPage.request.delete(`/api/account/documents/${documentResult.versionId}/`, { headers: { Origin: origin } });
+    const deletedAgain = await ownerPage.request.delete(`/api/account/documents/${documentResult.versionId}/`, { headers: { Origin: origin, Cookie: `${AUTH_COOKIE_NAME}=${ownerToken}` } });
     expect(deletedAgain.status()).toBe(404);
   } finally {
     await Promise.allSettled([owner.close(), other.close()]);
