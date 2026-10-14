@@ -4,6 +4,8 @@ import { Download, ShieldCheck } from "lucide-react";
 import { FormEvent, useMemo, useState } from "react";
 import { LegalReviewLawyers } from "@/components/lawyers/LegalReviewLawyers";
 import { DocumentResultSummary } from "@/components/documents/DocumentResultSummary";
+import { DocumentVersionHistory } from "@/components/documents/DocumentVersionHistory";
+import { addDocumentVersion } from "@/lib/document-version-history";
 import { createLaborDocumentResult, documentResultReviewMetadata, documentResultSchema, type DocumentResultV1 } from "@/lib/document-result-contract";
 import type { LaborDocumentScenario } from "@/data/labor-documents";
 import type { LaborLegalRule } from "@/data/labor-legal-sources";
@@ -18,6 +20,7 @@ export function LaborDocumentGenerator({ document, selected, rules }: { document
   const fields = useMemo(() => buildFields(selected), [selected]);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [version, setVersion] = useState<GeneratedVersion | null>(null);
+  const [versions, setVersions] = useState<Array<{ documentResult: DocumentResultV1; payload: GeneratedVersion }>>([]);
   const [editing, setEditing] = useState(true);
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [message, setMessage] = useState("");
@@ -60,7 +63,9 @@ export function LaborDocumentGenerator({ document, selected, rules }: { document
       if (commonResult.versionId !== body.result.versionId || commonResult.documentText !== body.result.draftText || commonResult.documentSlug !== document.slug) {
         throw new Error("Несоответствие версии документа. Попробуйте сформировать документ заново.");
       }
-      setVersion({ ...body.result, answers: { ...answers }, documentResult: commonResult });
+      const snapshot = { ...body.result, answers: { ...answers }, documentResult: commonResult };
+      setVersion(snapshot);
+      setVersions((history) => addDocumentVersion(history, { documentResult: commonResult, payload: snapshot }));
       setEditing(false);
       setReviewOpen(false);
       setReviewMessage("");
@@ -70,6 +75,17 @@ export function LaborDocumentGenerator({ document, selected, rules }: { document
       setStatus("error");
       setMessage(error instanceof Error ? error.message : "Не удалось сформировать документ. Введенные данные сохранены.");
     }
+  }
+
+  function openVersion(versionId: string) {
+    const snapshot = versions.find((item) => item.documentResult.versionId === versionId)?.payload;
+    if (!snapshot) return;
+    setVersion(snapshot);
+    setAnswers({ ...snapshot.answers });
+    setEditing(false);
+    setReviewOpen(false);
+    setReviewMessage("");
+    setMessage("Выбрана ранее сформированная версия. PDF будет создан из неё.");
   }
 
   function cancelEditing() {
@@ -218,6 +234,7 @@ export function LaborDocumentGenerator({ document, selected, rules }: { document
 
       <LegalReviewLawyers context={{ route: `/documents/${document.slug}/`, scenario: selected.scenario.key, documentTitle: version.documentTitle }} serviceSlug="trudovye-spory" />
     </div> : null}
+    <DocumentVersionHistory versions={versions.map((item) => item.documentResult)} currentVersionId={version?.documentResult.versionId ?? null} onSelect={openVersion} />
     {reviewReceipts.length ? <section className="mt-8 border-t border-line pt-5" aria-label="Отзыв согласия на предыдущие PDF">
       <h2 className="text-xl font-semibold text-ink">Ранее отправленные версии PDF</h2>
       <p className="mt-2 text-sm text-zinc-600">Каждую ранее отправленную версию можно удалить отдельно, не меняя текущий документ. Квитанции хранятся только в открытой вкладке.</p>
