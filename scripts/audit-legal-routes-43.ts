@@ -31,6 +31,17 @@ const record = registry.map((route) => {
   return {
     category: route.categorySlug, route: route.problemSlug, source: route.source,
     migrationStatus: route.migrationStatus, legalReviewedAt: route.legalReviewedAt,
+    routeUrl: route.problemUrl,
+    acceptance: {
+      scenarioNavigation: errors.some((item) => item.startsWith(`${route.categorySlug}/${route.problemSlug}/`)) ? "BLOCKED" : "STRUCTURAL_CHECK_ONLY",
+      legalRulesAndExceptions: "EXPERT_AND_CASE_MATRIX_REQUIRED",
+      questionnaireAndAnswers: "BROWSER_AND_VALIDATION_REQUIRED",
+      generatedDocumentType: "SCENARIO_BY_SCENARIO_REVIEW_REQUIRED",
+      versionedPdf: "CONTENT_AND_VERSION_REVIEW_REQUIRED",
+      safeFailuresAndUrgency: "NEGATIVE_CASE_MATRIX_REQUIRED",
+      seoMobileAndAccessibility: "BROWSER_AND_ACCESSIBILITY_REVIEW_REQUIRED",
+      automatedAndLegalSignoff: "EXPERT_SIGNOFF_REQUIRED"
+    },
     routeUrl: route.problemUrl, scenarios
   };
 });
