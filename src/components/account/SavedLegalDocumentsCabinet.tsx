@@ -13,6 +13,8 @@ type State = "loading" | "ready" | "error";
 
 export function SavedLegalDocumentsCabinet() {
   const [documents, setDocuments] = useState<Summary[]>([]);
+  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState("");
   const [state, setState] = useState<State>("loading");
   const [message, setMessage] = useState("");
   const [selected, setSelected] = useState<DocumentResultV1 | null>(null);
@@ -78,17 +80,36 @@ export function SavedLegalDocumentsCabinet() {
     } catch { setMessage("PDF из архивной копии сформировать не удалось."); }
   }
 
+  const filtered = documents.filter((item) =>
+    (!category || item.categorySlug === category) &&
+    (!query.trim() || [item.documentTitle, item.routeSlug, item.documentSlug, item.versionId].join(" ").toLocaleLowerCase("ru").includes(query.trim().toLocaleLowerCase("ru")))
+  );
+
   return <section className="rounded-xl border border-line bg-white p-4 shadow-sm sm:p-6">
     <p className="text-sm leading-6 text-zinc-700">Сохраняются только версии, которые вы явно добавили в архив. Текст зашифрован на сервере, доступен только вашей учётной записи. Удаление окончательное. Юридическая проверка не выполняется при сохранении.</p>
     <div className="mt-4 flex flex-wrap gap-3">
       <Link href="/documents/" className="inline-flex min-h-11 items-center rounded-md bg-trust px-4 py-2 text-sm font-semibold text-white">Подготовить документ</Link>
       <button type="button" onClick={() => { setState("loading"); void reload(); }} className="min-h-11 rounded-md border border-line px-4 py-2 text-sm font-semibold">Обновить список</button>
     </div>
+    {state === "ready" && documents.length > 0 ? <div className="mt-5 grid gap-3 sm:grid-cols-2">
+      <label className="grid gap-1 text-sm font-medium">Поиск по сохранённым версиям
+        <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Название документа или номер версии" className="min-h-11 rounded-md border border-line px-3 py-2" />
+      </label>
+      <label className="grid gap-1 text-sm font-medium">Раздел права
+        <select value={category} onChange={(event) => setCategory(event.target.value)} className="min-h-11 rounded-md border border-line bg-white px-3 py-2">
+          <option value="">Все разделы</option>
+          <option value="semya-i-deti">Семейное право</option>
+          <option value="trudovoe-pravo">Трудовое право</option>
+        </select>
+      </label>
+      <p className="text-sm text-zinc-600 sm:col-span-2" role="status">Найдено версий: {filtered.length} из {documents.length}</p>
+    </div> : null}
     {state === "loading" ? <p role="status" className="mt-5">Загрузка зашифрованного архива…</p> : null}
     {state === "error" ? <p role="alert" className="mt-5 text-red-800">{message}</p> : null}
     {state === "ready" && !documents.length ? <p className="mt-6 rounded-md bg-zinc-50 p-4 text-sm">Сохранённых документов пока нет. Сформируйте документ и нажмите «Сохранить в мои документы».</p> : null}
-    {state === "ready" && documents.length ? <ol className="mt-6 grid gap-3">
-      {documents.map((item) => <li key={item.versionId} className="rounded-lg border border-line p-4">
+    {state === "ready" && documents.length > 0 && filtered.length === 0 ? <p className="mt-5 text-sm" role="status">По выбранным условиям документов не найдено.</p> : null}
+    {state === "ready" && filtered.length ? <ol className="mt-6 grid gap-3">
+      {filtered.map((item) => <li key={item.versionId} className="rounded-lg border border-line p-4">
         <h2 className="break-words text-base font-semibold">{item.documentTitle}</h2>
         <p className="mt-2 text-xs text-zinc-600">Сохранено: {new Date(item.createdAt).toLocaleString("ru-RU")}; статус: не подтверждена готовность к подаче</p>
         <p className="mt-1 break-all text-xs text-zinc-500">Версия: {item.versionId}</p>
