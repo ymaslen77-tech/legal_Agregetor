@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Download, Pencil, ShieldCheck } from "lucide-react";
 import { useMemo, useState, type FormEvent } from "react";
 import { LegalReviewLawyers } from "@/components/lawyers/LegalReviewLawyers";
+import { DocumentResultSummary } from "@/components/documents/DocumentResultSummary";
 import { OfficialCourtHelp } from "@/components/forms/OfficialCourtHelp";
 import { DOCUMENT_REVIEW_RETENTION_DAYS } from "@/data/document-review-policy";
 import { FAMILY_ADDITIVE_LEGAL_REVIEWED_AT, getFamilyAdditiveLegalRules } from "@/data/family-additive-legal-review";
@@ -143,13 +144,10 @@ export function FamilyAdditiveDocumentHelper({ routeSlug, scenarioKey }: { route
       {!decision || editOpen ? <DocumentForm fields={scenario.helperFields} values={values} issueByField={issueByField} onChange={updateField} onSubmit={generate} submitLabel={decision ? "Сформировать новый документ" : "Сформировать документ"} /> : null}
 
       {decision ? <div className="mt-7" aria-live="polite">
-        <section className="border-l-4 border-amber-400 bg-amber-50 p-4 text-sm leading-6 text-amber-950">
-          <p className="font-semibold">{decision.resultLabel}</p>
-          <p className="mt-1"><strong>{decision.documentTitle}</strong></p>
-          <p className="mt-1">Готовность к подаче: нет. {decision.requiresLegalReview ? "Юридическая проверка обязательна." : "Сверьте сведения с официальной формой."}</p>
-          {decision.notices.map((item) => <p key={item} className="mt-2">{item}</p>)}
+        {documentResult ? <DocumentResultSummary result={documentResult} label={decision.resultLabel}>
+          {decision.notices.map((item) => <p key={item} className="mt-2 text-sm">{item}</p>)}
           {decision.redirectPath ? <Link href={decision.redirectPath} className="mt-3 inline-flex min-h-11 items-center font-semibold text-trust underline underline-offset-4">Открыть подходящий маршрут</Link> : null}
-        </section>
+        </DocumentResultSummary> : null}
 
         <section className="mt-6 border-t border-line pt-5">
           <h3 className="text-xl font-semibold text-ink">Сформированный документ</h3>
