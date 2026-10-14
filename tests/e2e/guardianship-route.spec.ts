@@ -140,6 +140,21 @@ test("searchable territory cascade works by keyboard and resets dependent values
   await page.getByRole("button", { name: "Скачать PDF" }).click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toBe("CHERNOVIK-opeka-appointment-standard-child.pdf");
+  // Human edits cannot be downloaded or sent to a lawyer as an older snapshot.
+  const status = page.getByRole("region", { name: "Юридический статус документа" });
+  const oldVersion = await status.locator("p").last().textContent();
+  expect(oldVersion).toMatch(/ID версии:/);
+  const editor = page.getByRole("textbox", { name: "Текст черновика" });
+  await editor.fill((await editor.inputValue()) + "\nУточнение заявителя для отдельной версии.");
+  await expect(page.getByRole("button", { name: "Скачать PDF" })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Проверить у юриста" }).first()).toBeDisabled();
+  await page.getByRole("button", { name: "Сохранить новую версию" }).click();
+  await expect(page.getByRole("heading", { name: "Версии документа в этой вкладке" })).toBeVisible();
+  const newVersion = await status.locator("p").last().textContent();
+  expect(newVersion).not.toBe(oldVersion);
+  await page.getByRole("button", { name: "Открыть версию" }).click();
+  await expect(status.locator("p").last()).toHaveText(oldVersion ?? "");
+
   await page.getByRole("button", { name: "Проверить у юриста" }).click();
   await expect(page.getByText("очереди на назначение", { exact: false })).toBeVisible();
   await expect(page.getByText("до 30 дней", { exact: false })).toBeVisible();
