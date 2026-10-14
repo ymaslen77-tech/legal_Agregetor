@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { legalDraftRequestSchema } from "@/lib/legal-draft-contract";
 import { buildLegalDraftPrompts, validateLegalDraftModelResult } from "@/lib/legal-draft-generation";
 import { verifyFamilyLegalDraftRequest } from "@/lib/family-draft-trusted-rules";
+import { createFamilyAIDraftDocumentResult } from "@/lib/document-result-contract";
+import { getLegalProblem } from "@/data/legal-problems";
 import {
   checkRateLimit, clientKey, readJsonWithLimit, rejectCrossOrigin,
   payloadTooLargeResponse, RequestPayloadTooLargeError
@@ -63,9 +65,22 @@ export async function POST(request: Request) {
     if (!text) throw new Error("model_empty_response");
     const data = JSON.parse(text.replace(/^\x60\x60\x60(?:json)?\s*/i, "").replace(/\s*\x60\x60\x60$/i, ""));
     const draft = validateLegalDraftModelResult(data, trustedInput);
+    const problem = getLegalProblem("semya-i-deti", trustedInput.verifiedRouteSlug);
+    if (!problem?.lastReviewedAt) throw new Error("missing_legal_review_date");
+    const documentResult = createFamilyAIDraftDocumentResult({
+      routeSlug: trustedInput.verifiedRouteSlug,
+      scenarioKey: trustedInput.scenario,
+      documentSlug: trustedInput.verifiedDocumentSlug,
+      documentTitle: draft.documentTitle,
+      documentText: draft.draftText,
+      usedRuleIds: draft.usedRuleIds,
+      placeholders: draft.placeholders,
+      legalReviewedAt: problem.lastReviewedAt
+    });
     return NextResponse.json({
       ok: true,
-      result: { ...draft, filingReady: false, requiresLegalReview: true, model: "configured-provider" }
+      result: { ...draft, filingReady: false, requiresLegalReview: true, model: "configured-provider" },
+      documentResult
     });
   } catch {
     return NextResponse.json({ ok: false, message: "Не удалось сформировать полный документ. Ответы сохранены, повторите попытку." }, { status: 502 });
