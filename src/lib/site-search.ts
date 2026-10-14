@@ -382,6 +382,7 @@ export function getSiteSearchIndex(extraResults: SiteSearchResult[] = []): SiteS
  */
 function specificFamilySituation(normalizedQuery: string): string | null {
   if (/(недееспособ.*взросл|опека.*взросл)/.test(normalizedQuery)) return null;
+  if (isParentsChildQuery(normalizedQuery)) return "roditeli-i-rebenok-posle-razvoda";
   if (/отмен.*усыновлен/.test(normalizedQuery)) return "otmena-usynovleniya";
   if (/(усыновить|усыновлен|удочер)/.test(normalizedQuery)) return "usynovlenie-rebenka";
   if (/(лишить.*родительск|лишен.*родительск|лишение родительск)/.test(normalizedQuery)) return "lishenie-roditelskih-prav";
