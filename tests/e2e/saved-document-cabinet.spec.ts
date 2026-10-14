@@ -37,6 +37,19 @@ test("encrypted document archive enforces owner isolation, restoration and delet
     });
     expect(save.status(), await save.text()).toBe(201);
 
+    const duplicate = await ownerPage.request.post("/api/account/documents/", {
+      headers: { Origin: origin }, data: { documentResult }
+    });
+    expect(duplicate.status()).toBe(409);
+
+    const anonymous = await browser.newContext();
+    try {
+      const anonymousRequest = await anonymous.request.get(origin + "/api/account/documents/");
+      expect(anonymousRequest.status()).toBe(401);
+    } finally {
+      await anonymous.close();
+    }
+
     const ownerList = await ownerPage.request.get("/api/account/documents/");
     expect(ownerList.status()).toBe(200);
     expect((await ownerList.json()).documents.some((d: { versionId: string }) => d.versionId === documentResult.versionId)).toBe(true);
@@ -60,6 +73,8 @@ test("encrypted document archive enforces owner isolation, restoration and delet
     expect(removed.status()).toBe(200);
     const noLongerExists = await ownerPage.request.get(`/api/account/documents/${documentResult.versionId}/`);
     expect(noLongerExists.status()).toBe(404);
+    const deletedAgain = await ownerPage.request.delete(`/api/account/documents/${documentResult.versionId}/`, { headers: { Origin: origin } });
+    expect(deletedAgain.status()).toBe(404);
   } finally {
     await Promise.allSettled([owner.close(), other.close()]);
     await prisma.user.deleteMany({ where: { id: { in: [ownerId, otherId] } } });
