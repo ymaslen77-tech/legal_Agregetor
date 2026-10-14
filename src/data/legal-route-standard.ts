@@ -1,6 +1,7 @@
 import { FAMILY_ADDITIVE_ROUTES, type FamilyAdditiveResultKind } from "@/data/family-additive-routes";
 import { LABOR_CATEGORY_SLUG, LABOR_ROUTES, type LaborResultType } from "@/data/labor-routes";
 import { legalProblems, type LegalProblem } from "@/data/legal-problems";
+import { getMappedLegacyFamilyScenarios } from "@/data/legacy-family-route-catalog";
 
 /**
  * Shared, read-only compatibility view over the existing legal navigation data.
@@ -45,7 +46,7 @@ export type LegalRouteV1 = {
   riskLevel: LegalProblem["riskLevel"];
   urgency: LegalProblem["urgency"];
   legalReviewedAt: string | null;
-  migrationStatus: "ADAPTED_V1" | "LEGACY";
+  migrationStatus: "ADAPTED_V1" | "SCENARIO_MAPPED_V1" | "LEGACY";
   source: "labor" | "family-additive" | "legacy-family";
   scenarios: LegalRouteScenarioV1[];
   relatedDocumentSlugs: string[];
@@ -173,9 +174,9 @@ export function adaptLegalProblemToV1(problem: LegalProblem): LegalRouteV1 {
     }
     return {
       ...base,
-      migrationStatus: "LEGACY",
+      migrationStatus: "SCENARIO_MAPPED_V1",
       source: "legacy-family",
-      scenarios: []
+      scenarios: getMappedLegacyFamilyScenarios(problem.slug, problemUrl) ?? []
     };
   }
 
