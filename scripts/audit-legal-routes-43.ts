@@ -3,7 +3,6 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { getLegalRouteRegistry } from "@/data/legal-route-standard";
 import { getNavigatorDocument } from "@/data/documents";
 
-const today = "2026-10-14"; // CI baseline snapshot date; future reviews may use the current date.
 const registry = getLegalRouteRegistry();
 const errors: string[] = [];
 const record = registry.map((route) => {
