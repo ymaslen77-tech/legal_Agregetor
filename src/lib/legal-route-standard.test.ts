@@ -40,6 +40,9 @@ for (const route of routes) {
       `${route.problemUrl}?scenario=${encodeURIComponent(scenario.key)}`
     );
     assert.ok(scenario.inputs.every((input) => input.key.trim() && input.label.trim()));
+    if (route.source === "labor") {
+      assert.ok(scenario.inputs.every((input, index) => input.key === `scenario-${index + 1}`), `${route.problemSlug}/${scenario.key}: input keys must match the existing labor generator`);
+    }
     if (scenario.documentSlug) {
       assert.equal(scenario.documentUrl, `/documents/${scenario.documentSlug}/`);
       assert.ok(getNavigatorDocument(scenario.documentSlug), `${route.problemSlug}/${scenario.key}: document not registered`);
