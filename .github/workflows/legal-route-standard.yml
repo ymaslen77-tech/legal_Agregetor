@@ -24,4 +24,5 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run test:route-standard
+      - run: npm run test:document-result
       - run: npm run typecheck
