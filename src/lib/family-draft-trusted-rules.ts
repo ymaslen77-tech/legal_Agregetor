@@ -29,7 +29,7 @@ import type { LegalDraftRequest } from "@/lib/legal-draft-contract";
  * A draft route must identify a registered document and scenario, and every
  * rule must match its stored authoritative record for that scenario.
  */
-const rulesByRoute: ReadonlyMap<string, readonly unknown[]> = new Map([
+const rulesByRoute: ReadonlyMap<string, readonly unknown[]> = new Map<string, readonly unknown[]>([
   ["roditeli-i-rebenok-posle-razvoda", PARENTS_CHILD_LEGAL_RULES],
   ["alimenty-na-rebenka", CHILD_SUPPORT_LEGAL_RULES],
   ["lishenie-roditelskih-prav", PARENTAL_RIGHTS_DEPRIVATION_RULES],
