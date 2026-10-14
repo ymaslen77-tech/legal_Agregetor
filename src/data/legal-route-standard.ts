@@ -3,6 +3,7 @@ import { LABOR_CATEGORY_SLUG, LABOR_ROUTES, type LaborResultType } from "@/data/
 import { legalProblems, type LegalProblem } from "@/data/legal-problems";
 import { getMappedLegacyFamilyScenarios } from "@/data/legacy-family-route-catalog";
 import { GUARDIANSHIP_ROUTE } from "@/data/guardianship-route";
+import { PARENTS_CHILD_ROUTE } from "@/data/parents-child-route";
 
 /**
  * Shared, read-only compatibility view over the existing legal navigation data.
@@ -175,7 +176,7 @@ export function adaptLegalProblemToV1(problem: LegalProblem): LegalRouteV1 {
     }
     return {
       ...base,
-      migrationStatus: problem.slug === GUARDIANSHIP_ROUTE.problemSlug ? "ADAPTED_V1" : "SCENARIO_MAPPED_V1",
+      migrationStatus: [GUARDIANSHIP_ROUTE.problemSlug, PARENTS_CHILD_ROUTE.problemSlug].includes(problem.slug as typeof GUARDIANSHIP_ROUTE.problemSlug | typeof PARENTS_CHILD_ROUTE.problemSlug) ? "ADAPTED_V1" : "SCENARIO_MAPPED_V1",
       source: "legacy-family",
       scenarios: getMappedLegacyFamilyScenarios(problem.slug, problemUrl) ?? []
     };
