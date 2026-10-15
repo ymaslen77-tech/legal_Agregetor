@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { FAMILY_ADDITIVE_DOCUMENTS } from "@/data/family-additive-documents";
 import { FAMILY_ADDITIVE_ROUTES } from "@/data/family-additive-routes";
+import { FAMILY_ADDITIVE_SCENARIO_RULE_IDS, getFamilyAdditiveLegalRulesForScenario } from "@/data/family-additive-legal-review";
 import { PROBLEM_QNA_CONTEXTS } from "@/data/related-questions-context";
 import { buildFamilyAdditiveDocument } from "@/lib/family-additive-document";
 import { validateFamilyAdditiveScenario, type FamilyAdditiveValues } from "@/lib/family-additive-validator";
@@ -30,6 +31,14 @@ for (const document of FAMILY_ADDITIVE_DOCUMENTS) {
 }
 
 for (const { route, scenario } of scenarioEntries) {
+  const legalRules = getFamilyAdditiveLegalRulesForScenario(route.problemSlug, scenario.key);
+  assert.ok(legalRules.length > 0, `${scenario.documentSlug}: scenario must have legal source provenance`);
+  assert.deepEqual(
+    legalRules.map((rule) => rule.id),
+    FAMILY_ADDITIVE_SCENARIO_RULE_IDS[route.problemSlug][scenario.key],
+    `${scenario.documentSlug}: legal rules must match explicit scenario mapping`
+  );
+  assert.ok(legalRules.every((rule) => rule.url.startsWith("https://")), `${scenario.documentSlug}: official legal URLs required`);
   const values: FamilyAdditiveValues = {};
   for (const field of scenario.helperFields) {
     if (field.type === "select") values[field.name] = field.options?.[0]?.value ?? "yes";
@@ -42,6 +51,18 @@ for (const { route, scenario } of scenarioEntries) {
   assert.ok(text.length > 250, `${scenario.documentSlug}: meaningful result`);
   assert.ok(!/deepseek|нейросет|искусственн.{0,5}интеллект|\bapi\b/i.test(text), `${scenario.documentSlug}: no technical provider text`);
   assert.equal(decision.filingReady, false);
+  if (!["officialForm", "preparedData"].includes(decision.resultKind)) {
+    for (const rule of legalRules) {
+      assert.ok(text.includes(`${rule.act}, ${rule.article}: ${rule.statement}`),
+        `${scenario.documentSlug}: missing applicable provision ${rule.id}`);
+    }
+    const otherRule = getFamilyAdditiveLegalRulesForScenario(route.problemSlug, scenario.key === "eligibility" ? "claim" : "eligibility")
+      .find((rule) => !legalRules.some((selectedRule) => selectedRule.id === rule.id));
+    if (otherRule && decision.resultKind !== "legalReviewOnly") {
+      assert.ok(!text.includes(`${otherRule.act}, ${otherRule.article}: ${otherRule.statement}`),
+        `${scenario.documentSlug}: irrelevant legal rule leaked into document`);
+    }
+  }
 }
 
 for (const route of routeEntries) {
