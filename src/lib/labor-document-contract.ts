@@ -113,6 +113,18 @@ export function validateLaborDocumentModelResult(
   // A model may cite only provisions it explicitly linked to usedRuleIds,
   // not every article available for the route.
   const usedRules = input.rules.filter((rule) => parsed.usedRuleIds.includes(rule.id));
+  const plenumCitation = /(?:постановлени\w*\s+)?пленума\s+(?:Верховного\s+Суда(?:\s+РФ)?|ВС\s+РФ)/giu;
+  const declaredPlenumRules = usedRules.filter((rule) => /Пленума\s+(?:Верховного\s+Суда(?:\s+РФ)?|ВС\s+РФ)/iu.test(rule.act));
+  if (plenumCitation.test(parsed.draftText) && !declaredPlenumRules.length) {
+    throw new Error("В документ добавлено постановление Пленума вне разрешённых и фактически использованных правовых правил.");
+  }
+  const allowedPlenumNumbers = new Set(declaredPlenumRules.flatMap((rule) =>
+    [...rule.act.matchAll(/№\s*(\d+)/g)].map((match) => match[1])
+  ));
+  const citedPlenumNumbers = [...parsed.draftText.matchAll(/пленума[^.\n]{0,100}?№\s*(\d+)/giu)].map((match) => match[1]);
+  if (citedPlenumNumbers.some((number) => !allowedPlenumNumbers.has(number))) {
+    throw new Error("Указан номер постановления Пленума, отсутствующего в разрешённом реестре.");
+  }
   const allowedArticles = new Set(usedRules.flatMap((rule) => rule.provisions.flatMap(extractArticleNumbers)));
   const actualArticles = extractArticleNumbers(parsed.draftText);
   if (actualArticles.some((article) => !allowedArticles.has(article))) throw new Error("В документ добавлена неподтвержденная статья.");
