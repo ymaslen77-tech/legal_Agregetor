@@ -133,7 +133,7 @@ function firstDecision(values: ChildSupportValues, issues: ChildSupportIssue[], 
   const orderPath = values.paymentMethod === "share" && values.otherInterested === "no";
   const legalPath: ChildSupportLegalPath = orderPath ? "order" : "claim";
   const title = orderPath ? "Заявление о вынесении судебного приказа о взыскании алиментов" : "Исковое заявление о взыскании алиментов на ребёнка";
-  const courtIssues = validateCourt(values);
+  const courtIssues = validateCourt(values, legalPath);
   const allIssues = [...issues, ...courtIssues];
   return {
     allowed: allIssues.length === 0,
@@ -174,7 +174,7 @@ function changeDecision(values: ChildSupportValues, issues: ChildSupportIssue[],
     };
   }
   const title = "Исковое заявление об изменении размера или способа уплаты алиментов";
-  const courtIssues = validateCourt(values);
+  const courtIssues = validateCourt(values, "claim");
   const allIssues = [...issues, ...courtIssues];
   return {
     allowed: allIssues.length === 0,
@@ -234,9 +234,21 @@ function reviewOnly(outcomeKey: string, title: string, notice: string, issues: C
   return { allowed: false, outcomeKey, legalPath: "claim", resultKind: "legalReviewOnly", resultLabel: "Требуется юридическая проверка", documentTitle: title, filingReady: false, requiresLegalReview: true, pdfAvailable: true, issues, notices: [notice], preparedData, filingSteps: [notice, "Подготовьте документы о ребёнке и действующих обязательствах.", "Не используйте обычный алиментный черновик до определения правильного правового пути."], draftText: "" };
 }
 
-function validateCourt(values: ChildSupportValues) {
+function validateCourt(values: ChildSupportValues, legalPath: "order" | "claim") {
   const issues: ChildSupportIssue[] = [];
   if (values.courtConfirmed !== "yes") issues.push({ field: "courtConfirmed", message: "Подтвердите суд на официальном ресурсе." });
+  const name = values.courtName?.trim() ?? "";
+  // The 2019 procedural amendments removed contested alimony claims from
+  // magistrate judges' jurisdiction; a magistrate remains appropriate for
+  // a qualifying court order. Never generate a knowingly misaddressed draft.
+  const magistrate = /судебн[а-яё]*\s+участ|миров[а-яё]*\s+суд/iu.test(name);
+  const district = /районн[а-яё]*\s+суд|городск[а-яё]*\s+суд/iu.test(name);
+  if (legalPath === "claim" && magistrate) {
+    issues.push({ field: "courtName", message: "Иск об алиментах нельзя адресовать мировому судье. Уточните районный (городской) суд по официальной подсудности." });
+  }
+  if (legalPath === "order" && district) {
+    issues.push({ field: "courtName", message: "Заявление о судебном приказе адресуют мировому судье, а не районному суду. Проверьте судебный участок." });
+  }
   return issues;
 }
 
