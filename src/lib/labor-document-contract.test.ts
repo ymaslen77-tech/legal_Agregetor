@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
-import { getLaborRulesForArea } from "@/data/labor-legal-sources";
+import { getLaborRulesForArea, getLaborRulesForScenario } from "@/data/labor-legal-sources";
 import { getLaborDocumentScenario, LABOR_DOCUMENTS } from "@/data/labor-documents";
 import { LABOR_ROUTES } from "@/data/labor-routes";
 import { buildLaborDocumentExportText } from "@/lib/labor-document-export";
-import { validateLaborDocumentModelResult } from "@/lib/labor-document-contract";
+import { buildLaborDocumentPrompts, validateLaborDocumentModelResult } from "@/lib/labor-document-contract";
 
 const laborScenarios = LABOR_ROUTES.flatMap((route) => route.scenarios);
 assert.equal(laborScenarios.length, 50);
@@ -34,6 +34,40 @@ for (const document of LABOR_DOCUMENTS) {
   }, { documentTitle: configured.scenario.resultTitle, rules: configuredRules });
   assert.equal(checked.documentTitle, configured.scenario.resultTitle);
 }
+
+const planned = getLaborDocumentScenario("zapros-osnovaniy-planiruemogo-uvolneniya");
+assert.ok(planned);
+const plannedRules = getLaborRulesForScenario(planned.route.areaId, planned.scenario.key, planned.scenario.legalRuleIds);
+assert.deepEqual(
+  new Set(plannedRules.map((rule) => rule.id)),
+  new Set(["tc-62-employment-document-copies", "tc-81-employer-dismissal"]),
+  "a preliminary inquiry must not cite redundancy, discipline, reinstatement or Plenum rulings by default"
+);
+const plannedBasis = plannedRules.find((rule) => rule.id === "tc-62-employment-document-copies");
+assert.ok(plannedBasis?.url.startsWith("https://pravo.gov.ru/"));
+const plannedPrompt = buildLaborDocumentPrompts({
+  documentTitle: planned.scenario.resultTitle,
+  documentType: "DRAFT",
+  facts: [{ key: "applicant", label: "Заявитель", value: "Петров Пётр Петрович" }],
+  rules: plannedRules, authority: ["Работодатель"], nextSteps: [],
+  routeSlug: planned.route.slug, scenarioKey: planned.scenario.key
+});
+assert.match(plannedPrompt.user, /не.*обязывает заранее создать/iu);
+const basePlannedText = "Работодателю ООО «Пример»\\nОт Петрова П. П.\\nЗАПРОС документов, связанных с работой\\nСсылаясь на статью 62 Трудового кодекса РФ, прошу выдать копии существующих связанных с моей работой документов, указанных в приложенном перечне.\\nДата: 15.10.2026\\nПодпись: __";
+const basePlanned = {
+  documentTitle: planned.scenario.resultTitle, draftText: basePlannedText,
+  usedRuleIds: ["tc-62-employment-document-copies"], placeholders: []
+};
+assert.ok(validateLaborDocumentModelResult(basePlanned, {
+  documentTitle: planned.scenario.resultTitle, rules: plannedRules,
+  routeSlug: planned.route.slug, scenarioKey: planned.scenario.key
+}));
+assert.throws(() => validateLaborDocumentModelResult({
+  ...basePlanned, draftText: basePlannedText + "\\nРаботодатель обязан предоставить письменное обоснование планируемого увольнения."
+}, {
+  documentTitle: planned.scenario.resultTitle, rules: plannedRules,
+  routeSlug: planned.route.slug, scenarioKey: planned.scenario.key
+}), /Нельзя требовать составления/, "do not invent employer duty to issue advance reasons");
 
 const selected = getLaborDocumentScenario("trebovanie-o-vyplate-zarplaty");
 assert.ok(selected);
