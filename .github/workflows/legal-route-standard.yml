@@ -29,6 +29,7 @@ jobs:
       - run: npm ci
       - run: npm run test:route-standard
       - run: npm run test:document-result
+      - run: npm run test:labor
       - run: npm run typecheck
       - name: Upload full scenario acceptance matrix
         if: always()
