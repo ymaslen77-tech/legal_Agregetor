@@ -61,6 +61,8 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm test
+      - name: Verify all 50 labor questionnaires against the API form contract
+        run: npm run test:labor
       - run: npm run build
       - name: Run AI Navigator quality check
         run: |
