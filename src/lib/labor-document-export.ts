@@ -19,8 +19,8 @@ export function buildLaborDocumentExportText(result: LaborDocumentExport) {
     "",
     result.documentText,
     "",
-    "Правовые основания",
-    ...result.rules.map((rule) => `${rule.act}, ${rule.provisions.join(", ")}: ${rule.statement}`),
+    "Справочные правовые основания и официальные источники (не часть обращения)",
+    ...result.rules.map((rule) => `${rule.act}, ${rule.provisions.join(", ")}: ${rule.statement}\nОфициальный источник: ${rule.url}\nДата сверки в реестре: ${rule.reviewedAt}`),
     "",
     "Что делать дальше",
     ...result.nextSteps.map((step, index) => `${index + 1}. ${step}`)
@@ -35,8 +35,14 @@ export async function createLaborDocumentPdfBlob(result: LaborDocumentExport) {
     { text: result.statusLabel, style: "status" },
     { text: result.documentTitle, style: "title" },
     { text: result.documentText, style: "document" },
-    { text: "Правовые основания", style: "heading" },
-    { ul: result.rules.map((rule) => `${rule.act}, ${rule.provisions.join(", ")}: ${rule.statement}`) },
+    { text: "Справочные правовые основания и официальные источники (не часть обращения)", style: "heading" },
+    { ul: result.rules.map((rule) => ({
+      text: [
+        { text: `${rule.act}, ${rule.provisions.join(", ")}: ${rule.statement}\n` },
+        { text: `Официальный источник: ${rule.url}`, link: rule.url, color: "#075985" },
+        { text: `\nДата сверки в реестре: ${rule.reviewedAt}` }
+      ]
+    })) },
     { text: "Что делать дальше", style: "heading" },
     { ol: result.nextSteps.map((step) => ({ text: step })) }
   ];
@@ -64,8 +70,8 @@ export async function createLaborDocumentDocxBlob(result: LaborDocumentExport) {
     new Paragraph({ children: [new TextRun({ text: result.statusLabel, bold: true })] }),
     new Paragraph({ text: result.documentTitle, heading: HeadingLevel.TITLE }),
     ...result.documentText.split(/\n/).map((text) => new Paragraph({ text })),
-    new Paragraph({ text: "Правовые основания", heading: HeadingLevel.HEADING_2 }),
-    ...result.rules.map((rule) => new Paragraph({ text: `${rule.act}, ${rule.provisions.join(", ")}: ${rule.statement}`, bullet: { level: 0 } })),
+    new Paragraph({ text: "Справочные правовые основания и официальные источники (не часть обращения)", heading: HeadingLevel.HEADING_2 }),
+    ...result.rules.map((rule) => new Paragraph({ text: `${rule.act}, ${rule.provisions.join(", ")}: ${rule.statement}. Официальный источник: ${rule.url}. Дата сверки в реестре: ${rule.reviewedAt}`, bullet: { level: 0 } })),
     new Paragraph({ text: "Что делать дальше", heading: HeadingLevel.HEADING_2 }),
     ...result.nextSteps.map((step) => new Paragraph({ text: step, numbering: { reference: "steps", level: 0 } }))
   ];
