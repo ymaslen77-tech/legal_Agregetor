@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { FAMILY_ADDITIVE_DOCUMENTS } from "@/data/family-additive-documents";
 import { FAMILY_ADDITIVE_ROUTES } from "@/data/family-additive-routes";
-import { FAMILY_ADDITIVE_SCENARIO_RULE_IDS, getFamilyAdditiveLegalRulesForScenario } from "@/data/family-additive-legal-review";
+import { FAMILY_ADDITIVE_SCENARIO_RULE_IDS, getFamilyAdditiveLegalRules, getFamilyAdditiveLegalRulesForScenario } from "@/data/family-additive-legal-review";
 import { PROBLEM_QNA_CONTEXTS } from "@/data/related-questions-context";
 import { buildFamilyAdditiveDocument } from "@/lib/family-additive-document";
 import { validateFamilyAdditiveScenario, type FamilyAdditiveValues } from "@/lib/family-additive-validator";
@@ -56,7 +56,7 @@ for (const { route, scenario } of scenarioEntries) {
       assert.ok(text.includes(`${rule.act}, ${rule.article}: ${rule.statement}`),
         `${scenario.documentSlug}: missing applicable provision ${rule.id}`);
     }
-    const otherRule = getFamilyAdditiveLegalRulesForScenario(route.problemSlug, scenario.key === "eligibility" ? "claim" : "eligibility")
+    const otherRule = getFamilyAdditiveLegalRules(route.problemSlug)
       .find((rule) => !legalRules.some((selectedRule) => selectedRule.id === rule.id));
     if (otherRule && decision.resultKind !== "legalReviewOnly") {
       assert.ok(!text.includes(`${otherRule.act}, ${otherRule.article}: ${otherRule.statement}`),
