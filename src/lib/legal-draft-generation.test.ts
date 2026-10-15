@@ -16,6 +16,23 @@ const valid = {
   placeholders: ["наименование суда", "перечень", "дата", "подпись"]
 };
 assert.equal(validateLegalDraftModelResult(valid, input).draftText, draftText);
+const draftWithoutCitation = draftText.replace("В соответствии со ст. 131 ГПК РФ", "В соответствии с процессуальным законодательством");
+assert.throws(
+  () => validateLegalDraftModelResult({ ...valid, draftText: draftWithoutCitation }, input),
+  /отсутствует обоснование/,
+  "a generic legal phrase is not a specific legal basis"
+);
+assert.throws(
+  () => validateLegalDraftModelResult({ ...valid, draftText: `${draftWithoutCitation}\nСправочно: ст. 131 ГПК РФ.` }, input),
+  /до подписи/,
+  "the article must appear in the document body, not just a note after signature"
+);
+assert.throws(
+  () => validateLegalDraftModelResult({ ...valid, usedRuleIds: [] }, input),
+  /вне использованных правовых оснований/,
+  "unused rule IDs must not justify otherwise unsupported article citations"
+);
+
 assert.match(buildLegalDraftPrompts(input).system, /не придумывай/iu);
 assert.throws(() => validateLegalDraftModelResult({ ...valid, usedRuleIds: ["invented"] }, input));
 assert.throws(() => validateLegalDraftModelResult({ ...valid, draftText: draftText + "\nСогласно ст. 999 ГПК РФ ..." }, input));
