@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { LaborDocumentResponse } from "@/lib/labor-document-contract";
 import type { FamilyAdditiveDecision } from "@/lib/family-additive-validator";
+import { getFamilyAdditiveLegalRules } from "@/data/family-additive-legal-review";
 
 /**
  * Shared result envelope across generators. Not a database record or proof of filing readiness.
@@ -82,6 +83,12 @@ export function createFamilyAdditiveDocumentResult(input: {
 }): DocumentResultV1 {
   const { decision } = input;
   if (!input.documentText.trim()) throw new Error("Cannot create empty document result");
+  // A rule is marked as used only when the generated text explicitly includes
+  // that exact article and statement. Prepared official-form data can cite none.
+  // This records provenance, NOT independent legal accuracy or filing approval.
+  const citedRules = getFamilyAdditiveLegalRules(decision.routeSlug)
+    .filter((rule) => input.documentText.includes(`${rule.act}, ${rule.article}: ${rule.statement}`))
+    .map((rule) => rule.id);
   return documentResultSchema.parse({
     contractVersion: DOCUMENT_RESULT_CONTRACT_VERSION,
     versionId: input.versionId ?? crypto.randomUUID(),
@@ -94,7 +101,7 @@ export function createFamilyAdditiveDocumentResult(input: {
     source: "DETERMINISTIC",
     documentTitle: decision.documentTitle,
     documentText: input.documentText,
-    usedRuleIds: [],
+    usedRuleIds: citedRules,
     placeholders: [],
     legalRegistryReviewedAt: input.legalReviewedAt,
     generatorVersion: "family-additive-1",
