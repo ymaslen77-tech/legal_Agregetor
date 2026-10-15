@@ -126,7 +126,7 @@ function normalizeLaborDocumentModelResult(raw: unknown) {
  */
 function extractArticleNumbers(value: string): string[] {
   const found = new Set<string>();
-  const expression = /(?:стать(?:я|и|е|ю|ей|ям|ях|ями)|ст\.)\s*(\d+(?:\.\d+)?(?:\s*(?:,|;|и|–|—|-)\s*\d+(?:\.\d+)?)*)/giu;
+  const expression = /(?:стать(?:я|и|е|ю|ёй|ям|ях|ями)|статей|ст\.)\s*(\d+(?:\.\d+)?(?:\s*(?:,|;|и|–|—|-)\s*\d+(?:\.\d+)?)*)/giu;
   for (const match of value.matchAll(expression)) {
     const citation = match[1];
     for (const token of citation.matchAll(/\d+(?:\.\d+)?/g)) found.add(token[0]);
