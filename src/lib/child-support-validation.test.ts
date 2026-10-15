@@ -7,6 +7,7 @@ import { getVisibleChildSupportFields, validateChildSupport } from "@/lib/child-
 const people = { applicantData: "Иванова Ирина, адрес", payerData: "Иванов Иван, дата и место рождения, адрес", childData: "Иванов Пётр, 01.01.2018", childLivesWithApplicant: "yes" };
 const safe = { childMinor: "yes", paternityRecorded: "yes", paternityDispute: "no", international: "no" };
 const court = { courtName: "Судебный участок № 1", courtConfirmed: "yes" };
+const districtCourt = { courtName: "Тверской районный суд города Москвы", courtConfirmed: "yes" };
 const bailiff = { bailiffOffice: "Подразделение ФССП", bailiffSource: "https://fssp.gov.ru/iss/ip" };
 const outcomes = new Set<string>();
 
@@ -27,9 +28,18 @@ assert.equal(order.legalPath, "order");
 assert.equal(order.filingReady, false);
 assert.match(order.draftText, /Применимость приказного производства/);
 
-const fixedClaim = record(validateChildSupport("first", { ...safe, existingInstrument: "no", otherInterested: "no", paymentMethod: "fixed", payerIncomeStable: "no", ...people, requestedSupport: "Взыскать твёрдую сумму", ...court }));
+const fixedClaim = record(validateChildSupport("first", { ...safe, existingInstrument: "no", otherInterested: "no", paymentMethod: "fixed", payerIncomeStable: "no", ...people, requestedSupport: "Взыскать твёрдую сумму", ...districtCourt }));
 assert.equal(fixedClaim.outcomeKey, "first-claim-draft");
 assert.equal(fixedClaim.legalPath, "claim");
+assert.equal(fixedClaim.issues.length, 0, "correct district-court claim should not be rejected");
+const misaddressedClaim = validateChildSupport("first", { ...safe, existingInstrument: "no", otherInterested: "no", paymentMethod: "fixed", payerIncomeStable: "no", ...people, requestedSupport: "Взыскать твёрдую сумму", ...court });
+assert.equal(misaddressedClaim.allowed, false);
+assert.ok(misaddressedClaim.issues.some((issue) => issue.field === "courtName"));
+assert.equal(misaddressedClaim.draftText, "", "must not generate a claim addressed to the magistrate judge");
+const misaddressedOrder = validateChildSupport("first", { ...safe, existingInstrument: "no", otherInterested: "no", paymentMethod: "share", payerIncomeStable: "yes", ...people, requestedSupport: "Взыскать алименты в доле", ...districtCourt });
+assert.equal(misaddressedOrder.allowed, false);
+assert.ok(misaddressedOrder.issues.some((issue) => issue.field === "courtName"));
+assert.equal(misaddressedOrder.draftText, "", "must not generate an order application addressed to district court");
 assert.equal(record(validateChildSupport("first", { ...safe, paternityDispute: "yes" })).outcomeKey, "parentage-review");
 assert.equal(record(validateChildSupport("first", { ...safe, international: "yes" })).outcomeKey, "international-review");
 assert.equal(record(validateChildSupport("first", { ...safe, existingInstrument: "yes" })).outcomeKey, "existing-instrument");
@@ -41,7 +51,7 @@ const agreementChange = record(validateChildSupport("change", { ...safe, current
 assert.equal(agreementChange.outcomeKey, "change-agreement-project");
 assert.match(agreementChange.draftText, /ПРОЕКТ ДЛЯ НОТАРИУСА/);
 assert.equal(getVisibleChildSupportFields("change", { currentBasis: "agreement", bothAgree: "yes" }).some((field) => field.name === "courtName"), false);
-const courtChange = record(validateChildSupport("change", { ...safe, currentBasis: "court", ...people, currentTerms: "Решение суда", changedCircumstances: "Изменения", requestedChange: "Изменить размер", ...court }));
+const courtChange = record(validateChildSupport("change", { ...safe, currentBasis: "court", ...people, currentTerms: "Решение суда", changedCircumstances: "Изменения", requestedChange: "Изменить размер", ...districtCourt }));
 assert.equal(courtChange.outcomeKey, "change-court-draft");
 assert.equal(courtChange.requiresLegalReview, true);
 
