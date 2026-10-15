@@ -1,4 +1,4 @@
-import { getFamilyAdditiveLegalRules } from "@/data/family-additive-legal-review";
+import { getFamilyAdditiveLegalRulesForScenario } from "@/data/family-additive-legal-review";
 import { getFamilyAdditiveScenario } from "@/data/family-additive-routes";
 import type { FamilyAdditiveDecision } from "@/lib/family-additive-validator";
 
@@ -7,7 +7,7 @@ const DRAFT_MARKER = "ПРОЕКТ — ТРЕБУЕТСЯ ЮРИДИЧЕСКАЯ
 export function buildFamilyAdditiveDocument(decision: FamilyAdditiveDecision) {
   const scenario = getFamilyAdditiveScenario(decision.routeSlug, decision.scenarioKey);
   if (!scenario) throw new Error("Сценарий документа не найден.");
-  const rules = getFamilyAdditiveLegalRules(decision.routeSlug);
+  const rules = getFamilyAdditiveLegalRulesForScenario(decision.routeSlug, decision.scenarioKey);
   const data = Object.fromEntries(decision.preparedData.map((item) => [item.label, item.value]));
   const values = decision.preparedData.map((item) => item.value);
   const court = findValue(data, "наименование суда");
