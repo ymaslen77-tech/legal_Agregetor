@@ -47,6 +47,22 @@ const valid = validateLaborDocumentModelResult({
 }, { documentTitle: selected.scenario.resultTitle, rules });
 assert.equal(valid.usedRuleIds[0], rule.id);
 
+const withoutGrounds = valid.draftText.replace(/На основании статьи \d+(?:\.\d+)? Трудового кодекса Российской Федерации/u, "На основании трудового законодательства");
+assert.throws(
+  () => validateLaborDocumentModelResult({ ...valid, draftText: withoutGrounds }, { documentTitle: selected.scenario.resultTitle, rules }),
+  /отсутствует юридическое обоснование/,
+  "AI cannot return a fluent request with no actual legal article"
+);
+assert.throws(
+  () => validateLaborDocumentModelResult({
+    ...valid,
+    draftText: `${withoutGrounds}\nСправка после подписи: на основании статьи 236 ТК РФ.`
+  }, { documentTitle: selected.scenario.resultTitle, rules }),
+  /до подписи/,
+  "legal basis after the signatory must not compensate for missing in-body citations"
+);
+
+
 const localizedKeys = validateLaborDocumentModelResult({
   название: valid.documentTitle,
   текст: valid.draftText,
@@ -79,6 +95,9 @@ assert.throws(() => validateLaborDocumentModelResult({ ...valid, draftText: `${v
 const exportText = buildLaborDocumentExportText({ statusLabel: "ПРОЕКТ — ТРЕБУЕТСЯ ЮРИДИЧЕСКАЯ ПРОВЕРКА", documentTitle: valid.documentTitle, documentText: valid.draftText, rules: [rule], nextSteps: selected.scenario.nextSteps, reviewedAt: rule.reviewedAt });
 assert.match(exportText, new RegExp(valid.documentTitle));
 assert.match(exportText, /Правовые основания/);
+assert.ok(exportText.includes(rule.url), "PDF/DOCX source appendix must expose a real official URL");
+assert.match(exportText, /официальные источники/iu);
+assert.match(exportText, /не часть обращения/iu);
 assert.match(exportText, /Что делать дальше/);
 
 console.log("Labor document contract and export parity validated.");
