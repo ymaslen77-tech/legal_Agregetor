@@ -53,6 +53,22 @@ assert.equal(localizedKeys.documentTitle, valid.documentTitle);
 assert.deepEqual(localizedKeys.usedRuleIds, valid.usedRuleIds);
 
 assert.throws(() => validateLaborDocumentModelResult({ ...valid, draftText: `${valid.draftText}\nСтатья 999 ТК РФ.` }, { documentTitle: selected.scenario.resultTitle, rules }), /неподтвержденная статья/);
+const exactUsedRules = { documentTitle: selected.scenario.resultTitle, rules };
+assert.ok(validateLaborDocumentModelResult({
+  ...valid, draftText: `${valid.draftText}\nНа основании статей 142 и 236 Трудового кодекса РФ прошу выплатить причитающиеся суммы.`
+}, exactUsedRules));
+assert.throws(() => validateLaborDocumentModelResult({
+  ...valid, draftText: `${valid.draftText}\nНа основании статей 142 и 999 ТК РФ заявлено требование.`
+}, exactUsedRules), /неподтвержденная статья/, "catch second item in article enumeration");
+assert.throws(() => validateLaborDocumentModelResult({
+  ...valid, draftText: `${valid.draftText}\nНа основании статей 142, 999 ТК РФ заявлено требование.`
+}, exactUsedRules), /неподтвержденная статья/, "catch comma-separated hallucinated citation");
+assert.throws(() => validateLaborDocumentModelResult({
+  ...valid, draftText: `${valid.draftText}\nПрименяются статьи 142–143 ТК РФ.`
+}, exactUsedRules), /неподтвержденная статья/, "catch non-cited articles hidden inside a range");
+assert.throws(() => validateLaborDocumentModelResult({
+  ...valid, usedRuleIds: []
+}, exactUsedRules), /неподтвержденная статья/, "a claimed article must be connected to an explicitly used legal rule");
 assert.throws(() => validateLaborDocumentModelResult({ ...valid, draftText: `${valid.draftText}\nОтвет: да.` }, { documentTitle: selected.scenario.resultTitle, rules }), /анкетный текст/);
 assert.throws(() => validateLaborDocumentModelResult({ ...valid, draftText: `${valid.draftText}\nТекст создан моделью.` }, { documentTitle: selected.scenario.resultTitle, rules }), /технический текст/);
 
