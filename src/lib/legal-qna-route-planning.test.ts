@@ -2,6 +2,21 @@ import assert from "node:assert/strict";
 import { QNA_LEGAL_AREAS, getQnaCatalogCoverage, getQnaLegalAreaByServiceSlug } from "@/data/legal-qna-taxonomy";
 import { PROPOSED_LEGAL_ROUTES, getProposedRoute, getProposedRoutes } from "@/data/legal-route-blueprints";
 import { assessProposedRouteInput, proposeRoutesForQna } from "@/lib/legal-qna-route-planning";
+import { getUnifiedLegalDevelopmentCatalog, getUnifiedLegalCatalogStats } from "@/data/unified-legal-route-catalog";
+
+const unified=getUnifiedLegalDevelopmentCatalog();
+const stats=getUnifiedLegalCatalogStats();
+assert.equal(stats.areas,19);
+assert.equal(stats.legacyServices,76);
+assert.equal(stats.baselineQuestions,171643);
+assert.equal(stats.existingRoutes,43);
+assert.equal(stats.existingScenarios,170);
+assert.equal(stats.proposedRoutes,24);
+assert.equal(stats.proposedScenarios,50);
+assert.equal(unified.find(x=>x.areaId==="family")?.currentRoutes.length,29);
+assert.equal(unified.find(x=>x.areaId==="labor")?.currentRoutes.length,14);
+assert.equal(unified.find(x=>x.areaId==="consumer")?.currentRoutes.length,0);
+assert.equal(unified.find(x=>x.areaId==="inheritance")?.publicNavigatorEnabled,false);
 
 const expectedQuestions=171643;
 assert.equal(QNA_LEGAL_AREAS.length,19);
