@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { createLaborDocumentResult } from "@/lib/document-result-contract";
 import { getLaborDocumentScenario } from "@/data/labor-documents";
 import { getLaborRulesForArea, LABOR_LEGAL_REVIEWED_AT } from "@/data/labor-legal-sources";
+import { validateLaborDocumentFacts } from "@/lib/labor-document-fields";
 import {
   buildLaborDocumentPrompts,
   laborDocumentRequestSchema,
@@ -40,11 +41,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, message: "Сервис подготовки текста временно недоступен. Введенные данные сохранены." }, { status: 503 });
   }
 
+  const verifiedForm = validateLaborDocumentFacts(selected, parsed.data.facts);
+  if (!verifiedForm) {
+    return NextResponse.json({ ok: false, message: "Сведения анкеты не соответствуют выбранному сценарию. Заполните все обязательные поля." }, { status: 400 });
+  }
+
   const rules = getLaborRulesForArea(selected.route.areaId);
   const prompts = buildLaborDocumentPrompts({
     documentTitle: selected.scenario.resultTitle,
     documentType: selected.scenario.resultType,
-    facts: parsed.data.facts,
+    facts: verifiedForm,
     rules,
     authority: selected.scenario.authority,
     nextSteps: selected.scenario.nextSteps

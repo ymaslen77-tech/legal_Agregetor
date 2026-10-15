@@ -12,13 +12,13 @@ import type { LaborDocumentScenario } from "@/data/labor-documents";
 import type { LaborLegalRule } from "@/data/labor-legal-sources";
 import type { LaborDocumentResponse } from "@/lib/labor-document-contract";
 import { createLaborDocumentPdfBlob, laborDocumentFilename } from "@/lib/labor-document-export";
+import { buildLaborDocumentFields } from "@/lib/labor-document-fields";
 
 type GeneratedVersion = LaborDocumentResponse & { answers: Record<string, string>; documentResult: DocumentResultV1 };
-type Field = { key: string; label: string; hint: string; kind?: "date" | "textarea" };
 type ReviewReceipt = { leadId: string; withdrawalToken: string; versionId: string };
 
 export function LaborDocumentGenerator({ document, selected, rules }: { document: { slug: string }; selected: LaborDocumentScenario; rules: LaborLegalRule[] }) {
-  const fields = useMemo(() => buildFields(selected), [selected]);
+  const fields = useMemo(() => buildLaborDocumentFields(selected), [selected]);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [version, setVersion] = useState<GeneratedVersion | null>(null);
   const [versions, setVersions] = useState<Array<{ documentResult: DocumentResultV1; payload: GeneratedVersion }>>([]);
@@ -254,20 +254,4 @@ export function LaborDocumentGenerator({ document, selected, rules }: { document
       </div>
     </section> : null}
   </section>;
-}
-
-function buildFields(selected: LaborDocumentScenario): Field[] {
-  const common: Field[] = [
-    { key: "applicant", label: "ФИО работника или заявителя", hint: "Полностью, как в документах." },
-    { key: "applicantContacts", label: "Адрес и контакты заявителя", hint: "Укажите только сведения, необходимые для документа и обратной связи." },
-    { key: "employer", label: "Работодатель", hint: "Полное наименование организации или ФИО работодателя." },
-    { key: "employerAddress", label: "Адрес работодателя", hint: "Юридический или подтвержденный адрес для направления документа." },
-    { key: "recipient", label: "Подтвержденный адресат", hint: `Допустимый класс адресата: ${selected.scenario.authority.join(", ")}. Для суда или органа укажите точное наименование.` },
-    { key: "recipientAddress", label: "Адрес получателя", hint: "Не указывайте предполагаемый адрес." },
-    { key: "circumstances", label: "Подтвержденные обстоятельства", hint: "Краткая хронология с датами и документами без правовых предположений." },
-    { key: "requestedOutcome", label: "Просьба или требования", hint: "Что именно должен сделать адресат." },
-    { key: "attachments", label: "Приложения", hint: "Каждый документ с новой строки; если приложений нет, укажите это прямо." },
-    { key: "documentDate", label: "Дата документа", hint: "Выберите дату. В генератор передаётся календарная дата в формате ГГГГ-ММ-ДД.", kind: "date" }
-  ];
-  return [...common, ...selected.scenario.questions.map((label, index) => ({ key: `scenario-${index + 1}`, label, hint: "Ответьте по имеющимся документам или переписке." }))];
 }

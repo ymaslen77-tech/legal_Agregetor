@@ -94,7 +94,10 @@ export function validateLaborDocumentModelResult(
   if (/(?:^|\n)\s*(?:Вопрос|Ответ|Вы указали)\s*:/iu.test(parsed.draftText)) throw new Error("В документ попал анкетный текст.");
   if (/https?:\/\//i.test(parsed.draftText)) throw new Error("В документ добавлена ссылка вне правового реестра.");
 
-  const allowedArticles = new Set(input.rules.flatMap((rule) => rule.provisions.flatMap(extractProvisionNumbers)));
+  // A model may cite only provisions it explicitly linked to usedRuleIds,
+  // not every article available for the route.
+  const usedRules = input.rules.filter((rule) => parsed.usedRuleIds.includes(rule.id));
+  const allowedArticles = new Set(usedRules.flatMap((rule) => rule.provisions.flatMap(extractArticleNumbers)));
   const actualArticles = extractArticleNumbers(parsed.draftText);
   if (actualArticles.some((article) => !allowedArticles.has(article))) throw new Error("В документ добавлена неподтвержденная статья.");
   return parsed;
@@ -116,10 +119,27 @@ function normalizeLaborDocumentModelResult(raw: unknown) {
   };
 }
 
-function extractArticleNumbers(value: string) {
-  return Array.from(value.matchAll(/(?:стать(?:я|и|е|ю)|ст\.)\s*(\d+(?:\.\d+)?)/giu), (match) => match[1]);
-}
-
-function extractProvisionNumbers(value: string) {
-  return Array.from(value.matchAll(/\b\d+(?:\.\d+)?\b/g), (match) => match[0]);
+/**
+ * Extract ALL articles from each citation, not just the first number.
+ * Also expands short enumerated ranges ("статьи 178–180", "312.1-312.9").
+ * Numbers from dates, paragraph and part numbers are not legal article IDs.
+ */
+function extractArticleNumbers(value: string): string[] {
+  const found = new Set<string>();
+  const expression = /(?:стать(?:я|и|е|ю|ёй|ям|ях|ями)|статей|ст\.)\s*(\d+(?:\.\d+)?(?:\s*(?:,|;|и|–|—|-)\s*\d+(?:\.\d+)?)*)/giu;
+  for (const match of value.matchAll(expression)) {
+    const citation = match[1];
+    for (const token of citation.matchAll(/\d+(?:\.\d+)?/g)) found.add(token[0]);
+    for (const range of citation.matchAll(/(\d+(?:\.\d+)?)\s*[-–—]\s*(\d+(?:\.\d+)?)/g)) {
+      const [from, to] = [range[1], range[2]];
+      const [fromMajor, fromMinor] = from.split(".").map(Number);
+      const [toMajor, toMinor] = to.split(".").map(Number);
+      if (fromMinor !== undefined && toMinor !== undefined && fromMajor === toMajor && toMinor >= fromMinor && toMinor - fromMinor <= 40) {
+        for (let n = fromMinor; n <= toMinor; n++) found.add(`${fromMajor}.${n}`);
+      } else if (fromMinor === undefined && toMinor === undefined && toMajor >= fromMajor && toMajor - fromMajor <= 40) {
+        for (let n = fromMajor; n <= toMajor; n++) found.add(String(n));
+      }
+    }
+  }
+  return [...found];
 }

@@ -19,9 +19,13 @@ for (const document of LABOR_DOCUMENTS) {
   assert.ok(configured);
   const configuredRules = getLaborRulesForArea(configured.route.areaId);
   assert.ok(configuredRules.length > 0);
-  const configuredRule = configuredRules[0];
-  const article = configuredRule.provisions.join(" ").match(/\d+(?:\.\d+)?/)?.[0];
-  assert.ok(article);
+  // Use an actual legal article, never a number from an amendment date.
+  const configuredRule = configuredRules.find((candidate) =>
+    candidate.provisions.some((provision) => /(?:стать(?:я|и|е|ю|ей|ям|ях|ями)|ст\.)\s*\d/iu.test(provision))
+  );
+  assert.ok(configuredRule, `${document.slug}: official rule with a real article required`);
+  const article = configuredRule.provisions.join(" ").match(/(?:стать(?:я|и|е|ю|ей|ям|ях|ями)|ст\.)\s*(\d+(?:\.\d+)?)/iu)?.[1];
+  assert.ok(article, `${document.slug}: could not parse cited article`);
   const checked = validateLaborDocumentModelResult({
     documentTitle: configured.scenario.resultTitle,
     draftText: `Работодателю ООО «Пример»\nот Иванова Ивана Ивановича\n\n${configured.scenario.resultTitle.toUpperCase()}\n\nПодтвержденные обстоятельства изложены заявителем. На основании статьи ${article} Трудового кодекса Российской Федерации прошу рассмотреть обращение и предоставить письменный ответ.\n\nПриложения: подтверждающие документы.\nДата: 07.10.2026\nПодпись: __________`,
@@ -53,6 +57,22 @@ assert.equal(localizedKeys.documentTitle, valid.documentTitle);
 assert.deepEqual(localizedKeys.usedRuleIds, valid.usedRuleIds);
 
 assert.throws(() => validateLaborDocumentModelResult({ ...valid, draftText: `${valid.draftText}\nСтатья 999 ТК РФ.` }, { documentTitle: selected.scenario.resultTitle, rules }), /неподтвержденная статья/);
+const exactUsedRules = { documentTitle: selected.scenario.resultTitle, rules };
+assert.ok(validateLaborDocumentModelResult({
+  ...valid, draftText: `${valid.draftText}\nНа основании статей 142 и 236 Трудового кодекса РФ прошу выплатить причитающиеся суммы.`
+}, exactUsedRules));
+assert.throws(() => validateLaborDocumentModelResult({
+  ...valid, draftText: `${valid.draftText}\nНа основании статей 142 и 999 ТК РФ заявлено требование.`
+}, exactUsedRules), /неподтвержденная статья/, "catch second item in article enumeration");
+assert.throws(() => validateLaborDocumentModelResult({
+  ...valid, draftText: `${valid.draftText}\nНа основании статей 142, 999 ТК РФ заявлено требование.`
+}, exactUsedRules), /неподтвержденная статья/, "catch comma-separated hallucinated citation");
+assert.throws(() => validateLaborDocumentModelResult({
+  ...valid, draftText: `${valid.draftText}\nПрименяются статьи 142–143 ТК РФ.`
+}, exactUsedRules), /неподтвержденная статья/, "catch non-cited articles hidden inside a range");
+assert.throws(() => validateLaborDocumentModelResult({
+  ...valid, usedRuleIds: []
+}, exactUsedRules), /неподтвержденная статья/, "a claimed article must be connected to an explicitly used legal rule");
 assert.throws(() => validateLaborDocumentModelResult({ ...valid, draftText: `${valid.draftText}\nОтвет: да.` }, { documentTitle: selected.scenario.resultTitle, rules }), /анкетный текст/);
 assert.throws(() => validateLaborDocumentModelResult({ ...valid, draftText: `${valid.draftText}\nТекст создан моделью.` }, { documentTitle: selected.scenario.resultTitle, rules }), /технический текст/);
 
