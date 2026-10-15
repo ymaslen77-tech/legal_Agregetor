@@ -58,7 +58,6 @@ jobs:
         run: npm run prisma:deploy
       - name: Verify migration history
         run: npx prisma migrate status
-      - run: npx prisma db push --skip-generate
       - run: npm run typecheck
       - run: npm run lint
       - run: npm test
