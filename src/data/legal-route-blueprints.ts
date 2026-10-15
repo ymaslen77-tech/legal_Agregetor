@@ -144,7 +144,7 @@ export const PROPOSED_LEGAL_ROUTES: readonly ProposedLegalRoute[] = [
     [detail("document","Какой исполнительный документ имеется?")],
     [scenario("check","Проверка статуса и материалов производства","CHECKLIST"),scenario("request","Запрос материалов","REQUEST_DRAFT")],ENFORCEMENT_SOURCES),
   route("enforcement","zhaloba-na-pristava","Жалоба на действия или бездействие пристава",
-    ["жалоба на пристава","бездействие пристав","обжаловать пристава","пристав незаконно"],
+    ["жалоба на пристава","жалобу на пристава","жалобы на пристава","бездействие пристав","обжаловать пристава","пристав незаконно"],
     ["оспаривание завещания"],
     [detail("action","Какие конкретно действия оспариваются?"),detail("dateOfKnowledge","Когда о них стало известно?")],
     [scenario("authority","Подчинённость и порядок обжалования","CHECKLIST","high"),scenario("complaint","Подготовка жалобы","COMPLAINT_DRAFT","high")],ENFORCEMENT_SOURCES),
