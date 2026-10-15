@@ -38,6 +38,9 @@ assert.equal(first.filingReady, false);
 assert.notEqual(first.versionId, second.versionId, "each generation gets a distinct immutable version");
 assert.equal(documentResultSchema.parse(first).versionId, first.versionId);
 assert.equal(first.documentText, commonFamilyInput.documentText);
+assert.ok(first.usedRuleIds.length > 0, "cited family legal rules must have provenance in document result");
+const uncited = createFamilyAdditiveDocumentResult({ ...commonFamilyInput, documentText: "Подготовленные сведения без ссылок на правовые нормы." });
+assert.deepEqual(uncited.usedRuleIds, [], "do not invent normative references for documents without citations");
 
 const fakeLaborResult = {
   documentTitle: "Требование работодателю",
