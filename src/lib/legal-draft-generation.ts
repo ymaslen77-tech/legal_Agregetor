@@ -13,6 +13,8 @@ export function buildLegalDraftPrompts(input: LegalDraftRequest) {
     "Не придумывай участников, органы, адреса, суд, подсудность, даты, сроки, госпошлины, суммы, нормы, доказательства и приложения.",
     "Если юридически значимый реквизит неизвестен, поставь понятный заполнитель в квадратных скобках и укажи его в placeholders.",
     "Составь необходимую для данного типа документа структуру: адресат, участники, заголовок, обстоятельства, правовые основания, просьба/требования, приложения, дата и подпись.",
+    "Правовое обоснование обязательно включай в основной текст до просьбы/требования и подписи. Приведи конкретные статьи/пункты из фактически применимых разрешённых правовых правил, а не только справочный список после подписи.",
+    "Не добавляй статьи или постановления Пленума для объёма: используй только относящиеся к фактам нормы; каждое используемое правило отрази в usedRuleIds. Если применимого правила нет, не выдумывай и не обещай готовый документ.",
     "Не добавляй анкеты, технические комментарии, URL, имена моделей, внутренние ID и инструкции пользователю внутрь юридического текста.",
     "Не утверждай, что документ готов к подаче или прошёл проверку юристом.",
     "Верни исключительно JSON с полями documentTitle, draftText, usedRuleIds и placeholders, без markdown."
@@ -58,13 +60,21 @@ export function validateLegalDraftModelResult(raw: unknown, input: LegalDraftReq
     throw new Error("Черновик содержит технические данные вместо юридического текста.");
   }
 
-  const permittedArticles = new Set(input.allowedLegalRules.flatMap((rule) =>
-    Array.from(rule.norm.matchAll(/\d+(?:\.\d+)?/g), (m) => m[0])
-  ));
-  const usedArticles = Array.from(doc.matchAll(/(?:стать(?:я|и|е|ю)|ст\.)\s*(\d+(?:\.\d+)?)/giu), (m) => m[1]);
+  // Source provenance must match actual statutory citations in the document.
+  // A rule ID without a cited provision is not sufficient legal justification.
+  const usedRules = input.allowedLegalRules.filter((rule) => parsed.usedRuleIds.includes(rule.id));
+  const articleExpression = /(?:стать(?:я|и|е|ю|ёй|ям|ях|ями)|статей|ст\.)\s*(\d+(?:\.\d+)?)/giu;
+  const cited = (value: string) => [...value.matchAll(articleExpression)].map((match) => match[1]);
+  const permittedArticles = new Set(usedRules.flatMap((rule) => cited(rule.norm)));
+  const usedArticles = cited(doc);
   if (usedArticles.some((number) => !permittedArticles.has(number))) {
-    throw new Error("Черновик содержит ссылку на статью вне переданных правовых оснований.");
+    throw new Error("Черновик содержит ссылку на статью вне использованных правовых оснований.");
   }
+  if (!parsed.usedRuleIds.length || !usedArticles.length) {
+    throw new Error("В тексте документа отсутствует обоснование с конкретной подтверждённой статьёй.");
+  }
+  const mainBody = doc.split(/(?:^|\n)\s*подпись\s*:/iu)[0];
+  if (!cited(mainBody).length) throw new Error("Правовые основания должны находиться в тексте до подписи.");
   if (parsed.placeholders.some((placeholder) => !doc.includes(placeholder) && !doc.includes("[" + placeholder + "]"))) {
     throw new Error("Список недостающих реквизитов не соответствует черновику.");
   }
