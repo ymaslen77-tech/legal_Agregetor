@@ -52,7 +52,7 @@ const plannedPrompt = buildLaborDocumentPrompts({
   rules: plannedRules, authority: ["Работодатель"], nextSteps: [],
   routeSlug: planned.route.slug, scenarioKey: planned.scenario.key
 });
-assert.match(plannedPrompt.user, /не.*обязывает заранее создать/iu);
+assert.match(plannedPrompt.user, /нельзя утверждать, будто статья 62 обязывает заранее создать/iu);
 const basePlannedText = "Работодателю ООО «Пример»\\nОт Петрова П. П.\\nЗАПРОС документов, связанных с работой\\nСсылаясь на статью 62 Трудового кодекса РФ, прошу выдать копии существующих связанных с моей работой документов, указанных в приложенном перечне.\\nДата: 15.10.2026\\nПодпись: __";
 const basePlanned = {
   documentTitle: planned.scenario.resultTitle, draftText: basePlannedText,
