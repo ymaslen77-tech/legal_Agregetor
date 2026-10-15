@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { LaborDocumentResponse } from "@/lib/labor-document-contract";
 import type { FamilyAdditiveDecision } from "@/lib/family-additive-validator";
-import { getFamilyAdditiveLegalRules } from "@/data/family-additive-legal-review";
+import { getFamilyAdditiveLegalRulesForScenario } from "@/data/family-additive-legal-review";
 
 /**
  * Shared result envelope across generators. Not a database record or proof of filing readiness.
@@ -86,7 +86,7 @@ export function createFamilyAdditiveDocumentResult(input: {
   // A rule is marked as used only when the generated text explicitly includes
   // that exact article and statement. Prepared official-form data can cite none.
   // This records provenance, NOT independent legal accuracy or filing approval.
-  const citedRules = getFamilyAdditiveLegalRules(decision.routeSlug)
+  const citedRules = getFamilyAdditiveLegalRulesForScenario(decision.routeSlug, decision.scenarioKey)
     .filter((rule) => input.documentText.includes(`${rule.act}, ${rule.article}: ${rule.statement}`))
     .map((rule) => rule.id);
   return documentResultSchema.parse({
