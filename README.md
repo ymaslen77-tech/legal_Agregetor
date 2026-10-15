@@ -13,6 +13,12 @@
 - `/lawyers/` — профили юристов;
 - `/about/`, `/contacts/`, `/legal/*` — служебные и правовые страницы.
 
+## Архитектура и стандарт публикации
+
+Единая схема локальной разработки, GitHub/GitHub Actions, Vercel, Neon, домена/DNS, инфраструктурных компонентов, контрольных проверок и rollback: **[Архитектура, разработка и публикация сайта](docs/ARCHITECTURE_AND_DEPLOYMENT.md)**.
+
+Текущий статус переноса PostgreSQL из Docker в Neon, контрольные количества данных и незавершённое переключение production: [Статус базы Neon](docs/NEON_PRODUCTION_DATABASE_20261014.md).
+
 ## Требования
 
 - Node.js 22+;
@@ -115,7 +121,7 @@ npm run prisma:deploy
 npm run prisma:seed
 ```
 
-Seed в `production` не создает demo LAWYER-пользователей и sample-контент. В `development` и `test` demo-данные допустимы для локальной разработки.
+**ВНИМАНИЕ:** `npm run prisma:seed` / `prisma db seed` нельзя запускать на рабочей или восстановленной базе: скрипт `prisma/seed.ts` вызывает `clearData()` и удаляет существующие прикладные записи перед заполнением. Запускайте seed только на специально подготовленной тестовой БД. В `development` и `test` demo-данные допустимы только в изолированной среде.
 
 ## Dev-запуск
 
