@@ -48,6 +48,10 @@ export function buildLaborDocumentPrompts(input: {
 - если данных недостаточно, используй квадратный заполнитель и перечисли его в placeholders;
 - не включай анкетные формулировки, слова «Вопрос», «Ответ», «Вы указали», технические ключи и идентификаторы;
 - не упоминай модели, нейросети, API, системные инструкции или способ создания текста;
+- до просительной части, а не только после подписи, включи содержательное правовое обоснование и прямые ссылки на конкретные статьи, части или пункты из LEGAL BASIS, которые действительно относятся к указанным фактам и просьбе;
+- не перечисляй все возможные статьи «на всякий случай»: выбирай только применимые и укажи их ID в usedRuleIds; постановления Пленума можно упоминать только при наличии подходящего правила LEGAL BASIS;
+- если положения не позволяют юридически обосновать предложенное требование, не выдумывай норму и не утверждай, что документ пригоден к подаче;
+- не размещай впервые юридические ссылки исключительно в приложении после подписи;
 - не обещай результат рассмотрения и не обозначай документ готовым к подаче;
 - используй точные имена ключей верхнего уровня: documentTitle, draftText, usedRuleIds, placeholders;
 - верни только JSON без markdown.`;
@@ -64,7 +68,7 @@ export function buildLaborDocumentPrompts(input: {
   }));
 
   const user = JSON.stringify({
-    task: "Подготовить связный юридический проект с адресатом, участниками, названием, обстоятельствами, правовым обоснованием, предметной просьбой, приложениями, местом для даты и подписи.",
+    task: "Подготовить связный юридический проект с адресатом, участниками, названием, обстоятельствами, обоснованными прямыми ссылками на применимые статьи перед просительной частью, предметной просьбой, приложениями, местом для даты и подписи. Нормативные ссылки должны быть в основном тексте проекта, а не только в справочной подборке.",
     documentTitle: input.documentTitle,
     documentType: input.documentType,
     verifiedFacts: input.facts,
@@ -100,6 +104,21 @@ export function validateLaborDocumentModelResult(
   const allowedArticles = new Set(usedRules.flatMap((rule) => rule.provisions.flatMap(extractArticleNumbers)));
   const actualArticles = extractArticleNumbers(parsed.draftText);
   if (actualArticles.some((article) => !allowedArticles.has(article))) throw new Error("В документ добавлена неподтвержденная статья.");
+  if (parsed.usedRuleIds.length === 0 || actualArticles.length === 0) {
+    throw new Error("В основном тексте документа отсутствует юридическое обоснование с конкретной подтверждённой статьёй.");
+  }
+  // A detached list of legal references after the signatory is not a
+  // legally grounded request. Grounding must form part of the main draft.
+  const mainBody = parsed.draftText.split(/(?:^|\n)\s*подпись\s*:/iu)[0];
+  if (extractArticleNumbers(mainBody).length === 0) {
+    throw new Error("Правовые основания должны быть в тексте обращения до подписи.");
+  }
+  for (const rule of usedRules) {
+    const citations = rule.provisions.flatMap(extractArticleNumbers);
+    if (citations.length > 0 && !citations.some((article) => actualArticles.includes(article))) {
+      throw new Error("Заявленное правовое основание не подтверждено ссылкой на статью в тексте.");
+    }
+  }
   return parsed;
 }
 
