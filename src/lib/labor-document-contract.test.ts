@@ -43,6 +43,7 @@ assert.deepEqual(
   new Set(["tc-62-employment-document-copies", "tc-81-employer-dismissal"]),
   "a preliminary inquiry must not cite redundancy, discipline, reinstatement or Plenum rulings by default"
 );
+assert.ok(!plannedRules.some((rule) => /Пленума/u.test(rule.act)), "plenum is not a default ground for a prospective dismissal request");
 const plannedBasis = plannedRules.find((rule) => rule.id === "tc-62-employment-document-copies");
 assert.ok(plannedBasis?.url.startsWith("https://pravo.gov.ru/"));
 const plannedPrompt = buildLaborDocumentPrompts({
@@ -62,6 +63,12 @@ assert.ok(validateLaborDocumentModelResult(basePlanned, {
   documentTitle: planned.scenario.resultTitle, rules: plannedRules,
   routeSlug: planned.route.slug, scenarioKey: planned.scenario.key
 }));
+assert.throws(() => validateLaborDocumentModelResult({
+  ...basePlanned,
+  draftText: basePlannedText + "\\nНа основании Постановления Пленума Верховного Суда РФ № 99."
+}, { documentTitle: planned.scenario.resultTitle, rules: plannedRules,
+  routeSlug: planned.route.slug, scenarioKey: planned.scenario.key }),
+  /Пленума вне разрешённых/, "Plenum rulings may never be invented by the provider");
 assert.throws(() => validateLaborDocumentModelResult({
   ...basePlanned, draftText: basePlannedText + "\\nРаботодатель обязан предоставить письменное обоснование планируемого увольнения."
 }, {
