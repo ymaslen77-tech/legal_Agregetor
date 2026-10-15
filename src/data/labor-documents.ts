@@ -1,4 +1,4 @@
-import { getLaborRulesForArea, LABOR_LEGAL_REVIEWED_AT } from "@/data/labor-legal-sources";
+import { getLaborRulesForScenario, LABOR_LEGAL_REVIEWED_AT } from "@/data/labor-legal-sources";
 import { LABOR_ROUTES, type LaborRoute, type LaborScenario } from "@/data/labor-routes";
 import type { NavigatorDocument } from "@/data/documents";
 
@@ -14,7 +14,7 @@ const documentScenarios: LaborDocumentScenario[] = LABOR_ROUTES.flatMap((route) 
 );
 
 export const LABOR_DOCUMENTS: NavigatorDocument[] = documentScenarios.map(({ route, scenario }) => {
-  const rules = getLaborRulesForArea(route.areaId);
+  const rules = getLaborRulesForScenario(route.areaId, scenario.key, scenario.legalRuleIds);
   const documentType = getDocumentType(scenario.resultTitle);
   const legalBasis = rules.map((rule) => `${rule.act}, ${rule.provisions.join(", ")}`);
 
