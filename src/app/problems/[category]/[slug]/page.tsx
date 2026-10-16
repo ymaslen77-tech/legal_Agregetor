@@ -133,6 +133,8 @@ import {
 } from "@/data/zags-route";
 import type { ZagsScenario } from "@/data/zags-route";
 import { getLaborRoute, LABOR_CATEGORY_SLUG } from "@/data/labor-routes";
+import { getFamilyLaborPlanForProblem } from "@/data/family-labor-implemented-routes";
+import { FamilyLaborProblemPage } from "@/components/documents/FamilyLaborRoutePages";
 import { breadcrumbJsonLd, legalServiceJsonLd } from "@/lib/jsonld";
 import { getRelatedQuestionsForContext } from "@/lib/navigator-relations";
 import { absoluteUrl, buildMetadata } from "@/lib/seo";
@@ -185,6 +187,10 @@ export default async function ProblemPage({ params, searchParams }: PageProps) {
   if (!category || !problem) notFound();
 
   const resolvedSearchParams = searchParams ? await searchParams : {};
+  const familyLaborPlan=getFamilyLaborPlanForProblem(problem.categorySlug,problem.slug);
+  if(familyLaborPlan){
+    return <FamilyLaborProblemPage plan={familyLaborPlan} scenarioKey={resolvedSearchParams.scenario}/>;
+  }
   if (problem.categorySlug === LABOR_CATEGORY_SLUG) {
     return <LaborProblemPage categoryTitle={category.title} problem={problem} scenario={resolvedSearchParams.scenario} />;
   }
