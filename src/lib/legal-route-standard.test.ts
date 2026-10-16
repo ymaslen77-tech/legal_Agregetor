@@ -24,7 +24,7 @@ for (const route of routes) {
   if (route.source === "family-labor-new") {
     assert.equal(route.legalReviewedAt, null, `${route.problemSlug}: an unaccepted route must not claim completed primary-source review`);
   } else {
-    assert.match(route.legalReviewedAt ?? "", /^\\d{4}-\\d{2}-\\d{2}$/, `${route.problemSlug}: missing source review date`);
+    assert.match(route.legalReviewedAt ?? "", /^\d{4}-\d{2}-\d{2}$/, `${route.problemSlug}: missing source review date`);
   }
   assert.equal(getLegalRouteV1(route.categorySlug, route.problemSlug)?.problemSlug, route.problemSlug);
 
