@@ -64,6 +64,7 @@ for(const plan of FAMILY_LABOR_PLANS){
     assert.equal(created.resultKind,"CHECKLIST");
     assert.equal(created.requiresLegalReview,true);
     assert.equal(created.filingReady,false);
+    assert.equal(created.legalRegistryReviewedAt,null,"unreviewed legal source must not claim verified date");
     assert.match(created.documentText,/НЕ ГОТОВ К ПОДАЧЕ/);
     assert.ok(created.documentText.includes("Проверенные обезличенные сведения"));
     assert.deepEqual(created.usedRuleIds,[]);

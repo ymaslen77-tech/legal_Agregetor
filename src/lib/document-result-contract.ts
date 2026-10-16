@@ -26,7 +26,8 @@ export const documentResultSchema = z.object({
   documentText: z.string().min(1).max(40000),
   usedRuleIds: z.array(z.string().min(1).max(120)).max(50),
   placeholders: z.array(z.string().min(1).max(300)).max(40),
-  legalRegistryReviewedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  /** Null indicates no source-registry legal review yet; never substitute implementation date. */
+  legalRegistryReviewedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable(),
   generatorVersion: z.string().min(1).max(40),
   filingReady: z.literal(false),
   requiresLegalReview: z.boolean()

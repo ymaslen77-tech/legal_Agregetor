@@ -26,6 +26,7 @@ for(const key of SUPPORTED_PROVISIONAL_DRAFTS){
   assert.ok(draft,key);
   assert.equal(document.resultKind,"DRAFT",key);
   assert.equal(document.filingReady,false);
+  assert.equal(document.legalRegistryReviewedAt,null);
   assert.equal(document.requiresLegalReview,true);
   assert.equal(document.source,"DETERMINISTIC");
   assert.ok(document.documentText.includes("ПРОЕКТ — НЕ ГОТОВ К ПОДАЧЕ"),key);

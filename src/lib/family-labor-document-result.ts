@@ -1,6 +1,6 @@
 import {DOCUMENT_RESULT_CONTRACT_VERSION,documentResultSchema,type DocumentResultV1} from "@/lib/document-result-contract";
 import {type FamilyLaborPlan} from "@/data/family-labor-route-expansion";
-import {familyLaborCategory,getFamilyLaborDocumentSlug,getFamilyLaborRegistryScenarioKey,getFamilyLaborRouteSlug,FAMILY_LABOR_IMPLEMENTATION_DATE}
+import {familyLaborCategory,getFamilyLaborDocumentSlug,getFamilyLaborRegistryScenarioKey,getFamilyLaborRouteSlug}
   from "@/data/family-labor-implemented-routes";
 import {getFamilyLaborGuidance} from "@/lib/family-labor-route-guidance";
 import {createProvisionalFamilyLaborDraft} from "@/lib/family-labor-provisional-draft";
@@ -50,7 +50,7 @@ export function createFamilyLaborChecklist(plan:FamilyLaborPlan,scenarioKey:stri
     scenarioKey:getFamilyLaborRegistryScenarioKey(plan,scenarioKey),documentSlug:docSlug,resultKind:"CHECKLIST",
     source:"DETERMINISTIC",documentTitle:"Чек-лист: "+scenario.title,
     documentText,usedRuleIds:[],placeholders:[],
-    legalRegistryReviewedAt:FAMILY_LABOR_IMPLEMENTATION_DATE,
+    legalRegistryReviewedAt:null,
     generatorVersion:"family-labor-checklist-1",filingReady:false,
     requiresLegalReview:true
   }),guidance:review.guidance};
