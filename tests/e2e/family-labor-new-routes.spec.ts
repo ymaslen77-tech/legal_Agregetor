@@ -43,10 +43,10 @@ test("new document pages expose exactly one route journey and noindex",async({pa
 });
 test("provisional draft forms keep source references, document version and filing guard",async({page})=>{
   test.setTimeout(180_000);
-  for(const id of ["alimony-order-objections","unpaid-leave","part-time-hours","hiring-refusal","maternity-leave"]){
+  for(const id of ["alimony-order-objections","unpaid-leave","part-time-hours","hiring-refusal","maternity-leave","secondary-employment","downtime","remote-work","study-leave"]){
     const plan=FAMILY_LABOR_PLANS.find(x=>x.id===id);
     expect(plan).toBeDefined();
-    const scenario=id==="maternity-leave"?"leave":plan!.scenarios[0].key;
+    const scenario=({ "maternity-leave":"leave", "secondary-employment":"payment", "downtime":"payment", "remote-work":"conditions", "study-leave":"study" } as Record<string,string>)[id]??plan!.scenarios[0].key;
     const slug=getFamilyLaborDocumentSlug(plan!,scenario);
     expect(slug).toBeTruthy();
     const resp=await page.goto("/documents/"+slug+"/");
@@ -55,7 +55,7 @@ test("provisional draft forms keep source references, document version and filin
     await expect(form).toBeVisible();
     for(const select of await form.locator("select").all()){
       const choices=await select.locator("option").allTextContents();
-      let choice=choices.find(c=>c==="заявитель")||
+      let choice=choices.find(c=>c==="совмещение")||choices.find(c=>c==="заявитель")||
         choices.find(c=>c==="должник")||
         choices.find(c=>c==="нет")||
         choices.find(c=>c==="беременность и роды")||choices.find(c=>c!=="Выберите значение");

@@ -19,6 +19,7 @@ for(const key of SUPPORTED_PROVISIONAL_DRAFTS){
   values.role="заявитель";
   if(planId==="alimony-order-objections"){values.roleInOrder="должник";values.isLate="нет";}
   if(planId==="maternity-leave")values.leaveType="беременность и роды";
+  if(planId==="secondary-employment")values.mode="совмещение";
   assert.equal(canBuildFamilyLaborDraft(plan,scenarioKey,values),true,key);
   const document=createFamilyLaborDocument(plan,scenarioKey,values,ids).result;
   const draft=createProvisionalFamilyLaborDraft(plan,scenarioKey,values);
@@ -58,12 +59,16 @@ for(const key of SUPPORTED_PROVISIONAL_DRAFTS){
   }
   if(planId==="maternity-leave")
     assert.equal(canBuildFamilyLaborDraft(plan,scenarioKey,{...values,leaveType:"уход за ребёнком"}),false);
+  if(planId==="secondary-employment"){
+    assert.equal(canBuildFamilyLaborDraft(plan,scenarioKey,{...values,mode:"совместительство"}),false);
+    assert.equal(createFamilyLaborDocument(plan,scenarioKey,{...values,mode:"совместительство"},ids).result.resultKind,"CHECKLIST");
+  }
 }
-assert.equal(checked,5);
+assert.equal(checked,9);
 const safety=plans.get("family-emergency-safety");
 assert.ok(safety);
 assert.equal(createProvisionalFamilyLaborDraft(safety,"immediate-danger",{}),null);
 const penalty=plans.get("alimony-penalty");
 assert.ok(penalty);
 assert.equal(createProvisionalFamilyLaborDraft(penalty,"penalty",{}),null);
-console.log("Five provisional legal drafts: source IDs, archive, safe branches and downgrade tests passed.");
+console.log("Nine provisional legal drafts: source IDs, archive, safe branches and downgrade tests passed.");
