@@ -41,6 +41,7 @@ jobs:
       NEXT_PUBLIC_SITE_URL: http://localhost:3000
       SITE_URL: http://localhost:3000
       LEAD_ATTACHMENT_STORAGE_ROOT: /tmp/private-lead-attachments
+      LOCAL_HTTP_E2E: "true"
 
     steps:
       - uses: actions/checkout@v4

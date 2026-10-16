@@ -70,11 +70,20 @@ for (const path of pages) {
   });
 }
 
-test("responsive city picker stays within the screen and is operable", async ({ page }) => {
+test("responsive city picker stays within the screen and is operable", async ({ page }, testInfo) => {
+  const errors: string[] = [];
+  page.on("pageerror", error => errors.push("pageerror: "+error.message));
+  page.on("requestfailed", request => errors.push(request.url()+": "+(request.failure()?.errorText??"request failed")));
+  page.on("console", message => { if (message.type()==="error") errors.push("console: "+message.text()); });
   await page.goto("/", { waitUntil: "domcontentloaded" });
   const opener = page.locator("header button[aria-expanded]").first();
   await expect(opener).toBeVisible();
-  await expect(opener).toHaveAttribute("data-hydrated", "true");
+  try {
+    await expect(opener).toHaveAttribute("data-hydrated", "true");
+  } catch (error) {
+    console.log("HYDRATION_ERRORS "+testInfo.project.name+" "+JSON.stringify(errors.slice(0,15)));
+    throw error;
+  }
   await expect(opener).toHaveAttribute("aria-expanded", "false");
   await opener.click();
   await expect(opener).toHaveAttribute("aria-expanded", "true");

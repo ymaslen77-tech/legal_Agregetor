@@ -65,9 +65,9 @@ export function Footer() {
             </div>
             ) : null}
           </div>
-          <nav className="flex flex-wrap gap-x-6 gap-y-3 lg:justify-end" aria-label="Разделы сайта">
+          <nav className="grid min-w-0 grid-cols-2 gap-x-3 gap-y-3 sm:flex sm:flex-wrap sm:gap-x-6 lg:justify-end" aria-label="Разделы сайта">
             {mainLinks.map(([href, label]) => (
-              <Link key={href} href={href} className="text-sm font-semibold text-ink transition hover:text-trust">
+              <Link key={href} href={href} className="min-w-0 max-w-full break-words text-sm font-semibold text-ink transition hover:text-trust">
                 {label}
               </Link>
             ))}
