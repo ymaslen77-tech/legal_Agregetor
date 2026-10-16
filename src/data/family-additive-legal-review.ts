@@ -30,6 +30,7 @@ export const FAMILY_ADDITIVE_LEGAL_RULES: Record<FamilyAdditiveRouteSlug, Family
   "alimenty-na-sovershennoletnego-rebenka": [
     rule("adult-sk-85", "Семейный кодекс РФ", "статья 85", "Содержание в судебном порядке возможно для нетрудоспособного совершеннолетнего ребёнка, нуждающегося в помощи; размер устанавливается ежемесячно в твёрдой денежной сумме.", "Официальный текст Семейного кодекса РФ", SK_URL, "Нетрудоспособность и нуждаемость проверяются одновременно.", "Очное обучение или отсутствие заработка сами по себе не заменяют условия статьи 85."),
     rule("adult-sk-99-101", "Семейный кодекс РФ", "статьи 99–101", "Добровольное содержание может быть оформлено нотариально удостоверенным соглашением.", "Официальный текст Семейного кодекса РФ", SK_URL, "Проект условий передаётся нотариусу.", "Текст сервиса не имеет силы нотариального соглашения."),
+    rule("adult-sk-119", "Семейный кодекс РФ", "статья 119", "Если установленный судом размер алиментов определён при отсутствии соглашения, суд вправе изменить его при изменении материального или семейного положения сторон, оценив обстоятельства конкретного дела.", "Официальный текст Семейного кодекса РФ", SK_URL, "Изменение ранее установленного судебным решением размера алиментов.", "Не применяется автоматически к нотариальному соглашению; изменение дохода одной стороны само по себе не гарантирует удовлетворение требования."),
     rule("adult-gpk-24-29", "Гражданский процессуальный кодекс РФ", "статьи 24 и 29", "Судебное требование рассматривает районный суд; для иска о взыскании алиментов допускается альтернативная территориальная подсудность.", "Официальный текст ГПК РФ", GPK_URL, "Конкретный суд подтверждается по официальной странице.", "Сервис не определяет суд только по названию населённого пункта."),
     rule("adult-nk-33336", "Налоговый кодекс РФ", "подпункт 2 пункта 1 статьи 333.36", "Истец по требованию о взыскании алиментов освобождён от госпошлины.", "ФНС России", NK_URL, "Только требование о взыскании алиментов.", "Соединённые требования и судебные расходы проверяются отдельно.")
   ],
@@ -63,6 +64,55 @@ export const FAMILY_ADDITIVE_LEGAL_RULES: Record<FamilyAdditiveRouteSlug, Family
     rule("birth-nk-fees", "Налоговый кодекс РФ", "статьи 333.26, 333.27 и 333.39", "Установлены пошлины за повторное свидетельство, справку и исправление, а также льготы.", "ФНС России", NK_URL, "Платёж перед обращением.", "Льгота применяется только после подтверждения основания.")
   ]
 };
+
+/**
+ * Explicit provenance matrix: each family scenario cites only the rules
+ * needed for its procedural route. This is a scope filter, not an expert
+ * certification of law in force. Update with legal review of new scenarios.
+ */
+export const FAMILY_ADDITIVE_SCENARIO_RULE_IDS: Record<FamilyAdditiveRouteSlug, Record<string, readonly string[]>> = {
+  "alimenty-na-sovershennoletnego-rebenka": {
+    eligibility: ["adult-sk-85"],
+    agreement: ["adult-sk-85", "adult-sk-99-101"],
+    claim: ["adult-sk-85", "adult-gpk-24-29", "adult-nk-33336"],
+    change: ["adult-sk-85", "adult-sk-119", "adult-gpk-24-29"]
+  },
+  "prekrashchenie-i-osvobozhdenie-ot-alimentov": {
+    termination: ["termination-sk-120"],
+    agreement: ["termination-sk-101"],
+    futureRelief: ["termination-sk-119"],
+    debtRelief: ["termination-sk-114"],
+    enforcement: ["termination-sk-120"]
+  },
+  "alimenty-na-soderzhanie-roditeley": {
+    eligibility: ["parents-sk-87"],
+    agreement: ["parents-sk-87"],
+    claim: ["parents-sk-87", "parents-gpk-24-29", "parents-nk-33336"],
+    extraExpenses: ["parents-sk-88"]
+  },
+  "otmena-usynovleniya": {
+    eligibility: ["cancel-sk-140", "cancel-sk-141"],
+    minorClaim: ["cancel-sk-140", "cancel-sk-141", "cancel-sk-142", "cancel-gpk-275"],
+    minorClaimSupport: ["cancel-sk-140", "cancel-sk-143", "cancel-gpk-275"],
+    adultConsent: ["cancel-sk-144"]
+  },
+  "dokumenty-o-rozhdenii-i-aktovaya-zapis": {
+    registration: ["birth-fz143-registration", "birth-minjust-201"],
+    repeatCertificate: ["birth-fz143-repeat", "birth-minjust-201", "birth-nk-fees"],
+    reference: ["birth-fz143-repeat", "birth-nk-fees"],
+    correction: ["birth-fz143-correction", "birth-minjust-201", "birth-nk-fees"]
+  }
+};
+
+export function getFamilyAdditiveLegalRulesForScenario(routeSlug: FamilyAdditiveRouteSlug, scenarioKey: string): FamilyAdditiveLegalRule[] {
+  const ids = FAMILY_ADDITIVE_SCENARIO_RULE_IDS[routeSlug][scenarioKey];
+  if (!ids?.length) throw new Error(`Missing verified family legal rule mapping: ${routeSlug}/${scenarioKey}`);
+  const known = new Map(getFamilyAdditiveLegalRules(routeSlug).map((item) => [item.id, item]));
+  if (new Set(ids).size !== ids.length || ids.some((id) => !known.has(id))) {
+    throw new Error(`Invalid family legal rule IDs: ${routeSlug}/${scenarioKey}`);
+  }
+  return ids.map((id) => known.get(id)!);
+}
 
 export function getFamilyAdditiveLegalRules(routeSlug: FamilyAdditiveRouteSlug) {
   return FAMILY_ADDITIVE_LEGAL_RULES[routeSlug];
