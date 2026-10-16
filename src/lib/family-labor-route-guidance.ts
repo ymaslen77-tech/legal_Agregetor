@@ -1,5 +1,6 @@
 import type { FamilyLaborPlan } from "@/data/family-labor-route-expansion";
 import { validateFamilyLaborIntake, type FamilyLaborIntake } from "@/lib/family-labor-route-expansion";
+import { FAMILY_LABOR_ACTS, getFamilyLaborScenarioReview } from "@/data/family-labor-scenario-review";
 
 export type FamilyLaborGuidance = FamilyLaborIntake & {
   scenarioTitle: string;
@@ -199,7 +200,12 @@ export function getFamilyLaborGuidance(
   const scenario = plan.scenarios.find(item => item.key === scenarioKey);
   if (!scenario) throw new Error("Unknown scenario: " + plan.id + "/" + scenarioKey);
   const special = SPECIAL[plan.id];
-  const guidance = [...(special?.guidance ?? fallback)];
+  const sourceGate=getFamilyLaborScenarioReview(plan.id,scenarioKey);
+  const guidance = [
+    ...(special?.guidance ?? fallback),
+    "Юридическая проверка выбранной ситуации: "+sourceGate.necessaryQualification.join("; ")+".",
+    "Запрещённый автоматический вывод: "+sourceGate.noAutomaticConclusion
+  ];
   const missing = [...result.missing];
   if (plan.id === "alimony-order-objections" && answers.isLate === "да" && !answers.lateReason?.trim()) {
     missing.push("lateReason");
@@ -231,7 +237,12 @@ export function getFamilyLaborGuidance(
     scenarioTitle: scenario.title,
     guidance,
     documentsToCheck,
-    verificationSources: special?.refs ?? [sources.code],
+    verificationSources: Array.from(new Map(
+      [...(special?.refs ?? []),...sourceGate.acts.map(key=>({
+        name:FAMILY_LABOR_ACTS[key].title+" (нормы и актуальность требуют проверки)",
+        url:FAMILY_LABOR_ACTS[key].url
+      }))].map(x=>[x.url,x])
+    ).values()),
     statusLabel: scenario.emergencyFirst ? "ЭКСТРЕННЫЙ ПОРЯДОК ДЕЙСТВИЙ"
       : (result.dataComplete && missing.length === 0) ? "ПРЕДВАРИТЕЛЬНЫЙ ЧЕК-ЛИСТ" : "НЕПОЛНАЯ АНКЕТА",
     draftDocument: null,

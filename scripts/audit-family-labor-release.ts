@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import {mkdirSync,writeFileSync} from "node:fs";
 import {FAMILY_LABOR_PLANS} from "@/data/family-labor-route-expansion";
 import {SUPPORTED_PROVISIONAL_DRAFTS} from "@/lib/family-labor-provisional-draft";
+import {getFamilyLaborScenarioReview} from "@/data/family-labor-scenario-review";
 import {getFamilyLaborDocumentSlug,getFamilyLaborRegistryScenarioKey,
   getFamilyLaborRouteSlug,familyLaborCategory} from "@/data/family-labor-implemented-routes";
 import {getLegalRouteRegistry} from "@/data/legal-route-standard";
@@ -13,6 +14,11 @@ const rows=FAMILY_LABOR_PLANS.flatMap(plan=>{
     x.categorySlug===familyLaborCategory(plan));
   assert.ok(route,plan.id+": registered route required");
   return plan.scenarios.map(scenario=>{
+    const gate=getFamilyLaborScenarioReview(plan.id,scenario.key);
+    assert.equal(gate.status,"NEEDS_CASE_SPECIFIC_LEGAL_REVIEW");
+    assert.equal(gate.filingApproved,false);
+    assert.ok(gate.acts.length>0);
+    assert.ok(gate.necessaryQualification.length>=2);
     const key=getFamilyLaborRegistryScenarioKey(plan,scenario.key);
     const scenarioV1=route.scenarios.find(item=>item.key===key);
     assert.ok(scenarioV1,plan.id+"/"+scenario.key);
