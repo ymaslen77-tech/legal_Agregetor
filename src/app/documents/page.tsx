@@ -33,7 +33,7 @@ export default function DocumentsPage() {
         </section>
 
         <section className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
-          <DocumentsCatalog documents={navigatorDocuments} />
+          <DocumentsCatalog documents={navigatorDocuments.map(({ slug, title, category, documentType, shortDescription, keywords, userQueries, relatedProblems }) => ({ slug, title, category, documentType, shortDescription, keywords, userQueries, relatedProblems: relatedProblems.map(({ title }) => ({ title })) }))} />
         </section>
       </main>
     </>

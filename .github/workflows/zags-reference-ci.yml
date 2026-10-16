@@ -41,6 +41,7 @@ jobs:
       NEXT_PUBLIC_SITE_URL: http://localhost:3000
       SITE_URL: http://localhost:3000
       LEAD_ATTACHMENT_STORAGE_ROOT: /tmp/private-lead-attachments
+      LOCAL_HTTP_E2E: "true"
 
     steps:
       - uses: actions/checkout@v4
@@ -80,8 +81,10 @@ jobs:
 
           cat /tmp/reference-routes-next.log
           exit 1
-      - name: Install Chromium for route acceptance
-        run: npx playwright install --with-deps chromium
+      - name: Install Chromium, Firefox and WebKit for route and responsive acceptance
+        run: npx playwright install --with-deps chromium firefox webkit
+      - name: Cross-browser responsive layouts and lab navigation timing
+        run: npx playwright test --config=playwright.responsive.config.ts --workers=2
       - name: Run all family and labor route acceptance
         env:
           E2E_SUBMIT_REVIEW: "true"
@@ -119,3 +122,5 @@ jobs:
             ${{ runner.temp }}/guardianship-pdf-audit
             playwright-report
             test-results
+            artifacts/responsive-metrics.ndjson
+            artifacts/responsive-browser-results.json

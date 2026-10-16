@@ -33,6 +33,18 @@ export type ProblemQnaContext = {
 };
 
 export const PROBLEM_QNA_CONTEXTS: Record<string, ProblemQnaContext> = {
+  "imushchestvo-fakticheskikh-sozhiteley": {
+    aliases: ["имущество сожителей", "раздел имущества в гражданском браке", "совместная квартира без регистрации брака"],
+    excludedTopics: ["официальный раздел имущества супругов", "брачный договор", "регистрация брака"]
+  },
+  "opeka-nad-sovershennoletnimi": {
+    aliases: ["опека над взрослым", "недееспособность совершеннолетнего", "назначить опекуна совершеннолетнему"],
+    excludedTopics: ["опека над ребенком", "усыновление", "лишение родительских прав"]
+  },
+  "srochnaya-zashchita-v-semye": {
+    aliases: ["угрозы в семье", "домашнее насилие", "насилие со стороны супруга"],
+    excludedTopics: ["раздел имущества супругов", "оформление брачного договора", "неустойка по алиментам"]
+  },
   "brak-zags-i-smena-familii": {
     aliases: ZAGS_PRIMARY_TAGS,
     excludedTopics: ZAGS_EXCLUDED_TOPICS

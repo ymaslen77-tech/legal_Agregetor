@@ -24,6 +24,7 @@ import { INTERNATIONAL_FAMILY_DISPUTES_PROBLEM } from "@/data/international-fami
 import { RELATIVE_CHILD_CONTACT_PROBLEM } from "@/data/relative-child-contact-problem";
 import { EMANCIPATION_PROBLEM } from "@/data/emancipation-problem";
 import { LABOR_PROBLEMS } from "@/data/labor-problems";
+import { FAMILY_LABOR_NEW_PROBLEMS } from "@/data/family-labor-implemented-routes";
 import { FAMILY_ADDITIVE_PROBLEMS } from "@/data/family-additive-problems";
 
 export type LegalProblemFaq = {
@@ -223,7 +224,8 @@ export const legalProblems: LegalProblem[] = [
   RELATIVE_CHILD_CONTACT_PROBLEM,
   EMANCIPATION_PROBLEM,
   ...FAMILY_ADDITIVE_PROBLEMS,
-  ...LABOR_PROBLEMS
+  ...LABOR_PROBLEMS,
+  ...FAMILY_LABOR_NEW_PROBLEMS
 ];
 
 export const popularProblems: LegalProblem[] = legalProblems;

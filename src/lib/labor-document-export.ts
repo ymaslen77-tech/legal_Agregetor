@@ -1,6 +1,7 @@
 import type { Content, TDocumentDefinitions } from "pdfmake/interfaces";
 import { Document, HeadingLevel, Packer, Paragraph, TextRun } from "docx";
 import type { LaborLegalRule } from "@/data/labor-legal-sources";
+import { legalRegistryReviewLabel } from "@/lib/document-result-contract";
 
 export type LaborDocumentExport = {
   statusLabel: string;
@@ -8,7 +9,7 @@ export type LaborDocumentExport = {
   documentText: string;
   rules: LaborLegalRule[];
   nextSteps: string[];
-  reviewedAt: string;
+  reviewedAt: string | null;
   versionId?: string;
 };
 
@@ -50,7 +51,7 @@ export async function createLaborDocumentPdfBlob(result: LaborDocumentExport) {
     pageSize: "A4",
     pageMargins: [48, 50, 48, 62],
     defaultStyle: { font: "Roboto", fontSize: 10, lineHeight: 1.35, color: "#18181b" },
-    footer: (page, pages) => ({ margin: [48, 10, 48, 0], columns: [{ text: `Правовая сверка: ${result.reviewedAt}${result.versionId ? ` | Версия: ${result.versionId}` : ""}`, style: "footer" }, { text: `${page}/${pages}`, alignment: "right", style: "footer" }] }),
+    footer: (page, pages) => ({ margin: [48, 10, 48, 0], columns: [{ text: `Правовая сверка: ${legalRegistryReviewLabel(result.reviewedAt)}${result.versionId ? ` | Версия: ${result.versionId}` : ""}`, style: "footer" }, { text: `${page}/${pages}`, alignment: "right", style: "footer" }] }),
     content,
     styles: {
       status: { fontSize: 10, bold: true, color: "#92400e", margin: [0, 0, 0, 8] },

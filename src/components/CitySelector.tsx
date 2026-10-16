@@ -24,7 +24,11 @@ const popularCityNames = [
   "Тюмень"
 ];
 
-export function CitySelector({ cities }: { cities: City[] }) {
+export function CitySelector() {
+  const [cities, setCities] = useState<City[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
   const [opened, setOpened] = useState(false);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<StoredCitySelection>({ id: "", name: "Россия", slug: "" });
@@ -40,26 +44,43 @@ export function CitySelector({ cities }: { cities: City[] }) {
     return cities.filter((city) => normalize(`${city.name} ${city.region}`).includes(normalizedQuery));
   }, [cities, query]);
 
+  // Remember the display label without serialising the entire city database in every page.
   useEffect(() => {
-    const stored = readStoredCity(cities);
-    if (stored) {
-      persistCity(stored);
-      setSelected(stored);
-      return;
-    }
+    setHydrated(true);
+    const stored = readStoredCity();
+    if (stored) setSelected(stored);
+  }, []);
 
-    const detected = detectCity(cities);
-    if (detected) {
-      persistCity(detected);
-      setSelected(detected);
-      sendAnalyticsEvent({
-        type: "CITY_AUTODETECTED",
-        targetType: "CITY",
-        targetId: detected.id,
-        payload: { slug: detected.slug }
-      });
-    }
-  }, [cities]);
+  useEffect(() => {
+    if (!opened || cities.length || loading) return;
+    const controller = new AbortController();
+    setLoading(true);
+    setLoadError(false);
+    fetch("/api/public-cities/", { signal: controller.signal })
+      .then((response) => {
+        if (!response.ok) throw new Error("city listing unavailable");
+        return response.json() as Promise<{cities: City[]}>;
+      })
+      .then((data) => {
+        if (!Array.isArray(data.cities)) throw new Error("invalid cities response");
+        setCities(data.cities);
+        if (!readStoredCity()) {
+          const detected = detectCity(data.cities);
+          if (detected) {
+            persistCity(detected);
+            setSelected(detected);
+            sendAnalyticsEvent({
+              type: "CITY_AUTODETECTED", targetType: "CITY",
+              targetId: detected.id, payload: {slug: detected.slug}
+            });
+          }
+        }
+      })
+      .catch((error: unknown) => { if (!controller.signal.aborted && error) setLoadError(true); })
+      .finally(() => { setLoading(false); });
+    return () => controller.abort();
+    // Fetch only when dropdown is opened; no city payload in initial HTML/React tree.
+  }, [opened, cities.length]);
 
   useEffect(() => {
     if (!opened) return;
@@ -98,18 +119,19 @@ export function CitySelector({ cities }: { cities: City[] }) {
   }
 
   return (
-    <div className="relative" ref={panelRef}>
+    <div className="relative min-w-0 shrink" ref={panelRef}>
       <button
         type="button"
         onClick={() => setOpened((value) => !value)}
-        className="inline-flex min-h-10 items-center gap-2 rounded-md border border-line bg-white px-3 text-sm font-medium text-zinc-700 hover:border-trust"
+        className="inline-flex min-h-11 max-w-[min(38vw,10rem)] items-center gap-1.5 rounded-md border border-line bg-white px-2 text-sm font-medium text-zinc-700 hover:border-trust sm:max-w-[14rem] sm:gap-2 sm:px-3"
         aria-expanded={opened}
+        data-hydrated={hydrated ? "true" : "false"}
       >
         <MapPin className="h-4 w-4 text-trust" aria-hidden="true" />
-        {selected.name}
+        <span className="min-w-0 truncate" title={selected.name}>{selected.name}</span>
       </button>
       {opened ? (
-        <div className="absolute left-0 top-12 z-50 w-[min(92vw,420px)] rounded-lg border border-line bg-white p-4 shadow-xl">
+        <div className="fixed inset-x-3 top-[4.25rem] z-50 max-h-[min(75dvh,34rem)] overflow-y-auto overscroll-contain rounded-lg border border-line bg-white p-4 shadow-xl sm:absolute sm:inset-x-auto sm:left-0 sm:top-12 sm:w-[min(92vw,420px)]">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-xs font-medium uppercase text-zinc-500">Текущий регион</p>
@@ -118,7 +140,7 @@ export function CitySelector({ cities }: { cities: City[] }) {
             <button
               type="button"
               onClick={() => setOpened(false)}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-line text-zinc-600 hover:border-trust"
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-line text-zinc-600 hover:border-trust"
               aria-label="Закрыть выбор города"
             >
               <X className="h-4 w-4" aria-hidden="true" />
@@ -130,7 +152,7 @@ export function CitySelector({ cities }: { cities: City[] }) {
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Поиск города..."
-              className="w-full text-sm outline-none"
+              className="min-w-0 w-full text-base outline-none"
             />
           </label>
           <div className="mt-3 flex flex-wrap gap-2">
@@ -153,6 +175,8 @@ export function CitySelector({ cities }: { cities: City[] }) {
           <CityButtonGroup title="Популярные города" cities={popularCities} onChoose={chooseCity} />
           <div className="mt-4">
             <p className="text-xs font-medium uppercase text-zinc-500">Все города</p>
+            {loading ? <p role="status" className="mt-2 text-sm text-zinc-600">Загружаем города…</p> : null}
+            {loadError ? <button type="button" onClick={() => { setCities([]); setLoadError(false); setOpened(false); window.setTimeout(() => setOpened(true), 0); }} className="mt-2 min-h-11 text-sm font-semibold text-trust underline">Повторить загрузку</button> : null}
             <div className="mt-2 max-h-56 overflow-auto rounded-md border border-line">
               {filteredCities.map((city) => (
                 <button
@@ -195,20 +219,20 @@ function CityButtonGroup({ title, cities, onChoose }: { title: string; cities: C
   );
 }
 
-function readStoredCity(cities: City[]): StoredCitySelection | null {
+function readStoredCity(): StoredCitySelection | null {
   try {
     const value = window.localStorage.getItem(cityStorageKey);
     if (!value) return null;
     const parsed = JSON.parse(value) as StoredCitySelection;
     if (!parsed.id) return { id: "", name: "Россия", slug: "" };
-    return cities.find((city) => city.id === parsed.id || city.slug === parsed.slug) ?? null;
-  } catch {
-    return null;
-  }
+    if (typeof parsed.id !== "string" || typeof parsed.name !== "string" ||
+        typeof parsed.slug !== "string" || parsed.name.length > 150) return null;
+    return parsed;
+  } catch { return null; }
 }
 
 function persistCity(city: StoredCitySelection) {
-  window.localStorage.setItem(cityStorageKey, JSON.stringify({ id: city.id, name: city.name, slug: city.slug, region: city.region ?? "" }));
+  try { window.localStorage.setItem(cityStorageKey, JSON.stringify({ id: city.id, name: city.name, slug: city.slug, region: city.region ?? "" })); } catch { /* Storage can be unavailable in privacy mode. */ }
   document.cookie = `${cityStorageKey}=${encodeURIComponent(city.slug || "russia")}; Path=/; Max-Age=31536000; SameSite=Lax`;
   window.dispatchEvent(new CustomEvent(cityChangedEventName, { detail: city }));
 }

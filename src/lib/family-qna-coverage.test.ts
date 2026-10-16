@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { legalProblems } from "@/data/legal-problems";
+import {FAMILY_LABOR_NEW_PROBLEMS} from "@/data/family-labor-implemented-routes";
 import { buildProblemQuestionContext, PROBLEM_QNA_CONTEXTS } from "@/data/related-questions-context";
 import { getRelatedQuestions, scoreQuestion } from "@/lib/related-questions";
 import { searchSite } from "@/lib/site-search";
@@ -15,7 +16,11 @@ const additiveSlugs = new Set([
   "dokumenty-o-rozhdenii-i-aktovaya-zapis"
 ]);
 const familyProblems = legalProblems.filter((problem) => problem.categorySlug === "semya-i-deti");
-assert.equal(familyProblems.filter((problem) => !additiveSlugs.has(problem.slug)).length, 24, "Набор из 24 базовых семейных маршрутов изменился");
+const newFamilySlugs=new Set(FAMILY_LABOR_NEW_PROBLEMS.filter(problem=>problem.categorySlug==="semya-i-deti").map(problem=>problem.slug));
+assert.equal(familyProblems.filter(problem=>!additiveSlugs.has(problem.slug)&&!newFamilySlugs.has(problem.slug)).length,24,
+  "Набор из 24 базовых семейных маршрутов изменился");
+assert.equal(familyProblems.filter(problem=>newFamilySlugs.has(problem.slug)).length,3,
+  "Должны быть три дополнительных семейных маршрута");
 assert.equal(familyProblems.filter((problem) => additiveSlugs.has(problem.slug)).length, 5, "Должно быть пять additive-маршрутов");
 assert.deepEqual(
   Object.keys(PROBLEM_QNA_CONTEXTS).sort(),

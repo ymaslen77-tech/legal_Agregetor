@@ -5,6 +5,8 @@ const isDevelopment = process.env.NODE_ENV !== "production";
 // while keeping the /questions hub indexable. Default true; set
 // BLOCK_QUESTIONS_INDEXING=false (then rebuild) to also index question pages.
 const blockQuestionsIndexing = process.env.BLOCK_QUESTIONS_INDEXING !== "false";
+// Explicitly allow local HTTP-only E2E under CI. HTTPS deployments retain upgrade-insecure-requests.
+const allowLocalHttpInE2E = process.env.LOCAL_HTTP_E2E === "true";
 const scriptSrc = `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""} https://mc.yandex.ru https://yastatic.net`;
 
 const nextConfig: NextConfig = {
@@ -110,7 +112,7 @@ const nextConfig: NextConfig = {
     const securityHeaders = [
       {
         key: "Content-Security-Policy",
-        value: `default-src 'self'; ${scriptSrc}; connect-src 'self' https://mc.yandex.ru https://*.mc.yandex.ru wss://mc.yandex.ru wss://*.mc.yandex.ru https://yastatic.net; img-src 'self' data: blob: https://mc.yandex.ru https://images.unsplash.com https://yastatic.net; style-src 'self' 'unsafe-inline' https://yastatic.net; font-src 'self' data:; frame-src https://mc.yandex.ru; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests`
+        value: `default-src 'self'; ${scriptSrc}; connect-src 'self' https://mc.yandex.ru https://*.mc.yandex.ru wss://mc.yandex.ru wss://*.mc.yandex.ru https://yastatic.net; img-src 'self' data: blob: https://mc.yandex.ru https://images.unsplash.com https://yastatic.net; style-src 'self' 'unsafe-inline' https://yastatic.net; font-src 'self' data:; frame-src https://mc.yandex.ru; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'${allowLocalHttpInE2E ? "" : "; upgrade-insecure-requests"}`
       },
       { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" },
       { key: "X-Content-Type-Options", value: "nosniff" },

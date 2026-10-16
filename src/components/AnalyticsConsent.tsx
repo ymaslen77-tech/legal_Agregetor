@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Script from "next/script";
 import { Cookie, Settings2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
@@ -9,6 +10,8 @@ import {
   readAnalyticsConsent,
   type AnalyticsConsent as AnalyticsConsentValue
 } from "@/lib/analytics-privacy";
+
+const YANDEX_METRIKA_ID = 109850822;
 
 export function AnalyticsConsent() {
   const [consent, setConsent] = useState<AnalyticsConsentValue | null | undefined>(undefined);
@@ -35,6 +38,11 @@ export function AnalyticsConsent() {
 
   return (
     <>
+      {consent === "granted" ? (
+        <Script id="yandex-metrika" strategy="lazyOnload">
+          {`(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for (var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r)return;}k=e.createElement(t),a=e.getElementsByTagName(t)[0];k.async=1;k.src=r;a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js?id=${YANDEX_METRIKA_ID}','ym');ym(${YANDEX_METRIKA_ID},'init',{webvisor:true,clickmap:true,trackLinks:true,accurateTrackBounce:true});`}
+        </Script>
+      ) : null}
       {consent === null || settingsOpened ? (
         <section
           aria-label="Настройки аналитики"

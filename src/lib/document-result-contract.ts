@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { LaborDocumentResponse } from "@/lib/labor-document-contract";
 import type { FamilyAdditiveDecision } from "@/lib/family-additive-validator";
-import { getFamilyAdditiveLegalRules } from "@/data/family-additive-legal-review";
+import { getFamilyAdditiveLegalRulesForScenario } from "@/data/family-additive-legal-review";
 
 /**
  * Shared result envelope across generators. Not a database record or proof of filing readiness.
@@ -26,13 +26,20 @@ export const documentResultSchema = z.object({
   documentText: z.string().min(1).max(40000),
   usedRuleIds: z.array(z.string().min(1).max(120)).max(50),
   placeholders: z.array(z.string().min(1).max(300)).max(40),
-  legalRegistryReviewedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  /** Null indicates no source-registry legal review yet; never substitute implementation date. */
+  legalRegistryReviewedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable(),
   generatorVersion: z.string().min(1).max(40),
   filingReady: z.literal(false),
   requiresLegalReview: z.boolean()
 }).strict();
 
 export type DocumentResultV1 = z.infer<typeof documentResultSchema>;
+
+/** Null is explicit pending legal review, not a date or an implicit approval. */
+export function legalRegistryReviewLabel(date: string | null): string {
+  return date ?? "не проведена";
+}
+
 
 const familyKindMap: Record<FamilyAdditiveDecision["resultKind"], DocumentResultV1["resultKind"]> = {
   checklist: "CHECKLIST",
@@ -86,7 +93,7 @@ export function createFamilyAdditiveDocumentResult(input: {
   // A rule is marked as used only when the generated text explicitly includes
   // that exact article and statement. Prepared official-form data can cite none.
   // This records provenance, NOT independent legal accuracy or filing approval.
-  const citedRules = getFamilyAdditiveLegalRules(decision.routeSlug)
+  const citedRules = getFamilyAdditiveLegalRulesForScenario(decision.routeSlug, decision.scenarioKey)
     .filter((rule) => input.documentText.includes(`${rule.act}, ${rule.article}: ${rule.statement}`))
     .map((rule) => rule.id);
   return documentResultSchema.parse({

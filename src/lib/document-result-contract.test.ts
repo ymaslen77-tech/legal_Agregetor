@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import {legalRegistryReviewLabel} from "@/lib/document-result-contract";
 import {
   createFamilyAdditiveDocumentResult,
   createLaborDocumentResult,
@@ -84,3 +85,6 @@ assert.throws(() => documentResultSchema.parse({ ...first, resultKind: "FAKE_COU
 assert.throws(() => createFamilyAdditiveDocumentResult({ ...commonFamilyInput, documentText: "  " }));
 
 console.log("DocumentResult v1 validated: family and labor envelopes, version isolation, safe metadata and filing block.");
+
+assert.equal(legalRegistryReviewLabel(null),"не проведена");
+assert.equal(legalRegistryReviewLabel("2026-10-05"),"2026-10-05");
