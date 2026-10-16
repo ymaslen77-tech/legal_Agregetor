@@ -55,7 +55,7 @@ test("provisional draft forms keep source references, document version and filin
     await expect(form).toBeVisible();
     for(const select of await form.locator("select").all()){
       const choices=await select.locator("option").allTextContents();
-      let choice=choices.find(c=>c==="совмещение")||choices.find(c=>c==="заявитель")||
+      const choice=choices.find(c=>c==="совмещение")||choices.find(c=>c==="заявитель")||
         choices.find(c=>c==="должник")||
         choices.find(c=>c==="нет")||
         choices.find(c=>c==="беременность и роды")||choices.find(c=>c!=="Выберите значение");
