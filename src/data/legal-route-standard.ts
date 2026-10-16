@@ -1,5 +1,8 @@
 import { FAMILY_ADDITIVE_ROUTES, type FamilyAdditiveResultKind } from "@/data/family-additive-routes";
 import { LABOR_CATEGORY_SLUG, LABOR_ROUTES, type LaborResultType } from "@/data/labor-routes";
+import { FAMILY_LABOR_PLANS } from "@/data/family-labor-route-expansion";
+import { familyLaborCategory,getFamilyLaborPlanForProblem,getFamilyLaborDocumentSlug,getFamilyLaborRegistryScenarioKey }
+  from "@/data/family-labor-implemented-routes";
 import { legalProblems, type LegalProblem } from "@/data/legal-problems";
 import { getMappedLegacyFamilyScenarios } from "@/data/legacy-family-route-catalog";
 
@@ -47,7 +50,7 @@ export type LegalRouteV1 = {
   urgency: LegalProblem["urgency"];
   legalReviewedAt: string | null;
   migrationStatus: "ADAPTED_V1" | "SCENARIO_MAPPED_V1" | "LEGACY";
-  source: "labor" | "family-additive" | "legacy-family";
+  source: "labor" | "family-additive" | "legacy-family" | "family-labor-new";
   scenarios: LegalRouteScenarioV1[];
   relatedDocumentSlugs: string[];
 };
@@ -110,6 +113,22 @@ function scenarioUrls(problemUrl: string, key: string, documentSlug?: string) {
   };
 }
 
+function extensionScenarios(problem:LegalProblem,problemUrl:string):LegalRouteScenarioV1[]{
+  return FAMILY_LABOR_PLANS.filter(plan=>plan.kind==="EXISTING_ROUTE_EXTENSION" &&
+    familyLaborCategory(plan)===problem.categorySlug && plan.existingSlug===problem.slug)
+    .flatMap(plan=>plan.scenarios.map(scenario=>({
+      key:getFamilyLaborRegistryScenarioKey(plan,scenario.key),
+      title:scenario.title,
+      outcome:"CHECKLIST" as const,
+      documentSlug:getFamilyLaborDocumentSlug(plan,scenario.key),
+      inputs:scenario.requiredFields.map((key,index)=>({
+        key:problem.categorySlug==="trudovoe-pravo"?"scenario-"+(index+1):key,
+        label:plan.fields.find(f=>f.key===key)?.label??key,required:true,type:"text"
+      })),
+      ...scenarioUrls(problemUrl,getFamilyLaborRegistryScenarioKey(plan,scenario.key),
+        getFamilyLaborDocumentSlug(plan,scenario.key)??undefined)
+    })));
+}
 export function adaptLegalProblemToV1(problem: LegalProblem): LegalRouteV1 {
   const problemUrl = `/problems/${problem.categorySlug}/${problem.slug}/`;
   const base = {
@@ -124,6 +143,21 @@ export function adaptLegalProblemToV1(problem: LegalProblem): LegalRouteV1 {
     relatedDocumentSlugs: problem.relatedDocumentSlugs
   } satisfies Omit<LegalRouteV1, "migrationStatus" | "source" | "scenarios">;
 
+  const newPlan=getFamilyLaborPlanForProblem(problem.categorySlug,problem.slug);
+  if(newPlan){
+    return {...base,migrationStatus:"ADAPTED_V1",source:"family-labor-new",
+      scenarios:newPlan.scenarios.map(scenario=>({
+        key:scenario.key,title:scenario.title,
+        outcome:scenario.emergencyFirst?"URGENT_INSTRUCTION":"CHECKLIST",
+        documentSlug:getFamilyLaborDocumentSlug(newPlan,scenario.key),
+        inputs:scenario.requiredFields.map(key=>({
+          key,label:newPlan.fields.find(f=>f.key===key)?.label??key,required:true,type:"text"
+        })),
+        ...scenarioUrls(problemUrl,scenario.key,
+          getFamilyLaborDocumentSlug(newPlan,scenario.key)??undefined)
+      }))
+    };
+  }
   if (problem.categorySlug === LABOR_CATEGORY_SLUG) {
     const route = LABOR_ROUTES.find((item) => item.slug === problem.slug);
     if (!route) throw new Error(`Labor route not registered: ${problem.slug}`);
@@ -131,7 +165,7 @@ export function adaptLegalProblemToV1(problem: LegalProblem): LegalRouteV1 {
       ...base,
       migrationStatus: "ADAPTED_V1",
       source: "labor",
-      scenarios: route.scenarios.map((scenario) => ({
+      scenarios: [...route.scenarios.map((scenario) => ({
         key: scenario.key,
         title: scenario.title,
         outcome: LABOR_OUTCOMES[scenario.resultType],
@@ -143,7 +177,7 @@ export function adaptLegalProblemToV1(problem: LegalProblem): LegalRouteV1 {
           type: "text"
         })),
         ...scenarioUrls(problemUrl, scenario.key, scenario.documentSlug)
-      }))
+      })),...extensionScenarios(problem,problemUrl)]
     };
   }
 
@@ -166,7 +200,7 @@ export function adaptLegalProblemToV1(problem: LegalProblem): LegalRouteV1 {
             type: field.type
           })),
           ...scenarioUrls(problemUrl, scenario.key, scenario.documentSlug)
-        }))
+        })),...extensionScenarios(problem,problemUrl)]
       };
     }
     if (!legacyFamilySet.has(problem.slug)) {
@@ -176,7 +210,7 @@ export function adaptLegalProblemToV1(problem: LegalProblem): LegalRouteV1 {
       ...base,
       migrationStatus: "ADAPTED_V1",
       source: "legacy-family",
-      scenarios: getMappedLegacyFamilyScenarios(problem.slug, problemUrl) ?? []
+      scenarios: [...(getMappedLegacyFamilyScenarios(problem.slug, problemUrl) ?? []),...extensionScenarios(problem,problemUrl)]
     };
   }
 
