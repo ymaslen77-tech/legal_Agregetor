@@ -15,7 +15,7 @@ export type ProvisionalDraft = {
 };
 
 const GPK_URL = "https://pravo.gov.ru/proxy/ips/?docbody=&nd=102078828";
-const TK_URL = "https://pravo.gov.ru/";
+const TK_URL = "https://pravo.gov.ru/proxy/ips/?docbody=&link_id=0&nd=102074279&intelsearch=&firstDoc=1";
 const registry = {
   "gpk-128": { id:"gpk-128",act:"ГПК РФ",provision:"статья 128",sourceUrl:GPK_URL },
   "gpk-129": { id:"gpk-129",act:"ГПК РФ",provision:"статья 129",sourceUrl:GPK_URL },
