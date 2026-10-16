@@ -5,7 +5,6 @@ import {familyLaborCategory,getFamilyLaborRouteSlug,getFamilyLaborDocumentSlug}
 import {FamilyLaborDocumentForm} from "@/components/documents/FamilyLaborDocumentForm";
 import {Breadcrumbs} from "@/components/Breadcrumbs";
 import {JsonLd} from "@/components/JsonLd";
-import {LegalRouteJourney} from "@/components/documents/LegalRouteJourney";
 import {breadcrumbJsonLd,legalServiceJsonLd} from "@/lib/jsonld";
 
 /** Standard route/situation/document journey for all eight new legal routes. */
@@ -26,8 +25,6 @@ export function FamilyLaborProblemPage({plan,scenarioKey}:{plan:FamilyLaborPlan;
     legalServiceJsonLd({path,name:plan.title,description:"Предварительный маршрут: "+plan.title+". Юридическая проверка обязательна.",lawyers:[]})
   ]}/>
   <Breadcrumbs items={breadcrumbs}/>
-  <LegalRouteJourney stage="situation" title={plan.title} problemUrl={path}
-    scenarioUrl={scenario?path+"?scenario="+encodeURIComponent(scenario.key):undefined}/>
   <article className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
     <header className="mt-6 border-b border-line pb-6">
       <h1 className="text-3xl font-semibold text-ink">{plan.title}</h1>
@@ -74,8 +71,6 @@ export function FamilyLaborDocumentPage({plan,scenarioKey}:{plan:FamilyLaborPlan
   return <>
   <JsonLd data={breadcrumbJsonLd(crumbs)}/>
   <Breadcrumbs items={crumbs}/>
-  <LegalRouteJourney stage="document" title={scenario.title} problemUrl={problemUrl}
-    scenarioUrl={problemUrl+"?scenario="+encodeURIComponent(scenarioKey)}/>
   <article className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
     <Link className="text-sm font-semibold text-trust underline" href={problemUrl+"?scenario="+encodeURIComponent(scenarioKey)}>Вернуться к маршруту</Link>
     <h1 className="mt-5 text-3xl font-semibold text-ink">{scenario.title}</h1>
