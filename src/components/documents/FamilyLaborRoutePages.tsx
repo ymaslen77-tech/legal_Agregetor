@@ -5,7 +5,7 @@ import {familyLaborCategory,getFamilyLaborRouteSlug,getFamilyLaborDocumentSlug}
 import {FamilyLaborDocumentForm} from "@/components/documents/FamilyLaborDocumentForm";
 import {Breadcrumbs} from "@/components/Breadcrumbs";
 import {JsonLd} from "@/components/JsonLd";
-import {breadcrumbJsonLd,legalServiceJsonLd} from "@/lib/jsonld";
+import {breadcrumbJsonLd} from "@/lib/jsonld";
 
 /** Standard route/situation/document journey for all eight new legal routes. */
 export function FamilyLaborProblemPage({plan,scenarioKey}:{plan:FamilyLaborPlan;scenarioKey?:string}){
@@ -20,10 +20,7 @@ export function FamilyLaborProblemPage({plan,scenarioKey}:{plan:FamilyLaborPlan;
     {name:plan.title,path}
   ];
   return <>
-  <JsonLd data={[
-    breadcrumbJsonLd(breadcrumbs),
-    legalServiceJsonLd({path,name:plan.title,description:"Предварительный маршрут: "+plan.title+". Юридическая проверка обязательна.",lawyers:[]})
-  ]}/>
+  <JsonLd data={breadcrumbJsonLd(breadcrumbs)}/>
   <Breadcrumbs items={breadcrumbs}/>
   <article className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
     <header className="mt-6 border-b border-line pb-6">
