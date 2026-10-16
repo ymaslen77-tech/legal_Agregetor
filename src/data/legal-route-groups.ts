@@ -21,6 +21,7 @@ export const LEGAL_ROUTE_GROUPS: Record<"semya-i-deti" | "trudovoe-pravo", reado
         "brachnyy-dogovor",
         "priznanie-braka-nedeystvitelnym",
         "slozhnye-imushchestvennye-spory-suprugov",
+        "imushchestvo-fakticheskikh-sozhiteley",
         "dokumenty-o-rozhdenii-i-aktovaya-zapis"
       ]
     },
@@ -30,6 +31,7 @@ export const LEGAL_ROUTE_GROUPS: Record<"semya-i-deti" | "trudovoe-pravo", reado
       description: "Место жительства и общение с ребёнком, отцовство, воспитание и родительские права.",
       problemSlugs: [
         "roditeli-i-rebenok-posle-razvoda",
+        "srochnaya-zashchita-v-semye",
         "lishenie-roditelskih-prav",
         "ogranichenie-roditelskih-prav",
         "vosstanovlenie-v-roditelskih-pravah",
@@ -62,6 +64,7 @@ export const LEGAL_ROUTE_GROUPS: Record<"semya-i-deti" | "trudovoe-pravo", reado
       description: "Назначение опеки, усыновление и отмена усыновления — разные процедуры.",
       problemSlugs: [
         "opeka-i-popechitelstvo-nad-rebenkom",
+        "opeka-nad-sovershennoletnimi",
         "usynovlenie-rebenka",
         "otmena-usynovleniya"
       ]
@@ -102,7 +105,10 @@ export const LEGAL_ROUTE_GROUPS: Record<"semya-i-deti" | "trudovoe-pravo", reado
         "trudovoy-dogovor",
         "neoformlennye-trudovye-otnosheniya",
         "perevod-i-izmenenie-usloviy-truda",
-        "prava-i-obyazannosti-rabotodatelya"
+        "prava-i-obyazannosti-rabotodatelya",
+        "sovmestitelstvo-i-sovmeshchenie",
+        "trud-nesovershennoletnikh",
+        "trud-inostrannykh-grazhdan"
       ]
     },
     {
@@ -113,7 +119,9 @@ export const LEGAL_ROUTE_GROUPS: Record<"semya-i-deti" | "trudovoe-pravo", reado
         "ezhegodnyy-otpusk",
         "otpusk-po-uhodu-za-rebenkom",
         "bolnichnyy",
-        "rabochee-vremya"
+        "rabochee-vremya",
+        "otpusk-po-beremennosti-i-rodam",
+        "vakhta-komandirovki-razezdnaya-rabota"
       ]
     },
     {
