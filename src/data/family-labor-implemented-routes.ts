@@ -30,6 +30,9 @@ export function getFamilyLaborRouteSlug(plan: FamilyLaborPlan): string {
   if (!plan.existingSlug) throw new Error("Cross-area link is not a new route: "+plan.id);
   return plan.existingSlug;
 }
+export function getFamilyLaborRegistryScenarioKey(plan:FamilyLaborPlan,scenarioKey:string):string {
+  return plan.kind==="EXISTING_ROUTE_EXTENSION"?"fl-"+plan.id+"-"+scenarioKey:scenarioKey;
+}
 export function getFamilyLaborDocumentSlug(plan: FamilyLaborPlan,scenarioKey:string):string|null {
   if (plan.kind==="CROSS_AREA_LINK" || plan.id==="family-emergency-safety") return null;
   if (!plan.scenarios.some(x=>x.key===scenarioKey)) return null;
