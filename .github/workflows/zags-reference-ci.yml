@@ -80,12 +80,14 @@ jobs:
 
           cat /tmp/reference-routes-next.log
           exit 1
-      - name: Install Chromium for route acceptance
-        run: npx playwright install --with-deps chromium
+      - name: Install Chromium, Firefox and WebKit for route and responsive acceptance
+        run: npx playwright install --with-deps chromium firefox webkit
       - name: Run all family and labor route acceptance
         env:
           E2E_SUBMIT_REVIEW: "true"
         run: npx playwright test --workers=2
+      - name: Cross-browser responsive layouts and lab navigation timing
+        run: npx playwright test --config=playwright.responsive.config.ts --workers=2
       - name: Confirm withdrawn review PDF was deleted
         run: test -z "$(find "$LEAD_ATTACHMENT_STORAGE_ROOT" -type f -name '*.pdf' -print -quit 2>/dev/null)"
       - name: Generate and inspect guardianship PDFs
@@ -119,3 +121,5 @@ jobs:
             ${{ runner.temp }}/guardianship-pdf-audit
             playwright-report
             test-results
+            artifacts/responsive-metrics.ndjson
+            artifacts/responsive-browser-results.json
