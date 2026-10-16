@@ -75,20 +75,20 @@ export function FamilyLaborDocumentForm({plan,scenarioKey}:{plan:FamilyLaborPlan
   }
   const result= getFamilyLaborGuidance(plan,scenarioKey,values);
   const supportsDraft=SUPPORTED_PROVISIONAL_DRAFTS.some(id=>id===plan.id+"/"+scenarioKey);
-  return <section id="fill-online" className="mt-6 scroll-mt-24 rounded-lg border border-line bg-white p-5" aria-label="Пошаговая анкета">
+  return <section id="fill-online" className="mt-6 min-w-0 max-w-full scroll-mt-24 rounded-lg border border-line bg-white p-4 sm:p-5" aria-label="Пошаговая анкета">
     <h2 className="text-xl font-semibold text-ink">Шаг 1. Обстоятельства и документы</h2>
     <p className="mt-2 text-sm leading-6 text-zinc-700">Вводите только необходимые данные. Они не отправляются на сервер при заполнении. Проверяйте даты и правовой статус по оригиналам документов.</p>
-    <div className="mt-5 grid gap-4">
-      {required.map(field=><label key={field.key} className="block text-sm font-medium text-ink">
+    <div className="mt-5 grid min-w-0 gap-4">
+      {required.map(field=><label key={field.key} className="block min-w-0 text-sm font-medium text-ink">
         {field.label} <span aria-hidden="true">*</span>
         {field.options?<select value={values[field.key]??""}
             onChange={e=>{setValues(prev=>({...prev,[field.key]:e.target.value}));setDirty(true);}}
-            className="mt-2 min-h-11 w-full rounded-md border border-line p-2">
+            className="mt-2 min-h-11 min-w-0 w-full rounded-md border border-line bg-white p-2 text-base">
           <option value="">Выберите значение</option>
           {field.options.map(opt=><option key={opt} value={opt}>{opt}</option>)}
         </select>:<textarea value={values[field.key]??""} maxLength={2000} rows={2}
           onChange={e=>{setValues(prev=>({...prev,[field.key]:e.target.value}));setDirty(true);}}
-          className="mt-2 w-full rounded-md border border-line p-3" />}
+          className="mt-2 min-w-0 w-full rounded-md border border-line p-3 text-base" />}
       </label>)}
       {plan.id==="alimony-order-objections" && values.isLate==="да" &&
         <label className="block text-sm font-medium text-ink">Почему невозможно было подать возражения в срок?
@@ -122,10 +122,10 @@ export function FamilyLaborDocumentForm({plan,scenarioKey}:{plan:FamilyLaborPlan
           <p className="mt-2 text-sm">Документ не одобрен к подаче в суд или государственный орган.</p>
         </DocumentResultSummary>
         <h3 className="mt-5 text-lg font-semibold">Полученный документ</h3>
-        <pre className="mt-3 max-h-[35rem] overflow-auto whitespace-pre-wrap border border-line bg-zinc-50 p-4 font-serif text-sm leading-6">{active.result.documentText}</pre>
+        <pre className="mt-3 max-h-[35rem] min-w-0 max-w-full overflow-y-auto whitespace-pre-wrap break-words [overflow-wrap:anywhere] rounded-md border border-line bg-zinc-50 p-3 font-serif text-sm leading-6 sm:p-4">{active.result.documentText}</pre>
         <div className="mt-4 flex flex-wrap gap-3">
           <button type="button" disabled={dirty} onClick={()=>void downloadDocx()}
-            className="min-h-11 rounded-md border border-trust px-4 py-2 font-semibold text-trust disabled:opacity-50">
+            className="min-h-11 min-w-0 max-w-full rounded-md border border-trust px-4 py-2 text-sm font-semibold text-trust disabled:opacity-50">
             Скачать DOCX
           </button>
           <button type="button" disabled={dirty} onClick={()=>void downloadPdf()}

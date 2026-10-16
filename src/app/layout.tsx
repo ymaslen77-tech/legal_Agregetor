@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import Script from "next/script";
 import "./globals.css";
@@ -10,6 +10,9 @@ import { JsonLd } from "@/components/JsonLd";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/jsonld";
 import { platformContacts } from "@/lib/platform";
 import { siteUrl } from "@/lib/seo";
+
+/** Respect the actual device CSS viewport; never shrink text to a desktop canvas. */
+export const viewport: Viewport = { width: "device-width", initialScale: 1 };
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
