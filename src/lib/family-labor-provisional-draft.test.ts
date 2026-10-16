@@ -18,6 +18,7 @@ for(const key of SUPPORTED_PROVISIONAL_DRAFTS){
   for(const f of plan.fields)values[f.key]=f.options?(f.options.includes("нет")?"нет":f.options[0]):"Сведения из приложенных документов";
   values.role="заявитель";
   if(planId==="alimony-order-objections"){values.roleInOrder="должник";values.isLate="нет";}
+  if(planId==="part-time-hours")values.mandatoryBasis="по соглашению";
   if(planId==="maternity-leave")values.leaveType="беременность и роды";
   if(planId==="secondary-employment")values.mode="совмещение";
   assert.equal(canBuildFamilyLaborDraft(plan,scenarioKey,values),true,key);
@@ -58,6 +59,8 @@ for(const key of SUPPORTED_PROVISIONAL_DRAFTS){
     assert.equal(canBuildFamilyLaborDraft(plan,scenarioKey,other),false);
     assert.equal(createFamilyLaborDocument(plan,scenarioKey,other,ids).result.resultKind,"CHECKLIST");
   }
+  if(planId==="part-time-hours")
+    assert.equal(canBuildFamilyLaborDraft(plan,scenarioKey,{...values,mandatoryBasis:"не знаю"}),false);
   if(planId==="maternity-leave")
     assert.equal(canBuildFamilyLaborDraft(plan,scenarioKey,{...values,leaveType:"уход за ребёнком"}),false);
   if(planId==="secondary-employment"){

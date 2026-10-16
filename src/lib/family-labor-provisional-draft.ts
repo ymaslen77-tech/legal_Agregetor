@@ -60,6 +60,7 @@ export function canBuildFamilyLaborDraft(
   }
   if(answers.role!=="заявитель")return false;
   if(id==="maternity-leave/leave")return answers.leaveType==="беременность и роды";
+  if(id==="part-time-hours/schedule")return answers.mandatoryBasis!=="не знаю";
   if(id==="secondary-employment/payment")return answers.mode==="совмещение";
   return true;
 }

@@ -49,6 +49,10 @@ assert.ok(orderClaimant.guidance.some(x=>x.includes("относятся к до�
 const penaltyAgreement=getFamilyLaborGuidance(penalty,"penalty",{instrument:"нотариальное соглашение",fault:"не знаю"});
 assert.ok(penaltyAgreement.guidance.some(x=>x.includes("ставку ответственности")));
 assert.ok(penaltyAgreement.guidance.some(x=>x.includes("вины не подтверждены")));
+const mandatoryPartTime=getFamilyLaborGuidance(pick("part-time-hours"),"schedule",{mandatoryBasis:"беременность"});
+assert.ok(mandatoryPartTime.guidance.some(line=>line.includes("пяти рабочих дней")));
+const ordinaryPartTime=getFamilyLaborGuidance(pick("part-time-hours"),"schedule",{mandatoryBasis:"по соглашению"});
+assert.ok(ordinaryPartTime.guidance.some(line=>line.includes("не применяется автоматически")));
 const notOpened=getFamilyLaborGuidance(pick("alimony-enforcement"),"inaction",{proceedingOpened:"нет"});
 assert.ok(notOpened.guidance.some(x=>x.includes("не возбуждено")));
 

@@ -207,6 +207,17 @@ export function getFamilyLaborGuidance(
     "Запрещённый автоматический вывод: "+sourceGate.noAutomaticConclusion
   ];
   const missing = [...result.missing];
+  if (plan.id === "part-time-hours") {
+    const ordinary = answers.mandatoryBasis === "по соглашению";
+    const unsure = answers.mandatoryBasis === "не знаю" || !answers.mandatoryBasis;
+    if (ordinary) {
+      guidance.push("При установлении неполного рабочего времени по обычному соглашению сторон специальный пятидневный срок из части второй статьи 93 ТК РФ не применяется автоматически.");
+    } else if (!unsure) {
+      guidance.push("С 1 сентября 2026 года часть вторая статьи 93 ТК РФ предусматривает принятие решения работодателем не позднее пяти рабочих дней со дня письменного обращения работника, имеющего установленное законом основание. Проверьте принадлежность к льготной категории, доказательства и дату вручения обращения.");
+    } else {
+      guidance.push("До определения правового основания нельзя установить, действует ли специальный пятидневный срок по статье 93 ТК РФ.");
+    }
+  }
   if (plan.id === "alimony-order-objections" && answers.isLate === "да" && !answers.lateReason?.trim()) {
     missing.push("lateReason");
     guidance.push("Для поздних возражений необходимо указать конкретные препятствия своевременной подачи и подтвердить их документами.");
