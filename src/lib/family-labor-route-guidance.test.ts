@@ -38,4 +38,18 @@ assert.ok(cohabitation.guidance.some(x=>x.includes("нельзя автомат�
 const pregnancy=getFamilyLaborGuidance(pick("maternity-leave"),"leave",{});
 assert.ok(pregnancy.guidance.some(x=>x.includes("разные")));
 assert.throws(()=>getFamilyLaborGuidance(order,"unknown",{}));
+const orderLate= getFamilyLaborGuidance(order,"objections",{
+  role:"другая сторона",event:"Приказ",dates:"Дата обращения",evidence:"Уведомление",
+  outcome:"Отмена",receipt:"Получено",order:"Мировой судья",roleInOrder:"должник",isLate:"да"
+});
+assert.equal(orderLate.dataComplete,false,"late objection requires a reason");
+assert.ok(orderLate.missing.includes("lateReason"));
+const orderClaimant=getFamilyLaborGuidance(order,"objections",{roleInOrder:"взыскатель"});
+assert.ok(orderClaimant.guidance.some(x=>x.includes("относятся к должнику")));
+const penaltyAgreement=getFamilyLaborGuidance(penalty,"penalty",{instrument:"нотариальное соглашение",fault:"не знаю"});
+assert.ok(penaltyAgreement.guidance.some(x=>x.includes("ставку ответственности")));
+assert.ok(penaltyAgreement.guidance.some(x=>x.includes("вины не подтверждены")));
+const notOpened=getFamilyLaborGuidance(pick("alimony-enforcement"),"inaction",{proceedingOpened:"нет"});
+assert.ok(notOpened.guidance.some(x=>x.includes("не возбуждено")));
+
 console.log("Preview guidance: "+checked+" guarded scenarios; no filing or document generation enabled.");

@@ -124,8 +124,25 @@ export function getFamilyLaborGuidance(
   if (!scenario) throw new Error("Unknown scenario: " + plan.id + "/" + scenarioKey);
   const special = SPECIAL[plan.id];
   const guidance = [...(special?.guidance ?? fallback)];
+  const missing = [...result.missing];
+  if (plan.id === "alimony-order-objections" && answers.isLate === "да" && !answers.lateReason?.trim()) {
+    missing.push("lateReason");
+    guidance.push("Для поздних возражений необходимо указать конкретные препятствия своевременной подачи и подтвердить их документами.");
+  }
+  if (plan.id === "alimony-order-objections" && answers.roleInOrder === "взыскатель") {
+    guidance.push("Возражения по статьям 128–129 ГПК РФ относятся к должнику. Взыскателю после отмены приказа нужно проверить исковой путь, а не подавать такие возражения от своего имени.");
+  }
   if (plan.id === "alimony-order-objections" && result.dataComplete) {
     guidance.push("Даже при заполненных реквизитах проверка даты получения и причин пропуска срока требует оценки первичных документов.");
+  }
+  if (plan.id === "alimony-penalty" && answers.instrument === "нотариальное соглашение") {
+    guidance.push("Для нотариального соглашения не применяйте автоматически ставку ответственности по судебному решению: проверьте условия соглашения и статью 115 СК РФ.");
+  }
+  if (plan.id === "alimony-penalty" && answers.fault !== "да") {
+    guidance.push("Основания ответственности и доказательства вины не подтверждены: не переходите к числовому расчёту неустойки.");
+  }
+  if (plan.id === "alimony-enforcement" && answers.proceedingOpened === "нет") {
+    guidance.push("Когда производство не возбуждено, сначала проверьте предъявление исполнительного документа и основания возбуждения, а не жалобу на бездействие по несуществующему производству.");
   }
   if (plan.id === "alimony-penalty" && result.dataComplete) {
     guidance.push("Неустойка здесь не рассчитывается автоматически и не выдается как готовое исковое требование.");
@@ -133,12 +150,14 @@ export function getFamilyLaborGuidance(
   const documentsToCheck = special?.docs ?? ["Сведения из анкеты", "Подтверждающие документы", "Официальные решения и ответы государственных органов, если они имеются"];
   return {
     ...result,
+    missing,
+    dataComplete: result.dataComplete && missing.length === 0,
     scenarioTitle: scenario.title,
     guidance,
     documentsToCheck,
     verificationSources: special?.refs ?? [sources.code],
     statusLabel: scenario.emergencyFirst ? "ЭКСТРЕННЫЙ ПОРЯДОК ДЕЙСТВИЙ"
-      : result.dataComplete ? "ПРЕДВАРИТЕЛЬНЫЙ ЧЕК-ЛИСТ" : "НЕПОЛНАЯ АНКЕТА",
+      : (result.dataComplete && missing.length === 0) ? "ПРЕДВАРИТЕЛЬНЫЙ ЧЕК-ЛИСТ" : "НЕПОЛНАЯ АНКЕТА",
     draftDocument: null,
     legalOutcomeApproved: false
   };
