@@ -1,5 +1,5 @@
 import { FAMILY_LABOR_PLANS } from "@/data/family-labor-route-expansion";
-import {familyLaborCategory,getFamilyLaborRouteSlug,getFamilyLaborDocumentSlug,
+import {getFamilyLaborRouteSlug,getFamilyLaborDocumentSlug,
   FAMILY_LABOR_IMPLEMENTATION_DATE} from "@/data/family-labor-implemented-routes";
 import type {NavigatorDocument} from "@/data/documents";
 
