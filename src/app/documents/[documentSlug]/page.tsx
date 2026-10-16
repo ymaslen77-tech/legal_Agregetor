@@ -42,6 +42,8 @@ import { ZagsScenarioOverview } from "@/components/documents/ZagsScenarioOvervie
 import { FamilyAdditiveDocumentPage } from "@/components/documents/FamilyAdditiveDocumentPage";
 import { getNavigatorDocument, navigatorDocuments } from "@/data/documents";
 import { getLaborDocumentScenario } from "@/data/labor-documents";
+import { getFamilyLaborDocumentMatch } from "@/data/family-labor-implemented-routes";
+import { FamilyLaborDocumentPage } from "@/components/documents/FamilyLaborRoutePages";
 import { getFamilyAdditiveScenarioByDocumentSlug } from "@/data/family-additive-routes";
 import { buildDocumentQuestionContext, PROBLEM_QNA_CONTEXTS } from "@/data/related-questions-context";
 import {
@@ -165,6 +167,10 @@ export default async function DocumentPage({ params, searchParams }: PageProps) 
     </DocumentQna>
   );
 
+  const familyLaborMatch=getFamilyLaborDocumentMatch(document.slug);
+  if(familyLaborMatch){
+    return <FamilyLaborDocumentPage plan={familyLaborMatch.plan} scenarioKey={familyLaborMatch.scenarioKey}/>;
+  }
   const laborDocumentScenario = getLaborDocumentScenario(document.slug);
   if (laborDocumentScenario) return <LaborDocumentPage document={document} selected={laborDocumentScenario} />;
 
