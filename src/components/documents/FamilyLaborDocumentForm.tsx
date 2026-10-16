@@ -4,7 +4,8 @@ import type {FamilyLaborPlan} from "@/data/family-labor-route-expansion";
 import {getFamilyLaborGuidance} from "@/lib/family-labor-route-guidance";
 import {createFamilyLaborChecklist} from "@/lib/family-labor-document-result";
 import type {DocumentResultV1} from "@/lib/document-result-contract";
-import {downloadGeneratedDocumentDocx,downloadGeneratedDocumentPdf} from "@/lib/document-export";
+import {downloadGeneratedDocumentDocx} from "@/lib/document-export";
+import {createFamilyLaborPdfBlob} from "@/lib/family-labor-pdf";
 import {addDocumentVersion} from "@/lib/document-version-history";
 import {DocumentVersionHistory} from "@/components/documents/DocumentVersionHistory";
 import {DocumentResultSummary} from "@/components/documents/DocumentResultSummary";
@@ -45,9 +46,22 @@ export function FamilyLaborDocumentForm({plan,scenarioKey}:{plan:FamilyLaborPlan
       content:active.result.documentText
     });
   }
-  function downloadPdf(){
+  async function downloadPdf(){
     if(!active||dirty)return;
-    downloadGeneratedDocumentPdf({title:active.result.documentTitle,content:active.result.documentText});
+    try{
+      const blob=await createFamilyLaborPdfBlob(active.result);
+      const url=URL.createObjectURL(blob);
+      const link=document.createElement("a");
+      link.href=url;
+      link.download=active.result.documentSlug+"-"+active.result.versionId+".pdf";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      setMessage("PDF сформирован из выбранной версии.");
+    }catch{
+      setMessage("PDF не сформирован. Проверьте текущую версию и попробуйте снова.");
+    }
   }
   if(emergency){
     return <section className="mt-6 border-l-4 border-red-600 bg-red-50 p-5" role="alert">
@@ -112,9 +126,9 @@ export function FamilyLaborDocumentForm({plan,scenarioKey}:{plan:FamilyLaborPlan
             className="min-h-11 rounded-md border border-trust px-4 py-2 font-semibold text-trust disabled:opacity-50">
             Скачать DOCX
           </button>
-          <button type="button" disabled={dirty} onClick={downloadPdf}
+          <button type="button" disabled={dirty} onClick={()=>void downloadPdf()}
             className="min-h-11 rounded-md border border-trust px-4 py-2 font-semibold text-trust disabled:opacity-50">
-            Сохранить в PDF (печать)
+            Скачать PDF
           </button>
         </div>
         <SaveLegalDocumentButton key={active.result.versionId} result={active.result} disabled={dirty}/>
