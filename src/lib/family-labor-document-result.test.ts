@@ -6,6 +6,7 @@ import {FAMILY_LABOR_NEW_ROUTES,FAMILY_LABOR_NEW_PROBLEMS,
 import {FAMILY_LABOR_NEW_DOCUMENTS} from "@/data/family-labor-route-documents";
 import {createFamilyLaborChecklist} from "@/lib/family-labor-document-result";
 import {getLegalRouteRegistry} from "@/data/legal-route-standard";
+import type {LegalRouteScenarioV1} from "@/data/legal-route-standard";
 import {getNavigatorDocument} from "@/data/documents";
 import {validateSavedDocument} from "@/lib/saved-document-validation";
 
@@ -29,7 +30,7 @@ for(const plan of FAMILY_LABOR_PLANS){
   for(const scenario of plan.scenarios){
     const documentSlug=getFamilyLaborDocumentSlug(plan,scenario.key);
     const registryKey=getFamilyLaborRegistryScenarioKey(plan,scenario.key);
-    const registryScenario=route.scenarios.find(x=>x.key===registryKey);
+    const registryScenario:LegalRouteScenarioV1|undefined=route.scenarios.find(x=>x.key===registryKey);
     assert.ok(registryScenario,plan.id+"/"+scenario.key);
     assert.equal(registryScenario.documentSlug,documentSlug);
     if(!documentSlug){
