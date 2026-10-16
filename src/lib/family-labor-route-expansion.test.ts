@@ -8,8 +8,8 @@ const existing={
   family:new Set(all.filter(x=>x.categorySlug==="semya-i-deti").map(x=>x.problemSlug)),
   labor:new Set(all.filter(x=>x.categorySlug==="trudovoe-pravo").map(x=>x.problemSlug))
 };
-assert.equal(existing.family.size,29);
-assert.equal(existing.labor.size,14);
+assert.equal(all.filter(x=>x.categorySlug==="semya-i-deti"&&x.source!=="family-labor-new").length,29);
+assert.equal(all.filter(x=>x.categorySlug==="trudovoe-pravo"&&x.source!=="family-labor-new").length,14);
 assert.equal(new Set(FAMILY_LABOR_PLANS.map(x=>x.id)).size,FAMILY_LABOR_PLANS.length);
 assert.equal(FAMILY_LABOR_PLANS.length,23);
 assert.equal(getFamilyLaborPlans("family").filter(x=>x.kind==="NEW_ROUTE").length,3);
@@ -55,5 +55,5 @@ assert.throws(()=>validateFamilyLaborIntakeById("no-such-plan","x",{}));
 const unified=getUnifiedLegalDevelopmentCatalog();
 assert.equal(unified.find(x=>x.areaId==="family")?.pendingExpansions.length,getFamilyLaborPlans("family").length);
 assert.equal(unified.find(x=>x.areaId==="labor")?.pendingExpansions.length,getFamilyLaborPlans("labor").length);
-assert.equal(all.length,43,"original public route registry remains unchanged");
+assert.equal(all.length,51,"8 new routes + original 43 registered");
 console.log("Family/labor: 8 new proposals, 12 extensions, 3 cross-links; legal release gate enforced.");
