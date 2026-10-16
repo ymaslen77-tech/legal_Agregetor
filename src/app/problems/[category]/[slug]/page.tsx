@@ -175,7 +175,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
     title: activeLaborDocument?.seoTitle ?? problem.seoTitle,
     description: activeLaborDocument?.seoDescription ?? problem.seoDescription,
     path: `/problems/${problem.categorySlug}/${problem.slug}/`,
-    isIndexable: true,
+    isIndexable: getFamilyLaborPlanForProblem(problem.categorySlug,problem.slug) === null,
     searchParams: resolvedSearchParams
   });
 }

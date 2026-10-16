@@ -151,7 +151,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
       ? zagsScenario?.seoDescription ?? "Выберите процедуру ЗАГС, откройте официальный образец формы, подготовьте сведения и скачайте утверждённый бланк для подачи."
       : document.seoDescription ?? document.shortDescription,
     path: `/documents/${document.slug}/`,
-    isIndexable: true,
+    isIndexable: getFamilyLaborDocumentMatch(document.slug) === null,
     searchParams: resolvedSearchParams
   });
 }
