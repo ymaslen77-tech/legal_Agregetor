@@ -103,3 +103,33 @@ main :is(img, video, canvas) { max-width: 100%; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }
+
+
+/* Long case numbers, document identifiers and legal references stay inside their
+ * own content area. Scroll wide tables locally instead of widening the page. */
+main :is(article, section, .legal-route-shell) {
+  min-width: 0;
+}
+main :is(pre, code) {
+  overflow-wrap: anywhere;
+}
+main pre {
+  max-width: 100%;
+  overflow-x: auto;
+}
+main :is(table, svg, iframe) {
+  max-width: 100%;
+}
+main table {
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+@media (max-width: 640px) {
+  main :is(button, select, input, textarea) {
+    max-width: 100%;
+  }
+  main :is(h1, h2, h3, p, li, dd) {
+    overflow-wrap: anywhere;
+  }
+}

@@ -98,3 +98,38 @@ test("responsive city picker stays within the screen and is operable", async ({ 
   await page.getByRole("button", { name: "Закрыть выбор города" }).click();
   await expect(search).toBeHidden();
 });
+
+
+test("mobile content and long data remain navigable without page overflow", async ({ page }) => {
+  await page.goto("/documents/", { waitUntil: "domcontentloaded" });
+  const fit = await page.evaluate(() => {
+    const vw = document.documentElement.clientWidth;
+    const main = document.querySelector("main");
+    if (!main) return { vw, mainWidth: 0, overflow: true, broken: true };
+    const mainWidth = Math.ceil(main.getBoundingClientRect().width);
+    const overflow = document.documentElement.scrollWidth > vw + 2;
+    const broken = Array.from(main.querySelectorAll("img, video, canvas"))
+      .some(el => el.getBoundingClientRect().width > vw + 2);
+    return { vw, mainWidth, overflow, broken };
+  });
+  expect(fit.mainWidth).toBeGreaterThan(0);
+  expect(fit.overflow, "no global overflow at any supported viewport").toBe(false);
+  expect(fit.broken, "media must scale to available viewport").toBe(false);
+});
+
+test("mobile text can zoom naturally and keeps interactive controls visible", async ({ page }, testInfo) => {
+  await page.goto("/documents/", { waitUntil: "domcontentloaded" });
+  const data = await page.evaluate(() => ({
+    viewport: document.querySelector('meta[name="viewport"]')?.getAttribute("content") ?? "",
+    mainFont: Number.parseFloat(getComputedStyle(document.querySelector("main")!).fontSize),
+    controls: Array.from(document.querySelectorAll("main button, main input, main select, main textarea"))
+      .filter(el => { const r=el.getBoundingClientRect(); return r.width>0 && r.height>0; })
+      .map(el => ({ width: Math.round(el.getBoundingClientRect().width), font: Number.parseFloat(getComputedStyle(el).fontSize) }))
+  }));
+  expect(data.viewport).toContain("width=device-width");
+  expect(data.viewport).not.toMatch(/user-scalable\s*=\s*no|maximum-scale\s*=\s*1/i);
+  expect(data.mainFont).toBeGreaterThanOrEqual(14);
+  if (testInfo.project.name.includes("phone") && !testInfo.project.name.includes("landscape")) {
+    expect(data.controls.every(x => x.font >= 16), "mobile forms must avoid Safari input auto-zoom").toBe(true);
+  }
+});
