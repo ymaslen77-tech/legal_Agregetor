@@ -188,7 +188,7 @@ export function adaptLegalProblemToV1(problem: LegalProblem): LegalRouteV1 {
         ...base,
         migrationStatus: "ADAPTED_V1",
         source: "family-additive",
-        scenarios: Object.values(route.scenarios).map((scenario) => ({
+        scenarios: [...Object.values(route.scenarios).map((scenario) => ({
           key: scenario.key,
           title: scenario.title,
           outcome: FAMILY_OUTCOMES[scenario.resultKind],
