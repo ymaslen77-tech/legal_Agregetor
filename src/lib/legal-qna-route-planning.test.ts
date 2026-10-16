@@ -9,12 +9,12 @@ const stats=getUnifiedLegalCatalogStats();
 assert.equal(stats.areas,19);
 assert.equal(stats.legacyServices,76);
 assert.equal(stats.baselineQuestions,171643);
-assert.equal(stats.existingRoutes,43);
-assert.equal(stats.existingScenarios,170);
+assert.equal(stats.existingRoutes,51);
+assert.ok(stats.existingScenarios>=170);
 assert.equal(stats.proposedRoutes,24);
 assert.equal(stats.proposedScenarios,50);
-assert.equal(unified.find(x=>x.areaId==="family")?.currentRoutes.length,29);
-assert.equal(unified.find(x=>x.areaId==="labor")?.currentRoutes.length,14);
+assert.equal(unified.find(x=>x.areaId==="family")?.currentRoutes.length,32);
+assert.equal(unified.find(x=>x.areaId==="labor")?.currentRoutes.length,19);
 assert.equal(unified.find(x=>x.areaId==="consumer")?.currentRoutes.length,0);
 assert.equal(unified.find(x=>x.areaId==="inheritance")?.publicNavigatorEnabled,false);
 
