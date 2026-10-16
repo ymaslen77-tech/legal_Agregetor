@@ -59,6 +59,7 @@ export function canBuildFamilyLaborDraft(
     return answers.roleInOrder==="должник" && answers.isLate==="нет";
   }
   if(answers.role!=="заявитель")return false;
+  if(id==="unpaid-leave/leave")return answers.leaveGround!=="не знаю";
   if(id==="maternity-leave/leave")return answers.leaveType==="беременность и роды";
   if(id==="part-time-hours/schedule")return answers.mandatoryBasis!=="не знаю";
   if(id==="secondary-employment/payment")return answers.mode==="совмещение";
