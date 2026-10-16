@@ -35,6 +35,23 @@ for (const path of pages) {
           .map((element) => Number.parseFloat(getComputedStyle(element).fontSize))
       };
     });
+    if (metric.documentWidth > metric.innerWidth + 2) {
+      const offenders = await page.evaluate(() =>
+        Array.from(document.querySelectorAll("body *"))
+          .map((element) => {
+            const rect = element.getBoundingClientRect();
+            return { tag: element.tagName.toLowerCase(),
+              cls: typeof element.className === "string" ? element.className.slice(0,100) : "",
+              right: Math.round(rect.right), width: Math.round(rect.width),
+              text: (element.textContent ?? "").trim().slice(0,55)
+            };
+          })
+          .filter((element) => element.right > innerWidth + 2 && element.width > 0)
+          .sort((a,b) => b.right-a.right)
+          .slice(0, 20)
+      );
+      console.log("RESPONSIVE_OVERFLOW_OFFENDERS "+testInfo.project.name+" "+path+" "+JSON.stringify(offenders));
+    }
     const item = { project: testInfo.project.name, path, ...metric };
     mkdirSync("artifacts", { recursive: true });
     appendFileSync("artifacts/responsive-metrics.ndjson", JSON.stringify(item) + "\n");
@@ -57,6 +74,7 @@ test("responsive city picker stays within the screen and is operable", async ({ 
   await page.goto("/", { waitUntil: "domcontentloaded" });
   const opener = page.locator("header button[aria-expanded]").first();
   await expect(opener).toBeVisible();
+  await expect(opener).toHaveAttribute("data-hydrated", "true");
   await expect(opener).toHaveAttribute("aria-expanded", "false");
   await opener.click();
   await expect(opener).toHaveAttribute("aria-expanded", "true");

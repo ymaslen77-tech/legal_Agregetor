@@ -25,8 +25,8 @@ const legalLinks = [
 export function Footer() {
   return (
     <footer className="border-t border-line bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="grid gap-8 lg:grid-cols-[1.2fr_1fr] lg:items-start">
+      <div className="mx-auto max-w-7xl min-w-0 px-4 py-10 sm:px-6 lg:px-8">
+        <div className="grid min-w-0 gap-8 lg:grid-cols-[1.2fr_1fr] lg:items-start">
           <div>
             <p className="text-lg font-semibold text-ink">ПравоПоиск</p>
             <p className="mt-3 max-w-md text-sm leading-6 text-zinc-600">
@@ -39,7 +39,7 @@ export function Footer() {
                   external
                   eventType="PLATFORM_EMAIL_CLICKED"
                   targetType="PLATFORM"
-                  className="inline-flex items-center gap-2 text-sm font-semibold text-ink hover:text-trust"
+                  className="inline-flex max-w-full min-w-0 items-center gap-2 break-all text-sm font-semibold text-ink hover:text-trust"
                 >
                   <Mail className="h-4 w-4" aria-hidden="true" />
                   {platformContacts.email}
@@ -78,7 +78,7 @@ export function Footer() {
             <p>© {new Date().getFullYear()} ПравоПоиск</p>
             <p>
               ООО «ПравоПоиск» · ИНН {platformContacts.inn} · ОГРН {platformContacts.ogrn} ·{" "}
-              <a href={platformContacts.emailHref} className="font-medium text-ink hover:text-trust">
+              <a href={platformContacts.emailHref} className="break-all font-medium text-ink hover:text-trust">
                 {platformContacts.email}
               </a>
             </p>

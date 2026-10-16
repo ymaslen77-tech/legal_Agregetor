@@ -28,6 +28,7 @@ export function CitySelector() {
   const [cities, setCities] = useState<City[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
   const [opened, setOpened] = useState(false);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<StoredCitySelection>({ id: "", name: "Россия", slug: "" });
@@ -45,6 +46,7 @@ export function CitySelector() {
 
   // Remember the display label without serialising the entire city database in every page.
   useEffect(() => {
+    setHydrated(true);
     const stored = readStoredCity();
     if (stored) setSelected(stored);
   }, []);
@@ -123,6 +125,7 @@ export function CitySelector() {
         onClick={() => setOpened((value) => !value)}
         className="inline-flex min-h-11 max-w-[min(38vw,10rem)] items-center gap-1.5 rounded-md border border-line bg-white px-2 text-sm font-medium text-zinc-700 hover:border-trust sm:max-w-[14rem] sm:gap-2 sm:px-3"
         aria-expanded={opened}
+        data-hydrated={hydrated ? "true" : "false"}
       >
         <MapPin className="h-4 w-4 text-trust" aria-hidden="true" />
         <span className="min-w-0 truncate" title={selected.name}>{selected.name}</span>
