@@ -3,14 +3,32 @@ import type {FamilyLaborPlan} from "@/data/family-labor-route-expansion";
 import {familyLaborCategory,getFamilyLaborRouteSlug,getFamilyLaborDocumentSlug}
   from "@/data/family-labor-implemented-routes";
 import {FamilyLaborDocumentForm} from "@/components/documents/FamilyLaborDocumentForm";
+import {Breadcrumbs} from "@/components/Breadcrumbs";
+import {JsonLd} from "@/components/JsonLd";
+import {LegalRouteJourney} from "@/components/documents/LegalRouteJourney";
+import {breadcrumbJsonLd,legalServiceJsonLd} from "@/lib/jsonld";
 
 /** Standard route/situation/document journey for all eight new legal routes. */
 export function FamilyLaborProblemPage({plan,scenarioKey}:{plan:FamilyLaborPlan;scenarioKey?:string}){
   const category=familyLaborCategory(plan),slug=getFamilyLaborRouteSlug(plan);
   const path="/problems/"+category+"/"+slug+"/";
   const scenario=plan.scenarios.find(s=>s.key===scenarioKey);
-  return <article className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-    <nav className="text-sm text-trust" aria-label="Навигация"><Link href="/problems/" className="underline">Правовой навигатор</Link> / <Link href={"/problems/"+category+"/"} className="underline">{category==="semya-i-deti"?"Семья и дети":"Трудовое право"}</Link></nav>
+  const categoryName=category==="semya-i-deti"?"Семья и дети":"Трудовое право";
+  const breadcrumbs=[
+    {name:"Главная",path:"/"},
+    {name:"Правовой навигатор",path:"/problems/"},
+    {name:categoryName,path:"/problems/"+category+"/"},
+    {name:plan.title,path}
+  ];
+  return <>
+  <JsonLd data={[
+    breadcrumbJsonLd(breadcrumbs),
+    legalServiceJsonLd({path,name:plan.title,description:"Предварительный маршрут: "+plan.title+". Юридическая проверка обязательна.",lawyers:[]})
+  ]}/>
+  <Breadcrumbs items={breadcrumbs}/>
+  <LegalRouteJourney stage="situation" title={plan.title} problemUrl={path}
+    scenarioUrl={scenario?path+"?scenario="+encodeURIComponent(scenario.key):undefined}/>
+  <article className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
     <header className="mt-6 border-b border-line pb-6">
       <h1 className="text-3xl font-semibold text-ink">{plan.title}</h1>
       <p className="mt-3 text-zinc-700">Выберите задачу, укажите подтверждённые обстоятельства и подготовьте персональный чек-лист. После юридической проверки возможна разработка процессуального документа.</p>
@@ -37,17 +55,43 @@ export function FamilyLaborProblemPage({plan,scenarioKey}:{plan:FamilyLaborPlan;
     <footer className="mt-8 border-t border-line pt-5 text-sm text-zinc-600">
       <p>Вопросы анкеты не являются подтверждением правовой позиции. Источники, подсудность и сроки требуют отдельной юридической проверки.</p>
     </footer>
-  </article>;
+  </article>
+  </>;
 }
 /** Separate canonical document page; same state machine and export/save contract. */
 export function FamilyLaborDocumentPage({plan,scenarioKey}:{plan:FamilyLaborPlan;scenarioKey:string}){
   const scenario=plan.scenarios.find(s=>s.key===scenarioKey);
   const slug=getFamilyLaborRouteSlug(plan),category=familyLaborCategory(plan);
   if(!scenario)return null;
-  return <article className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-    <Link className="text-sm font-semibold text-trust underline" href={"/problems/"+category+"/"+slug+"/?scenario="+scenarioKey}>Вернуться к маршруту</Link>
+  const docSlug=getFamilyLaborDocumentSlug(plan,scenarioKey);
+  const problemUrl="/problems/"+category+"/"+slug+"/";
+  const documentUrl=docSlug?"/documents/"+docSlug+"/":problemUrl;
+  const crumbs=[
+    {name:"Главная",path:"/"},
+    {name:"Документы",path:"/documents/"},
+    {name:scenario.title,path:documentUrl}
+  ];
+  return <>
+  <JsonLd data={breadcrumbJsonLd(crumbs)}/>
+  <Breadcrumbs items={crumbs}/>
+  <LegalRouteJourney stage="document" title={scenario.title} problemUrl={problemUrl}
+    scenarioUrl={problemUrl+"?scenario="+encodeURIComponent(scenarioKey)}/>
+  <article className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+    <Link className="text-sm font-semibold text-trust underline" href={problemUrl+"?scenario="+encodeURIComponent(scenarioKey)}>Вернуться к маршруту</Link>
     <h1 className="mt-5 text-3xl font-semibold text-ink">{scenario.title}</h1>
     <p className="mt-3 text-zinc-700">Заполните данные по документам. Экспортируется только персональный чек-лист, требующий правовой проверки.</p>
     <FamilyLaborDocumentForm plan={plan} scenarioKey={scenarioKey}/>
-  </article>;
+    <section className="mt-8 border-t border-line pt-6">
+      <h2 className="text-lg font-semibold">Источники для проверки</h2>
+      <p className="mt-2 text-sm text-zinc-700">Перечень правовых актов не означает, что они применимы без проверки к конкретным фактам. Актуальные редакции и особые условия требуется проверить перед подачей заявления.</p>
+      <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-zinc-700">
+        {plan.legalSources.map(item=><li key={item}>{item}</li>)}
+      </ul>
+      <a className="mt-4 inline-flex text-sm font-semibold text-trust underline"
+        href="https://pravo.gov.ru/" target="_blank" rel="noopener noreferrer">
+        Официальный интернет-портал правовой информации
+      </a>
+    </section>
+  </article>
+  </>;
 }
