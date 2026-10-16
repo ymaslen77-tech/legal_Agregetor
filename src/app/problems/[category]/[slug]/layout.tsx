@@ -1,5 +1,7 @@
 import type {ReactNode} from "react";
 import Link from "next/link";
+import {LegalRouteJourney} from "@/components/documents/LegalRouteJourney";
+import {getLegalProblem} from "@/data/legal-problems";
 import {getFamilyLaborPlans} from "@/data/family-labor-route-expansion";
 import {familyLaborCategory,getFamilyLaborDocumentSlug} from "@/data/family-labor-implemented-routes";
 import {FamilyLaborDocumentForm} from "@/components/documents/FamilyLaborDocumentForm";
@@ -10,15 +12,21 @@ export default async function LegalProblemLayout({
 }:{
   children:ReactNode;params:Promise<{category:string;slug:string}>;
 }){
-  if(process.env.FAMILY_LABOR_PREVIEW!=="1")return children;
   const {category,slug}=await params;
+  const problem=getLegalProblem(category,slug);
+  const journey=problem
+    ? <LegalRouteJourney stage="situation" title={problem.title}
+        problemUrl={`/problems/${problem.categorySlug}/${problem.slug}/`}/>
+    : null;
+  if(process.env.FAMILY_LABOR_PREVIEW!=="1")return <>{journey}{children}</>;
   const area=category==="semya-i-deti"?"family":category==="trudovoe-pravo"?"labor":null;
-  if(!area)return children;
+  if(!area)return <>{journey}{children}</>;
   const additions=getFamilyLaborPlans(area).filter(plan=>
     plan.kind==="EXISTING_ROUTE_EXTENSION"&&plan.existingSlug===slug&&familyLaborCategory(plan)===category
   );
-  if(!additions.length)return children;
+  if(!additions.length)return <>{journey}{children}</>;
   return <>
+    {journey}
     {children}
     <section className="mx-auto max-w-5xl px-4 pb-12 sm:px-6 lg:px-8" data-family-labor-extensions="true">
       <header className="border-t-4 border-amber-400 pt-6">

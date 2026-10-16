@@ -27,13 +27,13 @@ for (const viewport of [
   });
 }
 
-test("category contains 6 popular and 8 other routes", async ({ page }) => {
+test("category contains 6 popular and 13 other routes", async ({ page }) => {
   await page.goto(categoryPath);
   await dismissAnalytics(page);
   await expect(page.getByRole("heading", { name: "Популярные ситуации" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Увольнение и окончательный расчёт" })).toBeVisible();
   const routeLinks = await page.locator(`a[href^="${categoryPath}"]`).evaluateAll((links) => [...new Set(links.map((link) => link.getAttribute("href")))].filter(Boolean));
-  expect(routeLinks).toHaveLength(14);
+  expect(routeLinks).toHaveLength(19);
 });
 
 test("route opens one complete document form without a preliminary result branch", async ({ page }) => {
