@@ -3,8 +3,8 @@ import type {DocumentResultV1} from "@/lib/document-result-contract";
 
 /** Genuine A4 PDF for archived provisional checklists, never a court-ready form. */
 export async function createFamilyLaborPdfBlob(result:DocumentResultV1):Promise<Blob>{
-  if(result.resultKind!=="CHECKLIST"||result.filingReady!==false||!result.requiresLegalReview){
-    throw new Error("Только предварительный чек-лист может быть выгружен без юридической приёмки.");
+  if(!["CHECKLIST","DRAFT"].includes(result.resultKind)||result.filingReady!==false||!result.requiresLegalReview){
+    throw new Error("Непроверенный результат должен оставаться проектом или чек-листом.");
   }
   const [pdfMakeModule,vfsModule]=await Promise.all([
     import("pdfmake/build/pdfmake"),import("pdfmake/build/vfs_fonts")
@@ -13,7 +13,7 @@ export async function createFamilyLaborPdfBlob(result:DocumentResultV1):Promise<
   (pdfMake as typeof pdfMake & {addVirtualFileSystem:(files:Record<string,string>)=>void})
     .addVirtualFileSystem(vfsModule.default as unknown as Record<string,string>);
   const body:Content[]=[
-    {text:"ПРЕДВАРИТЕЛЬНЫЙ ЧЕК-ЛИСТ — НЕ ГОТОВ К ПОДАЧЕ",style:"warning"},
+    {text:result.resultKind==="DRAFT"?"ПРОЕКТ — НЕ ГОТОВ К ПОДАЧЕ":"ПРЕДВАРИТЕЛЬНЫЙ ЧЕК-ЛИСТ — НЕ ГОТОВ К ПОДАЧЕ",style:"warning"},
     {text:result.documentTitle,style:"title"},
     {text:result.documentText,style:"body"}
   ];

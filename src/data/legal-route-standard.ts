@@ -1,6 +1,7 @@
 import { FAMILY_ADDITIVE_ROUTES, type FamilyAdditiveResultKind } from "@/data/family-additive-routes";
 import { LABOR_CATEGORY_SLUG, LABOR_ROUTES, type LaborResultType } from "@/data/labor-routes";
 import { FAMILY_LABOR_PLANS } from "@/data/family-labor-route-expansion";
+import {SUPPORTED_PROVISIONAL_DRAFTS} from "@/lib/family-labor-provisional-draft";
 import { familyLaborCategory,getFamilyLaborPlanForProblem,getFamilyLaborDocumentSlug,getFamilyLaborRegistryScenarioKey }
   from "@/data/family-labor-implemented-routes";
 import { legalProblems, type LegalProblem } from "@/data/legal-problems";
@@ -119,7 +120,7 @@ function extensionScenarios(problem:LegalProblem,problemUrl:string):LegalRouteSc
     .flatMap(plan=>plan.scenarios.map(scenario=>({
       key:getFamilyLaborRegistryScenarioKey(plan,scenario.key),
       title:scenario.title,
-      outcome:"CHECKLIST" as const,
+      outcome:(SUPPORTED_PROVISIONAL_DRAFTS.some(id=>id===plan.id+"/"+scenario.key)?"DRAFT":"CHECKLIST") as LegalRouteOutcomeKind,
       documentSlug:getFamilyLaborDocumentSlug(plan,scenario.key),
       inputs:scenario.requiredFields.map((key,index)=>({
         key:problem.categorySlug==="trudovoe-pravo"?"scenario-"+(index+1):key,
@@ -148,7 +149,8 @@ export function adaptLegalProblemToV1(problem: LegalProblem): LegalRouteV1 {
     return {...base,migrationStatus:"ADAPTED_V1",source:"family-labor-new",
       scenarios:newPlan.scenarios.map(scenario=>({
         key:scenario.key,title:scenario.title,
-        outcome:scenario.emergencyFirst?"URGENT_INSTRUCTION":"CHECKLIST",
+        outcome:scenario.emergencyFirst?"URGENT_INSTRUCTION":
+          SUPPORTED_PROVISIONAL_DRAFTS.some(id=>id===newPlan.id+"/"+scenario.key)?"DRAFT":"CHECKLIST",
         documentSlug:getFamilyLaborDocumentSlug(newPlan,scenario.key),
         inputs:scenario.requiredFields.map(key=>({
           key,label:newPlan.fields.find(f=>f.key===key)?.label??key,required:true,type:"text"

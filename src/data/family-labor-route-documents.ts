@@ -2,6 +2,7 @@ import { FAMILY_LABOR_PLANS } from "@/data/family-labor-route-expansion";
 import {getFamilyLaborRouteSlug,getFamilyLaborDocumentSlug,
   FAMILY_LABOR_IMPLEMENTATION_DATE} from "@/data/family-labor-implemented-routes";
 import type {NavigatorDocument} from "@/data/documents";
+import {SUPPORTED_PROVISIONAL_DRAFTS} from "@/lib/family-labor-provisional-draft";
 
 /** Only supported provisional result: a personalized checklist, never a filed pleading. */
 export const FAMILY_LABOR_NEW_DOCUMENTS: NavigatorDocument[]=FAMILY_LABOR_PLANS.flatMap(plan=>
@@ -9,13 +10,16 @@ export const FAMILY_LABOR_NEW_DOCUMENTS: NavigatorDocument[]=FAMILY_LABOR_PLANS.
     const slug=getFamilyLaborDocumentSlug(plan,scenario.key);
     if(!slug)return [];
     const routeSlug=getFamilyLaborRouteSlug(plan);
+    const draftPossible=SUPPORTED_PROVISIONAL_DRAFTS.some(id=>id===plan.id+"/"+scenario.key);
     const fields=plan.fields.filter(f=>scenario.requiredFields.includes(f.key));
     const list=fields.map(f=>f.label);
     const warning="Не подавайте чек-лист вместо заявления: правовые основания, срок и адресат подлежат индивидуальной проверке.";
     return [{
-      slug,title:"Чек-лист: "+scenario.title,shortTitle:"Чек-лист: "+scenario.title,
+      slug,title:(draftPossible?"Проект или чек-лист: ":"Чек-лист: ")+scenario.title,
+      shortTitle:(draftPossible?"Проект или чек-лист: ":"Чек-лист: ")+scenario.title,
       category:plan.area==="family"?"Семейное право":"Трудовое право",
-      documentType:"Персональный чек-лист",resultKind:"CHECKLIST",
+      documentType:draftPossible?"Предварительный проект или чек-лист":"Персональный чек-лист",
+      resultKind:draftPossible?"DRAFT":"CHECKLIST",
       shortIntro:"Проверьте документы и факты по "+plan.title.toLowerCase()+".",
       shortDescription:"Предварительная анкета и документ для самопроверки без статуса готовности к подаче.",
       description:plan.title+": "+scenario.title+". Результат содержит факты пользователя, перечень документов и порядок юридической проверки.",
@@ -46,7 +50,7 @@ export const FAMILY_LABOR_NEW_DOCUMENTS: NavigatorDocument[]=FAMILY_LABOR_PLANS.
       userQueries:[plan.title.toLowerCase()],
       lastReviewedAt:FAMILY_LABOR_IMPLEMENTATION_DATE,
       disclaimer:warning,
-      seoTitle:"Чек-лист: "+scenario.title+" — заполнить и скачать",
+      seoTitle:(draftPossible?"Проект и чек-лист: ":"Чек-лист: ")+scenario.title+" — заполнить и скачать",
       seoDescription:"Факты и документы для "+scenario.title.toLowerCase()+", PDF/DOCX и сохранение версии; не является готовым заявлением."
     } satisfies NavigatorDocument];
   })

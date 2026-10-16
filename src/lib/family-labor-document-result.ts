@@ -3,6 +3,7 @@ import {type FamilyLaborPlan} from "@/data/family-labor-route-expansion";
 import {familyLaborCategory,getFamilyLaborDocumentSlug,getFamilyLaborRegistryScenarioKey,getFamilyLaborRouteSlug,FAMILY_LABOR_IMPLEMENTATION_DATE}
   from "@/data/family-labor-implemented-routes";
 import {getFamilyLaborGuidance} from "@/lib/family-labor-route-guidance";
+import {createProvisionalFamilyLaborDraft} from "@/lib/family-labor-provisional-draft";
 
 export type FamilyLaborChecklist = {result:DocumentResultV1; guidance:string[]};
 /** Deterministic evidence checklist. No model, external transmission, law citation invention or submission. */
@@ -53,4 +54,32 @@ export function createFamilyLaborChecklist(plan:FamilyLaborPlan,scenarioKey:stri
     generatorVersion:"family-labor-checklist-1",filingReady:false,
     requiresLegalReview:true
   }),guidance:review.guidance};
+}
+
+/**
+ * Use an allowlisted, source-linked deterministic draft only in narrowly
+ * qualified situations. All other scenarios retain the safer checklist.
+ * The result is never filing-ready; the draft requires professional review.
+ */
+export function createFamilyLaborDocument(
+  plan:FamilyLaborPlan,scenarioKey:string,answers:Record<string,string|undefined>,
+  ids:{versionId:string;createdAt:string}
+):FamilyLaborChecklist{
+  const checklist=createFamilyLaborChecklist(plan,scenarioKey,answers,ids);
+  const draft=createProvisionalFamilyLaborDraft(plan,scenarioKey,answers);
+  if(!draft)return checklist;
+  return {
+    result:documentResultSchema.parse({
+      ...checklist.result,
+      resultKind:"DRAFT",
+      documentTitle:"Проект: "+draft.title,
+      documentText:draft.text,
+      usedRuleIds:draft.ruleIds,
+      placeholders:draft.placeholders,
+      generatorVersion:"family-labor-draft-1",
+      requiresLegalReview:true,
+      filingReady:false
+    }),
+    guidance:checklist.guidance
+  };
 }

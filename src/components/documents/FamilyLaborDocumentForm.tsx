@@ -2,7 +2,8 @@
 import {useMemo,useState} from "react";
 import type {FamilyLaborPlan} from "@/data/family-labor-route-expansion";
 import {getFamilyLaborGuidance} from "@/lib/family-labor-route-guidance";
-import {createFamilyLaborChecklist} from "@/lib/family-labor-document-result";
+import {createFamilyLaborDocument} from "@/lib/family-labor-document-result";
+import {SUPPORTED_PROVISIONAL_DRAFTS} from "@/lib/family-labor-provisional-draft";
 import type {DocumentResultV1} from "@/lib/document-result-contract";
 import {downloadGeneratedDocumentDocx} from "@/lib/document-export";
 import {createFamilyLaborPdfBlob} from "@/lib/family-labor-pdf";
@@ -25,12 +26,12 @@ export function FamilyLaborDocumentForm({plan,scenarioKey}:{plan:FamilyLaborPlan
   const emergencyInfo=emergency?getFamilyLaborGuidance(plan,scenarioKey,{}):null;
   function create(){
     try{
-      const checklist=createFamilyLaborChecklist(plan,scenarioKey,values,{
+      const checklist=createFamilyLaborDocument(plan,scenarioKey,values,{
         versionId:crypto.randomUUID(),createdAt:new Date().toISOString()
       });
       const snapshot:Snapshot={result:checklist.result,values:{...values}};
       setVersions(prev=>addDocumentVersion(prev,{documentResult:snapshot.result,payload:snapshot}));
-      setActive(snapshot);setDirty(false);setMessage("Персональный чек-лист создан. Перед обращением требуется юридическая проверка.");
+      setActive(snapshot);setDirty(false);setMessage(snapshot.result.resultKind==="DRAFT"?"Создан маркированный проект; перед использованием требуется юридическая проверка.":"Персональный чек-лист создан. Перед обращением требуется юридическая проверка.");
     }catch(e){setMessage(e instanceof Error?e.message:"Исправьте исходные сведения.");}
   }
   function selectVersion(id:string){
@@ -73,6 +74,7 @@ export function FamilyLaborDocumentForm({plan,scenarioKey}:{plan:FamilyLaborPlan
     </section>;
   }
   const result= getFamilyLaborGuidance(plan,scenarioKey,values);
+  const supportsDraft=SUPPORTED_PROVISIONAL_DRAFTS.some(id=>id===plan.id+"/"+scenarioKey);
   return <section id="fill-online" className="mt-6 scroll-mt-24 rounded-lg border border-line bg-white p-5" aria-label="Пошаговая анкета">
     <h2 className="text-xl font-semibold text-ink">Шаг 1. Обстоятельства и документы</h2>
     <p className="mt-2 text-sm leading-6 text-zinc-700">Вводите только необходимые данные. Они не отправляются на сервер при заполнении. Проверяйте даты и правовой статус по оригиналам документов.</p>
@@ -109,10 +111,10 @@ export function FamilyLaborDocumentForm({plan,scenarioKey}:{plan:FamilyLaborPlan
     </div>
     <div className="mt-5 border-t border-line pt-5">
       <h2 className="text-xl font-semibold text-ink">Шаг 3. Подготовка результата</h2>
-      <p className="mt-2 text-sm leading-6 text-zinc-700">Доступен предварительный чек-лист, а не иск или заявление. Подготовка процессуального документа будет разрешена только после индивидуальной юридической проверки.</p>
+      <p className="mt-2 text-sm leading-6 text-zinc-700">В большинстве ситуаций доступен предварительный чек-лист. В ограниченных, подтверждённых правилами сценариях система создаёт только маркированный проект обращения, который нельзя подавать без юридической проверки.</p>
       <button type="button" disabled={!result.dataComplete}
         onClick={create} className="mt-4 min-h-11 rounded-md bg-trust px-5 py-3 text-sm font-semibold text-white disabled:opacity-50">
-        Создать новую версию чек-листа
+        Создать новую версию {supportsDraft?"документа":"чек-листа"}
       </button>
       {message?<p className="mt-3 text-sm" role="status">{message}</p>:null}
       {active?<section className="mt-6">
