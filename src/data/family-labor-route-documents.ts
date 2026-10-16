@@ -1,6 +1,5 @@
 import { FAMILY_LABOR_PLANS } from "@/data/family-labor-route-expansion";
-import {getFamilyLaborRouteSlug,getFamilyLaborDocumentSlug,
-  FAMILY_LABOR_IMPLEMENTATION_DATE} from "@/data/family-labor-implemented-routes";
+import {getFamilyLaborRouteSlug,getFamilyLaborDocumentSlug} from "@/data/family-labor-implemented-routes";
 import type {NavigatorDocument} from "@/data/documents";
 import {SUPPORTED_PROVISIONAL_DRAFTS} from "@/lib/family-labor-provisional-draft";
 
@@ -48,7 +47,7 @@ export const FAMILY_LABOR_NEW_DOCUMENTS: NavigatorDocument[]=FAMILY_LABOR_PLANS.
       legalReferenceKeys:[],
       keywords:[plan.title.toLowerCase(),scenario.title.toLowerCase()],
       userQueries:[plan.title.toLowerCase()],
-      lastReviewedAt:FAMILY_LABOR_IMPLEMENTATION_DATE,
+      // No legal-review date until official source review and acceptance are completed.
       disclaimer:warning,
       seoTitle:(draftPossible?"Проект и чек-лист: ":"Чек-лист: ")+scenario.title+" — заполнить и скачать",
       seoDescription:"Факты и документы для "+scenario.title.toLowerCase()+", PDF/DOCX и сохранение версии; не является готовым заявлением."

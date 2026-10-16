@@ -21,10 +21,16 @@ const rows=FAMILY_LABOR_PLANS.flatMap(plan=>{
       ? "DRAFT" : scenario.emergencyFirst ? "URGENT_INSTRUCTION" : "CHECKLIST";
     assert.equal(scenarioV1.outcome,expected);
     assert.equal(scenarioV1.documentSlug,documentSlug);
+    if(plan.kind==="NEW_ROUTE"){
+      const original=registry.find(x=>x.problemSlug===getFamilyLaborRouteSlug(plan)
+        && x.categorySlug===familyLaborCategory(plan));
+      assert.equal(original?.legalReviewedAt,null,"Unaccepted route must not claim legal review: "+plan.id);
+    }
     if(documentSlug){
       const document=getNavigatorDocument(documentSlug);
       assert.ok(document,documentSlug+": missing document page");
       assert.equal(document.resultKind,expected);
+      assert.equal(document.lastReviewedAt,undefined,"Unaccepted document must not claim legal review: "+documentSlug);
     }
     return {
       route:familyLaborCategory(plan)+"/"+getFamilyLaborRouteSlug(plan),

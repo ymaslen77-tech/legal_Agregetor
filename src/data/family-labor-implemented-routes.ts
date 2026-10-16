@@ -5,7 +5,7 @@ import type { LegalProblem } from "@/data/legal-problems";
  * Follow-on scenarios share the existing V1 routing and document contracts.
  * Substantive legal acceptance is not implied by registering a route.
  */
-export const FAMILY_LABOR_IMPLEMENTATION_DATE = "2026-10-16";
+export const FAMILY_LABOR_IMPLEMENTATION_DATE = "2026-10-16"; // code creation date, not legal acceptance
 export const FAMILY_LABOR_NEW_ROUTES = FAMILY_LABOR_PLANS.filter(item => item.kind === "NEW_ROUTE");
 
 const slugs: Record<string,string> = {
@@ -77,6 +77,6 @@ export const FAMILY_LABOR_NEW_PROBLEMS: LegalProblem[]=FAMILY_LABOR_NEW_ROUTES.m
     relatedProblemSlugs:[],
     selfHelpConditions:["В исходных документах нет спорных или неизвестных критических сведений."],
     lawyerConditions:["Неизвестны сроки или правовой режим.","Необходимо обращение в суд или обжалование.","Есть последствия для ребёнка, дееспособности или миграционного статуса."],
-    lastReviewedAt:FAMILY_LABOR_IMPLEMENTATION_DATE
+    // Legal review date is intentionally absent: implementation date is not legal sign-off.
   };
 });
