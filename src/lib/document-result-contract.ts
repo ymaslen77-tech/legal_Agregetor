@@ -35,6 +35,12 @@ export const documentResultSchema = z.object({
 
 export type DocumentResultV1 = z.infer<typeof documentResultSchema>;
 
+/** Null is explicit pending legal review, not a date or an implicit approval. */
+export function legalRegistryReviewLabel(date: string | null): string {
+  return date ?? "не проведена";
+}
+
+
 const familyKindMap: Record<FamilyAdditiveDecision["resultKind"], DocumentResultV1["resultKind"]> = {
   checklist: "CHECKLIST",
   agreementDraft: "AGREEMENT_DRAFT",

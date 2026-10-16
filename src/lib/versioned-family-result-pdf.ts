@@ -1,5 +1,5 @@
 import type { Content, TDocumentDefinitions } from "pdfmake/interfaces";
-import type { DocumentResultV1 } from "@/lib/document-result-contract";
+import {legalRegistryReviewLabel,type DocumentResultV1} from "@/lib/document-result-contract";
 
 /** Clearly marked family result PDF. Does not impersonate a court or official ZAGS form. */
 export async function createVersionedFamilyResultPdfBlob(result: DocumentResultV1): Promise<Blob> {
@@ -30,7 +30,7 @@ export async function createVersionedFamilyResultPdfBlob(result: DocumentResultV
     footer: (page, pages) => ({
       margin: [42, 10, 42, 0],
       columns: [
-        { text: `ID версии: ${result.versionId} | Правовая сверка: ${result.legalRegistryReviewedAt}`, fontSize: 7, color: "#71717a" },
+        { text: `ID версии: ${result.versionId} | Правовая сверка: ${legalRegistryReviewLabel(result.legalRegistryReviewedAt)}`, fontSize: 7, color: "#71717a" },
         { text: `${page}/${pages}`, fontSize: 8, alignment: "right" }
       ]
     }),
