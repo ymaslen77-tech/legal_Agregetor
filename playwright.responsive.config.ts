@@ -22,7 +22,7 @@ export default defineConfig({
     { name: "chrome-phone-390", use: { ...devices["Desktop Chrome"], viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true } },
     { name: "chrome-tablet-768", use: { ...devices["Desktop Chrome"], viewport: { width: 768, height: 1024 }, isMobile: true, hasTouch: true } },
     { name: "chrome-desktop-1440", use: { ...devices["Desktop Chrome"], viewport: { width: 1440, height: 900 } } },
-    { name: "firefox-phone-390", use: { ...devices["Desktop Firefox"], viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true } },
+    { name: "firefox-phone-390", use: { ...devices["Desktop Firefox"], viewport: { width: 390, height: 844 } } },
     { name: "firefox-desktop-1440", use: { ...devices["Desktop Firefox"], viewport: { width: 1440, height: 900 } } },
     { name: "safari-phone-390", use: { ...devices["Desktop Safari"], viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true } },
     { name: "safari-desktop-1440", use: { ...devices["Desktop Safari"], viewport: { width: 1440, height: 900 } } }

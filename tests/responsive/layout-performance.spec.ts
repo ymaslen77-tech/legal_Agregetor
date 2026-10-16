@@ -37,7 +37,7 @@ for (const path of pages) {
     });
     const item = { project: testInfo.project.name, path, ...metric };
     mkdirSync("artifacts", { recursive: true });
-    appendFileSync("artifacts/responsive-metrics.ndjson", JSON.stringify(item) + "\\n");
+    appendFileSync("artifacts/responsive-metrics.ndjson", JSON.stringify(item) + "\n");
     console.log("RESPONSIVE_LAB_METRIC " + JSON.stringify(item));
 
     expect(metric.viewportMeta).toContain("width=device-width");

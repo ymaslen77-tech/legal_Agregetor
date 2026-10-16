@@ -75,7 +75,7 @@ export function CitySelector() {
         }
       })
       .catch((error: unknown) => { if (!controller.signal.aborted && error) setLoadError(true); })
-      .finally(() => { if (!controller.signal.aborted) setLoading(false); });
+      .finally(() => { setLoading(false); });
     return () => controller.abort();
     // Fetch only when dropdown is opened; no city payload in initial HTML/React tree.
   }, [opened, cities.length]);
