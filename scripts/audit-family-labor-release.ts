@@ -45,6 +45,19 @@ const rows=FAMILY_LABOR_PLANS.flatMap(plan=>{
       documentSlug,inputs:scenario.requiredFields.length,
       uiAndContract:"IMPLEMENTED",
       legalSourceReview:"PENDING_OFFICIAL_PRIMARY_SOURCES",
+      legalAcceptanceChecklist:{
+        primaryActCurrentText:"PENDING_CASE_BY_CASE_VERIFICATION",
+        statutoryScopeAndExceptions:"PENDING_CASE_BY_CASE_VERIFICATION",
+        applicantStanding:"PENDING_CASE_BY_CASE_VERIFICATION",
+        addresseeAndTerritorialJurisdiction:"PENDING_CASE_BY_CASE_VERIFICATION",
+        deadlineAndStartOfPeriod:"PENDING_CASE_BY_CASE_VERIFICATION",
+        stateDutyAndAmounts:"PENDING_CASE_BY_CASE_VERIFICATION",
+        evidentiaryAttachments:"PENDING_CASE_BY_CASE_VERIFICATION",
+        documentBodyAndRequestedRelief:"PENDING_CASE_BY_CASE_VERIFICATION",
+        pdfDocxContentAndReadability:"PENDING_CASE_BY_CASE_VERIFICATION",
+        negativeAndHighRiskCases:"PENDING_CASE_BY_CASE_VERIFICATION",
+        expertSignOff:"NOT_GRANTED"
+      },
       specializedDocument:expected==="DRAFT"?"PROVISIONAL_UNAPPROVED":
         expected==="CHECKLIST"?"CHECKLIST_ONLY":"EMERGENCY_NO_DOCUMENT",
       pdfDocx:scenario.emergencyFirst?"NOT_APPLICABLE":"AVAILABLE",
@@ -61,6 +74,9 @@ assert.equal(FAMILY_LABOR_PLANS.filter(x=>x.kind==="CROSS_AREA_LINK").length,3);
 assert.equal(rows.filter(x=>x.resultKind==="DRAFT").length,SUPPORTED_PROVISIONAL_DRAFTS.length);
 assert.equal(SUPPORTED_PROVISIONAL_DRAFTS.length,14);
 assert.ok(rows.every(x=>!x.filingReady&&!x.publicationApproved));
+assert.ok(rows.every(x=>Object.values(x.legalAcceptanceChecklist).every(v=>
+  v==="PENDING_CASE_BY_CASE_VERIFICATION"||v==="NOT_GRANTED")));
+assert.ok(rows.every(x=>x.legalAcceptanceChecklist.expertSignOff==="NOT_GRANTED"));
 const summary={
   assessedAt:"2026-10-16",
   existingRoutes:43,addedRoutes:8,extensions:12,crossAreaLinks:3,
@@ -69,6 +85,9 @@ const summary={
   provisionalDrafts:rows.filter(x=>x.resultKind==="DRAFT").length,
   preliminaryChecklists:rows.filter(x=>x.resultKind==="CHECKLIST").length,
   emergencyInstructions:rows.filter(x=>x.resultKind==="URGENT_INSTRUCTION").length,
+  legalAcceptanceItemsPerScenario:11,
+  legallyApprovedScenarios:0,
+  releaseGate:"FAIL_CLOSED_UNTIL_REVIEWED",
   legalApproval:"BLOCKED_PENDING_INDIVIDUAL_PRIMARY_SOURCE_REVIEW",
   rollout:"NOT_AUTHORIZED",
   scenarios:rows
