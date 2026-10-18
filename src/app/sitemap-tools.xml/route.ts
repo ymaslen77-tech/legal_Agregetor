@@ -4,5 +4,5 @@ import { navigatorTools } from "@/data/tools";
 export async function GET() {
   const toolPaths = navigatorTools.filter((tool) => tool.status === "available").map((tool) => `/tools/${tool.slug}/`);
 
-  return xmlResponse(urlSet(["/tools/", ...toolPaths]));
+  return xmlResponse(urlSet(toolPaths));
 }

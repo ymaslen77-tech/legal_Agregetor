@@ -7,7 +7,6 @@ export async function GET() {
   const categoryPaths = [...new Set(legalProblems.map((problem) => `/problems/${problem.categorySlug}/`))];
   return xmlResponse(
     urlSet([
-      "/problems/",
       ...categoryPaths,
       ...legalProblems.filter(problem=>!pending.has(problem.slug)).map((problem) => `/problems/${problem.categorySlug}/${problem.slug}/`)
     ])
