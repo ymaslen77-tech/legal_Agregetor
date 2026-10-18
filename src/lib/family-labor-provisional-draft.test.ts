@@ -63,6 +63,12 @@ for(const key of SUPPORTED_PROVISIONAL_DRAFTS){
   if(planId==="unpaid-leave"){
     assert.equal(canBuildFamilyLaborDraft(plan,scenarioKey,{...values,leaveGround:"не знаю"}),false);
     assert.equal(createFamilyLaborDocument(plan,scenarioKey,{...values,leaveGround:"не знаю"},ids).result.resultKind,"CHECKLIST");
+    const emergencyLeave={...values,leaveGround:"чрезвычайная ситуация: нарушение условий жизнедеятельности и утрата имущества"};
+    assert.equal(canBuildFamilyLaborDraft(plan,scenarioKey,emergencyLeave),false);
+    const result=createFamilyLaborDocument(plan,scenarioKey,emergencyLeave,ids).result;
+    assert.equal(result.resultKind,"CHECKLIST");
+    assert.equal(result.filingReady,false);
+    assert.equal(result.legalRegistryReviewedAt,null);
   }
   if(planId==="part-time-hours")
     assert.equal(canBuildFamilyLaborDraft(plan,scenarioKey,{...values,mandatoryBasis:"не знаю"}),false);

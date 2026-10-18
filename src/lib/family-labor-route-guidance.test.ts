@@ -53,6 +53,8 @@ const disasterLeave=getFamilyLaborGuidance(pick("unpaid-leave"),"leave",{
   leaveGround:"чрезвычайная ситуация: нарушение условий жизнедеятельности и утрата имущества"
 });
 assert.ok(disasterLeave.guidance.some(s=>s.includes("1 сентября 2026")&&s.includes("пяти календарных дней")));
+assert.ok(disasterLeave.guidance.some(s=>s.includes("№ 620")&&s.includes("пяти рабочих дней")));
+assert.ok(disasterLeave.guidance.some(s=>s.includes("только чек-лист")));
 const ordinaryLeave=getFamilyLaborGuidance(pick("unpaid-leave"),"leave",{leaveGround:"по соглашению сторон"});
 assert.ok(ordinaryLeave.guidance.some(s=>s.includes("по соглашению сторон")&&s.includes("не означает")));
 const mandatoryPartTime=getFamilyLaborGuidance(pick("part-time-hours"),"schedule",{mandatoryBasis:"беременность"});

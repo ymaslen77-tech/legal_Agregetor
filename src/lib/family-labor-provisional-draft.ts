@@ -59,7 +59,11 @@ export function canBuildFamilyLaborDraft(
     return answers.roleInOrder==="должник" && answers.isLate==="нет";
   }
   if(answers.role!=="заявитель")return false;
-  if(id==="unpaid-leave/leave")return answers.leaveGround!=="не знаю";
+  // Government Resolution No 620 (28.05.2026) imposes a separate procedure
+  // for emergency-zone leave. The generic template lacks its qualifying evidence
+  // and deadline questions, so give a checklist rather than a misleading draft.
+  if(id==="unpaid-leave/leave")return answers.leaveGround!=="не знаю" &&
+    answers.leaveGround!=="чрезвычайная ситуация: нарушение условий жизнедеятельности и утрата имущества";
   if(id==="maternity-leave/leave")return answers.leaveType==="беременность и роды";
   if(id==="part-time-hours/schedule")return answers.mandatoryBasis!=="не знаю";
   if(id==="secondary-employment/payment")return answers.mode==="совмещение";
