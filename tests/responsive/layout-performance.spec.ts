@@ -122,14 +122,25 @@ test("mobile text can zoom naturally and keeps interactive controls visible", as
   const data = await page.evaluate(() => ({
     viewport: document.querySelector('meta[name="viewport"]')?.getAttribute("content") ?? "",
     mainFont: Number.parseFloat(getComputedStyle(document.querySelector("main")!).fontSize),
+    // Safari auto-zoom applies to editable form controls, not buttons.
+    // Buttons are checked separately for legibility instead of being mistaken for inputs.
     controls: Array.from(document.querySelectorAll("main button, main input, main select, main textarea"))
-      .filter(el => { const r=el.getBoundingClientRect(); return r.width>0 && r.height>0; })
-      .map(el => ({ width: Math.round(el.getBoundingClientRect().width), font: Number.parseFloat(getComputedStyle(el).fontSize) }))
+      .filter(el => { const r=el.getBoundingClientRect(); return r.width>0 && r.height>0 && getComputedStyle(el).visibility!=="hidden"; })
+      .map(el => ({
+        tag:el.tagName.toLowerCase(),
+        type:el.getAttribute("type") ?? "",
+        width:Math.round(el.getBoundingClientRect().width),
+        font:Number.parseFloat(getComputedStyle(el).fontSize)
+      }))
   }));
   expect(data.viewport).toContain("width=device-width");
   expect(data.viewport).not.toMatch(/user-scalable\s*=\s*no|maximum-scale\s*=\s*1/i);
   expect(data.mainFont).toBeGreaterThanOrEqual(14);
   if (testInfo.project.name.includes("phone") && !testInfo.project.name.includes("landscape")) {
-    expect(data.controls.every(x => x.font >= 16), "mobile forms must avoid Safari input auto-zoom").toBe(true);
+    const editable = data.controls.filter(x => x.tag==="textarea" || x.tag==="select" ||
+      (x.tag==="input" && !["checkbox","radio","range","hidden","file","button","submit","reset"].includes(x.type)));
+    const buttonLabels = data.controls.filter(x => x.tag==="button");
+    expect(editable.filter(x => x.font < 16), "editable mobile fields must avoid iOS auto-zoom").toEqual([]);
+    expect(buttonLabels.filter(x => x.font < 14), "mobile action labels must remain legible").toEqual([]);
   }
 });
