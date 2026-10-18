@@ -113,6 +113,14 @@ jobs:
           done
       - name: Generate and inspect parents and child PDF
         run: npm run audit:parents-child-pdf
+      - name: Generate and inspect all new family and labor PDF/DOCX files
+        run: |
+          npm run audit:family-labor-files
+          for pdf in artifacts/family-labor-file-audit/*.pdf; do
+            pages="$(pdfinfo "$pdf" | awk '/^Pages:/ {print $2}')"
+            test "${pages:-0}" -gt 0
+            pdftotext "$pdf" - | grep -q 'НЕ ГОТОВ К ПОДАЧЕ'
+          done
       - name: Upload PDF and browser acceptance artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -124,3 +132,4 @@ jobs:
             test-results
             artifacts/responsive-metrics.ndjson
             artifacts/responsive-browser-results.json
+            artifacts/family-labor-file-audit
