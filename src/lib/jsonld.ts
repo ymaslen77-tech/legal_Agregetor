@@ -17,6 +17,7 @@ export function organizationJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
+    "@id": `${siteUrl()}/#organization`,
     name: platformContacts.name || siteName,
     url: siteUrl(),
     logo: `${siteUrl()}/logo.svg`,
@@ -38,13 +39,11 @@ export function websiteJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
+    "@id": `${siteUrl()}/#website`,
     name: siteName,
     url: siteUrl(),
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${siteUrl()}/questions?q={search_term_string}`,
-      "query-input": "required name=search_term_string"
-    }
+    inLanguage: "ru-RU",
+    publisher: { "@id": `${siteUrl()}/#organization` }
   };
 }
 
@@ -52,6 +51,7 @@ export function breadcrumbJsonLd(items: Breadcrumb[]) {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
+    "@id": `${absoluteUrl(items.at(-1)?.path ?? "/")}#breadcrumb`,
     itemListElement: items.map((item, index) => ({
       "@type": "ListItem",
       position: index + 1,
