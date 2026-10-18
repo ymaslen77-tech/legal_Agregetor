@@ -40,6 +40,8 @@ for (const plan of FAMILY_LABOR_PLANS) {
     if(plan.id==="part-time-hours") input.mandatoryBasis="по соглашению";
     if(plan.id==="maternity-leave") input.leaveType="беременность и роды";
     if(plan.id==="secondary-employment") input.mode="совмещение";
+    if(plan.id==="shifts-and-business-trips") input.mode="командировка";
+    if(plan.id==="alimony-enforcement") {input.partyStatus="взыскатель";input.proceedingOpened="да";}
     const {result}=createFamilyLaborDocument(plan,scenario.key,input,{versionId,createdAt});
     const key=plan.id+"/"+scenario.key;
     const expected=SUPPORTED_PROVISIONAL_DRAFTS.includes(key as (typeof SUPPORTED_PROVISIONAL_DRAFTS)[number])?"DRAFT":"CHECKLIST";
@@ -78,12 +80,12 @@ for (const plan of FAMILY_LABOR_PLANS) {
   }
 }
 assert.equal(rows.length,30,"expected 30 non-emergency scenarios");
-assert.equal(rows.filter(row=>row.resultKind==="DRAFT").length,9);
-assert.equal(rows.filter(row=>row.resultKind==="CHECKLIST").length,21);
+assert.equal(rows.filter(row=>row.resultKind==="DRAFT").length,14);
+assert.equal(rows.filter(row=>row.resultKind==="CHECKLIST").length,16);
 const summary={
   scope:"BINARY_EXPORT_AND_SAVED_DOCUMENT_CONTRACT_ONLY",
   legalSignOff:"NOT_GRANTED",
-  scenarios:rows.length,provisionalDrafts:9,checklists:21,
+  scenarios:rows.length,provisionalDrafts:14,checklists:16,
   emergencyInstructionsExcluded:2,
   passed:rows.length,results:rows
 };

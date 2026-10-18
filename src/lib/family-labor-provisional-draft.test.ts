@@ -21,6 +21,9 @@ for(const key of SUPPORTED_PROVISIONAL_DRAFTS){
   if(planId==="unpaid-leave")values.leaveGround="по соглашению сторон";
   if(planId==="part-time-hours")values.mandatoryBasis="по соглашению";
   if(planId==="maternity-leave")values.leaveType="беременность и роды";
+  if(planId==="shifts-and-business-trips")values.mode="командировка";
+  if(planId==="secondary-employment")values.mode="совмещение";
+  if(planId==="alimony-enforcement"){values.partyStatus="взыскатель";values.proceedingOpened="да";}
   if(planId==="secondary-employment")values.mode="совмещение";
   assert.equal(canBuildFamilyLaborDraft(plan,scenarioKey,values),true,key);
   const document=createFamilyLaborDocument(plan,scenarioKey,values,ids).result;
@@ -74,16 +77,38 @@ for(const key of SUPPORTED_PROVISIONAL_DRAFTS){
     assert.equal(canBuildFamilyLaborDraft(plan,scenarioKey,{...values,mandatoryBasis:"не знаю"}),false);
   if(planId==="maternity-leave")
     assert.equal(canBuildFamilyLaborDraft(plan,scenarioKey,{...values,leaveType:"уход за ребёнком"}),false);
+  if(planId==="alimony-enforcement"){
+    for(const invalid of [{...values,proceedingOpened:"нет"},{...values,partyStatus:"представитель"},{...values,partyStatus:"не знаю"}]){
+      assert.equal(canBuildFamilyLaborDraft(plan,scenarioKey,invalid),false);
+      assert.equal(createFamilyLaborDocument(plan,scenarioKey,invalid,ids).result.resultKind,"CHECKLIST");
+    }
+    assert.ok(document.documentText.includes("не является жалобой")||
+      document.documentText.includes("не является иском"));
+  }
+  if(planId==="shifts-and-business-trips"){
+    assert.equal(canBuildFamilyLaborDraft(plan,scenarioKey,{...values,mode:"не знаю"}),false);
+    assert.equal(createProvisionalFamilyLaborDraft(plan,scenarioKey,{...values,mode:"не знаю"}),null);
+  }
+  if(planId==="maternity-leave" && scenarioKey==="benefits"){
+    assert.equal(canBuildFamilyLaborDraft(plan,scenarioKey,{...values,leaveType:"уход за ребёнком"}),false);
+  }
   if(planId==="secondary-employment"){
-    assert.equal(canBuildFamilyLaborDraft(plan,scenarioKey,{...values,mode:"совместительство"}),false);
-    assert.equal(createFamilyLaborDocument(plan,scenarioKey,{...values,mode:"совместительство"},ids).result.resultKind,"CHECKLIST");
+    if(scenarioKey==="payment"){
+      assert.equal(canBuildFamilyLaborDraft(plan,scenarioKey,{...values,mode:"совместительство"}),false);
+      assert.equal(createFamilyLaborDocument(plan,scenarioKey,{...values,mode:"совместительство"},ids).result.resultKind,"CHECKLIST");
+    }else{
+      assert.equal(canBuildFamilyLaborDraft(plan,scenarioKey,{...values,mode:"совместительство"}),true);
+      const other=createProvisionalFamilyLaborDraft(plan,scenarioKey,{...values,mode:"совместительство"});
+      assert.ok(other?.text.includes("самостоятельном трудовом договоре"));
+      assert.ok(!other?.text.includes("совмещение, какой"));
+    }
   }
 }
-assert.equal(checked,9);
+assert.equal(checked,14);
 const safety=plans.get("family-emergency-safety");
 assert.ok(safety);
 assert.equal(createProvisionalFamilyLaborDraft(safety,"immediate-danger",{}),null);
 const penalty=plans.get("alimony-penalty");
 assert.ok(penalty);
 assert.equal(createProvisionalFamilyLaborDraft(penalty,"penalty",{}),null);
-console.log("Nine provisional legal drafts: source IDs, archive, safe branches and downgrade tests passed.");
+console.log("Fourteen provisional legal drafts: source IDs, archive, safe branches and downgrade tests passed.");

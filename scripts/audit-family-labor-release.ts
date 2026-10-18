@@ -59,7 +59,7 @@ assert.equal(FAMILY_LABOR_PLANS.filter(x=>x.kind==="NEW_ROUTE").length,8);
 assert.equal(FAMILY_LABOR_PLANS.filter(x=>x.kind==="EXISTING_ROUTE_EXTENSION").length,12);
 assert.equal(FAMILY_LABOR_PLANS.filter(x=>x.kind==="CROSS_AREA_LINK").length,3);
 assert.equal(rows.filter(x=>x.resultKind==="DRAFT").length,SUPPORTED_PROVISIONAL_DRAFTS.length);
-assert.equal(SUPPORTED_PROVISIONAL_DRAFTS.length,9);
+assert.equal(SUPPORTED_PROVISIONAL_DRAFTS.length,14);
 assert.ok(rows.every(x=>!x.filingReady&&!x.publicationApproved));
 const summary={
   assessedAt:"2026-10-16",

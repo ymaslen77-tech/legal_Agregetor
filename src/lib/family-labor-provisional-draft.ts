@@ -15,6 +15,7 @@ export type ProvisionalDraft = {
 };
 
 const GPK_URL = "https://pravo.gov.ru/proxy/ips/?docbody=&nd=102078828";
+const FZ229_URL="https://pravo.gov.ru/proxy/ips/?docbody=&nd=102115222";
 const TK_URL = "https://pravo.gov.ru/proxy/ips/?docbody=&link_id=0&nd=102074279&intelsearch=&firstDoc=1";
 const registry = {
   "gpk-128": { id:"gpk-128",act:"ГПК РФ",provision:"статья 128",sourceUrl:GPK_URL },
@@ -27,14 +28,23 @@ const registry = {
   "tk-151": { id:"tk-151",act:"ТК РФ",provision:"статья 151",sourceUrl:TK_URL },
   "tk-157": { id:"tk-157",act:"ТК РФ",provision:"статья 157",sourceUrl:TK_URL },
   "tk-312.1": { id:"tk-312.1",act:"ТК РФ",provision:"статья 312.1",sourceUrl:TK_URL },
-  "tk-177": { id:"tk-177",act:"ТК РФ",provision:"статья 177",sourceUrl:TK_URL }
+  "tk-177": { id:"tk-177",act:"ТК РФ",provision:"статья 177",sourceUrl:TK_URL },
+  "tk-168": { id:"tk-168",act:"ТК РФ",provision:"статья 168",sourceUrl:TK_URL },
+  "tk-168.1": { id:"tk-168.1",act:"ТК РФ",provision:"статья 168.1",sourceUrl:TK_URL },
+  "tk-302": { id:"tk-302",act:"ТК РФ",provision:"статья 302",sourceUrl:TK_URL },
+  "tk-60.1": { id:"tk-60.1",act:"ТК РФ",provision:"статья 60.1",sourceUrl:TK_URL },
+  "fz229-50": { id:"fz229-50",act:"Федеральный закон № 229-ФЗ",provision:"статья 50",sourceUrl:FZ229_URL },
+  "fz229-102": { id:"fz229-102",act:"Федеральный закон № 229-ФЗ",provision:"статья 102",sourceUrl:FZ229_URL }
 } as const;
 
 type SupportedId = "alimony-order-objections/objections" |
   "unpaid-leave/leave" | "part-time-hours/schedule" |
   "hiring-refusal/refusal" | "maternity-leave/leave" |
   "secondary-employment/payment" | "downtime/payment" |
-  "remote-work/conditions" | "study-leave/study";
+  "remote-work/conditions" | "study-leave/study" |
+  "maternity-leave/benefits" | "shifts-and-business-trips/expenses" |
+  "secondary-employment/registration" | "alimony-enforcement/inaction" |
+  "alimony-enforcement/balance";
 export const SUPPORTED_PROVISIONAL_DRAFTS: readonly SupportedId[] = [
   "alimony-order-objections/objections",
   "unpaid-leave/leave",
@@ -44,7 +54,12 @@ export const SUPPORTED_PROVISIONAL_DRAFTS: readonly SupportedId[] = [
   "secondary-employment/payment",
   "downtime/payment",
   "remote-work/conditions",
-  "study-leave/study"
+  "study-leave/study",
+  "maternity-leave/benefits",
+  "shifts-and-business-trips/expenses",
+  "secondary-employment/registration",
+  "alimony-enforcement/inaction",
+  "alimony-enforcement/balance"
 ];
 
 /** A case with ambiguous standing or legal route must fall back to a checklist. */
@@ -55,6 +70,93 @@ export function canBuildFamilyLaborDraft(
   if(!SUPPORTED_PROVISIONAL_DRAFTS.some(key=>key===id))return false;
   const review=getFamilyLaborGuidance(plan,scenarioKey,answers);
   if(!review.dataComplete||review.invalid.length>0||review.emergencyFirst)return false;
+
+  // Low-risk document categories: requests for information or agreement,
+  // never pleadings, entitlement determinations, petitions for penalties or sums.
+  if(id==="maternity-leave/benefits") {
+    return {
+      title:"Запрос сведений об оформлении пособия по беременности и родам",
+      rules:["tk-255"],extraPlaceholders:["[укажите сведения о работодателе и реквизиты электронного листка нетрудоспособности]"],
+      content:[
+        "ЗАПРОС СВЕДЕНИЙ ОБ ОФОРМЛЕНИИ ПОСОБИЯ",
+        "Я обратилась по вопросу оформления отпуска по беременности и родам и соответствующих сведений для назначения пособия.",
+        "Данные заявления и медицинских документов (со слов работницы): "+safe(values.medicalBasis),
+        "В соответствии со статьёй 255 ТК РФ прошу сообщить, какие необходимые сведения и документы оформлены работодателем и переданы уполномоченному органу, а также какие сведения требуется уточнить.",
+        "Если сведения ещё не представлены, прошу сообщить причину и порядок исправления.",
+        "Данное обращение не является требованием о конкретной сумме пособия и не подтверждает право на его получение без проверки условий страхования.",
+        "Приложения: [реквизиты электронного листка нетрудоспособности, документы и сообщения при наличии]."
+      ]
+    };
+  }
+  if(id==="shifts-and-business-trips/expenses") {
+    const mode=values.mode;
+    const norm=mode==="вахта"?"tk-302":mode==="командировка"?"tk-168":"tk-168.1";
+    return {
+      title:"Запрос об оформлении и возмещении служебных расходов",
+      rules:[norm],extraPlaceholders:["[укажите период и подтверждающие документы по каждому расходу]"],
+      content:[
+        "ЗАЯВЛЕНИЕ О ПОРЯДКЕ ВОЗМЕЩЕНИЯ РАСХОДОВ И ПРЕДОСТАВЛЕНИИ ДОКУМЕНТОВ",
+        "Указанный работником вид работы: "+safe(mode),
+        "Расходы и обстоятельства по сведениям работника: "+safe(values.expenses),
+        "Прошу сообщить, какими документами установлены применимые компенсации и выплаты, какие подтверждающие документы требуются и как работодателем рассмотрен вопрос о возмещении перечисленных расходов.",
+        "Правовой режим командировки, разъездной работы и вахты различается; данный запрос не подменяет проверку договора, локальных актов, нормативных ограничений и фактически понесённых затрат.",
+        "Не прошу автоматически применять суточные командировки к работнику на вахте.",
+        "Приложения: [приказы, билеты, квитанции, расчётные листки и иные имеющиеся документы]."
+      ]
+    };
+  }
+  if(id==="secondary-employment/registration") {
+    const isConcurrent=values.mode==="совместительство";
+    return {
+      title:"Запрос об оформлении дополнительной работы",
+      rules:isConcurrent?["tk-60.1"]:["tk-60.2","tk-151"],
+      extraPlaceholders:["[укажите договор, должность и период дополнительной работы]"],
+      content:[
+        "ЗАПРОС ОБ ОФОРМЛЕНИИ ДОПОЛНИТЕЛЬНОЙ РАБОТЫ",
+        "Заявленный характер работы: "+safe(values.mode),
+        "Документы и обстоятельства со слов работника: "+safe(values.consent),
+        isConcurrent
+          ?"Прошу предоставить сведения и копии относящихся к моей работе документов о самостоятельном трудовом договоре по совместительству, режиме и условиях оплаты."
+          :"Прошу сообщить, как оформлено письменное согласие на совмещение, какой объём дополнительной работы согласован и как установлена доплата.",
+        "Прошу разъяснить применяемый работодателем правовой режим и сообщить, какие документы дополнительно требуются для его проверки.",
+        "Настоящий запрос не означает признания работодателем конкретного режима либо начисленной доплаты.",
+        "Приложения: [трудовой договор, соглашения и переписка при наличии]."
+      ]
+    };
+  }
+  if(id==="alimony-enforcement/inaction") {
+    return {
+      title:"Заявление об ознакомлении с материалами исполнительного производства",
+      rules:["fz229-50"],
+      extraPlaceholders:["[укажите номер исполнительного производства и подразделение ФССП]"],
+      content:[
+        "ЗАЯВЛЕНИЕ ОБ ОЗНАКОМЛЕНИИ С МАТЕРИАЛАМИ ИСПОЛНИТЕЛЬНОГО ПРОИЗВОДСТВА",
+        "Указанный заявителем статус стороны: "+safe(values.partyStatus),
+        "Сведения о возбужденном исполнительном производстве: "+safe(values.proceeding),
+        "Обстоятельства обращения: "+safe(values.bailiff),
+        "В соответствии со статьёй 50 Федерального закона № 229-ФЗ как сторона исполнительного производства прошу предоставить возможность ознакомиться с его материалами и сделать копии имеющихся документов, в том числе постановлений по рассматриваемому вопросу.",
+        "Прошу сообщить доступный порядок ознакомления и получения копий.",
+        "Это информационное обращение, не является жалобой на установленное судом незаконное бездействие; вопрос о жалобе и сроке обжалования требует самостоятельной оценки.",
+        "Приложения: [документы, подтверждающие участие в исполнительном производстве, если необходимы]."
+      ]
+    };
+  }
+  if(id==="alimony-enforcement/balance") {
+    return {
+      title:"Ходатайство о предоставлении постановления по расчёту задолженности по алиментам",
+      rules:["fz229-50","fz229-102"],
+      extraPlaceholders:["[укажите номер исполнительного производства и период задолженности]"],
+      content:[
+        "ХОДАТАЙСТВО О ПРЕДОСТАВЛЕНИИ СВЕДЕНИЙ О ЗАДОЛЖЕННОСТИ ПО АЛИМЕНТАМ",
+        "Указанный заявителем статус стороны: "+safe(values.partyStatus),
+        "Сведения о возбужденном исполнительном производстве: "+safe(values.proceeding),
+        "На основании статей 50 и 102 Федерального закона № 229-ФЗ прошу предоставить имеющееся постановление о расчёте и взыскании задолженности по алиментам и разъяснить, за какие периоды и по каким данным произведён расчёт.",
+        "При отсутствии такого постановления прошу сообщить о его наличии и применимом порядке определения задолженности.",
+        "Данное обращение не является иском об определении задолженности и не содержит автоматически рассчитанной суммы.",
+        "Приложения: [платёжные документы и копия исполнительного документа при наличии]."
+      ]
+    };
+  }
   if(id==="alimony-order-objections/objections"){
     return answers.roleInOrder==="должник" && answers.isLate==="нет";
   }
@@ -66,6 +168,13 @@ export function canBuildFamilyLaborDraft(
     answers.leaveGround!=="чрезвычайная ситуация: нарушение условий жизнедеятельности и утрата имущества";
   if(id==="maternity-leave/leave")return answers.leaveType==="беременность и роды";
   if(id==="part-time-hours/schedule")return answers.mandatoryBasis!=="не знаю";
+  if(id==="alimony-enforcement/inaction" || id==="alimony-enforcement/balance")
+    return answers.proceedingOpened==="да" && ["взыскатель","должник"].includes(answers.partyStatus??"");
+  if(id==="shifts-and-business-trips/expenses")
+    return ["вахта","командировка","разъездная работа"].includes(answers.mode??"");
+  if(id==="secondary-employment/registration")
+    return ["совмещение","совместительство"].includes(answers.mode??"");
+  if(id==="maternity-leave/benefits")return answers.leaveType==="беременность и роды";
   if(id==="secondary-employment/payment")return answers.mode==="совмещение";
   return true;
 }
