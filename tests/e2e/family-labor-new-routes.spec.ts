@@ -73,3 +73,47 @@ test("provisional draft forms keep source references, document version and filin
     await expect(form.getByRole("button",{name:"Скачать DOCX"})).toBeEnabled();
   }
 });
+
+
+test("new guarded information requests generate source-linked preliminary drafts in a real browser",async({page})=>{
+  test.setTimeout(180_000);
+  const cases=[
+    ["maternity-leave","benefits"],
+    ["shifts-and-business-trips","expenses"],
+    ["secondary-employment","registration"],
+    ["alimony-enforcement","inaction"],
+    ["alimony-enforcement","balance"]
+  ] as const;
+  for(const [planId,scenarioKey] of cases){
+    const plan=FAMILY_LABOR_PLANS.find(p=>p.id===planId);
+    expect(plan,planId).toBeDefined();
+    const slug=getFamilyLaborDocumentSlug(plan!,scenarioKey);
+    expect(slug).toBeTruthy();
+    const resp=await page.goto("/documents/"+slug+"/");
+    expect(resp?.status()).toBe(200);
+    const form=page.getByRole("region",{name:"Пошаговая анкета"});
+    await expect(form).toBeVisible();
+    for(const select of await form.locator("select").all()){
+      const options=await select.locator("option").allTextContents();
+      const choice=["взыскатель","да","командировка","совместительство",
+        "беременность и роды","заявитель","бездействие","нет"]
+        .find(x=>options.includes(x))??options.find(x=>x!=="Выберите значение");
+      expect(choice,planId+" should have a valid answer option").toBeTruthy();
+      await select.selectOption({label:choice!});
+    }
+    for(const input of await form.locator("textarea").all())
+      await input.fill("Обезличенные подтверждённые сведения из документов");
+    await form.getByRole("button",{name:/Создать новую версию/}).click();
+    const result=form.locator("pre");
+    await expect(result).toContainText("ПРОЕКТ — НЕ ГОТОВ К ПОДАЧЕ");
+    if(planId==="alimony-enforcement"){
+      await expect(result).toContainText("Федеральный закон № 229-ФЗ");
+      if(scenarioKey==="inaction")await expect(result).toContainText("не является жалобой");
+      else await expect(result).toContainText("не является иском");
+    }else{
+      await expect(result).toContainText("ТК РФ");
+    }
+    await expect(form.getByRole("button",{name:"Скачать PDF"})).toBeEnabled();
+    await expect(form.getByRole("button",{name:"Скачать DOCX"})).toBeEnabled();
+  }
+});
