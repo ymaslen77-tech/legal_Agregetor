@@ -19,7 +19,9 @@ assert.equal(FAMILY_LABOR_PLANS.filter(x=>x.kind==="CROSS_AREA_LINK").length,3);
 for(const plan of FAMILY_LABOR_PLANS){
   assert.equal(plan.publicEnabled,false);
   assert.equal(plan.filingReady,false);
-  assert.equal(plan.generation,"NOT_IMPLEMENTED");
+  assert.equal(plan.generation,
+    plan.kind==="CROSS_AREA_LINK"?"NOT_APPLICABLE":
+    plan.id==="family-emergency-safety"?"EMERGENCY_GUIDANCE_ONLY":"PRELIMINARY_ONLY");
   assert.equal(plan.legalReview,"PENDING_OFFICIAL_SOURCES");
   assert.ok(plan.legalSources.length>0);
   if(plan.kind==="NEW_ROUTE"){assert.equal(plan.existingSlug,null);assert.ok(plan.scenarios.length>0);}

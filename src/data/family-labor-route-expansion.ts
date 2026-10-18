@@ -1,6 +1,7 @@
 /**
  * Planned family/labor amendments derived from the 2026-10-16 Q&A gap audit.
- * Internal only. Never register these as public routes or document generators.
+ * Internal planning and staged implementation catalogue. Registered routes and
+ * preliminary documents remain unapproved for publication or court filing.
  */
 export type Area = "family" | "labor";
 export type Kind = "NEW_ROUTE" | "EXISTING_ROUTE_EXTENSION" | "CROSS_AREA_LINK";
@@ -14,7 +15,8 @@ export type FamilyLaborPlan = {
   existingSlug: string | null; destinationArea: string | null;
   fields: readonly IntakeField[]; scenarios: readonly ScenarioPlan[];
   legalSources: readonly string[];
-  legalReview: "PENDING_OFFICIAL_SOURCES"; generation: "NOT_IMPLEMENTED";
+  legalReview: "PENDING_OFFICIAL_SOURCES";
+  generation: "PRELIMINARY_ONLY" | "EMERGENCY_GUIDANCE_ONLY" | "NOT_APPLICABLE";
   publicEnabled: false; filingReady: false;
 };
 const common: readonly IntakeField[] = [
@@ -37,7 +39,8 @@ function make(
   return {id,area,kind,title,qnaSignalHits,existingSlug,destinationArea,
     fields:kind==="CROSS_AREA_LINK"?[]:kind==="NEW_ROUTE"&&id==="family-emergency-safety"?[]:[...common,...details],
     scenarios,legalSources:area==="family"?officialFamily:officialLabor,
-    legalReview:"PENDING_OFFICIAL_SOURCES",generation:"NOT_IMPLEMENTED",
+    legalReview:"PENDING_OFFICIAL_SOURCES",generation:kind==="CROSS_AREA_LINK"?"NOT_APPLICABLE":
+      id==="family-emergency-safety"?"EMERGENCY_GUIDANCE_ONLY":"PRELIMINARY_ONLY",
     publicEnabled:false,filingReady:false};
 }
 const family = (id:string,title:string,hits:number,details:readonly IntakeField[],cases:readonly ScenarioPlan[]) =>
