@@ -13,6 +13,8 @@ for(const plan of FAMILY_LABOR_PLANS)for(const scenario of plan.scenarios){
   assert.ok(gate.acts.length>0);
   assert.ok(gate.necessaryQualification.length>=2);
   assert.ok(gate.primaryProvisionsToConfirm.length>0);
+  assert.ok(gate.primaryProvisionsToConfirm.every(rule=>rule.trim().length>10));
+
   assert.ok(gate.noAutomaticConclusion.length>25);
   assert.ok(gate.acts.every(key=>FAMILY_LABOR_ACTS[key].url.startsWith("https://")));
   const guidance=getFamilyLaborGuidance(plan,scenario.key,{});
@@ -20,6 +22,9 @@ for(const plan of FAMILY_LABOR_PLANS)for(const scenario of plan.scenarios){
   assert.equal(guidance.legalOutcomeApproved,false);
   assert.equal(guidance.filingReady,false);
   assert.ok(guidance.guidance.some(g=>g.includes(gate.noAutomaticConclusion)));
+  assert.ok(gate.primaryProvisionsToConfirm.every(rule=>guidance.guidance.some(line=>line.includes(rule))),
+    plan.id+"/"+scenario.key+" must display the actual legal provisions to verify");
+
   assert.ok(gate.acts.every(key=>guidance.verificationSources.some(source=>source.url===FAMILY_LABOR_ACTS[key].url)));
 }
 assert.throws(()=>getFamilyLaborScenarioReview("unknown","scenario"));

@@ -203,6 +203,7 @@ export function getFamilyLaborGuidance(
   const sourceGate=getFamilyLaborScenarioReview(plan.id,scenarioKey);
   const guidance = [
     ...(special?.guidance ?? fallback),
+    "Нормы для сверки по действующей редакции: "+sourceGate.primaryProvisionsToConfirm.join("; ")+".",
     "Юридическая проверка выбранной ситуации: "+sourceGate.necessaryQualification.join("; ")+".",
     "Запрещённый автоматический вывод: "+sourceGate.noAutomaticConclusion
   ];
