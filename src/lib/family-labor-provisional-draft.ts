@@ -71,6 +71,39 @@ export function canBuildFamilyLaborDraft(
   const review=getFamilyLaborGuidance(plan,scenarioKey,answers);
   if(!review.dataComplete||review.invalid.length>0||review.emergencyFirst)return false;
 
+  if(id==="alimony-order-objections/objections"){
+    return answers.roleInOrder==="должник" && answers.isLate==="нет";
+  }
+  if(answers.role!=="заявитель")return false;
+  // Government Resolution No 620 (28.05.2026) imposes a separate procedure
+  // for emergency-zone leave. The generic template lacks its qualifying evidence
+  // and deadline questions, so give a checklist rather than a misleading draft.
+  if(id==="unpaid-leave/leave")return answers.leaveGround!=="не знаю" &&
+    answers.leaveGround!=="чрезвычайная ситуация: нарушение условий жизнедеятельности и утрата имущества";
+  if(id==="maternity-leave/leave")return answers.leaveType==="беременность и роды";
+  if(id==="part-time-hours/schedule")return answers.mandatoryBasis!=="не знаю";
+  if(id==="alimony-enforcement/inaction" || id==="alimony-enforcement/balance")
+    return answers.proceedingOpened==="да" && ["взыскатель","должник"].includes(answers.partyStatus??"");
+  if(id==="shifts-and-business-trips/expenses")
+    return ["вахта","командировка","разъездная работа"].includes(answers.mode??"");
+  if(id==="secondary-employment/registration")
+    return ["совмещение","совместительство"].includes(answers.mode??"");
+  if(id==="maternity-leave/benefits")return answers.leaveType==="беременность и роды";
+  if(id==="secondary-employment/payment")return answers.mode==="совмещение";
+  return true;
+}
+
+const blankLines=["Получатель: [укажите наименование и адрес адресата]",
+  "Заявитель: [укажите ФИО и контактные данные]",
+  "Дата: [дата подписания]", "Подпись: __________________"];
+function safe(value:string|undefined):string {
+  const v=(value??"").trim().replace(/\r\n?/g,"\n");
+  if(!v||v.length>2000)throw new Error("Недостаточные либо чрезмерные сведения для проекта.");
+  return v;
+}
+function generateContents(id:SupportedId,values:Record<string,string|undefined>):{
+  title:string; content:string[]; rules:Array<keyof typeof registry>;extraPlaceholders:string[];
+}{
   // Low-risk document categories: requests for information or agreement,
   // never pleadings, entitlement determinations, petitions for penalties or sums.
   if(id==="maternity-leave/benefits") {
@@ -157,39 +190,6 @@ export function canBuildFamilyLaborDraft(
       ]
     };
   }
-  if(id==="alimony-order-objections/objections"){
-    return answers.roleInOrder==="должник" && answers.isLate==="нет";
-  }
-  if(answers.role!=="заявитель")return false;
-  // Government Resolution No 620 (28.05.2026) imposes a separate procedure
-  // for emergency-zone leave. The generic template lacks its qualifying evidence
-  // and deadline questions, so give a checklist rather than a misleading draft.
-  if(id==="unpaid-leave/leave")return answers.leaveGround!=="не знаю" &&
-    answers.leaveGround!=="чрезвычайная ситуация: нарушение условий жизнедеятельности и утрата имущества";
-  if(id==="maternity-leave/leave")return answers.leaveType==="беременность и роды";
-  if(id==="part-time-hours/schedule")return answers.mandatoryBasis!=="не знаю";
-  if(id==="alimony-enforcement/inaction" || id==="alimony-enforcement/balance")
-    return answers.proceedingOpened==="да" && ["взыскатель","должник"].includes(answers.partyStatus??"");
-  if(id==="shifts-and-business-trips/expenses")
-    return ["вахта","командировка","разъездная работа"].includes(answers.mode??"");
-  if(id==="secondary-employment/registration")
-    return ["совмещение","совместительство"].includes(answers.mode??"");
-  if(id==="maternity-leave/benefits")return answers.leaveType==="беременность и роды";
-  if(id==="secondary-employment/payment")return answers.mode==="совмещение";
-  return true;
-}
-
-const blankLines=["Получатель: [укажите наименование и адрес адресата]",
-  "Заявитель: [укажите ФИО и контактные данные]",
-  "Дата: [дата подписания]", "Подпись: __________________"];
-function safe(value:string|undefined):string {
-  const v=(value??"").trim().replace(/\r\n?/g,"\n");
-  if(!v||v.length>2000)throw new Error("Недостаточные либо чрезмерные сведения для проекта.");
-  return v;
-}
-function generateContents(id:SupportedId,values:Record<string,string|undefined>):{
-  title:string; content:string[]; rules:Array<keyof typeof registry>;extraPlaceholders:string[];
-}{
   if(id==="alimony-order-objections/objections"){
     return {
       title:"Возражения относительно исполнения судебного приказа о взыскании алиментов",
