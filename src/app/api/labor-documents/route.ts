@@ -2,7 +2,7 @@ import crypto from "node:crypto";
 import { NextResponse } from "next/server";
 import { createLaborDocumentResult } from "@/lib/document-result-contract";
 import { getLaborDocumentScenario } from "@/data/labor-documents";
-import { getLaborRulesForArea, LABOR_LEGAL_REVIEWED_AT } from "@/data/labor-legal-sources";
+import { getLaborRulesForScenario, LABOR_LEGAL_REVIEWED_AT } from "@/data/labor-legal-sources";
 import { validateLaborDocumentFacts } from "@/lib/labor-document-fields";
 import {
   buildLaborDocumentPrompts,
@@ -46,14 +46,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, message: "Сведения анкеты не соответствуют выбранному сценарию. Заполните все обязательные поля." }, { status: 400 });
   }
 
-  const rules = getLaborRulesForArea(selected.route.areaId);
+  const rules = getLaborRulesForScenario(selected.route.areaId, selected.scenario.key, selected.scenario.legalRuleIds);
   const prompts = buildLaborDocumentPrompts({
     documentTitle: selected.scenario.resultTitle,
     documentType: selected.scenario.resultType,
     facts: verifiedForm,
     rules,
     authority: selected.scenario.authority,
-    nextSteps: selected.scenario.nextSteps
+    nextSteps: selected.scenario.nextSteps,
+    scenarioKey: selected.scenario.key,
+    routeSlug: selected.route.slug
   });
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
@@ -78,7 +80,7 @@ export async function POST(request: Request) {
     const content = body.choices?.[0]?.message?.content?.trim();
     if (!content) throw new Error("model_empty_response");
     const raw = JSON.parse(content.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, ""));
-    const result = validateLaborDocumentModelResult(raw, { documentTitle: selected.scenario.resultTitle, rules });
+    const result = validateLaborDocumentModelResult(raw, { documentTitle: selected.scenario.resultTitle, rules, scenarioKey: selected.scenario.key, routeSlug: selected.route.slug });
 
     const version = {
       ...result,

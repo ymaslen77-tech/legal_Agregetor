@@ -3,7 +3,7 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { JsonLd } from "@/components/JsonLd";
 import { LaborDocumentGenerator } from "@/components/labor/LaborDocumentGenerator";
 import type { LaborDocumentScenario } from "@/data/labor-documents";
-import { getLaborRulesByIds, getLaborRulesForArea } from "@/data/labor-legal-sources";
+import { getLaborRulesForScenario } from "@/data/labor-legal-sources";
 import { LABOR_CATEGORY_SLUG } from "@/data/labor-routes";
 import type { NavigatorDocument } from "@/data/documents";
 import { breadcrumbJsonLd } from "@/lib/jsonld";
@@ -12,10 +12,8 @@ import { absoluteUrl } from "@/lib/seo";
 export function LaborDocumentPage({ document, selected }: { document: NavigatorDocument; selected: LaborDocumentScenario }) {
   const path = `/documents/${document.slug}/`;
   const problemPath = `/problems/${LABOR_CATEGORY_SLUG}/${selected.route.slug}/`;
-  const rules = getLaborRulesForArea(selected.route.areaId);
-  const visibleRules = selected.scenario.legalRuleIds?.length
-    ? getLaborRulesByIds(selected.scenario.legalRuleIds)
-    : rules;
+  const rules = getLaborRulesForScenario(selected.route.areaId, selected.scenario.key, selected.scenario.legalRuleIds);
+  const visibleRules = rules;
   const breadcrumbs = [
     { name: "Главная", path: "/" },
     { name: "Документы", path: "/documents/" },

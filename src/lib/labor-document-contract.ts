@@ -39,6 +39,8 @@ export function buildLaborDocumentPrompts(input: {
   rules: LaborLegalRule[];
   authority: string[];
   nextSteps: string[];
+  routeSlug?: string;
+  scenarioKey?: string;
 }) {
   const system = `Составь профессиональный связный проект юридического документа на русском языке.
 
@@ -75,6 +77,9 @@ export function buildLaborDocumentPrompts(input: {
     verifiedAuthorityClass: input.authority,
     nextStepsOutsideDocument: input.nextSteps,
     legalBasis,
+    scenarioLegalSafety: input.routeSlug === "uvolnenie-po-iniciative-rabotodatelya" && input.scenarioKey === "planned"
+      ? "Запрашивайте копии существующих документов, связанных с работой, в пределах статьи 62 ТК РФ. Допустимо просить сообщить предполагаемое основание увольнения, но нельзя утверждать, будто статья 62 обязывает заранее создать специальную письменную мотивировку предполагаемого увольнения. Статья 81 ТК РФ перечисляет основания увольнения, но само предположение не подтверждает законность выбранного основания."
+      : null,
     responseFormat: {
       documentTitle: input.documentTitle,
       draftText: "полный текст документа",
@@ -88,7 +93,7 @@ export function buildLaborDocumentPrompts(input: {
 
 export function validateLaborDocumentModelResult(
   raw: unknown,
-  input: { documentTitle: string; rules: LaborLegalRule[] }
+  input: { documentTitle: string; rules: LaborLegalRule[]; routeSlug?: string; scenarioKey?: string }
 ) {
   const parsed = laborDocumentModelResponseSchema.parse(normalizeLaborDocumentModelResult(raw));
   const allowedRuleIds = new Set(input.rules.map((rule) => rule.id));
@@ -97,10 +102,29 @@ export function validateLaborDocumentModelResult(
   if (/(?:API|DeepSeek|OpenAI|нейросет\w*|модел\w*|искусственн\w* интеллект)/iu.test(parsed.draftText)) throw new Error("В документ попал технический текст.");
   if (/(?:^|\n)\s*(?:Вопрос|Ответ|Вы указали)\s*:/iu.test(parsed.draftText)) throw new Error("В документ попал анкетный текст.");
   if (/https?:\/\//i.test(parsed.draftText)) throw new Error("В документ добавлена ссылка вне правового реестра.");
+  if (input.routeSlug === "uvolnenie-po-iniciative-rabotodatelya" && input.scenarioKey === "planned") {
+    // A request for existing work-related documents is not an enforceable
+    // demand that the employer invent an advance written dismissal decision.
+    if (/обязан\w*[^.!?\n]{0,130}(?:предоставить|выдать|подготовить|составить)[^.!?\n]{0,120}(?:письменн\w*[^.!?\n]{0,40})?(?:обосновани\w*|мотивировк\w*|причин\w*)[^.!?\n]{0,110}(?:планир\w*|предполагаем\w*)/iu.test(parsed.draftText)) {
+      throw new Error("Нельзя требовать составления не предусмотренной законом письменной мотивировки будущего увольнения.");
+    }
+  }
 
   // A model may cite only provisions it explicitly linked to usedRuleIds,
   // not every article available for the route.
   const usedRules = input.rules.filter((rule) => parsed.usedRuleIds.includes(rule.id));
+  const plenumCitation = /(?:постановлени\w*\s+)?пленума\s+(?:Верховного\s+Суда(?:\s+РФ)?|ВС\s+РФ)/giu;
+  const declaredPlenumRules = usedRules.filter((rule) => /Пленума\s+(?:Верховного\s+Суда(?:\s+РФ)?|ВС\s+РФ)/iu.test(rule.act));
+  if (plenumCitation.test(parsed.draftText) && !declaredPlenumRules.length) {
+    throw new Error("В документ добавлено постановление Пленума вне разрешённых и фактически использованных правовых правил.");
+  }
+  const allowedPlenumNumbers = new Set(declaredPlenumRules.flatMap((rule) =>
+    [...rule.act.matchAll(/№\s*(\d+)/g)].map((match) => match[1])
+  ));
+  const citedPlenumNumbers = [...parsed.draftText.matchAll(/пленума[^.\n]{0,100}?№\s*(\d+)/giu)].map((match) => match[1]);
+  if (citedPlenumNumbers.some((number) => !allowedPlenumNumbers.has(number))) {
+    throw new Error("Указан номер постановления Пленума, отсутствующего в разрешённом реестре.");
+  }
   const allowedArticles = new Set(usedRules.flatMap((rule) => rule.provisions.flatMap(extractArticleNumbers)));
   const actualArticles = extractArticleNumbers(parsed.draftText);
   if (actualArticles.some((article) => !allowedArticles.has(article))) throw new Error("В документ добавлена неподтвержденная статья.");

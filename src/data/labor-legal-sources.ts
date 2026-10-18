@@ -50,6 +50,16 @@ function tcRule(input: Omit<LaborLegalRule, "act" | "officialSource" | "url" | "
 }
 
 export const LABOR_LEGAL_RULES: LaborLegalRule[] = [
+  tcRule({
+    id: "tc-62-employment-document-copies",
+    areas: ["employer-dismissal", "employer-rights-and-duties"],
+    provisions: ["статья 62"],
+    statement: "По письменному заявлению работника работодатель в предусмотренный законом срок предоставляет надлежащим образом заверенные копии документов, связанных с работой, без взимания платы.",
+    scope: "Запрос уже существующих документов, связанных с работой, в частности приказов и документов работодателя, относящихся к работнику.",
+    limitations: "Статья 62 ТК РФ не устанавливает общей обязанности работодателя создавать отдельное письменное объяснение ещё не принятого решения об увольнении. Обязанность выдать копию приказа об увольнении возникает после его оформления; не требуйте несуществующий приказ заранее.",
+    verifiedClaims: ["deadline"]
+  }),
+
   tcRule({ id: "tc-81-employer-dismissal", areas: ["employer-dismissal"], provisions: ["статья 81"], statement: "Работодатель вправе прекратить трудовой договор по своей инициативе только по предусмотренному законом основанию и при соблюдении относящейся к нему процедуры.", scope: "Основания увольнения работодателем, включая ликвидацию, сокращение, несоответствие, дисциплинарные основания и специальные случаи.", limitations: "Наличие основания, доказательства, гарантии и процедура проверяются отдельно; одно намерение работодателя не подтверждает законность увольнения.", verifiedClaims: [] }),
   tcRule({ id: "tc-81-leave-sick-protection", areas: ["employer-dismissal", "sick-leave"], provisions: ["часть шестая статьи 81"], statement: "Увольнение по инициативе работодателя в период временной нетрудоспособности или отпуска не допускается, кроме ликвидации организации либо прекращения деятельности индивидуального предпринимателя.", scope: "Увольнение работодателем во время больничного или отпуска.", limitations: "Запрет не применяется автоматически ко всем иным основаниям прекращения договора; юридическое основание нужно установить по документам.", verifiedClaims: [] }),
   tcRule({ id: "tc-178-180-redundancy", areas: ["employer-dismissal", "termination-payments"], provisions: ["статьи 178-180"], statement: "При сокращении или ликвидации применяются специальные правила о предупреждении, предложении вакансий и предусмотренных законом выплатах.", scope: "Сокращение численности или штата и ликвидация работодателя.", limitations: "Состав выплат и продолжительность их сохранения зависят от основания, статуса работодателя и подтвержденных обстоятельств.", verifiedClaims: ["deadline", "payment"] }),
@@ -108,6 +118,26 @@ export const LABOR_LEGAL_RULES: LaborLegalRule[] = [
 
 export function getLaborRulesForArea(area: LaborAreaId) {
   return LABOR_LEGAL_RULES.filter((item) => item.areas.includes(area));
+}
+
+/**
+ * Scenario-specific, fail-closed legal reference set. A prospective dismissal
+ * is not itself a court dispute; do not inject reinstatement, redundancy,
+ * dismissal-on-probation or Supreme Court Plenum rules into this request.
+ * Curated selections must be reviewed whenever a scenario changes.
+ */
+export function getLaborRulesForScenario(area: LaborAreaId, scenarioKey: string, ruleIds?: readonly string[]) {
+  if (ruleIds?.length) {
+    const selected = getLaborRulesByIds([...ruleIds]);
+    if (selected.length !== new Set(ruleIds).size) {
+      throw new Error(`Unknown or repeated rule IDs for labor scenario: ${area}/${scenarioKey}`);
+    }
+    return selected;
+  }
+  if (area === "employer-dismissal" && scenarioKey === "planned") {
+    return getLaborRulesByIds(["tc-62-employment-document-copies", "tc-81-employer-dismissal"]);
+  }
+  return getLaborRulesForArea(area);
 }
 
 export function getLaborRulesByIds(ids: string[]) {

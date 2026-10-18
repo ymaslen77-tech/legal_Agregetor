@@ -26,7 +26,11 @@ const record = registry.map((route) => {
       issues
     };
   });
-  if (!route.legalReviewedAt || !/^\d{4}-\d{2}-\d{2}$/.test(route.legalReviewedAt)) errors.push(`${route.problemSlug}: NO_REVIEW_DATE`);
+  if (route.source === "family-labor-new") {
+    if (route.legalReviewedAt !== null) errors.push(`${route.problemSlug}: FALSE_LEGAL_REVIEW_DATE`);
+  } else if (!route.legalReviewedAt || !/^\d{4}-\d{2}-\d{2}$/.test(route.legalReviewedAt)) {
+    errors.push(`${route.problemSlug}: NO_REVIEW_DATE`);
+  }
   if (!route.scenarios.length) errors.push(`${route.problemSlug}: NO_SCENARIOS`);
   return {
     category: route.categorySlug, route: route.problemSlug, source: route.source,

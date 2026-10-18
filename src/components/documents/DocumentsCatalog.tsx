@@ -5,6 +5,11 @@ import { Search, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { NavigatorDocument } from "@/data/documents";
 
+/** Keep large legal instructions and document bodies in server components. */
+type DocumentCatalogItem = Pick<NavigatorDocument,
+  "slug" | "title" | "category" | "documentType" | "shortDescription" | "keywords" | "userQueries"> &
+  { relatedProblems: Array<{title: string}> };
+
 const documentTypeRules = [
   ["Иски", /^(иск|исковое заявление)/i],
   ["Заявления", /^заявление/i],
@@ -18,7 +23,7 @@ const documentTypeRules = [
 
 const lawAreas = ["Семейное право", "Трудовое право"] as const;
 
-export function DocumentsCatalog({ documents }: { documents: NavigatorDocument[] }) {
+export function DocumentsCatalog({ documents }: { documents: DocumentCatalogItem[] }) {
   const [query, setQuery] = useState("");
   const [lawArea, setLawArea] = useState("");
   const [documentType, setDocumentType] = useState("");
@@ -47,10 +52,10 @@ export function DocumentsCatalog({ documents }: { documents: NavigatorDocument[]
   );
 }
 
-function lawAreaFor(document: NavigatorDocument) {
+function lawAreaFor(document: DocumentCatalogItem) {
   return document.category === "Трудовое право" ? "Трудовое право" : "Семейное право";
 }
-function documentTypeFor(document: NavigatorDocument) {
+function documentTypeFor(document: DocumentCatalogItem) {
   const values = [document.title, document.documentType];
   return documentTypeRules.find(([, pattern]) => values.some((value) => pattern.test(value)))?.[0] ?? "Другие документы";
 }
