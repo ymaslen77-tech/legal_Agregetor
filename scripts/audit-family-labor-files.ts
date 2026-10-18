@@ -12,6 +12,7 @@ import { buildGeneratedDocumentDocxBlob } from "@/lib/document-export";
 import { validateSavedDocument } from "@/lib/saved-document-validation";
 import { SUPPORTED_PROVISIONAL_DRAFTS } from "@/lib/family-labor-provisional-draft";
 
+async function main(): Promise<void> {
 const outDir = "artifacts/family-labor-file-audit";
 mkdirSync(outDir, { recursive: true });
 type Row = {
@@ -89,3 +90,10 @@ const summary={
 writeFileSync(join(outDir,"manifest.json"),JSON.stringify(summary,null,2)+"\n");
 console.log("Family/labor PDF/DOCX audit: "+rows.length+"/"+rows.length+
   " exports structurally valid; all flagged NOT READY TO FILE.");
+
+}
+
+main().catch((error: unknown) => {
+  console.error(error);
+  process.exitCode = 1;
+});
