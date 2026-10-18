@@ -7,5 +7,5 @@ export async function GET() {
   const pending=new Set(FAMILY_LABOR_NEW_DOCUMENTS.map(document=>document.slug));
   const documentPaths = navigatorDocuments.filter(document=>!pending.has(document.slug)).map((document) => `/documents/${document.slug}/`);
 
-  return xmlResponse(urlSet(["/documents/", ...documentPaths]));
+  return xmlResponse(urlSet(documentPaths));
 }

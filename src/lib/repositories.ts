@@ -1059,7 +1059,10 @@ export async function getSitemapEntries(
     | "questions"
 ) {
   if (kind === "pages") {
-    const includeLawyersRoot = await canIndexRootListingPage("lawyers");
+    const [includeLawyersRoot,includeQuestionsRoot] = await Promise.all([
+      canIndexRootListingPage("lawyers"),
+      canIndexRootListingPage("questions")
+    ]);
 
     return [
       "/",
@@ -1067,7 +1070,7 @@ export async function getSitemapEntries(
       "/problems/",
       "/documents/",
       "/tools/",
-      "/questions/",
+      ...(includeQuestionsRoot ? ["/questions/"] : []),
       ...(includeLawyersRoot ? ["/lawyers/"] : []),
       "/about/",
       "/contacts/",

@@ -23,7 +23,7 @@
 | DNS pravopoisk.ru и www | Vercel config `misconfigured=false`, конфликтов не показывает | Оставить и проверить HTTPS/308 извне |
 | Production `pravopoisk.vercel.app` | Главная 200, index/follow; sitemap index 6 файлов | Новый домен должен стать единственным canonical после следующей Production-сборки |
 | Canonical | На Production HTML всё ещё `https://pravopoisk.vercel.app/`; обе переменные `SITE_URL`, `NEXT_PUBLIC_SITE_URL` уже обновлены на `https://pravopoisk.ru`, но их новая версия ещё не развернута | Пересобрать Production при снятии Vercel-квоты; проверить canonical/OG/sitemap/robots |
-| Sitemap | 14 в pages, 46 в problems, 154 в documents, 0 в lawyers, 0 в questions; files may overlap | Устранить повторяющиеся записи; проверить отбор только реально индексируемых страниц |
+| Sitemap | 14 в pages, 46 в problems, 154 в documents, 0 в lawyers, 0 в questions; files may overlap | Устранить повторяющиеся записи; исключить корневую /questions/ из Sitemap, когда содержание не соответствует условиям индексирования |
 | Neon | SQL `SELECT 1` — HTTP 402, превышена квота проекта | Восстановить квоту; вернуть доступ к данным и повторно проверить sitemap |
 | /questions и /lawyers | HTTP 200, robots noindex при недоступной БД | Проверить данные после восстановления Neon, избегать пустых страниц и soft-404 |
 | Новые юридические сценарии | 32 сценария не прошли индивидуальную юридическую приёмку; `filingReady=false` | Не открывать их для SEO до подтверждения правовых норм и полезности |
@@ -33,7 +33,7 @@
 
 ## Исправлено в этом PR
 
-1. Sitemap исключает URL с параметрами/фрагментами, внешние адреса и дубли; корректно экранирует XML.
+1. Sitemap исключает URL с параметрами/фрагментами, внешние адреса и дубли; корректно экранирует XML. Устранены три повтора корневых URL между разделами карт сайта (/problems/, /documents/, /tools/). /questions/ включается только при положительном результате условия индексирования.
 2. У Organization/WebSite появился единый идентификатор `@id`; WebSite ссылается на реальную организацию в графе, указан русский язык.
 3. У BreadcrumbList появился `@id`, привязанный к канонической странице.
 4. Удалён неиспользуемый в Google Search с 2024 года WebSite SearchAction (не путать с реальным поиском на сайте).
