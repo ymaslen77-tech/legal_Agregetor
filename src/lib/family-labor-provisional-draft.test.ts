@@ -104,6 +104,15 @@ for(const key of SUPPORTED_PROVISIONAL_DRAFTS){
     }
   }
 }
+const enforcement=plans.get("alimony-enforcement");
+assert.ok(enforcement);
+const request=createProvisionalFamilyLaborDraft(enforcement,"balance",{
+  role:"заявитель",event:"Не получено постановление",dates:"Октябрь 2026",evidence:"Исполнительный лист",outcome:"Получить постановление",
+  proceeding:"Номер 123/26",bailiff:"Запрос сведений",proceedingOpened:"да",partyStatus:"взыскатель"
+});
+assert.ok(request);
+assert.ok(request.text.includes("Если постановление о расчёте задолженности не выносилось"));
+assert.ok(!request.text.includes("При отсутствии такого постановления прошу сообщить о его наличии"));
 assert.equal(checked,14);
 const safety=plans.get("family-emergency-safety");
 assert.ok(safety);

@@ -27,5 +27,15 @@ for(const plan of FAMILY_LABOR_PLANS)for(const scenario of plan.scenarios){
 
   assert.ok(gate.acts.every(key=>guidance.verificationSources.some(source=>source.url===FAMILY_LABOR_ACTS[key].url)));
 }
+for(const [planId,scenario,expectedSource] of [
+  ["adult-guardianship","appeal","kas"],
+  ["foreign-workers","eligibility","migration"],
+  ["foreign-workers","violation","migration"],
+  ["maternity-leave","benefits","insuranceInfo"]
+] as const){
+  const gate=getFamilyLaborScenarioReview(planId,scenario);
+  assert.ok(gate.acts.includes(expectedSource),planId+"/"+scenario+" must link its distinct legal regime");
+  assert.ok(getFamilyLaborGuidance(FAMILY_LABOR_PLANS.find(p=>p.id===planId)!,scenario,{}).verificationSources.some(s=>s.url===FAMILY_LABOR_ACTS[expectedSource].url));
+}
 assert.throws(()=>getFamilyLaborScenarioReview("unknown","scenario"));
 console.log("Family/labor legal case matrix: 32/32 scenario source gates, all not approved to file.");
