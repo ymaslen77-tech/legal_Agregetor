@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { publicCitiesResponse } from "./public-cities-response";
 
+
+async function main() {
 const rows = [{ id: "city-one", name: "Тестовый город", slug: "test-city", region: "Тестовый регион" }];
 const healthy = await publicCitiesResponse(async () => rows);
 assert.equal(healthy.status, 200);
@@ -29,3 +31,9 @@ try {
 }
 
 console.log("Public city API: true empty results vs database outage and retry response PASS");
+}
+
+void main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
