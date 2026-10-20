@@ -1,8 +1,18 @@
-import { NextResponse } from "next/server";
-import { getCities } from "@/lib/repositories";
+import { prisma } from "@/lib/prisma";
+import { publicCitiesResponse } from "@/lib/public-cities-response";
 
-/** Only public city labels; requested on dropdown opening, not on every page render. */
+export const dynamic = "force-dynamic";
+
+/** Read real, active city labels; never silently replace a database outage with a valid empty list. */
 export async function GET() {
-  const cities = await getCities();
-  return NextResponse.json({ cities: cities.map(({ id, name, slug, region }) => ({ id, name, slug, region })) });
+  return publicCitiesResponse(async () => {
+    const rows = await prisma.city.findMany({
+      where: { isActive: true },
+      select: { id: true, name: true, slug: true, region: true },
+      orderBy: { name: "asc" }
+    });
+    return rows.map(({ id, name, slug, region }) => ({
+      id, name, slug, region: region ?? ""
+    }));
+  });
 }
