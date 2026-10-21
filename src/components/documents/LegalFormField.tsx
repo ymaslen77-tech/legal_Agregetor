@@ -4,7 +4,7 @@ export type LegalFormOption = { value: string; label: string };
 
 export function LegalFormField({
   id, label, value, onChange, kind = "text", required = false,
-  hint, error, options, rows = 4
+  hint, error, options, rows = 4, maxLength
 }: {
   id: string;
   label: string;
@@ -16,6 +16,7 @@ export function LegalFormField({
   error?: string;
   options?: readonly LegalFormOption[];
   rows?: number;
+  maxLength?: number;
 }) {
   const inputClass = `min-h-11 w-full rounded-md border bg-white px-3 py-2 text-base font-normal text-ink outline-none focus:border-trust focus:ring-2 focus:ring-trust/30 ${error ? "border-red-600" : "border-line"}`;
   const hintId = hint ? `${id}-hint` : undefined;
@@ -33,8 +34,8 @@ export function LegalFormField({
     {kind === "select" ? <select {...props}>
       <option value="">Выберите вариант</option>
       {options?.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-    </select> : kind === "textarea" ? <textarea {...props} rows={rows} className={`${inputClass} min-h-28`} />
-      : <input {...props} type={inputType} min={kind === "number" ? 0 : undefined} />}
+    </select> : kind === "textarea" ? <textarea {...props} maxLength={maxLength} rows={rows} className={`${inputClass} min-h-28`} />
+      : <input {...props} maxLength={maxLength} type={inputType} min={kind === "number" ? 0 : undefined} />}
     {hint ? <p id={hintId} className="text-xs font-normal leading-5 text-zinc-600">{hint}</p> : null}
     {error ? <p id={errorId} className="text-sm font-normal text-red-700" role="alert">{error}</p> : null}
   </div>;

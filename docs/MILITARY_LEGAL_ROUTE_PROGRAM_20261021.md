@@ -49,3 +49,9 @@ Neon и production не изменять во время внутренней р
 Разрешён только экспертный интерфейс подготовки и экспорта для проверки — все 18 сценариев `filingReady=false`, протокол 11 критериев и обязательное `expertSignOff=NOT_GRANTED` сохраняются. Нельзя использовать Preview как юридическую публикацию или делиться обходом Vercel Authentication. Проверка на `npm run test:military`.
 
 Preview environment adjustment: Vercel may not expose system `VERCEL_ENV` when automatic system variable exposure is disabled. Preview therefore requires **both branch-scoped variables** `MILITARY_PREVIEW=1` and `MILITARY_PREVIEW_SCOPE=military-feature-preview`; explicit `VERCEL_ENV=production` still denies access. Vercel Authentication remains mandatory. The flags are set ONLY for Preview deployments from `feat/military-legal-routes-v1-20261021`.
+
+## Эталон интерфейса — этап 3
+
+- Утверждённые канонические URL `/problems/...` остаются **внутренней моделью данных**, не появляются в Sitemap до экспертной приёмки. Временно доступны 18 адресуемых предпросмотров только вида `/internal/military-preview/?route=<whitelisted>&scenario=<whitelisted>`. Факты пользователя в URL не передаются.
+- Пошаговый интерфейс, обязательное подтверждение исходных фактов, юридические препятствия до генерации, общий `LegalFormField` и `LegalRouteJourney`, версии и экспорт по DOCUMENT_RESULT_V1.
+- Для военного Preview отключена **любая** кнопка сохранения в постоянный кабинет: `DocumentResultSummary.showArchive=false`. Запрет серверной регистрации и отсутствие отправки в Neon сохраняются. Архив можно открывать лишь после подтверждённого допуска и проверки авторизации, шифрования, полномочий, целостности версии и согласия.
