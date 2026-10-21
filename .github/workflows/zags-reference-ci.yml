@@ -85,6 +85,23 @@ jobs:
         run: npx playwright install --with-deps chromium firefox webkit
       - name: Cross-browser responsive layouts and lab navigation timing
         run: npx playwright test --config=playwright.responsive.config.ts --workers=2
+      - name: Verify protected military UI in a separate Preview-like runtime
+        env:
+          MILITARY_PREVIEW: "1"
+          MILITARY_PREVIEW_SCOPE: "military-feature-preview"
+        run: |
+          npm run start -- -p 3706 > /tmp/military-preview-next.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:3706/internal/military-preview/ > /dev/null; then
+              PLAYWRIGHT_BASE_URL=http://127.0.0.1:3706 npx playwright test tests/e2e/military-preview.spec.ts --workers=1
+              exit $?
+            fi
+            sleep 1
+          done
+          cat /tmp/military-preview-next.log
+          exit 1
       - name: Run all family and labor route acceptance
         env:
           E2E_SUBMIT_REVIEW: "true"
