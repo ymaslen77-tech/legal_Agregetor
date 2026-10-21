@@ -1,6 +1,10 @@
 "use client";
+
+import Link from "next/link";
 import {useMemo,useState} from "react";
-import {MILITARY_ROUTES} from "@/data/military-route-plans";
+import {MILITARY_ROUTES,type MilitaryRoute,type MilitaryScenario,MILITARY_SOURCES} from "@/data/military-route-plans";
+import {getMilitaryCaseReview} from "@/data/military-case-reviews";
+import {militaryPreviewHref} from "@/lib/military-preview-navigation";
 import {createMilitaryDocumentResult,validateMilitaryIntake} from "@/lib/military-document-generator";
 import type {DocumentResultV1} from "@/lib/document-result-contract";
 import {downloadGeneratedDocumentDocx} from "@/lib/document-export";
@@ -9,115 +13,225 @@ import {addDocumentVersion} from "@/lib/document-version-history";
 import {DocumentResultSummary} from "@/components/documents/DocumentResultSummary";
 import {DocumentVersionHistory} from "@/components/documents/DocumentVersionHistory";
 import {LegalRouteJourney} from "@/components/documents/LegalRouteJourney";
+import {LegalFormField} from "@/components/documents/LegalFormField";
+
+type Step="choose"|"facts"|"review"|"result";
 type Snapshot={documentResult:DocumentResultV1;answers:Record<string,string>};
-export function MilitaryPreviewForm(){
- const [routeId,setRouteId]=useState(MILITARY_ROUTES[0].id);
- const route=MILITARY_ROUTES.find(r=>r.id===routeId)??MILITARY_ROUTES[0];
- const [scenarioKey,setScenarioKey]=useState(route.scenarios[0].key);
+type Props={initialRouteId:string;initialScenarioKey:string;invalidSelection?:boolean};
+
+function safeLabel(kind:MilitaryScenario["kind"]):string {
+ return kind==="DRAFT"?"Предварительный запрос сведений":kind==="CHECKLIST"?"Проверочный чек-лист":"Экстренная инструкция";
+}
+export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSelection=false}:Props){
+ const [routeId,setRouteId]=useState(initialRouteId);
+ const route=MILITARY_ROUTES.find(x=>x.id===routeId)??MILITARY_ROUTES[0];
+ const [scenarioKey,setScenarioKey]=useState(initialScenarioKey);
  const scenario=route.scenarios.find(s=>s.key===scenarioKey)??route.scenarios[0];
+ const [step,setStep]=useState<Step>("choose");
  const [answers,setAnswers]=useState<Record<string,string>>({});
  const [versions,setVersions]=useState<Snapshot[]>([]);
  const [selectedVersion,setSelectedVersion]=useState<string|null>(null);
  const [dirty,setDirty]=useState(true);
+ const [acknowledged,setAcknowledged]=useState(false);
  const [message,setMessage]=useState("");
  const required=useMemo(()=>route.fields.filter(f=>scenario.required.includes(f.key)),[route,scenario]);
+ const review=getMilitaryCaseReview(route.id,scenario.key);
  const validation=validateMilitaryIntake(route,scenario,answers);
  const active=versions.find(v=>v.documentResult.versionId===selectedVersion);
- function changeRoute(next:string){
-  const item=MILITARY_ROUTES.find(r=>r.id===next);if(!item)return;
-  setRouteId(next);setScenarioKey(item.scenarios[0].key);setAnswers({});setSelectedVersion(null);setDirty(true);setMessage("");
+ const emergency=scenario.kind==="URGENT_INSTRUCTION";
+ const completeCount=required.filter(f=>!validation.missing.includes(f.key)&&!validation.invalid.includes(f.key)).length;
+
+ function resetFor(routeNext:MilitaryRoute,scenarioNext:MilitaryScenario){
+  setRouteId(routeNext.id);setScenarioKey(scenarioNext.key);
+  setAnswers({});setSelectedVersion(null);setDirty(true);setAcknowledged(false);
+  setMessage("");setStep("choose");
  }
- function changeScenario(next:string){
-  setScenarioKey(next);setAnswers({});setSelectedVersion(null);setDirty(true);setMessage("");
+ function changeValue(key:string,value:string){
+  setAnswers(previous=>({...previous,[key]:value}));setDirty(true);setAcknowledged(false);setMessage("");
  }
  function generate(){
-  try{
-   const result=createMilitaryDocumentResult(route,scenario,answers,
-    {versionId:crypto.randomUUID(),createdAt:new Date().toISOString()});
+  try {
+   if(!acknowledged)throw new Error("Подтвердите, что проверили исходные сведения.");
+   const result=createMilitaryDocumentResult(route,scenario,answers,{
+    versionId:crypto.randomUUID(),createdAt:new Date().toISOString()
+   });
    const snapshot={documentResult:result,answers:{...answers}};
-   setVersions(prev=>addDocumentVersion(prev.map(item=>({documentResult:item.documentResult,payload:item})),{documentResult:result,payload:snapshot}).map(item=>item.payload));
-   setSelectedVersion(result.versionId);setDirty(false);
-   setMessage("Создана предварительная версия. Обязательная индивидуальная юридическая проверка не пройдена.");
-  }catch(e){setMessage(e instanceof Error?e.message:"Невозможно подготовить документ");}
+   setVersions(previous=>addDocumentVersion(
+    previous.map(item=>({documentResult:item.documentResult,payload:item})),
+    {documentResult:result,payload:snapshot}
+   ).map(item=>item.payload));
+   setSelectedVersion(result.versionId);setDirty(false);setStep("result");
+   setMessage("Создан предварительный результат. До правовой приёмки подавать его нельзя.");
+  } catch (e) {setMessage(e instanceof Error?e.message:"Не удалось подготовить результат.");}
  }
  async function downloadPdf(){
   if(!active||dirty)return;
-  try{
-   const result=active.documentResult;
-   const blob=await createFamilyLaborPdfBlob(result);
-   const url=URL.createObjectURL(blob);const link=document.createElement("a");
-   link.href=url;link.download=result.documentSlug+"-"+result.versionId+".pdf";document.body.appendChild(link);
-   link.click();link.remove();URL.revokeObjectURL(url);
-  }catch{setMessage("Не удалось сформировать PDF выбранной версии.");}
+  try {
+   const result=active.documentResult,blob=await createFamilyLaborPdfBlob(result);
+   const url=URL.createObjectURL(blob),a=document.createElement("a");
+   a.href=url;a.download=result.documentSlug+"-"+result.versionId+".pdf";
+   document.body.appendChild(a);a.click();a.remove();
+   URL.revokeObjectURL(url);setMessage("PDF выбранной версии сформирован.");
+  }catch {setMessage("Не удалось сформировать PDF. Попробуйте ещё раз.");}
  }
  async function downloadDocx(){
   if(!active||dirty)return;
-  try{
+  try {
    const result=active.documentResult;
-   await downloadGeneratedDocumentDocx({title:result.documentTitle,content:result.documentText,
-    fileName:result.documentSlug+"-"+result.versionId+".docx"});
-  }catch{setMessage("Не удалось сформировать DOCX выбранной версии.");}
+   await downloadGeneratedDocumentDocx({
+    title:result.documentTitle,content:result.documentText,
+    fileName:result.documentSlug+"-"+result.versionId+".docx"
+   });setMessage("DOCX выбранной версии сформирован.");
+  }catch {setMessage("Не удалось сформировать DOCX. Попробуйте ещё раз.");}
  }
- function selectVersion(versionId:string){
-  const match=versions.find(v=>v.documentResult.versionId===versionId);
-  if(!match)return;const matchRoute=MILITARY_ROUTES.find(r=>r.slug===match.documentResult.routeSlug);
-  if(matchRoute){setRouteId(matchRoute.id);setScenarioKey(match.documentResult.scenarioKey);}
-  setSelectedVersion(versionId);setAnswers({...match.answers});setDirty(false);setMessage("Восстановлена выбранная локальная версия.");
+ function selectVersion(id:string){
+  const snapshot=versions.find(v=>v.documentResult.versionId===id);
+  if(!snapshot)return;
+  const nextRoute=MILITARY_ROUTES.find(r=>r.slug===snapshot.documentResult.routeSlug);
+  if(!nextRoute)return;
+  setRouteId(nextRoute.id);setScenarioKey(snapshot.documentResult.scenarioKey);
+  setSelectedVersion(id);setAnswers({...snapshot.answers});setDirty(false);
+  setAcknowledged(true);setStep("result");setMessage("Выбрана неизменённая версия в этой вкладке.");
  }
+ function backToFacts(){setStep("facts");setMessage("");}
+ const statuses=[["Выбор ситуации","choose"],["Анкета","facts"],["Проверка фактов","review"],["Предварительный результат","result"]] as const;
  return <>
-  <LegalRouteJourney stage="document" title={route.title}/>
-  <section className="mx-auto max-w-5xl p-4 sm:p-8">
-  <p className="text-sm font-semibold text-amber-900">ВНУТРЕННИЙ ПРОТОТИП — НЕ ОПУБЛИКОВАНО, НЕ ГОТОВО К ПОДАЧЕ</p>
-  <h1 className="mt-2 text-3xl font-semibold">Военное право: маршруты и генераторы</h1>
-  <p className="mt-4 text-sm leading-6">Режим внутренней технической проверки. Факты остаются в браузере, не отправляются в Neon.
-    Нормы, компетенция, специальные режимы и сроки требуют экспертного подтверждения перед использованием.</p>
-  <label className="mt-6 block font-semibold">Направление
-   <select aria-label="Военный маршрут" value={routeId} onChange={e=>changeRoute(e.target.value)}
-    className="mt-2 w-full rounded-md border p-3 font-normal">
-    {MILITARY_ROUTES.map(r=><option key={r.id} value={r.id}>{r.title}</option>)}
-   </select>
-  </label>
-  <label className="mt-4 block font-semibold">Ситуация
-   <select aria-label="Сценарий военного права" value={scenario.key} onChange={e=>changeScenario(e.target.value)}
-    className="mt-2 w-full rounded-md border p-3 font-normal">
-    {route.scenarios.map(s=><option key={s.key} value={s.key}>{s.title}</option>)}
-   </select>
-  </label>
-  {scenario.kind==="URGENT_INSTRUCTION"?<div role="alert" className="mt-6 rounded-md border border-red-500 bg-red-50 p-5">
-   <h2 className="font-semibold text-red-900">Неотложная помощь</h2>
-   {scenario.safetyNotes.map(x=><p className="mt-2 text-sm text-red-900" key={x}>{x}</p>)}
-   <p className="mt-2 text-sm">Анкета и генерация документа для экстренного сценария не предусмотрены.</p>
-  </div>:<>
-   <div className="mt-6 grid gap-4" aria-label="Данные юридической анкеты">
-    {required.map(field=><label key={field.key} className="block text-sm font-semibold">
-     {field.label} *
-     {field.values?<select value={answers[field.key]??""}
-       onChange={e=>{setAnswers(a=>({...a,[field.key]:e.target.value}));setDirty(true);}}
-       className="mt-2 block min-h-11 w-full rounded-md border p-3 font-normal">
-       <option value="">Выберите значение</option>
-       {field.values.map(v=><option key={v} value={v}>{v}</option>)}
-      </select>:<textarea value={answers[field.key]??""} maxLength={2000} rows={2}
-       onChange={e=>{setAnswers(a=>({...a,[field.key]:e.target.value}));setDirty(true);}}
-       className="mt-2 block w-full rounded-md border p-3 font-normal"/>}
-    </label>)}
-   </div>
-   {validation.missing.length>0?<p className="mt-3 text-sm text-amber-800" role="status">Не заполнено: {validation.missing.map(x=>route.fields.find(f=>f.key===x)?.label??x).join("; ")}</p>:null}
-   {validation.invalid.length>0?<p className="mt-3 text-sm text-red-800" role="alert">Неверно заполнены поля: {validation.invalid.join(", ")}</p>:null}
-   {validation.warnings.map(w=><p key={w} role="alert" className="mt-3 text-sm text-red-800">{w}</p>)}
-   <button type="button" disabled={!validation.complete} onClick={generate} className="mt-5 min-h-11 rounded-md bg-slate-900 px-5 py-3 text-white disabled:opacity-50">
-    Создать предварительную версию
-   </button>
-   <p className="mt-3 text-sm" role="status">{message}</p>
-  </>}
-  {active&&<section className="mt-7 border-t pt-5">
-   <DocumentResultSummary result={active.documentResult}/>
-   <h2 className="mt-5 text-xl font-semibold">Версия документа</h2>
-   <pre className="mt-3 max-h-[38rem] overflow-y-auto whitespace-pre-wrap break-words rounded-md border bg-slate-50 p-4">{active.documentResult.documentText}</pre>
-   <div className="mt-4 flex flex-wrap gap-3">
-    <button disabled={dirty} onClick={()=>void downloadDocx()} className="rounded-md border p-3 disabled:opacity-50">Экспорт DOCX</button>
-    <button disabled={dirty} onClick={()=>void downloadPdf()} className="rounded-md border p-3 disabled:opacity-50">Экспорт PDF</button>
-   </div>
-   <DocumentVersionHistory versions={versions.map(x=>x.documentResult)} currentVersionId={active.documentResult.versionId} onSelect={selectVersion}/>
-  </section>}
- </section></>;
+  <LegalRouteJourney stage="document" title={route.title} activeStep={step==="choose"?1:step==="result"?3:2}/>
+  <section className="mx-auto max-w-5xl min-w-0 px-4 py-7 sm:px-6 lg:px-8">
+   <p className="text-sm font-semibold text-amber-900">ЗАКРЫТЫЙ ПРЕДПРОСМОТР — НЕ ГОТОВО К ПОДАЧЕ</p>
+   <h1 className="mt-2 text-3xl font-semibold text-ink">Военное право — юридические маршруты</h1>
+   <p className="mt-3 text-sm leading-6 text-zinc-700">
+    6 направлений, 18 сценариев. Проверка по стандартам ПравоПоиска.
+    Документы пока не согласованы юристом. Не указывайте ФИО, номера частей, местоположение, задачи подразделений,
+    диагнозы или чужие персональные данные. Всё введённое остаётся в памяти вкладки браузера и не отправляется в Neon.
+   </p>
+   {invalidSelection?<p role="alert" className="mt-4 rounded-lg border border-amber-400 bg-amber-50 p-3">
+    Неизвестный адрес сценария. Показан первый доступный вариант; выберите нужный маршрут.</p>:null}
+   <nav aria-label="Этапы заполнения военного маршрута" className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
+    {statuses.map(([label,kind],index)=><div key={kind} aria-current={step===kind?"step":undefined}
+     className={`rounded-lg border px-3 py-3 text-sm ${step===kind?"border-trust bg-emerald-50 font-semibold":"border-line bg-white"}`}>
+     <span aria-hidden="true">{index+1}. </span>{label}
+    </div>)}
+   </nav>
+
+   {step==="choose"?<section className="mt-7" aria-label="Выбор юридической ситуации">
+    <h2 className="text-xl font-semibold">Шаг 1. Выберите направление</h2>
+    <p className="mt-2 text-sm text-zinc-700">Каждое направление содержит три индивидуальных сценария. Ссылки относятся только к закрытому Preview.</p>
+    <div className="mt-4 grid gap-3 sm:grid-cols-2">
+     {MILITARY_ROUTES.map(r=><Link key={r.id} href={militaryPreviewHref(r.id)}
+       aria-current={route.id===r.id?"page":undefined}
+       className={`min-w-0 rounded-lg border p-4 text-sm hover:border-trust focus:ring-2 focus:ring-trust ${route.id===r.id?"border-trust bg-emerald-50":"border-line"}`}>
+       <span className="font-semibold">{r.title}</span>
+       <span className="mt-2 block text-xs text-zinc-600">{r.scenarios.length} сценария · юридическая проверка не завершена</span>
+      </Link>)}
+    </div>
+    <h3 className="mt-7 text-lg font-semibold">Выберите конкретную ситуацию</h3>
+    <ul className="mt-3 grid gap-3">
+     {route.scenarios.map(s=><li key={s.key}>
+       <Link href={militaryPreviewHref(route.id,s.key)}
+        aria-current={scenario.key===s.key?"page":undefined}
+        className={`block min-w-0 rounded-lg border px-4 py-3 text-sm hover:border-trust ${scenario.key===s.key?"border-trust bg-emerald-50":"border-line"}`}>
+        <span className="font-semibold">{s.title}</span>
+        <span className="mt-1 block text-xs text-zinc-600">{safeLabel(s.kind)}</span>
+       </Link>
+      </li>)}
+    </ul>
+    <div className="mt-5 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm">
+     <p className="font-semibold">Юридическое ограничение</p>
+     <p className="mt-1">{review.exclusionToCheck}</p>
+    </div>
+    {emergency?<div className="mt-5 rounded-lg border-l-4 border-red-700 bg-red-50 p-5" role="alert">
+      <h3 className="font-semibold text-red-950">Сначала неотложная помощь</h3>
+      {scenario.safetyNotes.map(t=><p key={t} className="mt-2 text-sm text-red-950">{t}</p>)}
+      <p className="mt-2 text-sm text-red-950">Заполнение анкеты и генерация файла не предусмотрены.</p>
+     </div>:<button type="button" onClick={()=>setStep("facts")}
+     className="mt-6 min-h-11 rounded-md bg-trust px-6 py-3 text-sm font-semibold text-white">Перейти к анкете</button>}
+   </section>:null}
+
+   {step==="facts"&&!emergency?<section className="mt-7" aria-label="Пошаговая анкета">
+    <h2 className="text-xl font-semibold">Шаг 2. Укажите необходимые обстоятельства</h2>
+    <p className="mt-2 text-sm leading-6 text-zinc-700">Сценарий: <strong>{scenario.title}</strong>. 
+     Только обезличенные сведения. Даты и правовой статус указывайте по документам, а не по предположениям.</p>
+    <p className="mt-3 text-xs text-zinc-600">Заполнено: {completeCount} из {required.length} обязательных полей.</p>
+    <div className="mt-5 grid min-w-0 gap-4">
+     {required.map(field=><LegalFormField key={field.key} id={"military-"+field.key}
+      label={field.label} value={answers[field.key]??""} required
+      kind={field.values?"select":"textarea"} rows={2} maxLength={2000}
+      options={field.values?.map(v=>({value:v,label:v}))}
+      hint={field.key==="urgency"?"Если помощь требуется или вы не уверены, генерация будет остановлена.":
+        field.key==="medical"?"Не указывайте диагноз и не прикладывайте медицинские файлы.":undefined}
+      error={validation.invalid.includes(field.key)?"Проверьте корректность заполнения.":undefined}
+      onChange={v=>changeValue(field.key,v)}/>)}
+    </div>
+    <div className="mt-5 flex flex-wrap gap-3">
+     <button type="button" onClick={()=>setStep("choose")} className="min-h-11 rounded-md border border-line px-5 py-3 text-sm font-semibold">Назад к ситуации</button>
+     <button type="button" onClick={()=>setStep("review")} className="min-h-11 rounded-md bg-trust px-5 py-3 text-sm font-semibold text-white">Проверить сведения</button>
+    </div>
+   </section>:null}
+
+   {step==="review"&&!emergency?<section className="mt-7" aria-label="Проверка перед генерацией">
+    <h2 className="text-xl font-semibold">Шаг 3. Проверка исходных данных и рисков</h2>
+    <p className="mt-2 text-sm text-zinc-700">Ниже — обязательные вопросы для последующей юридической проверки. Они не являются заключением эксперта.</p>
+    {validation.missing.length?<p role="alert" className="mt-4 rounded-md bg-amber-50 p-3 text-sm">
+      Не заполнено: {validation.missing.map(k=>route.fields.find(f=>f.key===k)?.label??k).join("; ")}</p>:null}
+    {validation.invalid.length?<p role="alert" className="mt-3 rounded-md bg-red-50 p-3 text-sm text-red-950">
+      Неверно заполнены поля: {validation.invalid.join("; ")}</p>:null}
+    {validation.warnings.map(w=><p role="alert" key={w} className="mt-3 rounded-md bg-amber-50 p-3 text-sm text-amber-950">{w}</p>)}
+    <h3 className="mt-5 font-semibold">Правовые вопросы конкретного сценария</h3>
+    <ol className="mt-2 list-decimal space-y-2 pl-6 text-sm leading-6">
+     {[review.scopeToCheck,review.standingToCheck,review.addresseeToCheck,review.timeToCheck,review.exclusionToCheck].map(t=><li key={t}>{t}</li>)}
+    </ol>
+    <h3 className="mt-5 font-semibold">Доказательства и приложения</h3>
+    <ul className="mt-2 list-disc space-y-1 pl-6 text-sm">
+     {review.evidenceToCheck.map(e=><li key={e}>{e}</li>)}
+    </ul>
+    <h3 className="mt-5 font-semibold">Нормативные источники — требуют сверки редакций</h3>
+    <ul className="mt-2 list-disc space-y-2 pl-6 text-sm">
+     {scenario.sources.map(sourceId=><li key={sourceId}>
+      <a className="underline underline-offset-2" href={MILITARY_SOURCES[sourceId].url}
+       target="_blank" rel="noreferrer noopener">{MILITARY_SOURCES[sourceId].name}</a>
+      {MILITARY_SOURCES[sourceId].verification==="PRIMARY_DOCUMENT_LINK_PENDING"?
+       <span className="ml-2 text-amber-900">(точный официальный документ не установлен)</span>:null}
+     </li>)}
+    </ul>
+    <label className="mt-6 flex items-start gap-3 rounded-md border border-line p-4 text-sm leading-6">
+     <input type="checkbox" checked={acknowledged} disabled={!validation.complete}
+      onChange={e=>setAcknowledged(e.target.checked)} className="mt-1 h-5 w-5" />
+     <span>Я проверил введённые факты по своим документам и понимаю, что это предварительный материал, который нельзя подавать без юридической проверки.</span>
+    </label>
+    <div className="mt-5 flex flex-wrap gap-3">
+     <button type="button" onClick={backToFacts}
+      className="min-h-11 rounded-md border border-line px-5 py-3 text-sm font-semibold">Изменить данные</button>
+     <button type="button" disabled={!validation.complete||!acknowledged} onClick={generate}
+      className="min-h-11 rounded-md bg-trust px-5 py-3 text-sm font-semibold text-white disabled:opacity-50">
+      Создать предварительную версию
+     </button>
+    </div>
+    {message?<p role="status" className="mt-3 text-sm">{message}</p>:null}
+   </section>:null}
+
+   {step==="result"&&active?<section className="mt-7" aria-label="Предварительный результат">
+    <h2 className="text-xl font-semibold">Шаг 4. Предварительный результат</h2>
+    <div className="mt-4"><DocumentResultSummary result={active.documentResult} showArchive={false}>
+     <p className="mt-2 text-sm">Сохранение в общий кабинет недоступно до юридической приёмки. Версия остаётся в памяти этой вкладки.</p>
+    </DocumentResultSummary></div>
+    <h3 className="mt-6 font-semibold">Сформированный материал</h3>
+    <pre className="mt-3 max-h-[38rem] min-w-0 overflow-y-auto whitespace-pre-wrap break-words [overflow-wrap:anywhere] rounded-md border border-line bg-zinc-50 p-4 font-serif text-sm leading-6">
+     {active.documentResult.documentText}
+    </pre>
+    <div className="mt-4 flex flex-wrap gap-3">
+     <button type="button" disabled={dirty} onClick={()=>void downloadDocx()}
+      className="min-h-11 rounded-md border border-trust px-4 py-2 text-sm font-semibold disabled:opacity-50">Скачать DOCX</button>
+     <button type="button" disabled={dirty} onClick={()=>void downloadPdf()}
+      className="min-h-11 rounded-md border border-trust px-4 py-2 text-sm font-semibold disabled:opacity-50">Скачать PDF</button>
+     <button type="button" onClick={backToFacts}
+      className="min-h-11 rounded-md border border-line px-4 py-2 text-sm font-semibold">Изменить и создать новую версию</button>
+    </div>
+    <p className="mt-3 text-sm text-amber-900">Этап 5 «Юридическая проверка» не завершён. Экспертный допуск к подаче отсутствует.</p>
+    <DocumentVersionHistory versions={versions.map(v=>v.documentResult)}
+     currentVersionId={active.documentResult.versionId} onSelect={selectVersion}/>
+   </section>:null}
+   {message&&step==="result"?<p role="status" className="mt-3 text-sm">{message}</p>:null}
+  </section>
+ </>;
 }
