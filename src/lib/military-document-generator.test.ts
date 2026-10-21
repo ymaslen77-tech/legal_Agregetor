@@ -56,6 +56,12 @@ for(const route of MILITARY_ROUTES){
   assert.ok(validateMilitaryIntake(route,scenario,oversized).invalid.includes("event"));
  }
 }
+const requestRoute=MILITARY_ROUTES[0],requestScenario=requestRoute.scenarios[1];
+const memberAnswers=Object.fromEntries(requestRoute.fields.map(x=>[x.key,x.values?x.values[0]:"Документированное обращение"]));
+memberAnswers.role="член семьи";
+const memberResult=createMilitaryDocumentResult(requestRoute,requestScenario,memberAnswers,{versionId:id,createdAt:stamp});
+assert.equal(memberResult.resultKind,"CHECKLIST","Representative/family standing must not be auto-assumed for draft");
+assert.equal(memberResult.filingReady,false);
 assert.equal(generated,17);assert.equal(emergencies,1);assert.equal(drafts,2);
 assert.throws(()=>documentResultSchema.parse({...createMilitaryDocumentResult(MILITARY_ROUTES[0],MILITARY_ROUTES[0].scenarios[0],
  Object.fromEntries(MILITARY_ROUTES[0].fields.map(f=>[f.key,f.values?f.values[0]:"Контрольные данные"])),

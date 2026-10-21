@@ -34,7 +34,7 @@ export function MilitaryPreviewForm(){
    const result=createMilitaryDocumentResult(route,scenario,answers,
     {versionId:crypto.randomUUID(),createdAt:new Date().toISOString()});
    const snapshot={documentResult:result,answers:{...answers}};
-   setVersions(prev=>addDocumentVersion(prev,{documentResult:result,payload:snapshot}).map(v=>v.payload));
+   setVersions(prev=>addDocumentVersion(prev.map(item=>({documentResult:item.documentResult,payload:item})),{documentResult:result,payload:snapshot}).map(item=>item.payload));
    setSelectedVersion(result.versionId);setDirty(false);
    setMessage("Создана предварительная версия. Обязательная индивидуальная юридическая проверка не пройдена.");
   }catch(e){setMessage(e instanceof Error?e.message:"Невозможно подготовить документ");}
