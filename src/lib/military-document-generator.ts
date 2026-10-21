@@ -20,7 +20,7 @@ export function validateMilitaryIntake(route:MilitaryRoute,scenario:MilitaryScen
  const warnings:string[]=[];
  if(isUncertain(answers.role?.trim()??"")||isUncertain(answers.regime?.trim()??""))
   warnings.push("Не установлен статус заявителя и/или режим службы; до уточнения генерация заблокирована.");
- if(route.id==="military-medical"&&scenario.kind!=="URGENT_INSTRUCTION"&&answers.urgency!=="нет")
+ if(route.id==="military-medical"&&answers.urgency!=="нет")
   warnings.push("При угрозе здоровью или неясной срочности сначала медицинская помощь; генерация заблокирована.");
  if(scenario.kind==="DRAFT"&&answers.role!=="военнослужащий")
   warnings.push("Проект запроса сведений доступен только самому военнослужащему; полномочия иных заявителей подлежат проверке.");
