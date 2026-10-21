@@ -8,6 +8,7 @@ import {createFamilyLaborPdfBlob} from "@/lib/family-labor-pdf";
 import {addDocumentVersion} from "@/lib/document-version-history";
 import {DocumentResultSummary} from "@/components/documents/DocumentResultSummary";
 import {DocumentVersionHistory} from "@/components/documents/DocumentVersionHistory";
+import {LegalRouteJourney} from "@/components/documents/LegalRouteJourney";
 type Snapshot={documentResult:DocumentResultV1;answers:Record<string,string>};
 export function MilitaryPreviewForm(){
  const [routeId,setRouteId]=useState(MILITARY_ROUTES[0].id);
@@ -63,7 +64,9 @@ export function MilitaryPreviewForm(){
   if(matchRoute){setRouteId(matchRoute.id);setScenarioKey(match.documentResult.scenarioKey);}
   setSelectedVersion(versionId);setAnswers({...match.answers});setDirty(false);setMessage("Восстановлена выбранная локальная версия.");
  }
- return <section className="mx-auto max-w-5xl p-4 sm:p-8">
+ return <>
+  <LegalRouteJourney stage="document" title={route.title}/>
+  <section className="mx-auto max-w-5xl p-4 sm:p-8">
   <p className="text-sm font-semibold text-amber-900">ВНУТРЕННИЙ ПРОТОТИП — НЕ ОПУБЛИКОВАНО, НЕ ГОТОВО К ПОДАЧЕ</p>
   <h1 className="mt-2 text-3xl font-semibold">Военное право: маршруты и генераторы</h1>
   <p className="mt-4 text-sm leading-6">Режим внутренней технической проверки. Факты остаются в браузере, не отправляются в Neon.
@@ -116,5 +119,5 @@ export function MilitaryPreviewForm(){
    </div>
    <DocumentVersionHistory versions={versions.map(x=>x.documentResult)} currentVersionId={active.documentResult.versionId} onSelect={selectVersion}/>
   </section>}
- </section>;
+ </section></>;
 }
