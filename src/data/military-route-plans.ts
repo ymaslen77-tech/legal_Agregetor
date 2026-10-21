@@ -71,12 +71,12 @@ export const MILITARY_ROUTES:readonly MilitaryRoute[]=[
   sc("service-order-copy","Получение копии приказа или ответа","DRAFT",["order","authority"],["53fz","76fz","1237"],baseNotes,["Реквизиты приказа или подтверждение обращения","Подтверждение полномочий"]),
   sc("transfer","Перевод и изменение условий службы","CHECKLIST",["contract","order"],["53fz","1237","647"],baseNotes,["Контракт, служебные документы и ответы"])
  ]),
- make("military-discharge","uvolnenie-s-voennoy-sluzhby","Увольнение с военной службы",null,[extra.grounds,extra.order],[
+ make("military-discharge","uvolnenie-s-voennoy-sluzhby","Увольнение с военной службы",null,[extra.grounds,extra.order,extra.medical],[
   sc("discharge-basis","Основания увольнения: предварительная проверка","CHECKLIST",["grounds"],["53fz","1237","647"],baseNotes,["Контракт, решения командования, документы об основаниях"]),
   sc("medical-discharge","Увольнение по состоянию здоровья","CHECKLIST",["medical"],["53fz","76fz","565","647"],[...baseNotes,"Не подменять заключение ВВК автоматическим решением об увольнении."],["Заключение ВВК, медицинские документы и приказы"]),
   sc("discharge-order","Получение приказа и расчёта при увольнении","CHECKLIST",["order"],["53fz","76fz","306fz"],baseNotes,["Приказ, данные об обеспечении и расчёте"])
  ]),
- make("military-pay","denezhnoe-dovolstvie-i-vyplaty","Денежное довольствие и выплаты военнослужащим",null,[extra.payments,extra.authority],[
+ make("military-pay","denezhnoe-dovolstvie-i-vyplaty","Денежное довольствие и выплаты военнослужащим",null,[extra.payments,extra.authority,extra.family],[
   sc("pay-breakdown","Запрос сведений о начислениях и удержаниях","DRAFT",["payments","authority"],["76fz","306fz"],baseNotes,["Расчётные сведения за указанные периоды","Подтверждение обращений"]),
   sc("benefits","Компенсации и дополнительные выплаты","CHECKLIST",["payments"],["76fz","306fz"],baseNotes,["Документы об основании выплаты и расчетные сведения"]),
   sc("family-benefits","Выплаты членам семьи","CHECKLIST",["family","payments"],["76fz","306fz"],[...baseNotes,"Отдельно проверить заявителя и доказательства права члена семьи."],["Документы о родстве и статусе, ответы ведомства"])
@@ -91,7 +91,7 @@ export const MILITARY_ROUTES:readonly MilitaryRoute[]=[
   sc("challenge-decision","Предварительная проверка обжалования решения","CHECKLIST",["decision","receipt"],["53fz","76fz","kas"],[...baseNotes,"Сроки и компетенцию суда либо ведомства нельзя угадывать по названию жалобы."],["Текст решения, дата получения и подтверждения"]),
   sc("inaction","Отсутствие ответа или действие командования","CHECKLIST",["decision","receipt"],["76fz","kas"],baseNotes,["Подтверждение направления обращения, ответы"])
  ]),
- make("mobilization-draft","prizyv-i-mobilizatsiya","Призыв, мобилизация и отсрочки",1658,[extra.summons,extra.deferment],[
+ make("mobilization-draft","prizyv-i-mobilizatsiya","Призыв, мобилизация и отсрочки",1658,[extra.summons,extra.deferment,extra.receipt],[
   sc("draft-notice","Повестка и решения комиссии: проверка обстоятельств","CHECKLIST",["summons"],["53fz","647"],[...baseNotes,"Не переносить правила обычного призыва на мобилизацию без проверки статуса."],["Повестка и решение комиссии, подтверждение вручения"]),
   sc("deferment","Проверка возможной отсрочки","CHECKLIST",["summons","deferment"],["53fz","647"],baseNotes,["Документы об основании отсрочки и сообщения органа"]),
   sc("challenge-draft","Обжалование решения о призыве: предварительный порядок","CHECKLIST",["summons","receipt"],["53fz","kas","647"],[...baseNotes,"Не обещать приостановления исполнения решения без анализа действующей нормы и процессуального положения."],["Решение, дата вручения, приложения"])
