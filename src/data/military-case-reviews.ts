@@ -16,7 +16,6 @@ export type MilitaryCaseReview = {
  reviewState:"PENDING_PRIMARY_TEXT_AND_CASE_SCOPE";
  expertSignOff:"NOT_GRANTED";
 };
-type CaseInfo=Omit<MilitaryCaseReview,"id"|"reviewState"|"expertSignOff">;
 const define=(id:string,legalQuestion:string,scopeToCheck:string,standingToCheck:string,
  addresseeToCheck:string,timeToCheck:string,evidenceToCheck:readonly string[],exclusionToCheck:string,
  sourceIds:readonly MilitarySourceId[]):MilitaryCaseReview=>({
