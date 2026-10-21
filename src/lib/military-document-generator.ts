@@ -1,10 +1,19 @@
 import {MILITARY_SOURCES,getMilitaryDocumentSlug,type MilitaryRoute,type MilitaryScenario} from "@/data/military-route-plans";
 import {documentResultSchema,DOCUMENT_RESULT_CONTRACT_VERSION,type DocumentResultV1} from "@/lib/document-result-contract";
+import {getMilitaryCaseReview} from "@/data/military-case-reviews";
 
 type Answers=Record<string,string|undefined>;
 export type MilitaryValidation={missing:string[];invalid:string[];warnings:string[];complete:boolean};
 const MIN_TEXT=4;
-function isUncertain(value:string):boolean {return ["не знаю","не уверен","неизвестно","нет данных"].includes(value.toLowerCase());}
+function isUncertain(value:string):boolean {
+ return ["не знаю","не уверен","неизвестно","нет данных","не указано","не установлен","неизвестен"].includes(value.toLowerCase());
+}
+function statusConflict(role:string|undefined,regime:string|undefined):boolean {
+ if(role==="призывник" && ["контракт","уволен"].includes(regime??""))return true;
+ if(role==="уволенный военнослужащий" && regime!=="уволен")return true;
+ if(role==="военнослужащий" && regime==="доподготовка к призыву")return true;
+ return false;
+}
 export function validateMilitaryIntake(route:MilitaryRoute,scenario:MilitaryScenario,answers:Answers):MilitaryValidation {
  const missing:string[]=[],invalid:string[]=[];
  if(scenario.kind==="URGENT_INSTRUCTION")return {missing:[],invalid:[],warnings:[],complete:true};
@@ -22,6 +31,8 @@ export function validateMilitaryIntake(route:MilitaryRoute,scenario:MilitaryScen
   warnings.push("Не установлен статус заявителя и/или режим службы; до уточнения генерация заблокирована.");
  if(route.id==="military-medical"&&answers.urgency!=="нет")
   warnings.push("При угрозе здоровью или неясной срочности сначала медицинская помощь; генерация заблокирована.");
+ if(statusConflict(answers.role,answers.regime))
+  warnings.push("Указанные статусы заявителя и службы противоречат друг другу; генерация заблокирована.");
  if(scenario.kind==="DRAFT"&&answers.role!=="военнослужащий")
   warnings.push("Проект запроса сведений доступен только самому военнослужащему; полномочия иных заявителей подлежат проверке.");
  if(["mobilization-draft","military-discharge","military-medical"].includes(route.id))
@@ -46,12 +57,24 @@ export function createMilitaryDocumentResult(
  const check=validateMilitaryIntake(route,scenario,answers);
  if(check.missing.length||check.invalid.length||!check.complete)throw new Error("Заполните и подтвердите обязательные факты: "+[...check.missing,...check.invalid,...check.warnings].join("; "));
  const sourceLines=scenario.sources.map(key=>"- "+MILITARY_SOURCES[key].name+": "+MILITARY_SOURCES[key].url);
- const draftEligible=scenario.kind==="DRAFT"&&answers.role==="военнослужащий"&&Boolean(answers.authority?.trim());
+ const review=getMilitaryCaseReview(route.id,scenario.key);
+ const questions=[
+  "- Применимый режим: "+review.scopeToCheck,
+  "- Полномочия заявителя: "+review.standingToCheck,
+  "- Адресат и компетенция: "+review.addresseeToCheck,
+  "- Срок и событие: "+review.timeToCheck,
+  "- Исключения: "+review.exclusionToCheck
+ ];
+ // An unconfirmed addressee cannot receive an automatically addressed draft.
+ const draftEligible=scenario.kind==="DRAFT"&&answers.role==="военнослужащий"&&
+  ["контракт","мобилизация","призыв"].includes(answers.regime??"")&&
+  Boolean(answers.authority?.trim())&&!isUncertain(answers.authority?.trim()??"");
  const checklistText=[
   "ПРЕДВАРИТЕЛЬНЫЙ ЧЕК-ЛИСТ — НЕ ГОТОВ К ПОДАЧЕ",
   heading(route,scenario),"",
   "Сведения заявителя (не проверены):",...factLines(route,scenario,answers),"",
   "Что необходимо проверить:",...scenario.safetyNotes.map((v,i)=>(i+1)+". "+v),"",
+  "Индивидуальные вопросы юридической приёмки:",...questions,"",
   "Документы:",...scenario.evidence.map(s=>"- "+s),"",
   "Нормативные источники (применимость и действующая редакция ещё не согласованы):",
   ...sourceLines,"",
@@ -70,6 +93,7 @@ export function createMilitaryDocumentResult(
      :"Сведений о начислениях и удержаниях за указанный период с расшифровкой оснований.",
    "",
    "Для юридической проверки необходимы:",...scenario.evidence.map(s=>"- "+s),"",
+   "Неразрешённые правовые вопросы:",...questions,"",
    "Источники, применимость которых требует проверки:",...sourceLines,"",
    "Адресат, полномочия подписанта, нормы, срок и форма обращения не подтверждены.",
    "ПЕРЕД ИСПОЛЬЗОВАНИЕМ ОБЯЗАТЕЛЬНА ЮРИДИЧЕСКАЯ ПРОВЕРКА."

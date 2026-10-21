@@ -64,6 +64,24 @@ assert.equal(validateMilitaryIntake(medicalRoute,medicalScenario,urgentAnswers).
 assert.throws(()=>createMilitaryDocumentResult(medicalRoute,medicalScenario,urgentAnswers,{versionId:id,createdAt:stamp}),/генерация заблокирована/);
 urgentAnswers.urgency="не знаю";
 assert.equal(validateMilitaryIntake(medicalRoute,medicalScenario,urgentAnswers).complete,false);
+const conflicts=[
+ {role:"призывник",regime:"контракт"},
+ {role:"уволенный военнослужащий",regime:"мобилизация"},
+ {role:"военнослужащий",regime:"доподготовка к призыву"}
+];
+for(const conflict of conflicts){
+ const route=MILITARY_ROUTES[0],sc=route.scenarios[0];
+ const values=Object.fromEntries(route.fields.map(f=>[f.key,f.values?f.values[0]:"Документированное обстоятельство"]));
+ Object.assign(values,conflict);
+ assert.equal(validateMilitaryIntake(route,sc,values).complete,false,"contradictory military status must fail");
+ assert.throws(()=>createMilitaryDocumentResult(route,sc,values,{versionId:id,createdAt:stamp}));
+}
+const unknownAuthorityRoute=MILITARY_ROUTES[0],unknownAuthorityScenario=unknownAuthorityRoute.scenarios[1];
+const draftFacts=Object.fromEntries(unknownAuthorityRoute.fields.map(f=>[f.key,f.values?f.values[0]:"Подтверждённый факт"]));
+draftFacts.role="военнослужащий";
+draftFacts.regime="контракт";
+draftFacts.authority="не знаю";
+assert.equal(createMilitaryDocumentResult(unknownAuthorityRoute,unknownAuthorityScenario,draftFacts,{versionId:id,createdAt:stamp}).resultKind,"CHECKLIST");
 const requestRoute=MILITARY_ROUTES[0],requestScenario=requestRoute.scenarios[1];
 const memberAnswers=Object.fromEntries(requestRoute.fields.map(x=>[x.key,x.values?x.values[0]:"Документированное обращение"]));
 memberAnswers.role="член семьи";
