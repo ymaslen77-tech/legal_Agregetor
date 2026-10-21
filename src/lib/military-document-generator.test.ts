@@ -56,6 +56,14 @@ for(const route of MILITARY_ROUTES){
   assert.ok(validateMilitaryIntake(route,scenario,oversized).invalid.includes("event"));
  }
 }
+const medicalRoute=getMilitaryRoute("military-medical")!;
+const medicalScenario=medicalRoute.scenarios.find(x=>x.key==="vvk-conclusion")!;
+const urgentAnswers=Object.fromEntries(medicalRoute.fields.map(x=>[x.key,x.values?x.values[0]:"Есть документ"]));
+urgentAnswers.urgency="да";
+assert.equal(validateMilitaryIntake(medicalRoute,medicalScenario,urgentAnswers).complete,false);
+assert.throws(()=>createMilitaryDocumentResult(medicalRoute,medicalScenario,urgentAnswers,{versionId:id,createdAt:stamp}),/генерация заблокирована/);
+urgentAnswers.urgency="не знаю";
+assert.equal(validateMilitaryIntake(medicalRoute,medicalScenario,urgentAnswers).complete,false);
 const requestRoute=MILITARY_ROUTES[0],requestScenario=requestRoute.scenarios[1];
 const memberAnswers=Object.fromEntries(requestRoute.fields.map(x=>[x.key,x.values?x.values[0]:"Документированное обращение"]));
 memberAnswers.role="член семьи";
