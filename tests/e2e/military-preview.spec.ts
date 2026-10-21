@@ -47,13 +47,13 @@ test("contract document flows through facts, safety checks and versioned prelimi
 });
 test("urgent medical scenario gives help without questionnaire or PDF",async({page})=>{
  await page.goto(militaryPreviewHref("military-medical","medical-emergency"));
- await expect(page.getByRole("alert")).toContainText("Сначала неотложная помощь");
+ await expect(page.getByRole("heading",{name:"Сначала неотложная помощь"})).toBeVisible();
  await expect(page.getByRole("button",{name:"Перейти к анкете"})).toHaveCount(0);
  await expect(page.getByRole("button",{name:"Скачать PDF"})).toHaveCount(0);
 });
 test("invalid route is safely reset without reflecting private facts",async({page})=>{
  const response=await page.goto("/internal/military-preview/?route=not-found&scenario=bad");
  expect(response?.status()).toBe(200);
- await expect(page.getByRole("alert")).toContainText("Неизвестный адрес сценария");
+ await expect(page.getByText("Неизвестный адрес сценария.",{exact:false})).toBeVisible();
  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content",/noindex/);
 });
