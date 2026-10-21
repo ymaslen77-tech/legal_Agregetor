@@ -22,7 +22,7 @@ for(const route of MILITARY_ROUTES){
   assert.ok(scenario.sources.length>=2,route.id+"/"+scenario.key+" has no legal registry");
   for(const id of scenario.sources)assert.ok(MILITARY_SOURCES[id]?.url.startsWith("https://"));
   const answers=Object.fromEntries(route.fields.map(f=>[f.key,
-    f.values?f.values.find(x=>x!=="не знаю")!:"Документы подтверждают событие"]));
+    f.key==="urgency"?"нет":f.values?f.values.find(x=>x!=="не знаю")!:"Документы подтверждают событие"]));
   const resultKind=scenario.kind;
   if(resultKind==="URGENT_INSTRUCTION"){
     emergencies++;
