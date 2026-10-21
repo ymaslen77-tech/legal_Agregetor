@@ -5,6 +5,9 @@ import {getMilitaryCaseReview} from "@/data/military-case-reviews";
 type Answers=Record<string,string|undefined>;
 export type MilitaryValidation={missing:string[];invalid:string[];warnings:string[];complete:boolean};
 const MIN_TEXT=4;
+const UNSUPPORTED_MILITARY_REGIMES=new Set([
+ "добровольческое формирование","военные сборы","мобилизационный людской резерв"
+]);
 function isUncertain(value:string):boolean {
  return ["не знаю","не уверен","неизвестно","нет данных","не указано","не установлен","неизвестен"].includes(value.toLowerCase());
 }
@@ -29,6 +32,8 @@ export function validateMilitaryIntake(route:MilitaryRoute,scenario:MilitaryScen
  const warnings:string[]=[];
  if(isUncertain(answers.role?.trim()??"")||isUncertain(answers.regime?.trim()??""))
   warnings.push("Не установлен статус заявителя и/или режим службы; до уточнения генерация заблокирована.");
+ if(UNSUPPORTED_MILITARY_REGIMES.has(answers.regime??""))
+  warnings.push("Для добровольческих формирований, военных сборов и мобилизационного резерва требуется отдельная юридическая процедура; генерация заблокирована.");
  if(route.id==="military-medical"&&answers.urgency!=="нет")
   warnings.push("При угрозе здоровью или неясной срочности сначала медицинская помощь; генерация заблокирована.");
  if(statusConflict(answers.role,answers.regime))

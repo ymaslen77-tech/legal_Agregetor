@@ -64,6 +64,13 @@ assert.equal(validateMilitaryIntake(medicalRoute,medicalScenario,urgentAnswers).
 assert.throws(()=>createMilitaryDocumentResult(medicalRoute,medicalScenario,urgentAnswers,{versionId:id,createdAt:stamp}),/генерация заблокирована/);
 urgentAnswers.urgency="не знаю";
 assert.equal(validateMilitaryIntake(medicalRoute,medicalScenario,urgentAnswers).complete,false);
+for(const unsupportedRegime of ["добровольческое формирование","военные сборы","мобилизационный людской резерв"]){
+ const route=MILITARY_ROUTES[0],scenario=route.scenarios[0];
+ const answers=Object.fromEntries(route.fields.map(f=>[f.key,
+   f.key==="regime"?unsupportedRegime:f.values?f.values[0]:"Подтверждённые сведения"]));
+ assert.equal(validateMilitaryIntake(route,scenario,answers).complete,false,"unsupported special status must block output");
+ assert.throws(()=>createMilitaryDocumentResult(route,scenario,answers,{versionId:id,createdAt:stamp}));
+}
 const conflicts=[
  {role:"призывник",regime:"контракт"},
  {role:"уволенный военнослужащий",regime:"мобилизация"},

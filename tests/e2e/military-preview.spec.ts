@@ -57,3 +57,14 @@ test("invalid route is safely reset without reflecting private facts",async({pag
  await expect(page.getByText("Неизвестный адрес сценария.",{exact:false})).toBeVisible();
  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content",/noindex/);
 });
+
+test("six military routes are readable without horizontal scrolling at phone width",async({page})=>{
+ test.setTimeout(120_000);
+ await page.setViewportSize({width:320,height:740});
+ for(const route of MILITARY_ROUTES){
+  await page.goto(militaryPreviewHref(route.id));
+  await expect(page.getByRole("heading",{name:"Военное право — юридические маршруты"})).toBeVisible();
+  const horizontalOverflow=await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth+1);
+  expect(horizontalOverflow,route.id+" must not overflow 320px width").toBe(false);
+ }
+});
