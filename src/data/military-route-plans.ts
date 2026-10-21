@@ -18,7 +18,7 @@ export type MilitaryRoute = {
   fields:readonly MilitaryField[]; scenarios:readonly MilitaryScenario[];
   publicationApproved:false; legalRegistryReviewedAt:null; filingReady:false;
 };
-export type MilitarySourceId = "53fz"|"76fz"|"1237"|"647"|"306fz"|"565"|"574"|"kas";
+export type MilitarySourceId = "53fz"|"76fz"|"1237"|"647"|"306fz"|"565"|"574"|"kas"|"plenum8"|"plenum21";
 
 export const MILITARY_SOURCES:Readonly<Record<MilitarySourceId,{name:string;url:string;verification:"PRIMARY_REFERENCE_FOUND_CASE_SCOPE_PENDING"}>>={
  "53fz":{name:"ФЗ № 53-ФЗ «О воинской обязанности и военной службе» (проверить действующую редакцию)",url:"https://mchs.gov.ru/dokumenty/814",verification:"PRIMARY_REFERENCE_FOUND_CASE_SCOPE_PENDING"},
@@ -26,9 +26,11 @@ export const MILITARY_SOURCES:Readonly<Record<MilitarySourceId,{name:string;url:
  "1237":{name:"Указ Президента № 1237 «Вопросы прохождения военной службы» (проверить актуальные изменения)",url:"https://mchs.gov.ru/dokumenty/804",verification:"PRIMARY_REFERENCE_FOUND_CASE_SCOPE_PENDING"},
  "647":{name:"Указ Президента № 647 о частичной мобилизации (сверить действующий режим)",url:"https://pravo.gov.ru/",verification:"PRIMARY_REFERENCE_FOUND_CASE_SCOPE_PENDING"},
  "306fz":{name:"ФЗ № 306-ФЗ о денежном довольствии и выплатах (сверить редакцию, ведомственные правила)",url:"https://pravo.gov.ru/",verification:"PRIMARY_REFERENCE_FOUND_CASE_SCOPE_PENDING"},
- "565":{name:"Постановление № 565 о военно-врачебной экспертизе (сверить редакцию)",url:"https://pravo.gov.ru/",verification:"PRIMARY_REFERENCE_FOUND_CASE_SCOPE_PENDING"},
+ "565":{name:"Постановление № 565 о военно-врачебной экспертизе (сверить редакцию)",url:"https://mchs.gov.ru/dokumenty/553",verification:"PRIMARY_REFERENCE_FOUND_CASE_SCOPE_PENDING"},
  "574":{name:"Постановление № 574 о независимой военно-врачебной экспертизе",url:"https://mchs.gov.ru/dokumenty/693",verification:"PRIMARY_REFERENCE_FOUND_CASE_SCOPE_PENDING"},
- "kas":{name:"КАС РФ: возможный процессуальный порядок, определяется юристом",url:"https://pravo.gov.ru/",verification:"PRIMARY_REFERENCE_FOUND_CASE_SCOPE_PENDING"}
+ "kas":{name:"КАС РФ: возможный процессуальный порядок, определяется юристом",url:"https://pravo.gov.ru/",verification:"PRIMARY_REFERENCE_FOUND_CASE_SCOPE_PENDING"},
+ "plenum8":{name:"Пленум ВС РФ № 8 от 29.05.2014 — военная служба и военные суды (сверить изменения)",url:"https://www.vsrf.ru/documents/all/8382",verification:"PRIMARY_REFERENCE_FOUND_CASE_SCOPE_PENDING"},
+ "plenum21":{name:"Пленум ВС РФ № 21 от 28.10.2025 — изменения разъяснений № 8",url:"https://www.vsrf.ru/documents/all/34814",verification:"PRIMARY_REFERENCE_FOUND_CASE_SCOPE_PENDING"}
 };
 const field=(key:string,label:string,values?:readonly string[]):MilitaryField=>({key,label,...(values?{values}:{})});
 const common:readonly MilitaryField[]=[
@@ -72,7 +74,7 @@ export const MILITARY_ROUTES:readonly MilitaryRoute[]=[
   sc("transfer","Перевод и изменение условий службы","CHECKLIST",["contract","order"],["53fz","1237","647"],baseNotes,["Контракт, служебные документы и ответы"])
  ]),
  make("military-discharge","uvolnenie-s-voennoy-sluzhby","Увольнение с военной службы",null,[extra.grounds,extra.order,extra.medical],[
-  sc("discharge-basis","Основания увольнения: предварительная проверка","CHECKLIST",["grounds"],["53fz","1237","647"],baseNotes,["Контракт, решения командования, документы об основаниях"]),
+  sc("discharge-basis","Основания увольнения: предварительная проверка","CHECKLIST",["grounds"],["53fz","1237","647","plenum8","plenum21"],baseNotes,["Контракт, решения командования, документы об основаниях"]),
   sc("medical-discharge","Увольнение по состоянию здоровья","CHECKLIST",["medical"],["53fz","76fz","565","647"],[...baseNotes,"Не подменять заключение ВВК автоматическим решением об увольнении."],["Заключение ВВК, медицинские документы и приказы"]),
   sc("discharge-order","Получение приказа и расчёта при увольнении","CHECKLIST",["order"],["53fz","76fz","306fz"],baseNotes,["Приказ, данные об обеспечении и расчёте"])
  ]),
@@ -88,8 +90,8 @@ export const MILITARY_ROUTES:readonly MilitaryRoute[]=[
  ]),
  make("command-appeal","obrashchenie-i-obzhalovanie-komandovaniya","Обращения и обжалование действий командования",null,[extra.decision,extra.receipt,extra.authority],[
   sc("request-explanation","Запрос письменного разъяснения","CHECKLIST",["decision","authority"],["76fz","1237"],baseNotes,["Предыдущие обращения, ответы, подтверждение вручения"]),
-  sc("challenge-decision","Предварительная проверка обжалования решения","CHECKLIST",["decision","receipt"],["53fz","76fz","kas"],[...baseNotes,"Сроки и компетенцию суда либо ведомства нельзя угадывать по названию жалобы."],["Текст решения, дата получения и подтверждения"]),
-  sc("inaction","Отсутствие ответа или действие командования","CHECKLIST",["decision","receipt"],["76fz","kas"],baseNotes,["Подтверждение направления обращения, ответы"])
+  sc("challenge-decision","Предварительная проверка обжалования решения","CHECKLIST",["decision","receipt"],["53fz","76fz","kas","plenum8","plenum21"],[...baseNotes,"Сроки и компетенцию суда либо ведомства нельзя угадывать по названию жалобы."],["Текст решения, дата получения и подтверждения"]),
+  sc("inaction","Отсутствие ответа или действие командования","CHECKLIST",["decision","receipt"],["76fz","kas","plenum8","plenum21"],baseNotes,["Подтверждение направления обращения, ответы"])
  ]),
  make("mobilization-draft","prizyv-i-mobilizatsiya","Призыв, мобилизация и отсрочки",1658,[extra.summons,extra.deferment,extra.receipt],[
   sc("draft-notice","Повестка и решения комиссии: проверка обстоятельств","CHECKLIST",["summons"],["53fz","647"],[...baseNotes,"Не переносить правила обычного призыва на мобилизацию без проверки статуса."],["Повестка и решение комиссии, подтверждение вручения"]),
