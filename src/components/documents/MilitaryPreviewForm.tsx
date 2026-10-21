@@ -1,6 +1,6 @@
 "use client";
 import {useMemo,useState} from "react";
-import {MILITARY_ROUTES,type MilitaryRoute,type MilitaryScenario} from "@/data/military-route-plans";
+import {MILITARY_ROUTES} from "@/data/military-route-plans";
 import {createMilitaryDocumentResult,validateMilitaryIntake} from "@/lib/military-document-generator";
 import type {DocumentResultV1} from "@/lib/document-result-contract";
 import {downloadGeneratedDocumentDocx} from "@/lib/document-export";
