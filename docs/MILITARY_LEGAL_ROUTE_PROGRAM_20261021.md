@@ -38,3 +38,6 @@ Neon и production не изменять во время внутренней р
 
 ### Проверка непубликации и SEO
 Добавлен Playwright E2E `tests/e2e/military-isolation.spec.ts`: Production должен отвечать 404 на `/internal/military-preview/`; все 6 маршрутов и 17 документов не должны появляться в картах сайта или публичном каталоге. Для ссылок на общий портал `pravo.gov.ru` теперь явно отмечено `PRIMARY_DOCUMENT_LINK_PENDING` — это **не подтверждение источника**.
+
+### Блокировка HTTP 200 от потокового notFound (регрессия E2E)
+Исходный notFound() внутри динамического React Server Component возвращал не гарантированный HTTP 404: Playwright зафиксировал HTTP 200 при noindex. Для внутреннего пути добавлена отдельная ранняя проверка src/middleware.ts, возвращающая HTTP 404, x-robots-tag: noindex, nofollow и cache-control: no-store до React-рендеринга. В разработке при MILITARY_PREVIEW=1 путь разрешён, исключён из SEO-merge и не делает лишних обращений к Neon. Это обязательная часть релизной безопасности.

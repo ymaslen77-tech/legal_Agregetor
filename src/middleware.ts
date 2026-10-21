@@ -74,6 +74,19 @@ export async function middleware(request: NextRequest, event: NextFetchEvent) {
   const response = NextResponse.next();
   const userAgent = request.headers.get("user-agent") ?? "";
   const normalizedPath = normalizePublicPath(request.nextUrl.pathname);
+  // Fail closed at the HTTP edge before React streaming starts. Calling
+  // notFound() inside a streamed RSC page can still produce HTTP 200.
+  if (normalizedPath.startsWith("/internal/military-preview/") &&
+      (process.env.NODE_ENV === "production" || process.env.MILITARY_PREVIEW !== "1")) {
+    return new NextResponse("Not Found", {
+      status: 404,
+      headers: {
+        "content-type": "text/plain; charset=utf-8",
+        "x-robots-tag": "noindex, nofollow",
+        "cache-control": "no-store"
+      }
+    });
+  }
   const publicSeoRedirect = publicSeoRedirects[normalizedPath] ?? canonicalSlugRedirect(normalizedPath);
   const technicalNoindexPath = isTechnicalNoindexPath(request.nextUrl.pathname);
 
@@ -222,6 +235,8 @@ function isTechnicalNoindexPath(pathname: string) {
     pathname.startsWith("/dev/") ||
     pathname === "/__dev" ||
     pathname.startsWith("/__dev/") ||
+    pathname === "/internal" ||
+    pathname.startsWith("/internal/") ||
     pathname === "/fallback" ||
     pathname.startsWith("/fallback/")
   );
@@ -249,6 +264,7 @@ function shouldCheckSeoMerge(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   if (pathname === "/") return false;
   if (pathname.startsWith("/admin")) return false;
+  if (pathname.startsWith("/internal/")) return false;
   if (isAccountPath(pathname)) return false;
   if (isLawyerCabinetPath(pathname)) return false;
   if (pathname.startsWith("/api/")) return false;

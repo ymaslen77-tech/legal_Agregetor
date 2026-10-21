@@ -4,7 +4,9 @@ import {MILITARY_ROUTES,getMilitaryDocumentSlug} from "../../src/data/military-r
 test("military unpublished development route is 404 in production",async({page})=>{
  const response=await page.goto("/internal/military-preview/");
  expect(response?.status()).toBe(404);
- await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content",/noindex/);
+ expect(response?.headers()["x-robots-tag"]).toContain("noindex");
+ expect(response?.headers()["cache-control"]).toContain("no-store");
+ await expect(page.getByText("Not Found")).toBeVisible();
 });
 
 test("unapproved military routes and drafts never enter public SEO or navigation",async({request})=>{
