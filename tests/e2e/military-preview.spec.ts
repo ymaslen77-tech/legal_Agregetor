@@ -3,7 +3,7 @@ import {MILITARY_ROUTES} from "../../src/data/military-route-plans";
 import {militaryPreviewHref} from "../../src/lib/military-preview-navigation";
 
 /** Run against the built app with BOTH branch-preview flags, not public Production. */
-test("all military route and scenario pages resolve with noindex and shared journey",async({page})=>{
+test("@military-preview all military route and scenario pages resolve with noindex and shared journey",async({page})=>{
  test.setTimeout(180_000);
  let seen=0;
  for(const route of MILITARY_ROUTES)for(const scenario of route.scenarios){
@@ -19,7 +19,7 @@ test("all military route and scenario pages resolve with noindex and shared jour
  }
  expect(seen).toBe(18);
 });
-test("contract document flows through facts, safety checks and versioned preliminary result without archive",async({page})=>{
+test("@military-preview contract document flows through facts, safety checks and versioned preliminary result without archive",async({page})=>{
  const networkPosts:string[]=[];
  page.on("request",request=>{if(request.method()==="POST")networkPosts.push(request.url());});
  await page.goto(militaryPreviewHref("service-contract","service-order-copy"));
@@ -45,20 +45,20 @@ test("contract document flows through facts, safety checks and versioned prelimi
  await expect(result.getByRole("button",{name:"Сохранить в мои документы"})).toHaveCount(0);
  expect(networkPosts).toEqual([]);
 });
-test("urgent medical scenario gives help without questionnaire or PDF",async({page})=>{
+test("@military-preview urgent medical scenario gives help without questionnaire or PDF",async({page})=>{
  await page.goto(militaryPreviewHref("military-medical","medical-emergency"));
  await expect(page.getByRole("heading",{name:"Сначала неотложная помощь"})).toBeVisible();
  await expect(page.getByRole("button",{name:"Перейти к анкете"})).toHaveCount(0);
  await expect(page.getByRole("button",{name:"Скачать PDF"})).toHaveCount(0);
 });
-test("invalid route is safely reset without reflecting private facts",async({page})=>{
+test("@military-preview invalid route is safely reset without reflecting private facts",async({page})=>{
  const response=await page.goto("/internal/military-preview/?route=not-found&scenario=bad");
  expect(response?.status()).toBe(200);
  await expect(page.getByText("Неизвестный адрес сценария.",{exact:false})).toBeVisible();
  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content",/noindex/);
 });
 
-test("six military routes are readable without horizontal scrolling at phone width",async({page})=>{
+test("@military-preview six military routes are readable without horizontal scrolling at phone width",async({page})=>{
  test.setTimeout(120_000);
  await page.setViewportSize({width:320,height:740});
  for(const route of MILITARY_ROUTES){

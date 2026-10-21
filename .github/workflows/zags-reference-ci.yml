@@ -105,7 +105,7 @@ jobs:
       - name: Run all family and labor route acceptance
         env:
           E2E_SUBMIT_REVIEW: "true"
-        run: npx playwright test --workers=2
+        run: npx playwright test --workers=2 --grep-invert "@military-preview"
       - name: Confirm withdrawn review PDF was deleted
         run: test -z "$(find "$LEAD_ATTACHMENT_STORAGE_ROOT" -type f -name '*.pdf' -print -quit 2>/dev/null)"
       - name: Generate and inspect guardianship PDFs
