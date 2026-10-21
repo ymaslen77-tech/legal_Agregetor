@@ -45,7 +45,7 @@
     "audit:routes-43": "tsx scripts/audit-legal-routes-43.ts",
     "test:qna-route-planning": "tsx src/lib/legal-qna-route-planning.test.ts",
     "test:seo-core": "tsx src/lib/sitemap.test.ts && tsx src/lib/jsonld.test.ts",
-    "test:military": "tsx src/data/military-route-standard.test.ts && tsx src/data/military-case-reviews.test.ts && tsx src/lib/military-document-generator.test.ts && npm run audit:military",
+    "test:military": "tsx src/lib/military-preview-access.test.ts && tsx src/data/military-route-standard.test.ts && tsx src/data/military-case-reviews.test.ts && tsx src/lib/military-document-generator.test.ts && npm run audit:military",
     "audit:military": "tsx scripts/audit-military-release.ts",
     "audit:military-files": "tsx scripts/audit-military-document-files.ts"
   },

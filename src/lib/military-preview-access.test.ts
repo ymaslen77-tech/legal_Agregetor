@@ -1,0 +1,12 @@
+import assert from "node:assert/strict";
+import {canOpenMilitaryPreview} from "./military-preview-access";
+const base={NODE_ENV:"production",VERCEL_ENV:"production",MILITARY_PREVIEW:"1"};
+assert.equal(canOpenMilitaryPreview(base),false,"production ALWAYS closed, even if flag accidentally set");
+assert.equal(canOpenMilitaryPreview({...base,VERCEL_ENV:"preview",MILITARY_PREVIEW:"0"}),false);
+assert.equal(canOpenMilitaryPreview({...base,VERCEL_ENV:"preview",MILITARY_PREVIEW:undefined}),false);
+assert.equal(canOpenMilitaryPreview({...base,VERCEL_ENV:"preview"}),true,"explicit protected Vercel preview allowed");
+assert.equal(canOpenMilitaryPreview({...base,VERCEL_ENV:"development"}),false);
+assert.equal(canOpenMilitaryPreview({NODE_ENV:"development",MILITARY_PREVIEW:"1"}),true);
+assert.equal(canOpenMilitaryPreview({NODE_ENV:"development"}),false);
+assert.equal(canOpenMilitaryPreview({...base,VERCEL_ENV:"preview",NODE_ENV:"test"}),false);
+console.log("Military preview access: Production blocked, Preview scoped flag, local opt-in PASS");

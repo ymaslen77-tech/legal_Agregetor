@@ -1,10 +1,11 @@
 import type {Metadata} from "next";
 import {notFound} from "next/navigation";
 import {MilitaryPreviewForm} from "@/components/documents/MilitaryPreviewForm";
+import {canOpenMilitaryPreview} from "@/lib/military-preview-access";
 export const metadata:Metadata={title:"Внутренняя проверка военного права",robots:{index:false,follow:false}};
 export const dynamic="force-dynamic";
-/** Not available on any production build; only local development with an explicit flag. */
+/** Production always disabled. Vercel Preview requires preview-scoped opt-in and project SSO. */
 export default function MilitaryInternalPage(){
- if(process.env.NODE_ENV==="production" || process.env.MILITARY_PREVIEW!=="1")notFound();
+ if(!canOpenMilitaryPreview(process.env))notFound();
  return <MilitaryPreviewForm/>;
 }

@@ -41,3 +41,9 @@ Neon и production не изменять во время внутренней р
 
 ### Блокировка HTTP 200 от потокового notFound (регрессия E2E)
 Исходный notFound() внутри динамического React Server Component возвращал не гарантированный HTTP 404: Playwright зафиксировал HTTP 200 при noindex. Для внутреннего пути добавлена отдельная ранняя проверка src/middleware.ts, возвращающая HTTP 404, x-robots-tag: noindex, nofollow и cache-control: no-store до React-рендеринга. В разработке при MILITARY_PREVIEW=1 путь разрешён, исключён из SEO-merge и не делает лишних обращений к Neon. Это обязательная часть релизной безопасности.
+
+## Защищённый предпросмотр Vercel
+
+При `MILITARY_PREVIEW=1`, установленном **только в Preview** для ветки `feat/military-legal-routes-v1-20261021`, и `VERCEL_ENV=preview`, серверный маршрут `/internal/military-preview/` разрешён на Vercel Preview. У проекта должна оставаться включённой Vercel Authentication для Preview; иначе нельзя распространять URL. В Production даже случайно заданное `MILITARY_PREVIEW=1` **не** откроет страницу (`VERCEL_ENV=production`); вернётся настоящий HTTP 404 через Middleware. SEO: noindex, не входит в Sitemap. Neon и основной публичный реестр не используются.
+
+Разрешён только экспертный интерфейс подготовки и экспорта для проверки — все 18 сценариев `filingReady=false`, протокол 11 критериев и обязательное `expertSignOff=NOT_GRANTED` сохраняются. Нельзя использовать Preview как юридическую публикацию или делиться обходом Vercel Authentication. Проверка на `npm run test:military`.

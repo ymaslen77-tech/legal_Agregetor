@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { AUTH_COOKIE_NAME, verifySessionToken } from "@/lib/auth";
 import { canonicalizePublicPathSegments } from "@/lib/canonical-slugs";
 import { isUnknownNavigatorPath } from "@/lib/navigator-paths";
+import {canOpenMilitaryPreview} from "@/lib/military-preview-access";
 
 const botPattern = /(googlebot|yandexbot|bingbot|duckduckbot|slurp|baiduspider)/i;
 
@@ -77,7 +78,7 @@ export async function middleware(request: NextRequest, event: NextFetchEvent) {
   // Fail closed at the HTTP edge before React streaming starts. Calling
   // notFound() inside a streamed RSC page can still produce HTTP 200.
   if (normalizedPath.startsWith("/internal/military-preview/") &&
-      (process.env.NODE_ENV === "production" || process.env.MILITARY_PREVIEW !== "1")) {
+      !canOpenMilitaryPreview(process.env)) {
     return new NextResponse("Not Found", {
       status: 404,
       headers: {
