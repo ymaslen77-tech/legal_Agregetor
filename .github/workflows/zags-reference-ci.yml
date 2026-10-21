@@ -121,6 +121,27 @@ jobs:
             test "${pages:-0}" -gt 0
             pdftotext "$pdf" - | grep -q 'НЕ ГОТОВ К ПОДАЧЕ'
           done
+      - name: Inspect all military PDF/DOCX files and render visual review samples
+        run: |
+          npm run audit:military-files
+          pdf_count="$(find artifacts/military-file-audit -maxdepth 1 -name '*.pdf' | wc -l)"
+          docx_count="$(find artifacts/military-file-audit -maxdepth 1 -name '*.docx' | wc -l)"
+          test "$pdf_count" -eq 17
+          test "$docx_count" -eq 17
+          for pdf in artifacts/military-file-audit/*.pdf; do
+            pages="$(pdfinfo "$pdf" | awk '/^Pages:/ {print $2}')"
+            test "${pages:-0}" -gt 0
+            pdftotext "$pdf" - | grep -q 'НЕ ГОТОВ К ПОДАЧЕ'
+            for n in $(seq 1 "$pages"); do
+              pdftotext -f "$n" -l "$n" "$pdf" - | grep -q '[[:alnum:]]'
+            done
+          done
+          mkdir -p artifacts/military-visual-audit
+          for pdf in artifacts/military-file-audit/service-contract-service-order-copy.pdf artifacts/military-file-audit/military-discharge-discharge-basis.pdf; do
+            test -s "$pdf"
+            pdftoppm -f 1 -l 1 -scale-to 1200 -png -singlefile "$pdf" "artifacts/military-visual-audit/$(basename "${pdf%.pdf}")"
+          done
+          test "$(find artifacts/military-visual-audit -maxdepth 1 -name '*.png' | wc -l)" -eq 2
       - name: Upload PDF and browser acceptance artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -133,3 +154,5 @@ jobs:
             artifacts/responsive-metrics.ndjson
             artifacts/responsive-browser-results.json
             artifacts/family-labor-file-audit
+            artifacts/military-file-audit
+            artifacts/military-visual-audit
