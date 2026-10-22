@@ -47,4 +47,39 @@ const report={assessedAt:"2026-10-21",standard:"LEGAL_ROUTE_STANDARD_V1",result:
  legallyApprovedScenarios:0,publishedRoutes:0,caseSpecificReviewRows:18,releaseGate,rows:scenarios};
 mkdirSync("artifacts",{recursive:true});
 writeFileSync("artifacts/military-legal-acceptance.json",JSON.stringify(report,null,2)+"\n");
+const mark=(label:string,value:string)=>label+": "+value;
+const output=[
+ "# Военное право — протокол юридической приёмки",
+ "",
+ "Подготовлено: 22.10.2026. Статус: ВСЕ 18 СЦЕНАРИЕВ ОЖИДАЮТ НЕЗАВИСИМОЙ ПРАВОВОЙ ПРОВЕРКИ.",
+ "Этот документ является бланком и рабочим списком вопросов, а не заключением юриста.",
+ "",
+ "Для допуска необходимо проверить действующие редакции на дату события, специальные режимы,",
+ "допустимость заявленного требования, доказательства, применимую процедуру, адресата, подсудность,",
+ "сроки/дату вручения, пошлину, DOCX/PDF и подлинное решение проверяющего.",
+ "",
+ ...scenarios.flatMap((s,index)=>[
+  "## "+(index+1)+". "+s.caseSpecificReview.id,
+  "",
+  mark("Маршрут",s.routeId),
+  mark("Сценарий",s.scenarioKey),
+  mark("Тип результата",s.plannedResult),
+  mark("Вопрос",s.caseSpecificReview.legalQuestion),
+  mark("Правовой режим",s.caseSpecificReview.scopeToCheck),
+  mark("Полномочия",s.caseSpecificReview.standingToCheck),
+  mark("Адресат",s.caseSpecificReview.addresseeToCheck),
+  mark("Сроки и начало отсчёта",s.caseSpecificReview.timeToCheck),
+  mark("Исключения",s.caseSpecificReview.exclusionToCheck),
+  ...s.caseSpecificReview.evidenceToCheck.map((e:string)=>"- Документ: "+e),
+  "",
+  "### 11 независимых критериев, пока не подтверждены",
+  ...CHECKS.map(check=>"- [ ] "+check+" — источник, редакция, применимость, вывод, доказательство, дата и проверяющий: НЕ ПРЕДОСТАВЛЕНЫ"),
+  "",
+  "Протокол и подпись проверяющего: НЕ ПРЕДОСТАВЛЕНЫ.",
+  "Готовность к подаче: НЕТ. Разрешение публикации: НЕТ.",
+  ""
+ ])
+];
+writeFileSync("artifacts/military-legal-review-checklist.md",output.join("\n")+"\n");
+
 console.log("MILITARY GATES: "+report.routes+" routes, "+report.scenarios+" scenarios, 11 mandatory checks, 0 approved; report saved");

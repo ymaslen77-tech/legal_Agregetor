@@ -24,12 +24,12 @@ export const MILITARY_SOURCES:Readonly<Record<MilitarySourceId,{name:string;url:
  "53fz":{name:"ФЗ № 53-ФЗ «О воинской обязанности и военной службе» (проверить действующую редакцию)",url:"https://mchs.gov.ru/dokumenty/814",verification:"PRIMARY_REFERENCE_FOUND_CASE_SCOPE_PENDING"},
  "76fz":{name:"ФЗ № 76-ФЗ «О статусе военнослужащих» (проверить действующую редакцию)",url:"https://mchs.gov.ru/dokumenty/812",verification:"PRIMARY_REFERENCE_FOUND_CASE_SCOPE_PENDING"},
  "1237":{name:"Указ Президента № 1237 «Вопросы прохождения военной службы» (проверить актуальные изменения)",url:"https://mchs.gov.ru/dokumenty/804",verification:"PRIMARY_REFERENCE_FOUND_CASE_SCOPE_PENDING"},
- "647":{name:"Указ Президента № 647 о частичной мобилизации (сверить действующий режим)",url:"https://pravo.gov.ru/",verification:"PRIMARY_DOCUMENT_LINK_PENDING"},
- "306fz":{name:"ФЗ № 306-ФЗ о денежном довольствии и выплатах (сверить редакцию, ведомственные правила)",url:"https://pravo.gov.ru/",verification:"PRIMARY_DOCUMENT_LINK_PENDING"},
+ "647":{name:"Указ Президента РФ от 21.09.2022 № 647 — официальное опубликование; действие во времени и специальные ограничения проверить",url:"https://publication.pravo.gov.ru/Document/View/0001202209210001",verification:"PRIMARY_REFERENCE_FOUND_CASE_SCOPE_PENDING"},
+ "306fz":{name:"Федеральный закон от 07.11.2011 № 306-ФЗ — ведомственная публикация; актуальная редакция и выплаты требуют сверки",url:"https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-07112011--306fz",verification:"PRIMARY_REFERENCE_FOUND_CASE_SCOPE_PENDING"},
  "565":{name:"Постановление № 565 о военно-врачебной экспертизе (сверить редакцию)",url:"https://mchs.gov.ru/dokumenty/553",verification:"PRIMARY_REFERENCE_FOUND_CASE_SCOPE_PENDING"},
  "574":{name:"Постановление № 574 о независимой военно-врачебной экспертизе",url:"https://mchs.gov.ru/dokumenty/693",verification:"PRIMARY_REFERENCE_FOUND_CASE_SCOPE_PENDING"},
  "kas":{name:"КАС РФ: возможный процессуальный порядок, определяется юристом",url:"https://pravo.gov.ru/",verification:"PRIMARY_DOCUMENT_LINK_PENDING"},
- "plenum8":{name:"Пленум ВС РФ № 8 от 29.05.2014 — военная служба и военные суды (сверить изменения)",url:"https://www.vsrf.ru/documents/all/8382",verification:"PRIMARY_REFERENCE_FOUND_CASE_SCOPE_PENDING"},
+ "plenum8":{name:"Пленум ВС РФ № 8 от 29.05.2014, изменения от 28.10.2025 № 21 — подсудность и военная служба",url:"https://vsrf.ru/documents/own/8382/",verification:"PRIMARY_REFERENCE_FOUND_CASE_SCOPE_PENDING"},
  "plenum21":{name:"Пленум ВС РФ № 21 от 28.10.2025 — изменения разъяснений № 8",url:"https://www.vsrf.ru/documents/all/34814",verification:"PRIMARY_REFERENCE_FOUND_CASE_SCOPE_PENDING"}
 };
 const field=(key:string,label:string,values?:readonly string[]):MilitaryField=>({key,label,...(values?{values}:{})});
