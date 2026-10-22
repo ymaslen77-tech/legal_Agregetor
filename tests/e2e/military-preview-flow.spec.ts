@@ -30,7 +30,17 @@ test("authenticated-preview-style military generator completes safe four-step jo
  await expect(result).toContainText("Индивидуальные вопросы юридической приёмки");
  await expect(result.getByRole("button",{name:"Скачать PDF"})).toBeEnabled();
  await expect(result.getByRole("button",{name:"Скачать DOCX"})).toBeEnabled();
+ const originalText=await result.locator("pre").textContent();
  await result.getByRole("button",{name:"Изменить и создать новую версию"}).click();
+ const editor=page.getByRole("region",{name:"Пошаговая анкета"});
+ const firstTextarea=editor.locator("textarea").first();
+ const originalAnswer=await firstTextarea.inputValue();
+ await firstTextarea.fill("Отредактированный тестовый факт, который нельзя применять до повторной генерации");
+ await page.getByRole("button",{name:"Отменить изменения"}).click();
+ await expect(page.getByRole("region",{name:"Предварительный результат"}).locator("pre")).toHaveText(originalText!);
+ await expect(page.getByRole("region",{name:"Предварительный результат"}).getByRole("button",{name:"Скачать PDF"})).toBeEnabled();
+ await result.getByRole("button",{name:"Изменить и создать новую версию"}).click();
+ await expect(page.getByRole("region",{name:"Пошаговая анкета"}).locator("textarea").first()).toHaveValue(originalAnswer);
  await page.getByRole("button",{name:"Проверить сведения"}).click();
  await page.getByRole("checkbox").check();
  await page.getByRole("button",{name:"Создать предварительную версию"}).click();
