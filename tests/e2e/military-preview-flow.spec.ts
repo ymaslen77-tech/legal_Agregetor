@@ -40,7 +40,8 @@ test("authenticated-preview-style military generator completes safe four-step jo
 test("medical emergency never exposes a generator",async({page})=>{
  const response=await page.goto("/internal/military-preview/?route=military-medical&scenario=medical-emergency");
  expect(response?.status()).toBe(200);
- await expect(page.getByRole("alert")).toContainText("Сначала неотложная помощь");
+ await expect(page.getByRole("heading",{name:"Сначала неотложная помощь"})).toBeVisible();
+ await expect(page.getByRole("alert").filter({hasText:"При угрозе жизни"})).toHaveCount(1);
  await expect(page.getByRole("button",{name:"Перейти к анкете"})).toHaveCount(0);
  await expect(page.getByRole("button",{name:"Создать предварительную версию"})).toHaveCount(0);
 });
