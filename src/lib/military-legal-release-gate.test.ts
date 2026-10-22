@@ -1,9 +1,11 @@
 import assert from "node:assert/strict";
 import {MILITARY_ROUTES} from "@/data/military-route-plans";
-import {MILITARY_ACCEPTANCE_CHECKS,reviewMilitaryAcceptance,auditMilitaryAcceptance,type MilitaryAcceptanceRecord} from "./military-legal-release-gate";
+import {MILITARY_ACCEPTANCE_CHECKS,MILITARY_ACCEPTANCE_LABELS,reviewMilitaryAcceptance,auditMilitaryAcceptance,type MilitaryAcceptanceRecord} from "./military-legal-release-gate";
 const all=MILITARY_ROUTES.flatMap(r=>r.scenarios.map(s=>r.id+"/"+s.key));
 assert.equal(all.length,18);
 assert.equal(MILITARY_ACCEPTANCE_CHECKS.length,11);
+assert.deepEqual(Object.keys(MILITARY_ACCEPTANCE_LABELS).sort(),[...MILITARY_ACCEPTANCE_CHECKS].sort());
+assert.ok(Object.values(MILITARY_ACCEPTANCE_LABELS).every(label=>label.length>=17));
 for(const scenarioId of all){
  const empty=reviewMilitaryAcceptance({scenarioId,checks:{}});
  assert.equal(empty.approved,false);

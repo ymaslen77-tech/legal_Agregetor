@@ -19,6 +19,21 @@ export const MILITARY_ACCEPTANCE_CHECKS=[
   "expertSignOff"
 ] as const;
 export type MilitaryAcceptanceCheck=typeof MILITARY_ACCEPTANCE_CHECKS[number];
+/** Russian reviewer-visible names for the unchanged 11 LEGAL_ROUTE_STANDARD_V1 gates. */
+export const MILITARY_ACCEPTANCE_LABELS:Record<MilitaryAcceptanceCheck,string>={
+ primaryActCurrentText:"Официальный текст и действующая редакция нормы",
+ statutoryScopeAndSpecialRegime:"Применимый режим и специальные исключения",
+ applicantStanding:"Полномочия и правовой статус заявителя",
+ addresseeAndJurisdiction:"Адресат, ведомство, компетенция суда",
+ deadlineAndReceiptDate:"Сроки и документальное подтверждение начала срока",
+ feesAndAmounts:"Госпошлина, расчёты и суммы, если применимо",
+ evidenceAndAttachments:"Доказательства, реквизиты и приложения",
+ documentRequestAndRelief:"Правильность требований и просительной части",
+ pdfDocxAndVersion:"PDF/DOCX, реквизиты, формат и версия",
+ negativeEmergencyAndExceptions:"Отрицательные, экстренные и особые случаи",
+ expertSignOff:"Письменное заключение и подпись рецензента"
+};
+
 export type MilitaryReviewEvidence={
  status:"PASS"|"FAIL"|"PENDING";
  rationale:string;

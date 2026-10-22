@@ -14,6 +14,7 @@ import {DocumentResultSummary} from "@/components/documents/DocumentResultSummar
 import {DocumentVersionHistory} from "@/components/documents/DocumentVersionHistory";
 import {LegalRouteJourney} from "@/components/documents/LegalRouteJourney";
 import {LegalFormField} from "@/components/documents/LegalFormField";
+import {MILITARY_ACCEPTANCE_CHECKS,MILITARY_ACCEPTANCE_LABELS} from "@/lib/military-legal-release-gate";
 
 type Step="choose"|"facts"|"review"|"result";
 type Snapshot={documentResult:DocumentResultV1;answers:Record<string,string>};
@@ -177,6 +178,13 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
     {validation.invalid.length?<p role="alert" className="mt-3 rounded-md bg-red-50 p-3 text-sm text-red-950">
       Неверно заполнены поля: {validation.invalid.join("; ")}</p>:null}
     {validation.warnings.map(w=><p role="alert" key={w} className="mt-3 rounded-md bg-amber-50 p-3 text-sm text-amber-950">{w}</p>)}
+    <details className="mt-5 rounded-lg border border-amber-300 bg-amber-50 p-4" open>
+     <summary className="cursor-pointer font-semibold">Юридическая приёмка: 0 из 11 критериев подтверждено</summary>
+     <p className="mt-2 text-sm">Все критерии требуют независимого письменного заключения. Автотесты не подтверждают актуальность правовых оснований.</p>
+     <ol className="mt-3 list-decimal space-y-1 pl-6 text-sm">
+      {MILITARY_ACCEPTANCE_CHECKS.map(key=><li key={key}>{MILITARY_ACCEPTANCE_LABELS[key]} — не подтверждено</li>)}
+     </ol>
+    </details>
     <h3 className="mt-5 font-semibold">Правовые вопросы конкретного сценария</h3>
     <ol className="mt-2 list-decimal space-y-2 pl-6 text-sm leading-6">
      {[review.scopeToCheck,review.standingToCheck,review.addresseeToCheck,review.timeToCheck,review.exclusionToCheck].map(t=><li key={t}>{t}</li>)}
