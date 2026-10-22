@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import {mkdirSync,writeFileSync} from "node:fs";
 import {MILITARY_ROUTES,MILITARY_SOURCES,getMilitaryDocumentSlug} from "@/data/military-route-plans";
 import {getMilitaryCaseReview,MILITARY_CASE_REVIEWS} from "@/data/military-case-reviews";
+import {auditMilitaryAcceptance,MILITARY_ACCEPTANCE_CHECKS} from "@/lib/military-legal-release-gate";
 const CHECKS=[
  "primaryActCurrentText","statutoryScopeAndSpecialRegime","applicantStanding",
  "addresseeAndJurisdiction","deadlineAndReceiptDate","feesAndAmounts",
@@ -31,6 +32,9 @@ const scenarios=MILITARY_ROUTES.flatMap(route=>route.scenarios.map(scenario=>{
   uiAndContract:"INTERNAL_PREVIEW",pdfDocx:scenario.kind==="URGENT_INSTRUCTION"?"NOT_APPLICABLE":"AWAITING_VISUAL_TEST",
   noPublicRegistry:true,legalAcceptanceChecklist:checks,filingReady:false,publicationApproved:false};
 }));
+const releaseGate=auditMilitaryAcceptance(scenarios.map(x=>({scenarioId:x.routeId+"/"+x.scenarioKey,checks:{}})));
+assert.equal(releaseGate.approved,false);
+assert.equal(MILITARY_ACCEPTANCE_CHECKS.length,11);
 assert.equal(scenarios.length,18);assert.equal(MILITARY_CASE_REVIEWS.length,18);
 assert.equal(new Set(MILITARY_CASE_REVIEWS.map(r=>r.id)).size,18);
 assert.equal(scenarios.filter(x=>x.plannedResult==="URGENT_INSTRUCTION").length,1);
@@ -40,7 +44,7 @@ const report={assessedAt:"2026-10-21",standard:"LEGAL_ROUTE_STANDARD_V1",result:
  provisionalDrafts:scenarios.filter(x=>x.plannedResult==="DRAFT").length,
  preliminaryChecklists:scenarios.filter(x=>x.plannedResult==="CHECKLIST").length,
  emergencyInstructions:scenarios.filter(x=>x.plannedResult==="URGENT_INSTRUCTION").length,
- legallyApprovedScenarios:0,publishedRoutes:0,caseSpecificReviewRows:18,rows:scenarios};
+ legallyApprovedScenarios:0,publishedRoutes:0,caseSpecificReviewRows:18,releaseGate,rows:scenarios};
 mkdirSync("artifacts",{recursive:true});
 writeFileSync("artifacts/military-legal-acceptance.json",JSON.stringify(report,null,2)+"\n");
 console.log("MILITARY GATES: "+report.routes+" routes, "+report.scenarios+" scenarios, 11 mandatory checks, 0 approved; report saved");
