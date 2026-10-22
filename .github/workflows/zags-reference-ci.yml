@@ -191,3 +191,4 @@ jobs:
             artifacts/family-labor-file-audit
             artifacts/military-file-audit
             artifacts/military-visual-audit
+            artifacts/military-legal-review-checklist.md

@@ -40,4 +40,6 @@ jobs:
           path: |
             artifacts/legal-route-acceptance.json
             artifacts/family-labor-readiness.json
+            artifacts/military-legal-acceptance.json
+            artifacts/military-legal-review-checklist.md
           if-no-files-found: warn

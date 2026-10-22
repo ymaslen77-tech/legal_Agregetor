@@ -80,6 +80,8 @@ const output=[
   ""
  ])
 ];
+assert.equal(output.filter(line=>line.includes("### 11 независимых критериев")).length,18);
+assert.equal(output.filter(line=>line.includes("Протокол и подпись проверяющего: НЕ ПРЕДОСТАВЛЕНЫ.")).length,18);
 writeFileSync("artifacts/military-legal-review-checklist.md",output.join("\n")+"\n");
 
 console.log("MILITARY GATES: "+report.routes+" routes, "+report.scenarios+" scenarios, 11 mandatory checks, 0 approved; report saved");
