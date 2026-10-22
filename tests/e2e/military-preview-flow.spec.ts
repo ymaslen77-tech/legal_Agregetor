@@ -1,4 +1,6 @@
 import {expect,test} from "@playwright/test";
+// The normal production E2E must not open internal preview. A separate CI job starts a protected preview.
+test.skip(process.env.MILITARY_PREVIEW!=="1" || process.env.MILITARY_PREVIEW_SCOPE!=="military-feature-preview","Preview-only flow");
 test("authenticated-preview-style military generator completes safe four-step journey and versions",async({page})=>{
  test.setTimeout(90_000);
  const response=await page.goto("/internal/military-preview/?route=service-contract&scenario=contract-check");
