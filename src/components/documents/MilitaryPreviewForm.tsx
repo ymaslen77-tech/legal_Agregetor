@@ -95,6 +95,12 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
   setAcknowledged(true);setStep("result");setMessage("Выбрана неизменённая версия в этой вкладке.");
  }
  function backToFacts(){setStep("facts");setMessage("");}
+ function cancelEditing(){
+  if(!active)return;
+  setAnswers({...active.answers});
+  setDirty(false);setAcknowledged(true);setStep("result");
+  setMessage("Изменения отменены. Сформированная версия не изменена.");
+ }
  const statuses=[["Выбор ситуации","choose"],["Анкета","facts"],["Проверка фактов","review"],["Предварительный результат","result"]] as const;
  return <>
   <LegalRouteJourney stage="document" title={route.title} activeStep={step==="choose"?1:step==="result"?3:2}/>
@@ -166,6 +172,8 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
     </div>
     <div className="mt-5 flex flex-wrap gap-3">
      <button type="button" onClick={()=>setStep("choose")} className="min-h-11 rounded-md border border-line px-5 py-3 text-sm font-semibold">Назад к ситуации</button>
+     {active?<button type="button" onClick={cancelEditing}
+      className="min-h-11 rounded-md border border-line px-5 py-3 text-sm font-semibold">Отменить изменения</button>:null}
      <button type="button" onClick={()=>setStep("review")} className="min-h-11 rounded-md bg-trust px-5 py-3 text-sm font-semibold text-white">Проверить сведения</button>
     </div>
    </section>:null}
@@ -210,6 +218,8 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
     <div className="mt-5 flex flex-wrap gap-3">
      <button type="button" onClick={backToFacts}
       className="min-h-11 rounded-md border border-line px-5 py-3 text-sm font-semibold">Изменить данные</button>
+     {active?<button type="button" onClick={cancelEditing}
+      className="min-h-11 rounded-md border border-line px-5 py-3 text-sm font-semibold">Отменить изменения</button>:null}
      <button type="button" disabled={!validation.complete||!acknowledged} onClick={generate}
       className="min-h-11 rounded-md bg-trust px-5 py-3 text-sm font-semibold text-white disabled:opacity-50">
       Создать предварительную версию
