@@ -95,7 +95,7 @@ jobs:
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           for attempt in {1..60}; do
             if curl --fail --silent http://127.0.0.1:3706/internal/military-preview/ > /dev/null; then
-              PLAYWRIGHT_BASE_URL=http://127.0.0.1:3706 npx playwright test tests/e2e/military-preview.spec.ts --workers=1
+              PLAYWRIGHT_BASE_URL=http://127.0.0.1:3706 npx playwright test --config=playwright.military-preview.config.ts --workers=2
               exit $?
             fi
             sleep 1
