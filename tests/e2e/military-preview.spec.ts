@@ -12,6 +12,8 @@ test("@military-preview all military route and scenario pages resolve with noind
   await expect(page.getByRole("heading",{name:"Военное право — юридические маршруты"})).toBeVisible();
   await expect(page.getByRole("navigation",{name:"Этапы юридического маршрута"})).toHaveCount(1);
   await expect(page.getByRole("navigation",{name:"Этапы юридического маршрута"}).getByRole("listitem")).toHaveCount(5);
+  await expect(page.getByRole("navigation",{name:"Этапы заполнения военного маршрута"})).toHaveCount(0);
+  await expect(page.getByRole("heading",{name:"Похожие вопросы"})).toHaveCount(1);
   await expect(page.getByRole("link",{name:new RegExp(scenario.title.slice(0,20))})).toBeVisible();
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content",/noindex/);
   await expect(page.getByText("ЗАКРЫТЫЙ ПРЕДПРОСМОТР")).toBeVisible();
