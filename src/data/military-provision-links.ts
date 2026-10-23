@@ -12,7 +12,7 @@ export type MilitaryProvisionId =
   | "76-12"|"76-16"|"76-21"|"76-23"|"76-24"
   | "1237-15"|"1237-34"|"306-2"|"306-3"|"565-8"|"574-reg"
   | "kas-218"|"kas-219"|"kas-220"|"31-18"
-  | "647-4"|"647-5"|"647-9"|"plenum8-jurisdiction"|"plenum8-discharge"|"plenum8-pay";
+  | "647-2"|"647-4"|"647-5"|"647-9"|"plenum8-jurisdiction"|"plenum8-discharge"|"plenum8-pay";
 
 export type MilitaryProvision = {
   id: MilitaryProvisionId;
@@ -53,6 +53,7 @@ const registry: Record<MilitaryProvisionId, Entry> = {
  "kas-219": {citation:"КАС РФ, ст. 219, чч. 1, 1.1, 5–8 — сроки и восстановление",pinpoint:"статья 219, части 1, 1.1, 5–8",url:cp+"cons_doc_LAW_176147/2f5aa04da27c7bf6acfe37bf09ff8fda2d86f306/",checked:true},
  "kas-220": {citation:"КАС РФ, ст. 220, чч. 1–3 — требования к административному иску",pinpoint:"статья 220, части 1–3",url:cp+"cons_doc_LAW_176147/8945094e753cbed0cecc4df482c401e36afe7f87/",checked:true},
  "31-18": {citation:"ФЗ № 31-ФЗ, ст. 18 — отсрочка по мобилизации (отдельно от обычного призыва)",pinpoint:"статья 18, конкретное основание требует проверки",url:cp+"cons_doc_LAW_13454/25fbd4e34ce45ed1b914188bace31872ee4df5da/",checked:true},
+ "647-2": {citation:"Указ Президента № 647, п. 2 — призыв граждан на военную службу по мобилизации",pinpoint:"пункт 2",url:cp+"cons_doc_LAW_426999/",textFragment:"2. Осуществить призыв граждан Российской Федерации",checked:true},
  "647-4": {citation:"Указ Президента № 647, п. 4 — действие контрактов в период мобилизации",pinpoint:"пункт 4",url:cp+"cons_doc_LAW_426999/",textFragment:"4. Контракты о прохождении военной службы",checked:true},
  "647-5": {citation:"Указ Президента № 647, п. 5 — специальные основания увольнения",pinpoint:"пункт 5, подпункт определяется по делу",url:cp+"cons_doc_LAW_426999/",textFragment:"5. Установить в период частичной мобилизации",checked:true},
  "647-9": {citation:"Указ Президента № 647, п. 9 — отсрочка для ОПК",pinpoint:"пункт 9",url:cp+"cons_doc_LAW_426999/",textFragment:"9. Предоставить гражданам Российской Федерации",checked:true},
@@ -77,17 +78,29 @@ const scenarioReferences: Record<string, readonly MilitaryProvisionId[]> = {
  "command-appeal/request-explanation":["76-21"],
  "command-appeal/challenge-decision":["76-21","kas-218","kas-219","kas-220","plenum8-jurisdiction"],
  "command-appeal/inaction":["76-21","kas-218","kas-219"],
- "mobilization-draft/draft-notice":["53-22","53-28","647-4"],
+ "mobilization-draft/draft-notice":["53-22","53-28","647-2"],
  "mobilization-draft/deferment":["53-24","31-18","647-9"],
  "mobilization-draft/challenge-draft":["53-28","53-35-1","53-35-2","kas-218"]
 };
 
 export const MILITARY_PINPOINT_REFERENCES: Readonly<Record<MilitaryProvisionId, Entry>> = registry;
 export const MILITARY_SCENARIO_PROVISIONS: Readonly<Record<string, readonly MilitaryProvisionId[]>> = scenarioReferences;
-export function getMilitaryPinpointLinks(routeId:string, scenarioKey:string):MilitaryProvision[] {
+/** Distinguish statutory regimes: rules for ordinary draft do not govern mobilisation appeals or deferrals. */
+export function getMilitaryPinpointLinks(routeId:string, scenarioKey:string, regime?:string):MilitaryProvision[] {
  const ids=scenarioReferences[routeId+"/"+scenarioKey];
  if(!ids)throw new Error("Missing legal pinpoint references: "+routeId+"/"+scenarioKey);
- return ids.filter(id=>registry[id].checked === true).map(id=>({id,...registry[id]}));
+ const ordinary=new Set(["призыв","доподготовка к призыву"]);
+ const mobilized=regime==="мобилизация";
+ const normalDraft=ordinary.has(regime??"");
+ return ids.filter(id=>{
+  if(registry[id].checked!==true)return false;
+  if(routeId!=="mobilization-draft")return true;
+  const ordinaryOnly=id==="53-22"||id==="53-24"||id==="53-28"||id==="53-35-1"||id==="53-35-2";
+  const mobilizationOnly=id==="31-18"||id==="647-2"||id==="647-9";
+  if(mobilized&&ordinaryOnly)return false;
+  if(normalDraft&&mobilizationOnly)return false;
+  return true;
+ }).map(id=>({id,...registry[id]}));
 }
 export function militaryProvisionHref(ref: MilitaryProvision):string {
  return ref.textFragment ? ref.url+"#:~:text="+encodeURIComponent(ref.textFragment) : ref.url;
