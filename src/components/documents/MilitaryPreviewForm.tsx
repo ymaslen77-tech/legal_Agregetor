@@ -81,7 +81,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
   try {
    const result=active.documentResult;
    await downloadGeneratedDocumentDocx({
-    title:result.documentTitle,content:result.documentText,
+    title:result.documentTitle,content:result.documentText,linkifyUrls:true,
     fileName:result.documentSlug+"-"+result.versionId+".docx"
    });setMessage("DOCX выбранной версии сформирован.");
   }catch {setMessage("Не удалось сформировать DOCX. Попробуйте ещё раз.");}
