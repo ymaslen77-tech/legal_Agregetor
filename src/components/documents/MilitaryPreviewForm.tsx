@@ -114,7 +114,10 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
    {invalidSelection?<p role="alert" className="mt-4 rounded-lg border border-amber-400 bg-amber-50 p-3">
     Неизвестный адрес сценария. Показан первый доступный вариант; выберите нужный маршрут.</p>:null}
    {step==="choose"?<section className="mt-5" aria-label="Выбор юридической ситуации">
-    <h2 className="text-xl font-semibold">Выберите направление</h2>
+    <div className="flex flex-wrap items-center justify-between gap-2">
+     <h2 className="text-xl font-semibold">Выберите направление</h2>
+     <a href="#military-related-questions" className="text-sm font-semibold text-trust underline underline-offset-2">Похожие вопросы ↓</a>
+    </div>
     <div className="mt-3 grid gap-2 sm:grid-cols-2">
      {MILITARY_ROUTES.map(r=><Link key={r.id} href={militaryPreviewHref(r.id)}
        aria-current={route.id===r.id?"page":undefined}
