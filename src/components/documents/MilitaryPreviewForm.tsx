@@ -237,11 +237,35 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
     <pre className="mt-3 max-h-[38rem] min-w-0 overflow-y-auto whitespace-pre-wrap break-words [overflow-wrap:anywhere] rounded-md border border-line bg-zinc-50 p-4 font-serif text-sm leading-6">
      {active.documentResult.documentText}
     </pre>
-    <div className="mt-4 flex flex-wrap gap-3">
+    <section className="mt-6 rounded-lg border border-line bg-white p-4" aria-label="Дальнейшие действия">
+     <h3 className="font-semibold">Что необходимо сделать до использования результата</h3>
+     <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm leading-6">
+      <li>Сверьте введённые факты, подтверждённый статус и даты с оригиналами документов. Если сведения неверны, измените анкету и сформируйте новую версию.</li>
+      <li>Подготовьте доказательства для индивидуальной проверки: {review.evidenceToCheck.join("; ")}.</li>
+      <li>Передайте проект компетентному юристу на проверку полномочий, адресата, сроков, особого режима и применимого порядка. Автоматическое определение подсудности не производится.</li>
+     </ol>
+     <p className="mt-3 text-sm font-medium text-amber-900">
+      Экспертная приёмка не предоставлена (0 из 11 критериев). Нельзя считать этот материал готовым к направлению.
+     </p>
+    </section>
+    <section className="mt-5" aria-label="Официальные источники для проверки">
+     <h3 className="font-semibold">Нормативные источники для проверки</h3>
+     <p className="mt-2 text-sm text-zinc-700">Ссылки указывают на опубликованные материалы, но их актуальная редакция, действие во времени и применимость к ситуации не подтверждены.</p>
+     <ul className="mt-3 list-disc space-y-2 pl-5 text-sm">
+      {scenario.sources.map(sourceId=><li key={sourceId}>
+       <a className="break-words text-trust underline underline-offset-2" href={MILITARY_SOURCES[sourceId].url}
+        target="_blank" rel="noreferrer noopener">{MILITARY_SOURCES[sourceId].name}</a>
+      </li>)}
+     </ul>
+    </section>
+    <p className="mt-5 text-sm text-zinc-700">
+     Передача юристу из этого закрытого предпросмотра пока не подключена. Реальные подтверждённые специалисты не подменяются демонстрационными профилями.
+    </p>
+    <div className="mt-5 flex flex-wrap gap-3" aria-label="Экспорт предварительного документа">
      <button type="button" disabled={dirty} onClick={()=>void downloadDocx()}
       className="min-h-11 rounded-md border border-trust px-4 py-2 text-sm font-semibold disabled:opacity-50">Скачать DOCX</button>
      <button type="button" disabled={dirty} onClick={()=>void downloadPdf()}
-      className="min-h-11 rounded-md border border-trust px-4 py-2 text-sm font-semibold disabled:opacity-50">Скачать PDF</button>
+      className="min-h-11 rounded-md bg-trust px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">Скачать PDF</button>
      <button type="button" onClick={backToFacts}
       className="min-h-11 rounded-md border border-line px-4 py-2 text-sm font-semibold">Изменить и создать новую версию</button>
     </div>
