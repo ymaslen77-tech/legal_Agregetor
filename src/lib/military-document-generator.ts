@@ -1,4 +1,4 @@
-import {MILITARY_SOURCES,getMilitaryDocumentSlug,type MilitaryRoute,type MilitaryScenario} from "@/data/military-route-plans";
+import {getMilitaryDocumentSlug,type MilitaryRoute,type MilitaryScenario} from "@/data/military-route-plans";
 import {documentResultSchema,DOCUMENT_RESULT_CONTRACT_VERSION,type DocumentResultV1} from "@/lib/document-result-contract";
 import {getMilitaryCaseReview} from "@/data/military-case-reviews";
 import {getMilitaryPinpointLinks,militaryProvisionHref} from "@/data/military-provision-links";
@@ -63,8 +63,7 @@ export function createMilitaryDocumentResult(
  const check=validateMilitaryIntake(route,scenario,answers);
  if(check.missing.length||check.invalid.length||!check.complete)throw new Error("Заполните и подтвердите обязательные факты: "+[...check.missing,...check.invalid,...check.warnings].join("; "));
  const pinpointLinks=getMilitaryPinpointLinks(route.id,scenario.key);
- const sourceLines=[...pinpointLinks.map(ref=>"- "+ref.citation+" ("+ref.pinpoint+"): "+militaryProvisionHref(ref)),
-  ...scenario.sources.map(key=>"- Общий источник, без подтверждения конкретной статьи: "+MILITARY_SOURCES[key].name+": "+MILITARY_SOURCES[key].url)];
+ const sourceLines=pinpointLinks.map(ref=>"- "+ref.citation+" ("+ref.pinpoint+"): "+militaryProvisionHref(ref));
  const review=getMilitaryCaseReview(route.id,scenario.key);
  const questions=[
   "- Применимый режим: "+review.scopeToCheck,
