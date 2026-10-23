@@ -7,6 +7,9 @@ test("authenticated-preview-style military generator completes safe four-step jo
  expect(response?.status()).toBe(200);
  await expect(page.getByRole("heading",{name:/Военное право — юридические маршруты/})).toBeVisible();
  await expect(page.getByRole("navigation",{name:"Этапы юридического маршрута"})).toBeVisible();
+ await expect(page.getByRole("navigation",{name:"Этапы заполнения военного маршрута"})).toHaveCount(0);
+ await expect(page.getByRole("heading",{name:"Похожие вопросы"})).toBeVisible();
+ await expect(page.getByRole("link",{name:"Похожие вопросы ↓"})).toHaveAttribute("href","#military-related-questions");
  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content",/noindex/);
  await expect(page.getByText(/18 сценариев/).first()).toBeVisible();
  await page.getByRole("button",{name:"Перейти к анкете"}).click();
