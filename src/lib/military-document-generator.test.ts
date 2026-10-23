@@ -4,6 +4,11 @@ import {validateMilitaryIntake,createMilitaryDocumentResult} from "@/lib/militar
 import {documentResultSchema} from "@/lib/document-result-contract";
 
 const id="11111111-1111-4111-8111-111111111111",stamp="2026-10-21T00:00:00.000Z";
+const kasSource=MILITARY_SOURCES.kas;
+assert.equal(kasSource.url,"https://publication.pravo.gov.ru/Document/View/0001201503090041");
+assert.equal(kasSource.verification,"PRIMARY_REFERENCE_FOUND_CASE_SCOPE_PENDING");
+assert.ok(kasSource.name.includes("действующая редакция"),"a historical primary publication is not a current consolidated text");
+assert.ok(Object.values(MILITARY_SOURCES).every(source=>new URL(source.url).pathname!=="/"),"all listed military sources must identify a specific resource");
 assert.equal(MILITARY_ROUTES.length,6);
 assert.equal(MILITARY_ROUTES.flatMap(r=>r.scenarios).length,18);
 const seenSlugs=new Set<string>();
