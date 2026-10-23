@@ -62,7 +62,7 @@ export function createMilitaryDocumentResult(
  if(scenario.kind==="URGENT_INSTRUCTION")throw new Error("Urgent instruction must not generate or export a document");
  const check=validateMilitaryIntake(route,scenario,answers);
  if(check.missing.length||check.invalid.length||!check.complete)throw new Error("Заполните и подтвердите обязательные факты: "+[...check.missing,...check.invalid,...check.warnings].join("; "));
- const pinpointLinks=getMilitaryPinpointLinks(route.id,scenario.key);
+ const pinpointLinks=getMilitaryPinpointLinks(route.id,scenario.key,answers.regime);
  const sourceLines=pinpointLinks.map(ref=>"- "+ref.citation+" ("+ref.pinpoint+"): "+militaryProvisionHref(ref));
  const review=getMilitaryCaseReview(route.id,scenario.key);
  const questions=[
