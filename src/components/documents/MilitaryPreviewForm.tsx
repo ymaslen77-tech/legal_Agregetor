@@ -3,6 +3,7 @@
 import Link from "next/link";
 import {useMemo,useState} from "react";
 import {MILITARY_ROUTES,type MilitaryRoute,type MilitaryScenario,MILITARY_SOURCES} from "@/data/military-route-plans";
+import {getMilitaryPinpointLinks,militaryProvisionHref} from "@/data/military-provision-links";
 import {getMilitaryCaseReview} from "@/data/military-case-reviews";
 import {militaryPreviewHref} from "@/lib/military-preview-navigation";
 import {createMilitaryDocumentResult,validateMilitaryIntake} from "@/lib/military-document-generator";
@@ -198,6 +199,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
      {review.evidenceToCheck.map(e=><li key={e}>{e}</li>)}
     </ul>
     <h3 className="mt-5 font-semibold">Нормативные источники — требуют сверки редакций</h3>
+    <ul className="mt-2 list-disc space-y-2 pl-6 text-sm">{getMilitaryPinpointLinks(route.id,scenario.key).map(ref=><li key={ref.id}><a className="underline underline-offset-2" href={militaryProvisionHref(ref)} target="_blank" rel="noreferrer noopener">{ref.citation}</a><span className="ml-2 text-zinc-600">({ref.pinpoint}; применимость и редакция на дату события требуют проверки)</span></li>)}</ul>
     <ul className="mt-2 list-disc space-y-2 pl-6 text-sm">
      {scenario.sources.map(sourceId=><li key={sourceId}>
       <a className="underline underline-offset-2" href={MILITARY_SOURCES[sourceId].url}
@@ -247,6 +249,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
     </section>
     <section className="mt-5" aria-label="Официальные источники для проверки">
      <h3 className="font-semibold">Нормативные источники для проверки</h3>
+     <ul className="mt-3 list-disc space-y-2 pl-5 text-sm">{getMilitaryPinpointLinks(route.id,scenario.key).map(ref=><li key={ref.id}><a className="break-words text-trust underline underline-offset-2" href={militaryProvisionHref(ref)} target="_blank" rel="noreferrer noopener">{ref.citation}</a> — {ref.pinpoint}</li>)}</ul>
      <p className="mt-2 text-sm text-zinc-700">Ссылки указывают на опубликованные материалы, но их актуальная редакция, действие во времени и применимость к ситуации не подтверждены.</p>
      <ul className="mt-3 list-disc space-y-2 pl-5 text-sm">
       {scenario.sources.map(sourceId=><li key={sourceId}>
