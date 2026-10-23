@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import {useMemo,useState} from "react";
-import {MILITARY_ROUTES,type MilitaryRoute,type MilitaryScenario,MILITARY_SOURCES} from "@/data/military-route-plans";
+import {MILITARY_ROUTES,type MilitaryRoute,type MilitaryScenario} from "@/data/military-route-plans";
 import {getMilitaryPinpointLinks,militaryProvisionHref} from "@/data/military-provision-links";
 import {getMilitaryCaseReview} from "@/data/military-case-reviews";
 import {militaryPreviewHref} from "@/lib/military-preview-navigation";
@@ -200,14 +200,6 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
     </ul>
     <h3 className="mt-5 font-semibold">Нормативные источники — требуют сверки редакций</h3>
     <ul className="mt-2 list-disc space-y-2 pl-6 text-sm">{getMilitaryPinpointLinks(route.id,scenario.key).map(ref=><li key={ref.id}><a className="underline underline-offset-2" href={militaryProvisionHref(ref)} target="_blank" rel="noreferrer noopener">{ref.citation}</a><span className="ml-2 text-zinc-600">({ref.pinpoint}; применимость и редакция на дату события требуют проверки)</span></li>)}</ul>
-    <ul className="mt-2 list-disc space-y-2 pl-6 text-sm">
-     {scenario.sources.map(sourceId=><li key={sourceId}>
-      <a className="underline underline-offset-2" href={MILITARY_SOURCES[sourceId].url}
-       target="_blank" rel="noreferrer noopener">{MILITARY_SOURCES[sourceId].name}</a>
-      {MILITARY_SOURCES[sourceId].verification==="PRIMARY_DOCUMENT_LINK_PENDING"?
-       <span className="ml-2 text-amber-900">(точный официальный документ не установлен)</span>:null}
-     </li>)}
-    </ul>
     </details>
     <label className="mt-4 flex items-start gap-3 rounded-md border border-line p-4 text-sm leading-6">
      <input type="checkbox" checked={acknowledged} disabled={!validation.complete}
@@ -251,12 +243,6 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
      <h3 className="font-semibold">Нормативные источники для проверки</h3>
      <ul className="mt-3 list-disc space-y-2 pl-5 text-sm">{getMilitaryPinpointLinks(route.id,scenario.key).map(ref=><li key={ref.id}><a className="break-words text-trust underline underline-offset-2" href={militaryProvisionHref(ref)} target="_blank" rel="noreferrer noopener">{ref.citation}</a> — {ref.pinpoint}</li>)}</ul>
      <p className="mt-2 text-sm text-zinc-700">Ссылки указывают на опубликованные материалы, но их актуальная редакция, действие во времени и применимость к ситуации не подтверждены.</p>
-     <ul className="mt-3 list-disc space-y-2 pl-5 text-sm">
-      {scenario.sources.map(sourceId=><li key={sourceId}>
-       <a className="break-words text-trust underline underline-offset-2" href={MILITARY_SOURCES[sourceId].url}
-        target="_blank" rel="noreferrer noopener">{MILITARY_SOURCES[sourceId].name}</a>
-      </li>)}
-     </ul>
     </section>
     <p className="mt-5 text-sm text-zinc-700">
      Передача юристу из этого закрытого предпросмотра пока не подключена. Реальные подтверждённые специалисты не подменяются демонстрационными профилями.
