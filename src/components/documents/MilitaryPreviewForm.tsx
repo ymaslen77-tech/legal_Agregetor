@@ -101,39 +101,30 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
   setDirty(false);setAcknowledged(true);setStep("result");
   setMessage("Изменения отменены. Сформированная версия не изменена.");
  }
- const statuses=[["Выбор ситуации","choose"],["Анкета","facts"],["Проверка фактов","review"],["Предварительный результат","result"]] as const;
  return <>
   <LegalRouteJourney stage="document" title={route.title} activeStep={step==="choose"?1:step==="result"?3:2}/>
-  <section className="mx-auto max-w-5xl min-w-0 px-4 py-7 sm:px-6 lg:px-8">
-   <p className="text-sm font-semibold text-amber-900">ЗАКРЫТЫЙ ПРЕДПРОСМОТР — НЕ ГОТОВО К ПОДАЧЕ</p>
-   <h1 className="mt-2 text-3xl font-semibold text-ink">Военное право — юридические маршруты</h1>
-   <p className="mt-3 text-sm leading-6 text-zinc-700">
-    6 направлений, 18 сценариев. Проверка по стандартам ПравоПоиска.
-    Документы пока не согласованы юристом. Не указывайте ФИО, номера частей, местоположение, задачи подразделений,
-    диагнозы или чужие персональные данные. Всё введённое остаётся в памяти вкладки браузера и не отправляется в Neon.
+  <section className="mx-auto max-w-5xl min-w-0 px-4 py-5 sm:px-6 lg:px-8">
+   <p className="text-xs font-semibold uppercase tracking-wide text-amber-900">ЗАКРЫТЫЙ ПРЕДПРОСМОТР — НЕ ГОТОВО К ПОДАЧЕ</p>
+   <h1 className="mt-1 text-2xl font-semibold text-ink sm:text-3xl">Военное право — юридические маршруты</h1>
+   <p className="mt-2 text-sm leading-6 text-zinc-700">
+    6 направлений · 18 сценариев. Документы не согласованы юристом.
+    Не вводите ФИО, номера частей, местоположение, задачи подразделений, диагнозы и чужие данные.
+    Анкета остаётся в памяти вкладки и не отправляется в Neon.
    </p>
    {invalidSelection?<p role="alert" className="mt-4 rounded-lg border border-amber-400 bg-amber-50 p-3">
     Неизвестный адрес сценария. Показан первый доступный вариант; выберите нужный маршрут.</p>:null}
-   <nav aria-label="Этапы заполнения военного маршрута" className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
-    {statuses.map(([label,kind],index)=><div key={kind} aria-current={step===kind?"step":undefined}
-     className={`rounded-lg border px-3 py-3 text-sm ${step===kind?"border-trust bg-emerald-50 font-semibold":"border-line bg-white"}`}>
-     <span aria-hidden="true">{index+1}. </span>{label}
-    </div>)}
-   </nav>
-
-   {step==="choose"?<section className="mt-7" aria-label="Выбор юридической ситуации">
-    <h2 className="text-xl font-semibold">Шаг 1. Выберите направление</h2>
-    <p className="mt-2 text-sm text-zinc-700">Каждое направление содержит три индивидуальных сценария. Ссылки относятся только к закрытому Preview.</p>
-    <div className="mt-4 grid gap-3 sm:grid-cols-2">
+   {step==="choose"?<section className="mt-5" aria-label="Выбор юридической ситуации">
+    <h2 className="text-xl font-semibold">Выберите направление</h2>
+    <div className="mt-3 grid gap-2 sm:grid-cols-2">
      {MILITARY_ROUTES.map(r=><Link key={r.id} href={militaryPreviewHref(r.id)}
        aria-current={route.id===r.id?"page":undefined}
-       className={`min-w-0 rounded-lg border p-4 text-sm hover:border-trust focus:ring-2 focus:ring-trust ${route.id===r.id?"border-trust bg-emerald-50":"border-line"}`}>
+       className={`min-w-0 rounded-lg border px-4 py-3 text-sm hover:border-trust focus:ring-2 focus:ring-trust ${route.id===r.id?"border-trust bg-emerald-50":"border-line"}`}>
        <span className="font-semibold">{r.title}</span>
-       <span className="mt-2 block text-xs text-zinc-600">{r.scenarios.length} сценария · юридическая проверка не завершена</span>
+       <span className="mt-1 block text-xs text-zinc-600">{r.scenarios.length} сценария</span>
       </Link>)}
     </div>
-    <h3 className="mt-7 text-lg font-semibold">Выберите конкретную ситуацию</h3>
-    <ul className="mt-3 grid gap-3">
+    <h3 className="mt-5 text-lg font-semibold">Выберите ситуацию</h3>
+    <ul className="mt-3 grid gap-2">
      {route.scenarios.map(s=><li key={s.key}>
        <Link href={militaryPreviewHref(route.id,s.key)}
         aria-current={scenario.key===s.key?"page":undefined}
@@ -143,10 +134,10 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
        </Link>
       </li>)}
     </ul>
-    <div className="mt-5 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm">
-     <p className="font-semibold">Юридическое ограничение</p>
-     <p className="mt-1">{review.exclusionToCheck}</p>
-    </div>
+    <details className="mt-4 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm">
+     <summary className="cursor-pointer font-semibold">Ограничения выбранной ситуации</summary>
+     <p className="mt-2 leading-6">{review.exclusionToCheck}</p>
+    </details>
     {emergency?<div className="mt-5 rounded-lg border-l-4 border-red-700 bg-red-50 p-5" role="alert">
       <h3 className="font-semibold text-red-950">Сначала неотложная помощь</h3>
       {scenario.safetyNotes.map(t=><p key={t} className="mt-2 text-sm text-red-950">{t}</p>)}
@@ -156,7 +147,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
    </section>:null}
 
    {step==="facts"&&!emergency?<section className="mt-7" aria-label="Пошаговая анкета">
-    <h2 className="text-xl font-semibold">Шаг 2. Укажите необходимые обстоятельства</h2>
+    <h2 className="text-xl font-semibold">Анкета</h2>
     <p className="mt-2 text-sm leading-6 text-zinc-700">Сценарий: <strong>{scenario.title}</strong>. 
      Только обезличенные сведения. Даты и правовой статус указывайте по документам, а не по предположениям.</p>
     <p className="mt-3 text-xs text-zinc-600">Заполнено: {completeCount} из {required.length} обязательных полей.</p>
@@ -179,21 +170,23 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
    </section>:null}
 
    {step==="review"&&!emergency?<section className="mt-7" aria-label="Проверка перед генерацией">
-    <h2 className="text-xl font-semibold">Шаг 3. Проверка исходных данных и рисков</h2>
+    <h2 className="text-xl font-semibold">Проверьте сведения и риски</h2>
     <p className="mt-2 text-sm text-zinc-700">Ниже — обязательные вопросы для последующей юридической проверки. Они не являются заключением эксперта.</p>
     {validation.missing.length?<p role="alert" className="mt-4 rounded-md bg-amber-50 p-3 text-sm">
       Не заполнено: {validation.missing.map(k=>route.fields.find(f=>f.key===k)?.label??k).join("; ")}</p>:null}
     {validation.invalid.length?<p role="alert" className="mt-3 rounded-md bg-red-50 p-3 text-sm text-red-950">
       Неверно заполнены поля: {validation.invalid.join("; ")}</p>:null}
     {validation.warnings.map(w=><p role="alert" key={w} className="mt-3 rounded-md bg-amber-50 p-3 text-sm text-amber-950">{w}</p>)}
-    <details className="mt-5 rounded-lg border border-amber-300 bg-amber-50 p-4" open>
-     <summary className="cursor-pointer font-semibold">Юридическая приёмка: 0 из 11 критериев подтверждено</summary>
+    <details className="mt-4 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3">
+     <summary className="cursor-pointer font-semibold">Юридическая приёмка: 0 из 11 — нужна проверка эксперта</summary>
      <p className="mt-2 text-sm">Все критерии требуют независимого письменного заключения. Автотесты не подтверждают актуальность правовых оснований.</p>
      <ol className="mt-3 list-decimal space-y-1 pl-6 text-sm">
       {MILITARY_ACCEPTANCE_CHECKS.map(key=><li key={key}>{MILITARY_ACCEPTANCE_LABELS[key]} — не подтверждено</li>)}
      </ol>
     </details>
-    <h3 className="mt-5 font-semibold">Правовые вопросы конкретного сценария</h3>
+    <details className="mt-4 rounded-lg border border-line bg-white px-4 py-3 text-sm">
+     <summary className="cursor-pointer font-semibold">Правовые вопросы, доказательства и источники</summary>
+     <h3 className="mt-4 font-semibold">Правовые вопросы конкретного сценария</h3>
     <ol className="mt-2 list-decimal space-y-2 pl-6 text-sm leading-6">
      {[review.scopeToCheck,review.standingToCheck,review.addresseeToCheck,review.timeToCheck,review.exclusionToCheck].map(t=><li key={t}>{t}</li>)}
     </ol>
@@ -210,7 +203,8 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
        <span className="ml-2 text-amber-900">(точный официальный документ не установлен)</span>:null}
      </li>)}
     </ul>
-    <label className="mt-6 flex items-start gap-3 rounded-md border border-line p-4 text-sm leading-6">
+    </details>
+    <label className="mt-4 flex items-start gap-3 rounded-md border border-line p-4 text-sm leading-6">
      <input type="checkbox" checked={acknowledged} disabled={!validation.complete}
       onChange={e=>setAcknowledged(e.target.checked)} className="mt-1 h-5 w-5" />
      <span>Я проверил введённые факты по своим документам и понимаю, что это предварительный материал, который нельзя подавать без юридической проверки.</span>
@@ -229,7 +223,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
    </section>:null}
 
    {step==="result"&&active?<section className="mt-7" aria-label="Предварительный результат">
-    <h2 className="text-xl font-semibold">Шаг 4. Предварительный результат</h2>
+    <h2 className="text-xl font-semibold">Предварительный результат</h2>
     <div className="mt-4"><DocumentResultSummary result={active.documentResult} showArchive={false}>
      <p className="mt-2 text-sm">Сохранение в общий кабинет недоступно до юридической приёмки. Версия остаётся в памяти этой вкладки.</p>
     </DocumentResultSummary></div>
@@ -269,7 +263,6 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
      <button type="button" onClick={backToFacts}
       className="min-h-11 rounded-md border border-line px-4 py-2 text-sm font-semibold">Изменить и создать новую версию</button>
     </div>
-    <p className="mt-3 text-sm text-amber-900">Этап 5 «Юридическая проверка» не завершён. Экспертный допуск к подаче отсутствует.</p>
     <DocumentVersionHistory versions={versions.map(v=>v.documentResult)}
      currentVersionId={active.documentResult.versionId} onSelect={selectVersion}/>
    </section>:null}
