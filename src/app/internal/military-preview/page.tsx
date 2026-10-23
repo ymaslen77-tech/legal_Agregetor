@@ -12,7 +12,7 @@ export default async function MilitaryInternalPage({searchParams}:{searchParams:
  const query=await searchParams;
  const selection=resolveMilitaryPreviewSelection(query.route,query.scenario);
  return <>
-  <MilitaryPreviewForm initialRouteId={selection.route.id} initialScenarioKey={selection.scenario.key} invalidSelection={selection.invalidSelection}/>
+  <MilitaryPreviewForm key={`${selection.route.id}/${selection.scenario.key}`} initialRouteId={selection.route.id} initialScenarioKey={selection.scenario.key} invalidSelection={selection.invalidSelection}/>
   <MilitaryRelatedQuestions routeId={selection.route.id} scenarioKey={selection.scenario.key}/>
  </>;
 }
