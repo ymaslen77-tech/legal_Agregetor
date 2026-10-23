@@ -28,6 +28,9 @@ test("authenticated-preview-style military generator completes safe four-step jo
  const result=page.getByRole("region",{name:"Предварительный результат"});
  await expect(result).toContainText("НЕ ГОТОВ К ПОДАЧЕ");
  await expect(result).toContainText("Индивидуальные вопросы юридической приёмки");
+ await expect(result.getByRole("region",{name:"Дальнейшие действия"})).toContainText("Экспертная приёмка не предоставлена");
+ await expect(result.getByRole("region",{name:"Официальные источники для проверки"}).getByRole("link")).toHaveCount(3);
+ await expect(result).toContainText("Передача юристу из этого закрытого предпросмотра пока не подключена");
  await expect(result.getByRole("button",{name:"Скачать PDF"})).toBeEnabled();
  await expect(result.getByRole("button",{name:"Скачать DOCX"})).toBeEnabled();
  const originalText=await result.locator("pre").textContent();
