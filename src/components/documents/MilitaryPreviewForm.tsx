@@ -199,7 +199,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
      {review.evidenceToCheck.map(e=><li key={e}>{e}</li>)}
     </ul>
     <h3 className="mt-5 font-semibold">Нормативные источники — требуют сверки редакций</h3>
-    <ul className="mt-2 list-disc space-y-2 pl-6 text-sm">{getMilitaryPinpointLinks(route.id,scenario.key).map(ref=><li key={ref.id}><a className="underline underline-offset-2" href={militaryProvisionHref(ref)} target="_blank" rel="noreferrer noopener">{ref.citation}</a><span className="ml-2 text-zinc-600">({ref.pinpoint}; применимость и редакция на дату события требуют проверки)</span></li>)}</ul>
+    <ul className="mt-2 list-disc space-y-2 pl-6 text-sm">{getMilitaryPinpointLinks(route.id,scenario.key,answers.regime).map(ref=><li key={ref.id}><a className="underline underline-offset-2" href={militaryProvisionHref(ref)} target="_blank" rel="noreferrer noopener">{ref.citation}</a><span className="ml-2 text-zinc-600">({ref.pinpoint}; применимость и редакция на дату события требуют проверки)</span></li>)}</ul>
     </details>
     <label className="mt-4 flex items-start gap-3 rounded-md border border-line p-4 text-sm leading-6">
      <input type="checkbox" checked={acknowledged} disabled={!validation.complete}
@@ -241,7 +241,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
     </section>
     <section className="mt-5" aria-label="Официальные источники для проверки">
      <h3 className="font-semibold">Нормативные источники для проверки</h3>
-     <ul className="mt-3 list-disc space-y-2 pl-5 text-sm">{getMilitaryPinpointLinks(route.id,scenario.key).map(ref=><li key={ref.id}><a className="break-words text-trust underline underline-offset-2" href={militaryProvisionHref(ref)} target="_blank" rel="noreferrer noopener">{ref.citation}</a> — {ref.pinpoint}</li>)}</ul>
+     <ul className="mt-3 list-disc space-y-2 pl-5 text-sm">{getMilitaryPinpointLinks(route.id,scenario.key,answers.regime).map(ref=><li key={ref.id}><a className="break-words text-trust underline underline-offset-2" href={militaryProvisionHref(ref)} target="_blank" rel="noreferrer noopener">{ref.citation}</a> — {ref.pinpoint}</li>)}</ul>
      <p className="mt-2 text-sm text-zinc-700">Ссылки указывают на опубликованные материалы, но их актуальная редакция, действие во времени и применимость к ситуации не подтверждены.</p>
     </section>
     <p className="mt-5 text-sm text-zinc-700">
