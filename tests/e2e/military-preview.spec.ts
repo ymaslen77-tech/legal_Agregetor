@@ -70,3 +70,16 @@ test("@military-preview six military routes are readable without horizontal scro
   expect(horizontalOverflow,route.id+" must not overflow 320px width").toBe(false);
  }
 });
+
+test("@military-preview route switching updates form and related-question context without reusing previous answers",async({page})=>{
+ await page.goto(militaryPreviewHref("service-contract","contract-check"));
+ await page.getByRole("link",{name:/Увольнение с военной службы/}).first().click();
+ await expect(page.getByRole("navigation",{name:"Этапы юридического маршрута"})).toContainText("Увольнение с военной службы");
+ await page.getByRole("link",{name:/Увольнение по состоянию здоровья/}).click();
+ await expect(page).toHaveURL(/scenario=medical-discharge/);
+ await expect(page.getByRole("heading",{name:"Похожие вопросы"})).toBeVisible();
+ await page.getByRole("button",{name:"Перейти к анкете"}).click();
+ const form=page.getByRole("region",{name:"Пошаговая анкета"});
+ await expect(form).toContainText("Увольнение по состоянию здоровья");
+ await expect(form.locator("textarea").first()).toBeEmpty();
+});
