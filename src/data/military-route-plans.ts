@@ -28,7 +28,7 @@ export const MILITARY_SOURCES:Readonly<Record<MilitarySourceId,{name:string;url:
  "306fz":{name:"Федеральный закон от 07.11.2011 № 306-ФЗ — ведомственная публикация; актуальная редакция и выплаты требуют сверки",url:"https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-07112011--306fz",verification:"PRIMARY_REFERENCE_FOUND_CASE_SCOPE_PENDING"},
  "565":{name:"Постановление № 565 о военно-врачебной экспертизе (сверить редакцию)",url:"https://mchs.gov.ru/dokumenty/553",verification:"PRIMARY_REFERENCE_FOUND_CASE_SCOPE_PENDING"},
  "574":{name:"Постановление № 574 о независимой военно-врачебной экспертизе",url:"https://mchs.gov.ru/dokumenty/693",verification:"PRIMARY_REFERENCE_FOUND_CASE_SCOPE_PENDING"},
- "kas":{name:"КАС РФ: возможный процессуальный порядок, определяется юристом",url:"https://pravo.gov.ru/",verification:"PRIMARY_DOCUMENT_LINK_PENDING"},
+ "kas":{name:"КАС РФ — Федеральный закон от 08.03.2015 № 21-ФЗ, официальная публикация 09.03.2015; действующая редакция, порядок и подсудность требуют отдельной проверки",url:"https://publication.pravo.gov.ru/Document/View/0001201503090041",verification:"PRIMARY_REFERENCE_FOUND_CASE_SCOPE_PENDING"},
  "plenum8":{name:"Пленум ВС РФ № 8 от 29.05.2014, изменения от 28.10.2025 № 21 — подсудность и военная служба",url:"https://vsrf.ru/documents/own/8382/",verification:"PRIMARY_REFERENCE_FOUND_CASE_SCOPE_PENDING"},
  "plenum21":{name:"Пленум ВС РФ № 21 от 28.10.2025 — изменения разъяснений № 8",url:"https://www.vsrf.ru/documents/all/34814",verification:"PRIMARY_REFERENCE_FOUND_CASE_SCOPE_PENDING"}
 };
