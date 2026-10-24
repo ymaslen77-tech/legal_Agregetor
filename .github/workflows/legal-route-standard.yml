@@ -28,6 +28,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run test:route-standard
+      - run: npm run test:military
       - run: npm run audit:family-labor-release
       - run: npm run test:document-result
       - run: npm run test:labor
@@ -40,4 +41,6 @@ jobs:
           path: |
             artifacts/legal-route-acceptance.json
             artifacts/family-labor-readiness.json
+            artifacts/military-legal-acceptance.json
+            artifacts/military-legal-review-checklist.md
           if-no-files-found: warn
