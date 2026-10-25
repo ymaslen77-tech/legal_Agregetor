@@ -42,6 +42,10 @@ export default function ProblemsPage() {
                   <p className="mt-2 text-sm leading-6 text-zinc-600">{category.description}</p>
                 </Link>
               ))}
+              <Link href="/voennoe-pravo/" className="rounded-lg border border-line bg-white p-5 shadow-sm hover:border-trust">
+                <h3 className="text-lg font-semibold text-ink">Военное право</h3>
+                <p className="mt-2 text-sm leading-6 text-zinc-600">Контракт, увольнение, выплаты, ВВК, командование, призыв и мобилизация. 18 тем; юридические генераторы пока на проверке.</p>
+              </Link>
             </div>
           </div>
         </section>
