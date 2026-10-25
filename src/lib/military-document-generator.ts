@@ -41,6 +41,10 @@ export function validateMilitaryIntake(route:MilitaryRoute,scenario:MilitaryScen
   warnings.push("Указанные статусы заявителя и службы противоречат друг другу; генерация заблокирована.");
  if(scenario.kind==="DRAFT"&&answers.role!=="военнослужащий")
   warnings.push("Проект запроса сведений доступен только самому военнослужащему; полномочия иных заявителей подлежат проверке.");
+ if(route.id==="mobilization-draft" &&
+  !((answers.role==="призывник" && ["доподготовка к призыву","призыв"].includes(answers.regime??"")) ||
+    (answers.role==="военнослужащий" && answers.regime==="мобилизация")))
+  warnings.push("Статус заявителя не соответствует выбранной ситуации призыва или мобилизации; генерация заблокирована.");
  if(["mobilization-draft","military-discharge","military-medical"].includes(route.id))
   warnings.push("Обязательна индивидуальная оценка специальных правовых режимов и применимой редакции норм.");
  return {missing,invalid,warnings,complete:!missing.length&&!invalid.length&&!warnings.some(s=>s.includes("генерация заблокирована"))};
