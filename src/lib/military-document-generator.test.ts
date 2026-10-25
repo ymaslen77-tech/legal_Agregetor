@@ -29,6 +29,7 @@ for(const route of MILITARY_ROUTES){
   for(const id of scenario.sources)assert.ok(MILITARY_SOURCES[id]?.url.startsWith("https://"));
   const answers=Object.fromEntries(route.fields.map(f=>[f.key,
     f.key==="urgency"?"нет":f.values?f.values.find(x=>x!=="не знаю")!:"Документы подтверждают событие"]));
+  if(route.id==="mobilization-draft"){answers.role="призывник";answers.regime="доподготовка к призыву";}
   const resultKind=scenario.kind;
   if(resultKind==="URGENT_INSTRUCTION"){
     emergencies++;
@@ -66,6 +67,13 @@ for(const route of MILITARY_ROUTES){
   assert.ok(validateMilitaryIntake(route,scenario,oversized).invalid.includes("event"));
  }
 }
+const draftRoute=getMilitaryRoute("mobilization-draft")!;
+const inapplicable=draftRoute.scenarios[0];
+const wrongRole=Object.fromEntries(draftRoute.fields.map(f=>[f.key,
+ f.values?f.values[0]:"Подтверждённые обстоятельства"]));
+wrongRole.role="военнослужащий";wrongRole.regime="контракт";
+assert.equal(validateMilitaryIntake(draftRoute,inapplicable,wrongRole).complete,false);
+assert.throws(()=>createMilitaryDocumentResult(draftRoute,inapplicable,wrongRole,{versionId:id,createdAt:stamp}),/генерация заблокирована/);
 const medicalRoute=getMilitaryRoute("military-medical")!;
 const medicalScenario=medicalRoute.scenarios.find(x=>x.key==="vvk-conclusion")!;
 const urgentAnswers=Object.fromEntries(medicalRoute.fields.map(x=>[x.key,x.values?x.values[0]:"Есть документ"]));
