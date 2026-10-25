@@ -113,8 +113,11 @@ jobs:
           if ! command -v pdfinfo >/dev/null || ! command -v pdftotext >/dev/null || ! command -v pdftoppm >/dev/null; then
             # Ignore an unrelated third-party APT mirror failure (e.g. Microsoft 403).
             # This is a disposable GitHub runner, not the application/VPS.
-            sudo grep -rl 'packages.microsoft.com' /etc/apt/sources.list.d/ 2>/dev/null |
-              while IFS= read -r source; do sudo mv "$source" "$source.disabled"; done
+            for source in /etc/apt/sources.list.d/*; do
+              if grep -q 'packages.microsoft.com' "$source" 2>/dev/null; then
+                sudo mv "$source" "$source.disabled"
+              fi
+            done
             sudo apt-get update
             sudo apt-get install -y poppler-utils
           fi
