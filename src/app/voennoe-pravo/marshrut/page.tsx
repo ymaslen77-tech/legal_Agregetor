@@ -17,7 +17,7 @@ export default async function MilitaryDraftRoute({searchParams}:{searchParams:Pr
  return <>
   <MilitaryPreviewForm key={selection.route.id+"/"+selection.scenario.key}
    initialRouteId={selection.route.id} initialScenarioKey={selection.scenario.key}
-   invalidSelection={selection.invalidSelection} routeHref={militaryPublicDraftHref}/>
+   invalidSelection={selection.invalidSelection} publicDraft routeHref={militaryPublicDraftHref}/>
   <MilitaryRelatedQuestions routeId={selection.route.id} scenarioKey={selection.scenario.key}/>
  </>;
 }
