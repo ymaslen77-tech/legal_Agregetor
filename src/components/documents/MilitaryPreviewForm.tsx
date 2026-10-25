@@ -11,20 +11,20 @@ import type {DocumentResultV1} from "@/lib/document-result-contract";
 import {downloadGeneratedDocumentDocx} from "@/lib/document-export";
 import {createFamilyLaborPdfBlob} from "@/lib/family-labor-pdf";
 import {addDocumentVersion} from "@/lib/document-version-history";
-import {DocumentResultSummary} from "@/components/documents/DocumentResultSummary";
+
 import {DocumentVersionHistory} from "@/components/documents/DocumentVersionHistory";
-import {LegalRouteJourney} from "@/components/documents/LegalRouteJourney";
+import {MilitaryRouteJourney} from "@/components/documents/MilitaryRouteJourney";
 import {LegalFormField} from "@/components/documents/LegalFormField";
 import {MILITARY_ACCEPTANCE_CHECKS,MILITARY_ACCEPTANCE_LABELS} from "@/lib/military-legal-release-gate";
 
 type Step="choose"|"facts"|"review"|"result";
 type Snapshot={documentResult:DocumentResultV1;answers:Record<string,string>};
-type Props={initialRouteId:string;initialScenarioKey:string;invalidSelection?:boolean;routeHref?:(routeId:string,scenarioKey?:string)=>string};
+type Props={initialRouteId:string;initialScenarioKey:string;invalidSelection?:boolean;publicDraft?:boolean;routeHref?:(routeId:string,scenarioKey?:string)=>string};
 
 function safeLabel(kind:MilitaryScenario["kind"]):string {
- return kind==="DRAFT"?"Предварительный запрос сведений":kind==="CHECKLIST"?"Проверочный чек-лист":"Экстренная инструкция";
+ return kind==="URGENT_INSTRUCTION"?"Срочная инструкция":"Предварительный проект обращения или чек-лист";
 }
-export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSelection=false,routeHref=militaryPreviewHref}:Props){
+export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSelection=false,publicDraft=false,routeHref=militaryPreviewHref}:Props){
  const [routeId,setRouteId]=useState(initialRouteId);
  const route=MILITARY_ROUTES.find(x=>x.id===routeId)??MILITARY_ROUTES[0];
  const [scenarioKey,setScenarioKey]=useState(initialScenarioKey);
@@ -81,7 +81,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
   try {
    const result=active.documentResult;
    await downloadGeneratedDocumentDocx({
-    title:result.documentTitle,content:result.documentText,linkifyUrls:true,
+    title:result.documentTitle,content:result.documentText,
     fileName:result.documentSlug+"-"+result.versionId+".docx"
    });setMessage("DOCX выбранной версии сформирован.");
   }catch {setMessage("Не удалось сформировать DOCX. Попробуйте ещё раз.");}
@@ -103,9 +103,9 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
   setMessage("Изменения отменены. Сформированная версия не изменена.");
  }
  return <>
-  <LegalRouteJourney stage="document" title={route.title} activeStep={step==="choose"?1:step==="result"?3:2}/>
+  <MilitaryRouteJourney title={route.title} step={step}/>
   <section className="mx-auto max-w-5xl min-w-0 px-4 py-5 sm:px-6 lg:px-8">
-   <p className="text-xs font-semibold uppercase tracking-wide text-amber-900">ЗАКРЫТЫЙ ПРЕДПРОСМОТР — НЕ ГОТОВО К ПОДАЧЕ</p>
+   <p className="text-xs font-semibold uppercase tracking-wide text-amber-900">{publicDraft?"ПРЕДВАРИТЕЛЬНЫЙ ПРОЕКТ — НЕ ГОТОВО К ПОДАЧЕ":"ЗАКРЫТЫЙ ПРЕДПРОСМОТР — НЕ ГОТОВО К ПОДАЧЕ"}</p>
    <h1 className="mt-1 text-2xl font-semibold text-ink sm:text-3xl">Военное право — юридические маршруты</h1>
    <p className="mt-2 text-sm leading-6 text-zinc-700">
     6 направлений · 18 сценариев. Документы не согласованы юристом.
@@ -158,7 +158,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
     <div className="mt-5 grid min-w-0 gap-4">
      {required.map(field=><LegalFormField key={field.key} id={"military-"+field.key}
       label={field.label} value={answers[field.key]??""} required
-      kind={field.values?"select":"textarea"} rows={2} maxLength={2000}
+      kind={field.values?"select":"textarea"} rows={2}
       options={field.values?.map(v=>({value:v,label:v}))}
       hint={field.key==="urgency"?"Если помощь требуется или вы не уверены, генерация будет остановлена.":
         field.key==="medical"?"Не указывайте диагноз и не прикладывайте медицинские файлы.":undefined}
@@ -221,9 +221,11 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
 
    {step==="result"&&active?<section className="mt-7" aria-label="Предварительный результат">
     <h2 className="text-xl font-semibold">Предварительный результат</h2>
-    <div className="mt-4"><DocumentResultSummary result={active.documentResult} showArchive={false}>
-     <p className="mt-2 text-sm">Сохранение в общий кабинет недоступно до юридической приёмки. Версия остаётся в памяти этой вкладки.</p>
-    </DocumentResultSummary></div>
+    <section className="mt-4 border-l-4 border-amber-400 bg-amber-50 p-4 text-amber-950" aria-label="Юридический статус документа">
+     <p className="font-semibold">ПРОЕКТ — ТРЕБУЕТСЯ ЮРИДИЧЕСКАЯ ПРОВЕРКА</p>
+     <h3 className="mt-2 text-lg font-semibold">{active.documentResult.documentTitle}</h3>
+     <p className="mt-2 text-sm">Готовность к подаче не подтверждена. Данные остаются в памяти вкладки; кабинет и передача юристу не подключены.</p>
+    </section>
     <h3 className="mt-6 font-semibold">Сформированный материал</h3>
     <pre className="mt-3 max-h-[38rem] min-w-0 overflow-y-auto whitespace-pre-wrap break-words [overflow-wrap:anywhere] rounded-md border border-line bg-zinc-50 p-4 font-serif text-sm leading-6">
      {active.documentResult.documentText}
