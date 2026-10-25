@@ -4,64 +4,64 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { buildMetadata } from "@/lib/seo";
 
 /**
- * Public informational index only. Do not import military generators, expose
- * internal Preview, register unapproved documents, or claim filing readiness.
+ * Navigation to the guarded browser-only draft wizard. No legal approval,
+ * saved sensitive inputs, public indexing or claim of filing readiness.
  * Detailed routes remain behind the separate legal acceptance gate.
  */
 const topics = [
   {
     title: "Контракт и прохождение военной службы",
     entries: [
-      ["Заключение и условия контракта", "условия контракта военнослужащего"],
-      ["Получение копии приказа или ответа", "получение копии приказа военнослужащему"],
-      ["Перевод и изменение условий службы", "перевод военнослужащего"]
+      ["Заключение и условия контракта", "service-contract", "contract-check"],
+      ["Получение копии приказа или ответа", "service-contract", "service-order-copy"],
+      ["Перевод и изменение условий службы", "service-contract", "transfer"]
     ]
   },
   {
     title: "Увольнение с военной службы",
     entries: [
-      ["Проверка оснований увольнения", "увольнение с военной службы"],
-      ["Увольнение по состоянию здоровья", "увольнение по состоянию здоровья ВВК"],
-      ["Приказ и расчёт при увольнении", "приказ об увольнении военнослужащего"]
+      ["Проверка оснований увольнения", "military-discharge", "discharge-basis"],
+      ["Увольнение по состоянию здоровья", "military-discharge", "medical-discharge"],
+      ["Приказ и расчёт при увольнении", "military-discharge", "discharge-order"]
     ]
   },
   {
     title: "Денежное довольствие и выплаты",
     entries: [
-      ["Начисления и удержания", "денежное довольствие военнослужащего"],
-      ["Компенсации и дополнительные выплаты", "выплаты военнослужащим"],
-      ["Выплаты членам семьи", "выплаты семье военнослужащего"]
+      ["Начисления и удержания", "military-pay", "pay-breakdown"],
+      ["Компенсации и дополнительные выплаты", "military-pay", "benefits"],
+      ["Выплаты членам семьи", "military-pay", "family-benefits"]
     ]
   },
   {
     title: "Военно-врачебная комиссия",
     entries: [
-      ["Неотложная медицинская помощь", "медицинская помощь военнослужащему"],
-      ["Проверка заключения ВВК", "заключение военно врачебной комиссии"],
-      ["Независимая военно-врачебная экспертиза", "независимая ВВК"]
+      ["Неотложная медицинская помощь", "military-medical", "medical-emergency"],
+      ["Проверка заключения ВВК", "military-medical", "vvk-conclusion"],
+      ["Независимая военно-врачебная экспертиза", "military-medical", "independent-review"]
     ]
   },
   {
     title: "Обращения и действия командования",
     entries: [
-      ["Запрос письменного разъяснения", "обращение к командованию"],
-      ["Проверка порядка обжалования решения", "жалоба на командира"],
-      ["Отсутствие ответа на обращение", "нет ответа на рапорт"]
+      ["Запрос письменного разъяснения", "command-appeal", "request-explanation"],
+      ["Проверка порядка обжалования решения", "command-appeal", "challenge-decision"],
+      ["Отсутствие ответа на обращение", "command-appeal", "inaction"]
     ]
   },
   {
     title: "Призыв, мобилизация и отсрочки",
     entries: [
-      ["Повестки и решения комиссии", "повестка в военкомат"],
-      ["Проверка возможной отсрочки", "отсрочка от мобилизации"],
-      ["Обжалование решения о призыве", "оспаривание решения призывной комиссии"]
+      ["Повестки и решения комиссии", "mobilization-draft", "draft-notice"],
+      ["Проверка возможной отсрочки", "mobilization-draft", "deferment"],
+      ["Обжалование решения о призыве", "mobilization-draft", "challenge-draft"]
     ]
   }
 ] as const;
 
 export const metadata: Metadata = buildMetadata({
   title: "Военное право — вопросы и жизненные ситуации",
-  description: "Каталог тем по военному праву: контракт, увольнение, довольствие, ВВК, командование, призыв и мобилизация. Подготовка юридических маршрутов продолжается.",
+  description: "Военное право: 18 пошаговых ситуаций с предварительными проектами документов, проверкой обстоятельств и PDF. Требуется юридическая проверка.",
   path: "/voennoe-pravo/",
   isIndexable: false
 });
@@ -80,8 +80,8 @@ export default function MilitaryLawTopicsPage() {
         </p>
         <h1 className="mt-2 text-3xl font-semibold text-ink">Военное право</h1>
         <p className="mt-3 max-w-4xl text-sm leading-6 text-zinc-700">
-          6 направлений и 18 тем. Выберите ситуацию, чтобы найти опубликованные вопросы пользователей.
-          Автоматические юридические маршруты и документы пока проходят проверку и недоступны для подачи.
+          6 направлений и 18 маршрутов. Выберите ситуацию, заполните анкету, проверьте сведения
+          и сформируйте предварительный проект документа с PDF. Все результаты требуют проверки юристом и не готовы к подаче.
         </p>
         <p className="mt-3 max-w-4xl text-sm leading-6 text-zinc-700">
           Правовой статус, особый режим, сроки, адресат и порядок защиты зависят от обстоятельств.
@@ -94,9 +94,9 @@ export default function MilitaryLawTopicsPage() {
             <section key={topic.title} className="rounded-lg border border-line bg-white p-5 shadow-sm">
               <h2 className="text-lg font-semibold text-ink">{topic.title}</h2>
               <ul className="mt-3 space-y-2">
-                {topic.entries.map(([label, query]) => (
+                {topic.entries.map(([label, route, scenario]) => (
                   <li key={label}>
-                    <Link href={`/questions/?q=${encodeURIComponent(query)}`}
+                    <Link href={`/voennoe-pravo/marshrut/?route=${encodeURIComponent(route)}&scenario=${encodeURIComponent(scenario)}`}
                       className="flex min-h-11 items-center rounded-md border border-line px-3 py-2 text-sm leading-6 text-trust hover:border-trust hover:bg-zinc-50">
                       {label}
                     </Link>
