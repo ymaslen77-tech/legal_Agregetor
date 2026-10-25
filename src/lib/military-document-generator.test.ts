@@ -39,7 +39,10 @@ for(const route of MILITARY_ROUTES){
   assert.equal(status.complete,true,route.id+"/"+scenario.key+" "+JSON.stringify(status));
   const out=createMilitaryDocumentResult(route,scenario,answers,{versionId:id,createdAt:stamp});
   documentResultSchema.parse(out);
-  assert.equal(out.resultKind,resultKind==="DRAFT"?"DRAFT":"CHECKLIST");
+  assert.equal(out.resultKind,"DRAFT");
+  assert.ok(out.documentText.includes("ПРОШУ РАССМОТРЕТЬ"));
+  assert.ok(out.documentText.includes("Дата: [заполнить при подписании]"));
+  assert.ok(out.documentText.includes("Подпись: [подпись заявителя после проверки]"));
   assert.equal(out.filingReady,false);
   assert.equal(out.requiresLegalReview,true);
   assert.equal(out.legalRegistryReviewedAt,null);
@@ -100,8 +103,8 @@ memberAnswers.role="член семьи";
 const memberResult=createMilitaryDocumentResult(requestRoute,requestScenario,memberAnswers,{versionId:id,createdAt:stamp});
 assert.equal(memberResult.resultKind,"CHECKLIST","Representative/family standing must not be auto-assumed for draft");
 assert.equal(memberResult.filingReady,false);
-assert.equal(generated,17);assert.equal(emergencies,1);assert.equal(drafts,2);
+assert.equal(generated,17);assert.equal(emergencies,1);assert.equal(drafts,17);
 assert.throws(()=>documentResultSchema.parse({...createMilitaryDocumentResult(MILITARY_ROUTES[0],MILITARY_ROUTES[0].scenarios[0],
  Object.fromEntries(MILITARY_ROUTES[0].fields.map(f=>[f.key,f.values?f.values[0]:"Контрольные данные"])),
  {versionId:id,createdAt:stamp}),filingReady:true}),/false/);
-console.log("MILITARY: 6 routes, 18 scenarios, 17 preview documents (2 drafts), mandatory inputs, high-risk gates PASS");
+console.log("MILITARY: 6 routes, 18 scenarios, 17 individualized draft documents, 1 urgent instruction, high-risk gates PASS");
