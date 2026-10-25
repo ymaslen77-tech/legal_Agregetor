@@ -5,7 +5,7 @@ import {useMemo,useState} from "react";
 import {MILITARY_ROUTES,type MilitaryRoute,type MilitaryScenario} from "@/data/military-route-plans";
 import {getMilitaryPinpointLinks,militaryProvisionHref} from "@/data/military-provision-links";
 import {getMilitaryCaseReview} from "@/data/military-case-reviews";
-import {militaryPreviewHref} from "@/lib/military-preview-navigation";
+import {militaryPreviewHref,militaryPublicDraftHref} from "@/lib/military-preview-navigation";
 import {createMilitaryDocumentResult,validateMilitaryIntake} from "@/lib/military-document-generator";
 import type {DocumentResultV1} from "@/lib/document-result-contract";
 import {downloadGeneratedDocumentDocx} from "@/lib/document-export";
@@ -19,12 +19,13 @@ import {MILITARY_ACCEPTANCE_CHECKS,MILITARY_ACCEPTANCE_LABELS} from "@/lib/milit
 
 type Step="choose"|"facts"|"review"|"result";
 type Snapshot={documentResult:DocumentResultV1;answers:Record<string,string>};
-type Props={initialRouteId:string;initialScenarioKey:string;invalidSelection?:boolean;publicDraft?:boolean;routeHref?:(routeId:string,scenarioKey?:string)=>string};
+type Props={initialRouteId:string;initialScenarioKey:string;invalidSelection?:boolean;publicDraft?:boolean};
 
 function safeLabel(kind:MilitaryScenario["kind"]):string {
  return kind==="URGENT_INSTRUCTION"?"Срочная инструкция":"Предварительный проект обращения или чек-лист";
 }
-export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSelection=false,publicDraft=false,routeHref=militaryPreviewHref}:Props){
+export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSelection=false,publicDraft=false}:Props){
+ const routeHref=publicDraft?militaryPublicDraftHref:militaryPreviewHref;
  const [routeId,setRouteId]=useState(initialRouteId);
  const route=MILITARY_ROUTES.find(x=>x.id===routeId)??MILITARY_ROUTES[0];
  const [scenarioKey,setScenarioKey]=useState(initialScenarioKey);
