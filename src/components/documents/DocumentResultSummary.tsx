@@ -6,12 +6,14 @@ export function DocumentResultSummary({
   result,
   label,
   children,
-  archiveDisabled = false
+  archiveDisabled = false,
+  showArchive = true
 }: {
   result: DocumentResultV1;
   label?: string;
   children?: ReactNode;
   archiveDisabled?: boolean;
+  showArchive?: boolean;
 }) {
   return (
     <section className="border-l-4 border-amber-400 bg-amber-50 p-4 text-amber-950" aria-label="Юридический статус документа">
@@ -27,7 +29,7 @@ export function DocumentResultSummary({
       </p>
       <p className="mt-2 break-all text-xs">ID версии: {result.versionId}</p>
       {children}
-      <SaveLegalDocumentButton key={result.versionId} result={result} disabled={archiveDisabled} />
+      {showArchive ? <SaveLegalDocumentButton key={result.versionId} result={result} disabled={archiveDisabled} /> : null}
     </section>
   );
 }

@@ -17,6 +17,15 @@ export async function createFamilyLaborPdfBlob(result:DocumentResultV1):Promise<
     {text:result.documentTitle,style:"title"},
     {text:result.documentText,style:"body"}
   ];
+  // Military preliminary exports include real clickable link annotations as well
+  // as visible URLs in the document body. This does not certify legal applicability.
+  if(result.categorySlug==="voennoe-pravo"){
+    const urls=[...new Set(result.documentText.match(/https:\/\/[^\s]+/g)??[])];
+    if(urls.length){
+      body.push({text:"Активные ссылки на нормативные источники",style:"sourcesHeading"});
+      for(const url of urls)body.push({text:url,link:url,style:"sourceLink"});
+    }
+  }
   const definition:TDocumentDefinitions={
     pageSize:"A4",pageMargins:[45,52,45,60],
     defaultStyle:{font:"Roboto",fontSize:10.5,lineHeight:1.4,color:"#18181b"},
@@ -32,6 +41,8 @@ export async function createFamilyLaborPdfBlob(result:DocumentResultV1):Promise<
       warning:{bold:true,color:"#9a3412",fontSize:10,margin:[0,0,0,12]},
       title:{bold:true,fontSize:16,margin:[0,0,0,12]},
       body:{fontSize:10.5,lineHeight:1.45},
+      sourcesHeading:{bold:true,fontSize:11,margin:[0,10,0,4]},
+      sourceLink:{fontSize:8.5,color:"#1d4ed8",decoration:"underline",margin:[0,0,0,4]},
       footer:{fontSize:8,color:"#71717a"}
     },
     info:{title:result.documentTitle,subject:"Предварительный юридический чек-лист"}

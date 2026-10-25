@@ -85,16 +85,42 @@ jobs:
         run: npx playwright install --with-deps chromium firefox webkit
       - name: Cross-browser responsive layouts and lab navigation timing
         run: npx playwright test --config=playwright.responsive.config.ts --workers=2
+      - name: Verify protected military UI in a separate Preview-like runtime
+        env:
+          MILITARY_PREVIEW: "1"
+          MILITARY_PREVIEW_SCOPE: "military-feature-preview"
+        run: |
+          npm run start -- -p 3706 > /tmp/military-preview-next.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:3706/internal/military-preview/ > /dev/null; then
+              PLAYWRIGHT_BASE_URL=http://127.0.0.1:3706 npx playwright test --config=playwright.military-preview.config.ts --workers=2
+              exit $?
+            fi
+            sleep 1
+          done
+          cat /tmp/military-preview-next.log
+          exit 1
       - name: Run all family and labor route acceptance
         env:
           E2E_SUBMIT_REVIEW: "true"
-        run: npx playwright test --workers=2
+        run: npx playwright test --workers=2 --grep-invert "@military-preview"
       - name: Confirm withdrawn review PDF was deleted
         run: test -z "$(find "$LEAD_ATTACHMENT_STORAGE_ROOT" -type f -name '*.pdf' -print -quit 2>/dev/null)"
       - name: Generate and inspect guardianship PDFs
         run: |
-          sudo apt-get update
-          sudo apt-get install -y poppler-utils
+          if ! command -v pdfinfo >/dev/null || ! command -v pdftotext >/dev/null || ! command -v pdftoppm >/dev/null; then
+            # Ignore an unrelated third-party APT mirror failure (e.g. Microsoft 403).
+            # This is a disposable GitHub runner, not the application/VPS.
+            for source in /etc/apt/sources.list.d/*; do
+              if grep -q 'packages.microsoft.com' "$source" 2>/dev/null; then
+                sudo mv "$source" "$source.disabled"
+              fi
+            done
+            sudo apt-get update
+            sudo apt-get install -y poppler-utils
+          fi
           export GUARDIANSHIP_PDF_AUDIT_DIR="$RUNNER_TEMP/guardianship-pdf-audit"
           npm run audit:guardianship-pdf
           for pdf in "$GUARDIANSHIP_PDF_AUDIT_DIR"/*.pdf; do
@@ -121,6 +147,45 @@ jobs:
             test "${pages:-0}" -gt 0
             pdftotext "$pdf" - | grep -q 'НЕ ГОТОВ К ПОДАЧЕ'
           done
+      - name: Run protected military preview end-to-end without Neon
+        env:
+          MILITARY_PREVIEW: "1"
+          MILITARY_PREVIEW_SCOPE: "military-feature-preview"
+          VERCEL_ENV: preview
+        run: |
+          npm run start -- -p 3781 >/tmp/military-preview-e2e.log 2>&1 &
+          app_pid=$!
+          trap 'kill "$app_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..50}; do
+            if curl --fail --silent http://127.0.0.1:3781/internal/military-preview/ >/dev/null; then
+              PLAYWRIGHT_BASE_URL=http://127.0.0.1:3781 npx playwright test tests/e2e/military-preview-flow.spec.ts --workers=1
+              exit $?
+            fi
+            sleep 1
+          done
+          cat /tmp/military-preview-e2e.log
+          exit 1
+      - name: Inspect all military PDF/DOCX files and render visual review samples
+        run: |
+          npm run audit:military-files
+          pdf_count="$(find artifacts/military-file-audit -maxdepth 1 -name '*.pdf' | wc -l)"
+          docx_count="$(find artifacts/military-file-audit -maxdepth 1 -name '*.docx' | wc -l)"
+          test "$pdf_count" -eq 17
+          test "$docx_count" -eq 17
+          for pdf in artifacts/military-file-audit/*.pdf; do
+            pages="$(pdfinfo "$pdf" | awk '/^Pages:/ {print $2}')"
+            test "${pages:-0}" -gt 0
+            pdftotext "$pdf" - | grep -q 'НЕ ГОТОВ К ПОДАЧЕ'
+            for n in $(seq 1 "$pages"); do
+              pdftotext -f "$n" -l "$n" "$pdf" - | grep -q '[[:alnum:]]'
+            done
+          done
+          mkdir -p artifacts/military-visual-audit
+          for pdf in artifacts/military-file-audit/service-contract-service-order-copy.pdf artifacts/military-file-audit/military-discharge-discharge-basis.pdf; do
+            test -s "$pdf"
+            pdftoppm -f 1 -l 1 -scale-to 1200 -png -singlefile "$pdf" "artifacts/military-visual-audit/$(basename "${pdf%.pdf}")"
+          done
+          test "$(find artifacts/military-visual-audit -maxdepth 1 -name '*.png' | wc -l)" -eq 2
       - name: Upload PDF and browser acceptance artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -133,3 +198,6 @@ jobs:
             artifacts/responsive-metrics.ndjson
             artifacts/responsive-browser-results.json
             artifacts/family-labor-file-audit
+            artifacts/military-file-audit
+            artifacts/military-visual-audit
+            artifacts/military-legal-review-checklist.md
