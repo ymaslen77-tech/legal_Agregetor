@@ -248,11 +248,18 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
     <p className="mt-5 text-sm text-zinc-700">
      Передача документа юристу из этого маршрута пока не подключена. Реальные подтверждённые специалисты не подменяются демонстрационными профилями.
     </p>
-    <div className="mt-5 flex flex-wrap gap-3" aria-label="Экспорт предварительного документа">
-     <button type="button" disabled={dirty} onClick={()=>void downloadDocx()}
-      className="min-h-11 rounded-md border border-trust px-4 py-2 text-sm font-semibold disabled:opacity-50">Скачать DOCX</button>
+    <div className="mt-5 flex flex-wrap gap-3" aria-label="Основные действия с предварительным документом">
      <button type="button" disabled={dirty} onClick={()=>void downloadPdf()}
-      className="min-h-11 rounded-md bg-trust px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">Скачать PDF</button>
+      className="min-h-11 rounded-md bg-trust px-5 py-3 text-sm font-semibold text-white disabled:opacity-50">Скачать PDF</button>
+     <button type="button" disabled aria-disabled="true"
+      title="Передача юристу откроется только после проверки специалиста, согласия и безопасного подключения"
+      className="min-h-11 rounded-md border border-line bg-zinc-50 px-5 py-3 text-sm font-semibold text-zinc-600">
+      Отправить на проверку юристу (пока недоступно)
+     </button>
+    </div>
+    <div className="mt-3 flex flex-wrap gap-3" aria-label="Дополнительные действия">
+     <button type="button" disabled={dirty} onClick={()=>void downloadDocx()}
+      className="min-h-11 rounded-md border border-line px-4 py-2 text-sm font-semibold disabled:opacity-50">Скачать DOCX</button>
      <button type="button" onClick={backToFacts}
       className="min-h-11 rounded-md border border-line px-4 py-2 text-sm font-semibold">Изменить и создать новую версию</button>
     </div>
