@@ -1,9 +1,10 @@
-import { Document, Packer, Paragraph, TextRun } from "docx";
+import { Document, ExternalHyperlink, Packer, Paragraph, TextRun } from "docx";
 
 type DownloadGeneratedDocumentDocxParams = {
   title: string;
   fileName: string;
   content: string;
+  linkifyUrls?: boolean;
 };
 
 type DownloadGeneratedDocumentPdfParams = {
@@ -13,9 +14,9 @@ type DownloadGeneratedDocumentPdfParams = {
 
 const BOLD_LINE_PATTERNS = [/^ПРОШУ:$/i, /^Приложения:$/i, /^Дата:/i, /^Подпись:/i];
 
-export async function downloadGeneratedDocumentDocx({ title, fileName, content }: DownloadGeneratedDocumentDocxParams): Promise<void> {
+export async function downloadGeneratedDocumentDocx({ title, fileName, content, linkifyUrls }: DownloadGeneratedDocumentDocxParams): Promise<void> {
   const safeFileName = ensureDocxExtension(fileName);
-  const blob = await buildGeneratedDocumentDocxBlob({ title, fileName, content });
+  const blob = await buildGeneratedDocumentDocxBlob({ title, fileName, content, linkifyUrls });
   const url = URL.createObjectURL(blob);
   const link = window.document.createElement("a");
   link.href = url;
@@ -26,7 +27,7 @@ export async function downloadGeneratedDocumentDocx({ title, fileName, content }
   URL.revokeObjectURL(url);
 }
 
-export async function buildGeneratedDocumentDocxBlob({ title, content }: DownloadGeneratedDocumentDocxParams): Promise<Blob> {
+export async function buildGeneratedDocumentDocxBlob({ title, content, linkifyUrls = false }: DownloadGeneratedDocumentDocxParams): Promise<Blob> {
   const paragraphs = [
     new Paragraph({
       spacing: { after: 240 },
@@ -38,7 +39,7 @@ export async function buildGeneratedDocumentDocxBlob({ title, content }: Downloa
         })
       ]
     }),
-    ...content.split(/\r?\n/).map((line) => buildParagraph(line))
+    ...content.split(/\r?\n/).map((line) => buildParagraph(line, linkifyUrls))
   ];
 
   const document = new Document({
@@ -78,7 +79,7 @@ export function downloadGeneratedDocumentPdf({ title, content }: DownloadGenerat
   printWindow.document.close();
 }
 
-function buildParagraph(line: string) {
+function buildParagraph(line: string, linkifyUrls = false) {
   const trimmedLine = line.trim();
 
   if (!trimmedLine) {
@@ -90,16 +91,18 @@ function buildParagraph(line: string) {
 
   const isBoldLine = BOLD_LINE_PATTERNS.some((pattern) => pattern.test(trimmedLine));
 
-  return new Paragraph({
-    spacing: { after: 120 },
-    children: [
-      new TextRun({
-        text: line,
-        bold: isBoldLine,
-        size: 24
-      })
-    ]
-  });
+  const match = linkifyUrls ? /https:\/\/[^\s]+/.exec(line) : null;
+  const children = match
+    ? [
+        new TextRun({ text: line.slice(0, match.index), bold: isBoldLine, size: 24 }),
+        new ExternalHyperlink({
+          children: [new TextRun({ text: match[0], style: "Hyperlink", size: 24 })],
+          link: match[0]
+        }),
+        new TextRun({ text: line.slice(match.index + match[0].length), bold: isBoldLine, size: 24 })
+      ]
+    : [new TextRun({ text: line, bold: isBoldLine, size: 24 })];
+  return new Paragraph({ spacing: { after: 120 }, children });
 }
 
 function ensureDocxExtension(fileName: string) {
