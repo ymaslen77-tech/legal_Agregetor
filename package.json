@@ -46,7 +46,8 @@
     "test:qna-route-planning": "tsx src/lib/legal-qna-route-planning.test.ts",
     "test:seo-core": "tsx src/lib/sitemap.test.ts && tsx src/lib/jsonld.test.ts",
     "test:military": "tsx src/data/military-provision-links.test.ts && tsx src/data/military-case-reviews.test.ts && tsx src/data/military-related-question-context.test.ts && tsx src/data/military-route-standard.test.ts && tsx src/lib/military-preview-navigation.test.ts && tsx src/lib/military-legal-release-gate.test.ts && tsx src/lib/military-document-generator.test.ts",
-    "test:e2e:military-public": "playwright test tests/e2e/military-public-draft.spec.ts"
+    "test:e2e:military-public": "playwright test tests/e2e/military-public-draft.spec.ts",
+    "audit:military-files": "tsx scripts/audit-military-document-files.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.8.2",
