@@ -71,6 +71,16 @@ const SEO_MERGE_CACHE_MAX_ENTRIES = 500;
 const seoMergeCache = new Map<string, { value: SeoMergeResult; expiresAt: number }>();
 
 export async function middleware(request: NextRequest, event: NextFetchEvent) {
+  // Canonical host: www is an alias, not a second indexable version of the site.
+  // Trust only the exact known public hostname; preserve path and query string.
+  const forwardedHost = request.headers.get("x-forwarded-host")?.split(",")[0].trim().toLowerCase();
+  const requestHost = request.headers.get("host")?.split(":")[0].trim().toLowerCase();
+  if ([forwardedHost, requestHost, request.nextUrl.hostname.toLowerCase()].includes("www.pravopoisk.ru")) {
+    const canonical = siteRedirect(request.nextUrl.pathname);
+    canonical.search = request.nextUrl.search;
+    return NextResponse.redirect(canonical, 308);
+  }
+
   const response = NextResponse.next();
   const userAgent = request.headers.get("user-agent") ?? "";
   const normalizedPath = normalizePublicPath(request.nextUrl.pathname);
