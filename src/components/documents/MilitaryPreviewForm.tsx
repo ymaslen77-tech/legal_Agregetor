@@ -248,16 +248,24 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
      <p className="mt-2 text-sm text-zinc-700">Ссылки указывают на опубликованные материалы, но их актуальная редакция, действие во времени и применимость к ситуации не подтверждены.</p>
     </section>
     <p className="mt-5 text-sm text-zinc-700">
-     Передача юристу из этого закрытого предпросмотра пока не подключена. Реальные подтверждённые специалисты не подменяются демонстрационными профилями.
+     Передача юристу пока не подключена. Проект остаётся на вашем устройстве; реальные специалисты не подменяются демонстрационными профилями.
     </p>
-    <div className="mt-5 flex flex-wrap gap-3" aria-label="Экспорт предварительного документа">
-     <button type="button" disabled={dirty} onClick={()=>void downloadDocx()}
-      className="min-h-11 rounded-md border border-trust px-4 py-2 text-sm font-semibold disabled:opacity-50">Скачать DOCX</button>
+    <div className="mt-5 flex flex-wrap gap-3" aria-label="Итоговые действия с документом">
      <button type="button" disabled={dirty} onClick={()=>void downloadPdf()}
       className="min-h-11 rounded-md bg-trust px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">Скачать PDF</button>
-     <button type="button" onClick={backToFacts}
-      className="min-h-11 rounded-md border border-line px-4 py-2 text-sm font-semibold">Изменить и создать новую версию</button>
+     <button type="button" disabled aria-describedby="military-lawyer-handoff-disabled"
+      className="min-h-11 rounded-md border border-line px-4 py-2 text-sm font-semibold opacity-60">Отправить на проверку юристу</button>
     </div>
+    <p id="military-lawyer-handoff-disabled" className="mt-2 text-xs text-zinc-600">Передача юристу станет доступна только после проверки защищённого хранения, согласия пользователя и подключения реальных специалистов.</p>
+    <details className="mt-4 rounded-lg border border-line bg-white p-3">
+     <summary className="cursor-pointer text-sm font-semibold">Редактирование и дополнительные форматы</summary>
+     <div className="mt-3 flex flex-wrap gap-3">
+      <button type="button" disabled={dirty} onClick={()=>void downloadDocx()}
+       className="min-h-11 rounded-md border border-trust px-4 py-2 text-sm font-semibold disabled:opacity-50">Скачать DOCX</button>
+      <button type="button" onClick={backToFacts}
+       className="min-h-11 rounded-md border border-line px-4 py-2 text-sm font-semibold">Изменить и создать новую версию</button>
+     </div>
+    </details>
     <DocumentVersionHistory versions={versions.map(v=>v.documentResult)}
      currentVersionId={active.documentResult.versionId} onSelect={selectVersion}/>
    </section>:null}
