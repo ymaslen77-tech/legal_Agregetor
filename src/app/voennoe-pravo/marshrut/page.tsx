@@ -1,7 +1,7 @@
 import type {Metadata} from "next";
 import {MilitaryPreviewForm} from "@/components/documents/MilitaryPreviewForm";
 import {MilitaryRelatedQuestions} from "@/components/questions/MilitaryRelatedQuestions";
-import {resolveMilitaryPreviewSelection,militaryPublicDraftHref} from "@/lib/military-preview-navigation";
+import {resolveMilitaryPreviewSelection} from "@/lib/military-preview-navigation";
 
 /** Public draft workflow: no approved legal filing, no server-side intake persistence. */
 export const metadata:Metadata={
@@ -17,7 +17,7 @@ export default async function MilitaryDraftRoute({searchParams}:{searchParams:Pr
  return <>
   <MilitaryPreviewForm key={selection.route.id+"/"+selection.scenario.key}
    initialRouteId={selection.route.id} initialScenarioKey={selection.scenario.key}
-   invalidSelection={selection.invalidSelection} publicDraft routeHref={militaryPublicDraftHref}/>
+   invalidSelection={selection.invalidSelection} publicDraft/>
   <MilitaryRelatedQuestions routeId={selection.route.id} scenarioKey={selection.scenario.key}/>
  </>;
 }
