@@ -5,7 +5,7 @@ import {useMemo,useState} from "react";
 import {MILITARY_ROUTES,type MilitaryRoute,type MilitaryScenario} from "@/data/military-route-plans";
 import {getMilitaryPinpointLinks,militaryProvisionHref} from "@/data/military-provision-links";
 import {getMilitaryCaseReview} from "@/data/military-case-reviews";
-import {militaryPreviewHref} from "@/lib/military-preview-navigation";
+import {militaryPreviewHref,militaryPublicHref} from "@/lib/military-preview-navigation";
 import {createMilitaryDocumentResult,validateMilitaryIntake} from "@/lib/military-document-generator";
 import type {DocumentResultV1} from "@/lib/document-result-contract";
 import {downloadGeneratedDocumentDocx} from "@/lib/document-export";
@@ -19,14 +19,15 @@ import {MILITARY_ACCEPTANCE_CHECKS,MILITARY_ACCEPTANCE_LABELS} from "@/lib/milit
 
 type Step="choose"|"facts"|"review"|"result";
 type Snapshot={documentResult:DocumentResultV1;answers:Record<string,string>};
-type Props={initialRouteId:string;initialScenarioKey:string;invalidSelection?:boolean};
+type Props={initialRouteId:string;initialScenarioKey:string;invalidSelection?:boolean;publicDraft?:boolean};
 
 function safeLabel(kind:MilitaryScenario["kind"]):string {
  return kind==="DRAFT"?"Предварительный запрос сведений":kind==="CHECKLIST"?"Проверочный чек-лист":"Экстренная инструкция";
 }
-export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSelection=false}:Props){
+export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSelection=false,publicDraft=false}:Props){
  const [routeId,setRouteId]=useState(initialRouteId);
  const route=MILITARY_ROUTES.find(x=>x.id===routeId)??MILITARY_ROUTES[0];
+ const routeHref=publicDraft?militaryPublicHref:militaryPreviewHref;
  const [scenarioKey,setScenarioKey]=useState(initialScenarioKey);
  const scenario=route.scenarios.find(s=>s.key===scenarioKey)??route.scenarios[0];
  const [step,setStep]=useState<Step>("choose");
@@ -105,7 +106,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
  return <>
   <LegalRouteJourney stage="document" title={route.title} activeStep={step==="choose"?1:step==="result"?3:2}/>
   <section className="mx-auto max-w-5xl min-w-0 px-4 py-5 sm:px-6 lg:px-8">
-   <p className="text-xs font-semibold uppercase tracking-wide text-amber-900">ЗАКРЫТЫЙ ПРЕДПРОСМОТР — НЕ ГОТОВО К ПОДАЧЕ</p>
+   <p className="text-xs font-semibold uppercase tracking-wide text-amber-900">{publicDraft?"ПРОЕКТ ДЛЯ ЮРИДИЧЕСКОЙ ПРОВЕРКИ — НЕ ГОТОВО К ПОДАЧЕ":"ЗАКРЫТЫЙ ПРЕДПРОСМОТР — НЕ ГОТОВО К ПОДАЧЕ"}</p>
    <h1 className="mt-1 text-2xl font-semibold text-ink sm:text-3xl">Военное право — юридические маршруты</h1>
    <p className="mt-2 text-sm leading-6 text-zinc-700">
     6 направлений · 18 сценариев. Документы не согласованы юристом.
@@ -120,7 +121,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
      <a href="#military-related-questions" className="text-sm font-semibold text-trust underline underline-offset-2">Похожие вопросы ↓</a>
     </div>
     <div className="mt-3 grid gap-2 sm:grid-cols-2">
-     {MILITARY_ROUTES.map(r=><Link key={r.id} href={militaryPreviewHref(r.id)}
+     {MILITARY_ROUTES.map(r=><Link key={r.id} href={routeHref(r.id)}
        aria-current={route.id===r.id?"page":undefined}
        className={`min-w-0 rounded-lg border px-4 py-3 text-sm hover:border-trust focus:ring-2 focus:ring-trust ${route.id===r.id?"border-trust bg-emerald-50":"border-line"}`}>
        <span className="font-semibold">{r.title}</span>
@@ -130,7 +131,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
     <h3 className="mt-5 text-lg font-semibold">Выберите ситуацию</h3>
     <ul className="mt-3 grid gap-2">
      {route.scenarios.map(s=><li key={s.key}>
-       <Link href={militaryPreviewHref(route.id,s.key)}
+       <Link href={routeHref(route.id,s.key)}
         aria-current={scenario.key===s.key?"page":undefined}
         className={`block min-w-0 rounded-lg border px-4 py-3 text-sm hover:border-trust ${scenario.key===s.key?"border-trust bg-emerald-50":"border-line"}`}>
         <span className="font-semibold">{s.title}</span>
@@ -245,7 +246,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
      <p className="mt-2 text-sm text-zinc-700">Ссылки указывают на опубликованные материалы, но их актуальная редакция, действие во времени и применимость к ситуации не подтверждены.</p>
     </section>
     <p className="mt-5 text-sm text-zinc-700">
-     Передача юристу из этого закрытого предпросмотра пока не подключена. Реальные подтверждённые специалисты не подменяются демонстрационными профилями.
+     Передача документа юристу из этого маршрута пока не подключена. Реальные подтверждённые специалисты не подменяются демонстрационными профилями.
     </p>
     <div className="mt-5 flex flex-wrap gap-3" aria-label="Экспорт предварительного документа">
      <button type="button" disabled={dirty} onClick={()=>void downloadDocx()}
