@@ -1,11 +1,16 @@
 import assert from "node:assert/strict";
 import {MILITARY_ROUTES} from "@/data/military-route-plans";
-import {resolveMilitaryPreviewSelection,militaryPreviewHref} from "./military-preview-navigation";
+import {resolveMilitaryPreviewSelection,militaryPreviewHref,militaryPublicHref} from "./military-preview-navigation";
 const urls=new Set<string>();
 for(const route of MILITARY_ROUTES){
  for(const scenario of route.scenarios){
   const href=militaryPreviewHref(route.id,scenario.key);
   assert.ok(href.startsWith("/internal/military-preview/?"));
+  const publicHref=militaryPublicHref(route.id,scenario.key);
+  assert.ok(publicHref.startsWith("/voennoe-pravo/marshrut/?"));
+  assert.ok(!publicHref.includes("documentText"));
+  assert.ok(publicHref.endsWith(href.split("?")[1]));
+
   assert.ok(!href.includes("documentText"));
   const parsed=new URL(href,"https://preview.invalid");
   const chosen=resolveMilitaryPreviewSelection(parsed.searchParams.get("route")||undefined,
