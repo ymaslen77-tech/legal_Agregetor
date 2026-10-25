@@ -19,12 +19,12 @@ import {MILITARY_ACCEPTANCE_CHECKS,MILITARY_ACCEPTANCE_LABELS} from "@/lib/milit
 
 type Step="choose"|"facts"|"review"|"result";
 type Snapshot={documentResult:DocumentResultV1;answers:Record<string,string>};
-type Props={initialRouteId:string;initialScenarioKey:string;invalidSelection?:boolean};
+type Props={initialRouteId:string;initialScenarioKey:string;invalidSelection?:boolean;routeHref?:(routeId:string,scenarioKey?:string)=>string};
 
 function safeLabel(kind:MilitaryScenario["kind"]):string {
  return kind==="DRAFT"?"Предварительный запрос сведений":kind==="CHECKLIST"?"Проверочный чек-лист":"Экстренная инструкция";
 }
-export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSelection=false}:Props){
+export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSelection=false,routeHref=militaryPreviewHref}:Props){
  const [routeId,setRouteId]=useState(initialRouteId);
  const route=MILITARY_ROUTES.find(x=>x.id===routeId)??MILITARY_ROUTES[0];
  const [scenarioKey,setScenarioKey]=useState(initialScenarioKey);
@@ -120,7 +120,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
      <a href="#military-related-questions" className="text-sm font-semibold text-trust underline underline-offset-2">Похожие вопросы ↓</a>
     </div>
     <div className="mt-3 grid gap-2 sm:grid-cols-2">
-     {MILITARY_ROUTES.map(r=><Link key={r.id} href={militaryPreviewHref(r.id)}
+     {MILITARY_ROUTES.map(r=><Link key={r.id} href={routeHref(r.id)}
        aria-current={route.id===r.id?"page":undefined}
        className={`min-w-0 rounded-lg border px-4 py-3 text-sm hover:border-trust focus:ring-2 focus:ring-trust ${route.id===r.id?"border-trust bg-emerald-50":"border-line"}`}>
        <span className="font-semibold">{r.title}</span>
@@ -130,7 +130,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
     <h3 className="mt-5 text-lg font-semibold">Выберите ситуацию</h3>
     <ul className="mt-3 grid gap-2">
      {route.scenarios.map(s=><li key={s.key}>
-       <Link href={militaryPreviewHref(route.id,s.key)}
+       <Link href={routeHref(route.id,s.key)}
         aria-current={scenario.key===s.key?"page":undefined}
         className={`block min-w-0 rounded-lg border px-4 py-3 text-sm hover:border-trust ${scenario.key===s.key?"border-trust bg-emerald-50":"border-line"}`}>
         <span className="font-semibold">{s.title}</span>
