@@ -41,7 +41,7 @@ export function validateMilitaryIntake(route:MilitaryRoute,scenario:MilitaryScen
  if(statusConflict(answers.role,answers.regime))
   warnings.push("Указанные статусы заявителя и службы противоречат друг другу; генерация заблокирована.");
  if(scenario.kind==="DRAFT"&&answers.role!=="военнослужащий")
-  warnings.push("Проект запроса сведений доступен только самому военнослужащему; полномочия иных заявителей подлежат проверке.");
+  warnings.push("Для заявителя с иным статусом обязательна отдельная проверка полномочий и выбранной процедуры до использования проекта.");
  if(["mobilization-draft","military-discharge","military-medical"].includes(route.id))
   warnings.push("Обязательна индивидуальная оценка специальных правовых режимов и применимой редакции норм.");
  return {missing,invalid,warnings,complete:!missing.length&&!invalid.length&&!warnings.some(s=>s.includes("генерация заблокирована"))};
