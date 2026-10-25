@@ -19,3 +19,12 @@ export function militaryPreviewHref(routeId:string,scenarioKey?:string):string {
  if(scenarioKey)query.set("scenario",scenarioKey);
  return "/internal/military-preview/?"+query.toString();
 }
+
+/**
+ * Public entry point into the same guarded, browser-only questionnaire.
+ * Query parameters contain stable scenario IDs, never facts, identities or answers.
+ */
+export function militaryPublicHref(routeId:string,scenarioKey?:string):string {
+ const preview=militaryPreviewHref(routeId,scenarioKey);
+ return preview.replace("/internal/military-preview/","/voennoe-pravo/marshrut/");
+}
