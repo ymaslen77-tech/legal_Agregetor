@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import {useMemo,useState} from "react";
 import {MILITARY_ROUTES,type MilitaryRoute,type MilitaryScenario} from "@/data/military-route-plans";
 import {getMilitaryPinpointLinks,militaryProvisionHref} from "@/data/military-provision-links";
@@ -121,22 +120,22 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
      <a href="#military-related-questions" className="text-sm font-semibold text-trust underline underline-offset-2">Похожие вопросы ↓</a>
     </div>
     <div className="mt-3 grid gap-2 sm:grid-cols-2">
-     {MILITARY_ROUTES.map(r=><Link key={r.id} href={routeHref(r.id)}
+     {MILITARY_ROUTES.map(r=><a key={r.id} href={routeHref(r.id)}
        aria-current={route.id===r.id?"page":undefined}
        className={`min-w-0 rounded-lg border px-4 py-3 text-sm hover:border-trust focus:ring-2 focus:ring-trust ${route.id===r.id?"border-trust bg-emerald-50":"border-line"}`}>
        <span className="font-semibold">{r.title}</span>
        <span className="mt-1 block text-xs text-zinc-600">{r.scenarios.length} сценария</span>
-      </Link>)}
+      </a>)}
     </div>
     <h3 className="mt-5 text-lg font-semibold">Выберите ситуацию</h3>
     <ul className="mt-3 grid gap-2">
      {route.scenarios.map(s=><li key={s.key}>
-       <Link href={routeHref(route.id,s.key)}
+       <a href={routeHref(route.id,s.key)}
         aria-current={scenario.key===s.key?"page":undefined}
         className={`block min-w-0 rounded-lg border px-4 py-3 text-sm hover:border-trust ${scenario.key===s.key?"border-trust bg-emerald-50":"border-line"}`}>
         <span className="font-semibold">{s.title}</span>
         <span className="mt-1 block text-xs text-zinc-600">{safeLabel(s.kind)}</span>
-       </Link>
+       </a>
       </li>)}
     </ul>
     <details className="mt-4 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm">
