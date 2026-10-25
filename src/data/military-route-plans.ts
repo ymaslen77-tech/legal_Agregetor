@@ -66,37 +66,37 @@ const baseNotes=[
 const make=(id:string,slug:string,title:string,hits:number|null,fields:readonly MilitaryField[],scenarios:readonly MilitaryScenario[]):MilitaryRoute=>({
  id,slug,title,qnaSignalHits:hits,fields:[...common,...fields],scenarios,publicationApproved:false,legalRegistryReviewedAt:null,filingReady:false
 });
-/** No published URL or filing-ready template is created from these entries. */
+/** Draft-only scenario definitions: public wizard is noindex, not filing-ready. */
 export const MILITARY_ROUTES:readonly MilitaryRoute[]=[
  make("service-contract","prokhozhdenie-voennoy-sluzhby-po-kontraktu","Контракт и прохождение военной службы",3028,[extra.contract,extra.order,extra.authority],[
-  sc("contract-check","Заключение и условия контракта","CHECKLIST",["contract"],["53fz","1237","647"],baseNotes,["Подтверждение контракта и условий","Приказы и ответы"]),
+  sc("contract-check","Заключение и условия контракта","DRAFT",["contract"],["53fz","1237","647"],baseNotes,["Подтверждение контракта и условий","Приказы и ответы"]),
   sc("service-order-copy","Получение копии приказа или ответа","DRAFT",["order","authority"],["53fz","76fz","1237"],baseNotes,["Реквизиты приказа или подтверждение обращения","Подтверждение полномочий"]),
-  sc("transfer","Перевод и изменение условий службы","CHECKLIST",["contract","order"],["53fz","1237","647"],baseNotes,["Контракт, служебные документы и ответы"])
+  sc("transfer","Перевод и изменение условий службы","DRAFT",["contract","order"],["53fz","1237","647"],baseNotes,["Контракт, служебные документы и ответы"])
  ]),
  make("military-discharge","uvolnenie-s-voennoy-sluzhby","Увольнение с военной службы",null,[extra.grounds,extra.order,extra.medical],[
-  sc("discharge-basis","Основания увольнения: предварительная проверка","CHECKLIST",["grounds"],["53fz","1237","647","plenum8","plenum21"],baseNotes,["Контракт, решения командования, документы об основаниях"]),
-  sc("medical-discharge","Увольнение по состоянию здоровья","CHECKLIST",["medical"],["53fz","76fz","565","647"],[...baseNotes,"Не подменять заключение ВВК автоматическим решением об увольнении."],["Заключение ВВК, медицинские документы и приказы"]),
-  sc("discharge-order","Получение приказа и расчёта при увольнении","CHECKLIST",["order"],["53fz","76fz","306fz"],baseNotes,["Приказ, данные об обеспечении и расчёте"])
+  sc("discharge-basis","Основания увольнения: предварительная проверка","DRAFT",["grounds"],["53fz","1237","647","plenum8","plenum21"],baseNotes,["Контракт, решения командования, документы об основаниях"]),
+  sc("medical-discharge","Увольнение по состоянию здоровья","DRAFT",["medical"],["53fz","76fz","565","647"],[...baseNotes,"Не подменять заключение ВВК автоматическим решением об увольнении."],["Заключение ВВК, медицинские документы и приказы"]),
+  sc("discharge-order","Получение приказа и расчёта при увольнении","DRAFT",["order"],["53fz","76fz","306fz"],baseNotes,["Приказ, данные об обеспечении и расчёте"])
  ]),
  make("military-pay","denezhnoe-dovolstvie-i-vyplaty","Денежное довольствие и выплаты военнослужащим",null,[extra.payments,extra.authority,extra.family],[
   sc("pay-breakdown","Запрос сведений о начислениях и удержаниях","DRAFT",["payments","authority"],["76fz","306fz"],baseNotes,["Расчётные сведения за указанные периоды","Подтверждение обращений"]),
-  sc("benefits","Компенсации и дополнительные выплаты","CHECKLIST",["payments"],["76fz","306fz"],baseNotes,["Документы об основании выплаты и расчетные сведения"]),
-  sc("family-benefits","Выплаты членам семьи","CHECKLIST",["family","payments"],["76fz","306fz"],[...baseNotes,"Отдельно проверить заявителя и доказательства права члена семьи."],["Документы о родстве и статусе, ответы ведомства"])
+  sc("benefits","Компенсации и дополнительные выплаты","DRAFT",["payments"],["76fz","306fz"],baseNotes,["Документы об основании выплаты и расчетные сведения"]),
+  sc("family-benefits","Выплаты членам семьи","DRAFT",["family","payments"],["76fz","306fz"],[...baseNotes,"Отдельно проверить заявителя и доказательства права члена семьи."],["Документы о родстве и статусе, ответы ведомства"])
  ]),
  make("military-medical","voenno-vrachebnaya-komissiya","Военно-врачебная комиссия и состояние здоровья",null,[extra.medical,extra.urgency],[
   sc("medical-emergency","Неотложная медицинская помощь","URGENT_INSTRUCTION",[],["76fz","565"],["При угрозе жизни или здоровью незамедлительно обратитесь за экстренной медицинской помощью; анкету заполнять не требуется.","Не передавайте диагнозы, маршруты части или данные третьих лиц в публичный сервис."],[]),
-  sc("vvk-conclusion","Проверка заключения военно-врачебной комиссии","CHECKLIST",["medical","urgency"],["53fz","76fz","565"],[...baseNotes,"Категория годности и медицинские основания требуют профильной экспертизы."],["Копия заключения ВВК","Медицинские документы из официальных источников"]),
-  sc("independent-review","Независимая военно-врачебная экспертиза","CHECKLIST",["medical","urgency"],["565","574"],[...baseNotes,"Порядок и возможность независимой экспертизы уточняются индивидуально."],["Заключение ВВК и подтверждённые медицинские документы"])
+  sc("vvk-conclusion","Проверка заключения военно-врачебной комиссии","DRAFT",["medical","urgency"],["53fz","76fz","565"],[...baseNotes,"Категория годности и медицинские основания требуют профильной экспертизы."],["Копия заключения ВВК","Медицинские документы из официальных источников"]),
+  sc("independent-review","Независимая военно-врачебная экспертиза","DRAFT",["medical","urgency"],["565","574"],[...baseNotes,"Порядок и возможность независимой экспертизы уточняются индивидуально."],["Заключение ВВК и подтверждённые медицинские документы"])
  ]),
  make("command-appeal","obrashchenie-i-obzhalovanie-komandovaniya","Обращения и обжалование действий командования",null,[extra.decision,extra.receipt,extra.authority],[
-  sc("request-explanation","Запрос письменного разъяснения","CHECKLIST",["decision","authority"],["76fz","1237"],baseNotes,["Предыдущие обращения, ответы, подтверждение вручения"]),
-  sc("challenge-decision","Предварительная проверка обжалования решения","CHECKLIST",["decision","receipt"],["53fz","76fz","kas","plenum8","plenum21"],[...baseNotes,"Сроки и компетенцию суда либо ведомства нельзя угадывать по названию жалобы."],["Текст решения, дата получения и подтверждения"]),
-  sc("inaction","Отсутствие ответа или действие командования","CHECKLIST",["decision","receipt"],["76fz","kas","plenum8","plenum21"],baseNotes,["Подтверждение направления обращения, ответы"])
+  sc("request-explanation","Запрос письменного разъяснения","DRAFT",["decision","authority"],["76fz","1237"],baseNotes,["Предыдущие обращения, ответы, подтверждение вручения"]),
+  sc("challenge-decision","Предварительная проверка обжалования решения","DRAFT",["decision","receipt"],["53fz","76fz","kas","plenum8","plenum21"],[...baseNotes,"Сроки и компетенцию суда либо ведомства нельзя угадывать по названию жалобы."],["Текст решения, дата получения и подтверждения"]),
+  sc("inaction","Отсутствие ответа или действие командования","DRAFT",["decision","receipt"],["76fz","kas","plenum8","plenum21"],baseNotes,["Подтверждение направления обращения, ответы"])
  ]),
  make("mobilization-draft","prizyv-i-mobilizatsiya","Призыв, мобилизация и отсрочки",1658,[extra.summons,extra.deferment,extra.receipt],[
-  sc("draft-notice","Повестка и решения комиссии: проверка обстоятельств","CHECKLIST",["summons"],["53fz","647"],[...baseNotes,"Не переносить правила обычного призыва на мобилизацию без проверки статуса."],["Повестка и решение комиссии, подтверждение вручения"]),
-  sc("deferment","Проверка возможной отсрочки","CHECKLIST",["summons","deferment"],["53fz","647"],baseNotes,["Документы об основании отсрочки и сообщения органа"]),
-  sc("challenge-draft","Обжалование решения о призыве: предварительный порядок","CHECKLIST",["summons","receipt"],["53fz","kas","647"],[...baseNotes,"Не обещать приостановления исполнения решения без анализа действующей нормы и процессуального положения."],["Решение, дата вручения, приложения"])
+  sc("draft-notice","Повестка и решения комиссии: проверка обстоятельств","DRAFT",["summons"],["53fz","647"],[...baseNotes,"Не переносить правила обычного призыва на мобилизацию без проверки статуса."],["Повестка и решение комиссии, подтверждение вручения"]),
+  sc("deferment","Проверка возможной отсрочки","DRAFT",["summons","deferment"],["53fz","647"],baseNotes,["Документы об основании отсрочки и сообщения органа"]),
+  sc("challenge-draft","Обжалование решения о призыве: предварительный порядок","DRAFT",["summons","receipt"],["53fz","kas","647"],[...baseNotes,"Не обещать приостановления исполнения решения без анализа действующей нормы и процессуального положения."],["Решение, дата вручения, приложения"])
  ])
 ];
 export function getMilitaryRoute(id:string):MilitaryRoute|null {return MILITARY_ROUTES.find(r=>r.id===id)??null;}
