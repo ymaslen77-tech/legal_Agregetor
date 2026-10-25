@@ -22,7 +22,7 @@ type Snapshot={documentResult:DocumentResultV1;answers:Record<string,string>};
 type Props={initialRouteId:string;initialScenarioKey:string;invalidSelection?:boolean;publicDraft?:boolean};
 
 function safeLabel(kind:MilitaryScenario["kind"]):string {
- return kind==="DRAFT"?"Предварительный запрос сведений":kind==="CHECKLIST"?"Проверочный чек-лист":"Экстренная инструкция";
+ return kind==="DRAFT"?"Проект документа для юридической проверки":kind==="CHECKLIST"?"Проверочный чек-лист":"Экстренная инструкция";
 }
 export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSelection=false,publicDraft=false}:Props){
  const [routeId,setRouteId]=useState(initialRouteId);
