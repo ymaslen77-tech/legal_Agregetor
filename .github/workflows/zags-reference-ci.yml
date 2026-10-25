@@ -110,8 +110,14 @@ jobs:
         run: test -z "$(find "$LEAD_ATTACHMENT_STORAGE_ROOT" -type f -name '*.pdf' -print -quit 2>/dev/null)"
       - name: Generate and inspect guardianship PDFs
         run: |
-          sudo apt-get update
-          sudo apt-get install -y poppler-utils
+          if ! command -v pdfinfo >/dev/null || ! command -v pdftotext >/dev/null || ! command -v pdftoppm >/dev/null; then
+            # Ignore an unrelated third-party APT mirror failure (e.g. Microsoft 403).
+            # This is a disposable GitHub runner, not the application/VPS.
+            sudo grep -rl 'packages.microsoft.com' /etc/apt/sources.list.d/ 2>/dev/null |
+              while IFS= read -r source; do sudo mv "$source" "$source.disabled"; done
+            sudo apt-get update
+            sudo apt-get install -y poppler-utils
+          fi
           export GUARDIANSHIP_PDF_AUDIT_DIR="$RUNNER_TEMP/guardianship-pdf-audit"
           npm run audit:guardianship-pdf
           for pdf in "$GUARDIANSHIP_PDF_AUDIT_DIR"/*.pdf; do
