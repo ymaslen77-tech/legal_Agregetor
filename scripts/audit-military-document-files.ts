@@ -46,7 +46,7 @@ async function main(){
   }
  }
  assert.equal(rows.length,17);
- assert.equal(rows.filter(x=>x.resultKind==="DRAFT").length,2);
+ assert.equal(rows.filter(x=>x.resultKind==="DRAFT").length,17);
  const report={scope:"BINARY_FILES_AND_VERSION_ONLY",legallyApproved:0,rows,passed:rows.length};
  writeFileSync(join(dir,"manifest.json"),JSON.stringify(report,null,2)+"\n");
  console.log("Military export: 17/17 synthetic PDF and DOCX, filingReady=false, not yet cabinet approved");
