@@ -2,6 +2,7 @@ import {getMilitaryDocumentSlug,type MilitaryRoute,type MilitaryScenario} from "
 import {documentResultSchema,DOCUMENT_RESULT_CONTRACT_VERSION,type DocumentResultV1} from "@/lib/document-result-contract";
 import {getMilitaryCaseReview} from "@/data/military-case-reviews";
 import {getMilitaryPinpointLinks,militaryProvisionHref} from "@/data/military-provision-links";
+import {getMilitaryDraftPlan} from "@/data/military-draft-templates";
 
 type Answers=Record<string,string|undefined>;
 export type MilitaryValidation={missing:string[];invalid:string[];warnings:string[];complete:boolean};
@@ -72,38 +73,68 @@ export function createMilitaryDocumentResult(
   "- Срок и событие: "+review.timeToCheck,
   "- Исключения: "+review.exclusionToCheck
  ];
- // An unconfirmed addressee cannot receive an automatically addressed draft.
- const draftEligible=scenario.kind==="DRAFT"&&answers.role==="военнослужащий"&&
-  ["контракт","мобилизация","призыв"].includes(answers.regime??"")&&
-  Boolean(answers.authority?.trim())&&!isUncertain(answers.authority?.trim()??"");
+ // Every draft still needs a verified applicant status. A family member,
+ // former servicemember or conscript must not inherit active servicemember powers.
+ const activeSelf=answers.role==="военнослужащий" &&
+   ["контракт","мобилизация","призыв"].includes(answers.regime??"");
+ const dischargedSelf=route.id==="military-discharge" &&
+   answers.role==="уволенный военнослужащий" && answers.regime==="уволен";
+ const conscriptSelf=route.id==="mobilization-draft" &&
+   answers.role==="призывник" && ["призыв","доподготовка к призыву","мобилизация"].includes(answers.regime??"");
+ const familyApplicant=route.id==="military-pay" && scenario.key==="family-benefits" &&
+   answers.role==="член семьи";
+ const knownAddressee=Boolean(answers.authority?.trim()) &&
+   !isUncertain(answers.authority?.trim()??"");
+ const requiresNamedAddressee=["service-order-copy","pay-breakdown"].includes(scenario.key);
+ const plan=getMilitaryDraftPlan(route.id,scenario.key);
+ if(!plan)throw new Error("Не найден индивидуальный шаблон проекта: "+route.id+"/"+scenario.key);
+ const draftEligible=scenario.kind==="DRAFT" &&
+   (activeSelf||dischargedSelf||conscriptSelf||familyApplicant) &&
+   (!requiresNamedAddressee||knownAddressee);
  const checklistText=[
   "ПРЕДВАРИТЕЛЬНЫЙ ЧЕК-ЛИСТ — НЕ ГОТОВ К ПОДАЧЕ",
   heading(route,scenario),"",
-  "Сведения заявителя (не проверены):",...factLines(route,scenario,answers),"",
-  "Что необходимо проверить:",...scenario.safetyNotes.map((v,i)=>(i+1)+". "+v),"",
-  "Индивидуальные вопросы юридической приёмки:",...questions,"",
-  "Документы:",...scenario.evidence.map(s=>"- "+s),"",
-  "Нормативные источники (применимость и действующая редакция ещё не согласованы):",
-  ...sourceLines,"",
-  "Не является заявлением, иском, жалобой, рапортом или юридическим заключением.",
-  "Срок, компетентный орган, пошлина, статус заявителя и специальные исключения требуют индивидуального подтверждения."
+  "Подтверждённый для автоподготовки статус или необходимый адресат не установлен. Не следует создавать от имени пользователя неподтверждённое обращение.",
+  "Проверьте сведения:",...factLines(route,scenario,answers),"",
+  "Юридические вопросы:",...questions,"",
+  "Документы для проверки:",...scenario.evidence.map(s=>"- "+s),"",
+  "Источники для юридической сверки:",...sourceLines,"",
+  "Заявление, жалоба или рапорт не сформированы. Нужна индивидуальная проверка полномочий и порядка обращения."
  ].join("\n");
+ const addressee=knownAddressee
+  ? "Указанный заявителем предполагаемый адресат (компетенция не проверена): "+answers.authority!.trim()
+  : "Адресат: [определить компетентный орган и должностное лицо после юридической проверки]";
  const draftText=draftEligible?[
-   "ПРЕДВАРИТЕЛЬНЫЙ ПРОЕКТ ЗАПРОСА — НЕ ГОТОВ К ПОДАЧЕ",
-   "Адресат, указанный заявителем (не подтверждён): "+answers.authority!.trim(),
-   heading(route,scenario),"",
-   "Изложенные заявителем обстоятельства:",
-   ...factLines(route,scenario,answers),"",
-   "Прошу рассмотреть возможность предоставления мне следующих сведений:",
-   scenario.key==="service-order-copy"
-     ?"Копии относящегося ко мне приказа/решения и сведений о принятом по моему обращению решении."
-     :"Сведений о начислениях и удержаниях за указанный период с расшифровкой оснований.",
+   "ПРЕДВАРИТЕЛЬНЫЙ ПРОЕКТ — НЕ ГОТОВ К ПОДАЧЕ",
+   addressee,
+   "От: [заявитель, данные и полномочия подлежат подтверждению при проверке]",
    "",
-   "Для юридической проверки необходимы:",...scenario.evidence.map(s=>"- "+s),"",
-   "Неразрешённые правовые вопросы:",...questions,"",
-   "Источники, применимость которых требует проверки:",...sourceLines,"",
-   "Адресат, полномочия подписанта, нормы, срок и форма обращения не подтверждены.",
-   "ПЕРЕД ИСПОЛЬЗОВАНИЕМ ОБЯЗАТЕЛЬНА ЮРИДИЧЕСКАЯ ПРОВЕРКА."
+   plan.title.toUpperCase(),
+   "",
+   "ОБСТОЯТЕЛЬСТВА",
+   "По сообщённым заявителем сведениям, произошло следующее: "+(answers.event??"").trim()+".",
+   "Дата события и получения относящихся к нему решений: "+(answers.dates??"").trim()+".",
+   "Сообщённый статус заявителя: "+(answers.role??"")+". Вид службы или правовой режим: "+(answers.regime??"")+".",
+   "Имеющиеся подтверждающие сведения и документы: "+(answers.evidence??"").trim()+".",
+   "Цель обращения со слов заявителя: "+(answers.goal??"").trim()+".",
+   ...scenario.required.filter(key=>!["event","dates","role","regime","evidence","goal","authority"].includes(key))
+     .map(key=>{const field=route.fields.find(x=>x.key===key);return (field?.label??key)+": "+(answers[key]??"").trim()+".";}),
+   "",
+   "ПРОШУ РАССМОТРЕТЬ (ПРОЕКТ ТРЕБОВАНИЙ)",
+   ...plan.requests.map((item,index)=>(index+1)+". "+item),
+   "",
+   "ДОКУМЕНТЫ И ПРИЛОЖЕНИЯ ДЛЯ СВЕРКИ",
+   ...scenario.evidence.map((item,index)=>(index+1)+". "+item+" (включить только при наличии и применимости)."),
+   "",
+   "ПРАВОВОЕ ОБОСНОВАНИЕ — ТРЕБУЕТ ПРОВЕРКИ",
+   "Перед направлением определить, являются ли нормы ниже применимыми к указанному статусу, дате события и специальному режиму:",
+   ...sourceLines,
+   "Отдельно проверить полномочия, компетенцию адресата, сроки, порядок, пошлину (если применимо) и просительную часть.",
+   "",
+   "Дата: [заполнить при подписании]",
+   "Подпись: [подпись заявителя после проверки]",
+   "",
+   "ПРОЕКТ НЕ ПОДЛЕЖИТ ПОДАЧЕ ДО ЮРИДИЧЕСКОЙ ПРОВЕРКИ."
  ].join("\n"):checklistText;
  const slug=getMilitaryDocumentSlug(route,scenario);
  if(!slug)throw new Error("Document slug missing");
@@ -112,9 +143,9 @@ export function createMilitaryDocumentResult(
    versionId:ids.versionId,createdAt:ids.createdAt,
    categorySlug:"voennoe-pravo",routeSlug:route.slug,scenarioKey:scenario.key,
    documentSlug:slug,resultKind:draftEligible?"DRAFT":"CHECKLIST",source:"DETERMINISTIC",
-   documentTitle:(draftEligible?"Предварительный проект: ":"Чек-лист: ")+scenario.title,
+   documentTitle:draftEligible?plan.title:"Чек-лист: "+scenario.title,
    documentText:draftText,usedRuleIds:[],placeholders:[],
-   legalRegistryReviewedAt:null,generatorVersion:"military-preview-1",
+   legalRegistryReviewedAt:null,generatorVersion:"military-draft-2",
    filingReady:false,requiresLegalReview:true
  });
 }
