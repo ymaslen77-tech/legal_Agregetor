@@ -27,6 +27,11 @@ async function main(){
    assert.equal(result.legalRegistryReviewedAt,null);
    assert.ok(result.documentText.includes("НЕ ГОТОВ К ПОДАЧЕ"));
    assert.ok(result.documentText.includes("С учётом изложенного прошу:"));
+   assert.ok(result.documentText.includes("Правовые основания"));
+   assert.ok(result.documentText.includes("Цель обращения:"));
+   assert.ok(result.documentText.includes("Дата: [указать]"));
+   assert.ok(!result.documentText.includes("0 из 11"));
+   assert.ok(result.documentText.length<30000,"Draft is excessively long");
    // Must remain outside the public catalog until expert legal review.
    assert.equal(validateSavedDocument(result),null,"Cannot persist draft under an unregistered route");
    const [pdf,docx]=await Promise.all([

@@ -15,17 +15,18 @@ import {addDocumentVersion} from "@/lib/document-version-history";
 import {DocumentVersionHistory} from "@/components/documents/DocumentVersionHistory";
 import {LegalRouteJourney} from "@/components/documents/LegalRouteJourney";
 import {DocumentResultSummary} from "@/components/documents/DocumentResultSummary";
+import {MilitaryDocumentReviewForm} from "@/components/documents/MilitaryDocumentReviewForm";
 import {LegalFormField} from "@/components/documents/LegalFormField";
 
 
 type Step="choose"|"facts"|"review"|"result";
 type Snapshot={documentResult:DocumentResultV1;answers:Record<string,string>};
-type Props={initialRouteId:string;initialScenarioKey:string;invalidSelection?:boolean;publicDraft?:boolean;compactFlow?:boolean};
+type Props={initialRouteId:string;initialScenarioKey:string;invalidSelection?:boolean;publicDraft?:boolean;compactFlow?:boolean;reviewAvailable?:boolean};
 
 function safeLabel(kind:MilitaryScenario["kind"]):string {
  return kind==="URGENT_INSTRUCTION"?"Срочная инструкция":"Предварительный проект обращения или чек-лист";
 }
-export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSelection=false,publicDraft=false,compactFlow=false}:Props){
+export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSelection=false,publicDraft=false,compactFlow=false,reviewAvailable=false}:Props){
  const routeHref=compactFlow?militaryCanonicalRouteHref:publicDraft?militaryPublicDraftHref:militaryPreviewHref;
  const [routeId,setRouteId]=useState(initialRouteId);
  const route=MILITARY_ROUTES.find(x=>x.id===routeId)??MILITARY_ROUTES[0];
@@ -164,8 +165,8 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
       label={field.label} value={answers[field.key]??""} required
       kind={field.values?"select":"textarea"} rows={2}
       options={field.values?.map(v=>({value:v,label:v}))}
-      hint={field.key==="urgency"?"Если помощь требуется или вы не уверены, генерация будет остановлена.":
-        field.key==="medical"?"Не указывайте диагноз и не прикладывайте медицинские файлы.":undefined}
+      hint={field.key==="urgency"?"Если требуется срочная помощь, сначала обратитесь к врачу.":
+        field.key==="medical"?"Не пишите диагноз.":undefined}
       error={validation.invalid.includes(field.key)?"Проверьте корректность заполнения.":undefined}
       onChange={v=>changeValue(field.key,v)}/>)}
     </div>
@@ -179,7 +180,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
 
    {(step==="review"||compactFlow)&&!emergency?<section className={compactFlow?"mt-5 rounded-lg border border-line bg-white p-4 sm:p-5":"mt-7"} aria-label="Проверка перед генерацией">
     <h2 className="text-xl font-semibold">Шаг 2. Проверка ограничений</h2>
-    <p className="mt-2 text-sm text-zinc-700">Перед обращением проверьте факты, документы и порядок защиты ваших прав.</p>
+    <p className="mt-2 text-sm text-zinc-700">Проверьте сведения по документам.</p>
     {validation.missing.length?<p role="alert" className="mt-4 rounded-md bg-amber-50 p-3 text-sm">
       Не заполнено: {validation.missing.map(k=>route.fields.find(f=>f.key===k)?.label??k).join("; ")}</p>:null}
     {validation.invalid.length?<p role="alert" className="mt-3 rounded-md bg-red-50 p-3 text-sm text-red-950">
@@ -243,15 +244,13 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
      <p className="mt-2 text-sm text-zinc-700">Ссылки указывают на опубликованные материалы, но их актуальная редакция, действие во времени и применимость к ситуации не подтверждены.</p>
     </section>
     <p className="mt-5 text-sm text-zinc-700">
-     Для проверки проекта обратитесь к выбранному вами специалисту.
+     Перед использованием проверьте документ у юриста.
     </p>
     <div className="mt-5 flex flex-wrap gap-3" aria-label="Итоговые действия с документом">
      <button type="button" disabled={dirty} onClick={()=>void downloadPdf()}
       className="min-h-11 rounded-md bg-trust px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">Скачать PDF</button>
-     <button type="button" disabled aria-describedby="military-lawyer-handoff-disabled"
-      className="min-h-11 rounded-md border border-line px-4 py-2 text-sm font-semibold opacity-60">Отправить на проверку юристу</button>
+     {reviewAvailable?<MilitaryDocumentReviewForm key={active.documentResult.versionId} result={active.documentResult}/>:<span className="text-sm text-zinc-600">Отправка на проверку сейчас недоступна. Скачайте PDF для передачи юристу.</span>}
     </div>
-    <p id="military-lawyer-handoff-disabled" className="mt-2 text-xs text-zinc-600">Отправка через сайт пока недоступна. Скачанный документ можно передать выбранному юристу самостоятельно.</p>
     <details className="mt-4 rounded-lg border border-line bg-white p-3">
      <summary className="cursor-pointer text-sm font-semibold">Редактировать документ и скачать DOCX</summary>
      <div className="mt-3 flex flex-wrap gap-3">

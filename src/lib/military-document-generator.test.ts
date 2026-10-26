@@ -43,6 +43,12 @@ for(const route of MILITARY_ROUTES){
   documentResultSchema.parse(out);
   assert.equal(out.resultKind,"DRAFT","all 17 direct-applicant scenarios must produce a coherent draft");
   assert.ok(out.documentText.includes("С учётом изложенного прошу:"), "draft has a concrete request");
+  assert.ok(out.documentText.includes("Правовые основания"), "legal basis is included in the draft");
+  assert.ok(out.documentText.includes("Цель обращения:"), "user objective is included");
+  assert.ok(out.documentText.includes("http"), "legal references include exact link");
+  assert.ok(!/Neon|UUID|генератор|API/.test(out.documentText), "document has no technical copy");
+  if(route.id==="service-contract" && ["contract-check","transfer"].includes(scenario.key))
+    assert.ok(out.documentText.includes("Пленума ВС РФ"), "relevant verified Supreme Court guidance is included");
   assert.ok(out.documentText.includes("Подпись:"), "draft has a signature field");
   assert.ok(out.documentText.includes("От: [ФИО"), "draft includes applicant placeholder");
   assert.ok(out.documentText.includes("Кому:"), "draft includes recipient placeholder");
@@ -73,13 +79,13 @@ const wrongRole=Object.fromEntries(draftRoute.fields.map(f=>[f.key,
  f.values?f.values[0]:"Подтверждённые обстоятельства"]));
 wrongRole.role="военнослужащий";wrongRole.regime="контракт";
 assert.equal(validateMilitaryIntake(draftRoute,inapplicable,wrongRole).complete,false);
-assert.throws(()=>createMilitaryDocumentResult(draftRoute,inapplicable,wrongRole,{versionId:id,createdAt:stamp}),/генерация заблокирована/);
+assert.throws(()=>createMilitaryDocumentResult(draftRoute,inapplicable,wrongRole,{versionId:id,createdAt:stamp}),/Проверьте данные в анкете/);
 const medicalRoute=getMilitaryRoute("military-medical")!;
 const medicalScenario=medicalRoute.scenarios.find(x=>x.key==="vvk-conclusion")!;
 const urgentAnswers=Object.fromEntries(medicalRoute.fields.map(x=>[x.key,x.values?x.values[0]:"Есть документ"]));
 urgentAnswers.urgency="да";
 assert.equal(validateMilitaryIntake(medicalRoute,medicalScenario,urgentAnswers).complete,false);
-assert.throws(()=>createMilitaryDocumentResult(medicalRoute,medicalScenario,urgentAnswers,{versionId:id,createdAt:stamp}),/генерация заблокирована/);
+assert.throws(()=>createMilitaryDocumentResult(medicalRoute,medicalScenario,urgentAnswers,{versionId:id,createdAt:stamp}),/Проверьте данные в анкете/);
 urgentAnswers.urgency="не знаю";
 assert.equal(validateMilitaryIntake(medicalRoute,medicalScenario,urgentAnswers).complete,false);
 for(const unsupportedRegime of ["добровольческое формирование","военные сборы","мобилизационный людской резерв"]){
