@@ -799,7 +799,8 @@ export const MILITARY_NAVIGATOR_DOCUMENTS:NavigatorDocument[]=MILITARY_LEGAL_DOC
   generatorSeoDescription:"Укажите необходимые сведения для "+doc.title.toLowerCase()+" и скачайте проект в PDF или DOCX.",
   keywords:[doc.title.toLowerCase(),doc.formLabel.toLowerCase()+" военнослужащего",doc.slug.replaceAll("-"," ")],
   userQueries:[doc.title.toLowerCase(),"скачать "+doc.title.toLowerCase()+" pdf","образец "+doc.title.toLowerCase()],
-  lastReviewedAt:undefined,
+  // Date of checking the public statutory references and specimen structure; NOT lawyer sign-off.
+  lastReviewedAt:"2026-10-26",
   disclaimer:"Проект носит предварительный характер. Законность требования, статус заявителя, адресат и сроки подлежат юридической проверке."
  };
 });
