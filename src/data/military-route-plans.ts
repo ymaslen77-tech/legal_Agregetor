@@ -36,24 +36,24 @@ const field=(key:string,label:string,values?:readonly string[]):MilitaryField=>(
 const common:readonly MilitaryField[]=[
  field("role","Кто обращается?",["военнослужащий","призывник","уволенный военнослужащий","член семьи","представитель","не знаю"]),
  field("regime","Правовой статус и вид службы",["контракт","призыв","мобилизация","уволен","доподготовка к призыву","добровольческое формирование","военные сборы","мобилизационный людской резерв","не знаю"]),
- field("event","Что произошло (без сведений о расположении части, задачах или личных данных других лиц)?"),
- field("dates","Даты события и получения решений: укажите известные, без автоматического исчисления сроков"),
- field("evidence","Документы, подтверждающие обстоятельства (без паспортных и медицинских данных)"),
- field("goal","Какой результат необходимо получить?")
+ field("event","Что произошло?"),
+ field("dates","Когда это произошло и когда вы получили документ?"),
+ field("evidence","Какие документы подтверждают ваши слова?"),
+ field("goal","Что вы хотите получить?")
 ];
 const extra:Record<string,MilitaryField>={
- authority:field("authority","Известный по документам адресат (без адреса и номера части)"),
- contract:field("contract","Дата/вид контракта и подтверждающие документы"),
- order:field("order","Реквизиты известного приказа/решения или указание, что копии нет"),
- grounds:field("grounds","Предполагаемое основание и подтверждение; без правовой квалификации"),
- payments:field("payments","Какие начисления или выплаты вызывают вопросы, период"),
- decision:field("decision","Какое действие, ответ или бездействие рассматривается"),
- receipt:field("receipt","Когда фактически узнали о решении и как получили его"),
- medical:field("medical","Наличие заключения ВВК/медицинских документов (без диагноза)"),
+ authority:field("authority","Кому вы хотите направить обращение?"),
+ contract:field("contract","Когда заключён контракт и какой он?"),
+ order:field("order","Какой приказ или решение вы получили?"),
+ grounds:field("grounds","По какой причине рассматривается увольнение?"),
+ payments:field("payments","Какие выплаты и за какой период нужно проверить?"),
+ decision:field("decision","Какое решение или действие вы хотите проверить?"),
+ receipt:field("receipt","Когда и как вы узнали о решении?"),
+ medical:field("medical","Есть ли заключение ВВК?"),
  urgency:field("urgency","Нужна ли неотложная медицинская помощь?",["да","нет","не знаю"]),
- summons:field("summons","Вид и способ получения повестки/решения, дата"),
- deferment:field("deferment","Документально подтверждённое возможное основание отсрочки"),
- family:field("family","Какие семейные обстоятельства подтверждены документами")
+ summons:field("summons","Какую повестку или решение вы получили и когда?"),
+ deferment:field("deferment","Чем подтверждается возможное право на отсрочку?"),
+ family:field("family","Какие семейные обстоятельства подтверждены?")
 };
 const sc=(key:string,title:string,kind:MilitaryScenario["kind"],extras:readonly string[],sources:readonly MilitarySourceId[],safetyNotes:readonly string[],evidence:readonly string[]):MilitaryScenario=>({
  key,title,kind,required:kind==="URGENT_INSTRUCTION"?[]:[...common.map(f=>f.key),...extras],sources,safetyNotes,evidence
