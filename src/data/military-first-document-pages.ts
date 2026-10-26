@@ -1,8 +1,8 @@
 import type {NavigatorDocument} from "@/data/documents";
-import {getMilitaryDocumentBlueprint} from "@/data/military-document-blueprints";
-import {getMilitaryDraftFields,type MilitaryReadyDraftKey,MILITARY_READY_DRAFT_KEYS} from "@/lib/military-official-document-drafts";
+import {getMilitaryDocumentBlueprint,MILITARY_DOCUMENT_BLUEPRINTS} from "@/data/military-document-blueprints";
+import {getMilitaryDocumentFields} from "@/lib/military-document-composer";
 
-export const MILITARY_FIRST_DOCUMENT_PAGES:NavigatorDocument[]=MILITARY_READY_DRAFT_KEYS.map((key:MilitaryReadyDraftKey)=>{
+export const MILITARY_FIRST_DOCUMENT_PAGES:NavigatorDocument[]=MILITARY_DOCUMENT_BLUEPRINTS.map(({scenarioKey:key})=>{
  const blueprint=getMilitaryDocumentBlueprint(key)!;
  const legalBasis=blueprint.legalSources.map(s=>s.citation);
  const instructions=[
@@ -24,7 +24,7 @@ export const MILITARY_FIRST_DOCUMENT_PAGES:NavigatorDocument[]=MILITARY_READY_DR
   description:blueprint.intent,heroDescription:`${blueprint.intent}. Подготовьте подтверждённые сведения и сформируйте текст для проверки.`,
   whenToUse:[blueprint.intent],whenNotToUse:cautions,
   beforeFillingChecklist:[...blueprint.requiredRequisites],
-  requiredData:getMilitaryDraftFields(key).map(x=>x.label),
+  requiredData:getMilitaryDocumentFields(key).filter(x=>x.required).map(x=>x.label),
   whatToPrepare,whatToInclude:[...blueprint.requiredRequisites],
   howToFill:["Заполняйте исключительно подтверждённые сведения.","Не сообщайте сведения о дислокации подразделений и персональные данные третьих лиц."],
   whereToFile:blueprint.submission,whereToSubmit:blueprint.submission,
@@ -52,6 +52,6 @@ export const MILITARY_FIRST_DOCUMENT_PAGES:NavigatorDocument[]=MILITARY_READY_DR
 export function getMilitaryFirstDocumentMatch(slug:string){
  const match=MILITARY_FIRST_DOCUMENT_PAGES.find(x=>x.slug===slug);
  if(!match)return null;
- const key=MILITARY_READY_DRAFT_KEYS.find(k=>getMilitaryDocumentBlueprint(k)?.slug===slug);
+ const key=MILITARY_DOCUMENT_BLUEPRINTS.find(item=>item.slug===slug)?.scenarioKey;
  return key?{document:match,key}:null;
 }
