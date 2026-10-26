@@ -1,6 +1,6 @@
 /** Internal-only LEGAL_ROUTE_STANDARD_V1 projection; NOT registered in public legalProblems. */
 import {MILITARY_ROUTES,getMilitaryDocumentSlug} from "@/data/military-route-plans";
-import {militaryIntakeQuestionLabel,militaryIntakeHint} from "@/data/military-intake-plans";
+import {militaryIntakeQuestionLabel} from "@/data/military-intake-plans";
 import {LEGAL_ROUTE_STANDARD_VERSION,type LegalRouteV1,type LegalRouteScenarioV1} from "@/data/legal-route-standard";
 export type MilitaryRouteV1=Omit<LegalRouteV1,"source">&{source:"military-preview"};
 export function getMilitaryPreviewRoutes():MilitaryRouteV1[]{
