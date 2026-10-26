@@ -104,10 +104,10 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
   setMessage("Изменения отменены. Сформированная версия не изменена.");
  }
  return <>
-  <LegalRouteJourney stage="document" title={route.title}
+  {compactFlow&&emergency?null:<LegalRouteJourney stage="document" title={route.title}
    problemUrl={compactFlow?militaryCanonicalRouteHref(route.id):routeHref(route.id)}
    scenarioUrl={compactFlow?militaryCanonicalRouteHref(route.id,scenario.key):routeHref(route.id,scenario.key)}
-   activeStep={step==="choose"?0:step==="facts"?2:step==="review"?2:3}/>
+   activeStep={step==="choose"?0:step==="facts"?2:step==="review"?2:3}/>}
   <section className="mx-auto max-w-5xl min-w-0 px-4 py-5 sm:px-6 lg:px-8">
    {!compactFlow?<h1 className="text-2xl font-semibold text-ink sm:text-3xl">Военное право — юридические маршруты</h1>:null}
    <p className="mt-2 text-sm leading-6 text-zinc-700">
