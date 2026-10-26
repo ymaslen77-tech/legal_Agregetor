@@ -111,6 +111,17 @@ assert.equal(validateMilitaryIntake(draftRoute,inapplicable,wrongRole).complete,
 assert.throws(()=>createMilitaryDocumentResult(draftRoute,inapplicable,wrongRole,{versionId:id,createdAt:stamp}),/Проверьте данные в анкете/);
 const medicalRoute=getMilitaryRoute("military-medical")!;
 const medicalScenario=medicalRoute.scenarios.find(x=>x.key==="vvk-conclusion")!;
+const medicallyRelevantAnswers:Record<string,string>=Object.fromEntries(
+ medicalRoute.fields.map(x=>[x.key,x.values?x.values[0]:"Заключение ВВК имеется"])
+);
+medicallyRelevantAnswers.role="военнослужащий";
+medicallyRelevantAnswers.regime="контракт";
+medicallyRelevantAnswers.medical="В";
+delete medicallyRelevantAnswers.urgency;
+assert.equal(validateMilitaryIntake(medicalRoute,medicalScenario,medicallyRelevantAnswers).complete,true,
+ "Official fitness category without obsolete urgency answer must validate");
+assert.equal(createMilitaryDocumentResult(medicalRoute,medicalScenario,medicallyRelevantAnswers,
+ {versionId:id,createdAt:stamp}).resultKind,"DRAFT");
 const urgentAnswers=Object.fromEntries(medicalRoute.fields.map(x=>[x.key,x.values?x.values[0]:"Есть документ"]));
 urgentAnswers.urgency="да";
 assert.equal(validateMilitaryIntake(medicalRoute,medicalScenario,urgentAnswers).complete,false);
