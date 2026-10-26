@@ -43,6 +43,12 @@ for(const route of MILITARY_ROUTES){
   documentResultSchema.parse(out);
   assert.equal(out.resultKind,"DRAFT","all 17 direct-applicant scenarios must produce a coherent draft");
   assert.ok(out.documentText.includes("С учётом изложенного прошу:"), "draft has a concrete request");
+  assert.ok(out.documentText.includes("Правовые основания"), "legal basis is included in the draft");
+  assert.ok(out.documentText.includes("Цель обращения:"), "user objective is included");
+  assert.ok(out.documentText.includes("http"), "legal references include exact link");
+  assert.ok(!/Neon|UUID|генератор|API/.test(out.documentText), "document has no technical copy");
+  if(route.id==="service-contract" && ["contract-check","transfer"].includes(scenario.key))
+    assert.ok(out.documentText.includes("Пленума ВС РФ"), "relevant verified Supreme Court guidance is included");
   assert.ok(out.documentText.includes("Подпись:"), "draft has a signature field");
   assert.ok(out.documentText.includes("От: [ФИО"), "draft includes applicant placeholder");
   assert.ok(out.documentText.includes("Кому:"), "draft includes recipient placeholder");
