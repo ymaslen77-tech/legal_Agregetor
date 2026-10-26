@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import {MILITARY_ROUTES,MILITARY_SOURCES,getMilitaryDocumentSlug,getMilitaryRoute} from "@/data/military-route-plans";
 import {validateMilitaryIntake,createMilitaryDocumentResult,MILITARY_DRAFT_PURPOSES} from "@/lib/military-document-generator";
 import {documentResultSchema} from "@/lib/document-result-contract";
-import {MILITARY_INTAKE_PLANS,militaryIntakeQuestionLabel,resolveMilitaryIntakeAnswers} from "@/data/military-intake-plans";
+import {MILITARY_INTAKE_PLANS,militaryIntakeQuestionLabel,militaryIntakeHint,militaryIntakeLegalReason,resolveMilitaryIntakeAnswers} from "@/data/military-intake-plans";
 
 const id="11111111-1111-4111-8111-111111111111",stamp="2026-10-21T00:00:00.000Z";
 const kasSource=MILITARY_SOURCES.kas;
@@ -23,6 +23,12 @@ for(const {route,scenario} of tailored){
  const config=MILITARY_INTAKE_PLANS[scenario.key];
  assert.ok(config,"Missing individual questionnaire "+scenario.key);
  assert.deepEqual(fields,config.fields);
+ for(const key of fields){
+  assert.ok(militaryIntakeLegalReason(scenario.key,key),"Missing legal purpose: "+scenario.key+"/"+key);
+  if(!["role"].includes(key))assert.ok(militaryIntakeHint(scenario.key,key)||key==="regime"&&scenario.key==="discharge-basis","Missing plain-language help: "+scenario.key+"/"+key);
+ }
+ if(route.id==="military-medical")assert.ok(!fields.includes("urgency"),"A normal VVK review is not emergency triage");
+ if(route.id==="mobilization-draft")assert.ok(!fields.includes("summons")||scenario.key!=="deferment","Deferment does not require existing summons");
  const titles=fields.map(key=>militaryIntakeQuestionLabel(scenario.key,route.fields.find(f=>f.key===key)!));
  const signature=JSON.stringify(titles);
  assert.ok(!signatures.has(signature),"Situation-specific prompts must differ: "+scenario.key);
