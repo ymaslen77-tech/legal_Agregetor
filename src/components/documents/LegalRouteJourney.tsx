@@ -15,7 +15,7 @@ export function LegalRouteJourney({
   const steps = [
     { label: "Ситуация", href: problemUrl },
     { label: "Выбор пути", href: scenarioUrl },
-    { label: "Анкета", href: undefined },
+    { label: "Подготовка", href: undefined },
     { label: "Результат", href: undefined },
     { label: "Проверка", href: undefined }
   ];
