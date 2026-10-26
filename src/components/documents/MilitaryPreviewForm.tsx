@@ -26,7 +26,7 @@ type Snapshot={documentResult:DocumentResultV1;answers:Record<string,string>};
 type Props={initialRouteId:string;initialScenarioKey:string;invalidSelection?:boolean;publicDraft?:boolean;compactFlow?:boolean;reviewAvailable?:boolean};
 
 function safeLabel(kind:MilitaryScenario["kind"]):string {
- return kind==="URGENT_INSTRUCTION"?"Срочная инструкция":"Предварительный проект обращения или чек-лист";
+ return kind==="URGENT_INSTRUCTION"?"Срочная инструкция":"Предварительная подготовка документа";
 }
 export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSelection=false,publicDraft=false,compactFlow=false,reviewAvailable=false}:Props){
  const routeHref=compactFlow?militaryCanonicalRouteHref:publicDraft?militaryPublicDraftHref:militaryPreviewHref;
@@ -149,16 +149,16 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
     {emergency?<div className="mt-5 rounded-lg border-l-4 border-red-700 bg-red-50 p-5" role="alert">
       <h3 className="font-semibold text-red-950">Сначала неотложная помощь</h3>
       {scenario.safetyNotes.map(t=><p key={t} className="mt-2 text-sm text-red-950">{t}</p>)}
-      <p className="mt-2 text-sm text-red-950">Заполнение анкеты и генерация файла не предусмотрены.</p>
+      <p className="mt-2 text-sm text-red-950">Подготовка документа не предусмотрена.</p>
      </div>:<button type="button" onClick={()=>setStep("facts")}
-     className="mt-6 min-h-11 rounded-md bg-trust px-6 py-3 text-sm font-semibold text-white">Перейти к анкете</button>}
+     className="mt-6 min-h-11 rounded-md bg-trust px-6 py-3 text-sm font-semibold text-white">Перейти к подготовке документа</button>}
    </section>:null}
 
    {compactFlow&&emergency?<section className="mt-6 border-l-4 border-red-700 bg-red-50 p-5" role="alert">
     <h3 className="text-xl font-semibold text-red-950">Сначала неотложная помощь</h3>
     {scenario.safetyNotes.map(note=><p key={note} className="mt-2 text-sm text-red-950">{note}</p>)}
    </section>:null}
-   {(step==="facts"||compactFlow)&&!emergency?<section className="mt-6 min-w-0 max-w-full rounded-lg border border-line bg-white p-4 sm:p-5" aria-label="Пошаговая анкета">
+   {(step==="facts"||compactFlow)&&!emergency?<section className="mt-6 min-w-0 max-w-full rounded-lg border border-line bg-white p-4 sm:p-5" aria-label="Подготовка юридического документа">
     <h2 className="text-xl font-semibold">Шаг 1. Обстоятельства и документы</h2>
     <p className="mt-2 text-sm leading-6 text-zinc-700">Ответьте только на вопросы по выбранной ситуации.</p>
 
@@ -231,7 +231,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
     <section className="mt-6 rounded-lg border border-line bg-white p-4" aria-label="Дальнейшие действия">
      <h3 className="font-semibold">Что необходимо сделать до использования результата</h3>
      <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm leading-6">
-      <li>Сверьте введённые факты, подтверждённый статус и даты с оригиналами документов. Если сведения неверны, измените анкету и сформируйте новую версию.</li>
+      <li>Сверьте введённые факты, подтверждённый статус и даты с оригиналами документов. Если сведения неверны, исправьте сведения и сформируйте новую версию.</li>
       <li>Подготовьте доказательства для индивидуальной проверки: {review.evidenceToCheck.join("; ")}.</li>
       <li>Передайте проект компетентному юристу на проверку полномочий, адресата, сроков, особого режима и применимого порядка. Автоматическое определение подсудности не производится.</li>
      </ol>
