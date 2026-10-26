@@ -7,28 +7,29 @@ import {downloadGeneratedDocumentDocx} from "@/lib/document-export";
 export function MilitaryOfficialDocumentPage({documentKey}:{documentKey:MilitaryReadyDraftKey}){
  const blueprint=getMilitaryDocumentBlueprint(documentKey)!;
  const [values,setValues]=useState<Partial<MilitaryDocumentFacts>>({});
- const [generated,setGenerated]=useState<{text:string;values:string}|null>(null);
+ const [generated,setGenerated]=useState<string|null>(null);
  const [notice,setNotice]=useState("");
  const fields=getMilitaryDraftFields(documentKey);
  function change(key:string,value:string){setValues(p=>({...p,[key]:value}));setGenerated(null);setNotice("");}
  function prepare(){
   const result=prepareMilitaryOfficialDraft(documentKey,values as MilitaryDocumentFacts);
   if(!result.draft){setNotice("Для составления документа заполните: "+result.missing.join("; "));return;}
-  setGenerated({text:result.draft,values:JSON.stringify(values)});
+  setGenerated(result.draft);
   setNotice("Рапорт составлен по введённым сведениям. Проверьте документ и полномочия адресата.");
  }
  async function pdf(){
   if(!generated)return;
   const {createFamilyLaborPdfBlob}=await import("@/lib/family-labor-pdf");
-  const blob=await createFamilyLaborPdfBlob({
+  const {documentResultSchema}=await import("@/lib/document-result-contract");
+  const blob=await createFamilyLaborPdfBlob(documentResultSchema.parse({
    contractVersion:"DOCUMENT_RESULT_V1",
    versionId:crypto.randomUUID(),createdAt:new Date().toISOString(),
-   categorySlug:"voennoe-pravo",routeSlug:"",scenarioKey:documentKey,
+   categorySlug:"voennoe-pravo",routeSlug:"military-document",scenarioKey:documentKey,
    documentSlug:blueprint.slug,resultKind:"DRAFT",source:"DETERMINISTIC",
-   documentTitle:blueprint.title,documentText:generated.text,usedRuleIds:[],
+   documentTitle:blueprint.title,documentText:generated,usedRuleIds:[],
    placeholders:[],legalRegistryReviewedAt:null,generatorVersion:"military-official-draft-1",
    filingReady:false,requiresLegalReview:true
-  });
+  }));
   const url=URL.createObjectURL(blob),a=document.createElement("a");
   a.href=url;a.download=blueprint.slug+".pdf";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
  }
@@ -46,10 +47,10 @@ export function MilitaryOfficialDocumentPage({documentKey}:{documentKey:Military
   {notice?<p role="status" className="mt-3 text-sm">{notice}</p>:null}
   {generated?<section className="mt-6" aria-label="Созданный рапорт">
    <h3 className="font-semibold">{blueprint.title}</h3>
-   <pre className="mt-3 whitespace-pre-wrap break-words rounded-md border border-line bg-zinc-50 p-4 font-serif text-sm leading-6">{generated.text}</pre>
+   <pre className="mt-3 whitespace-pre-wrap break-words rounded-md border border-line bg-zinc-50 p-4 font-serif text-sm leading-6">{generated}</pre>
    <div className="mt-4 flex flex-wrap gap-3">
     <button type="button" onClick={()=>void pdf()} className="min-h-11 rounded-md border border-trust px-4 py-2 font-semibold text-trust">Скачать PDF</button>
-    <button type="button" onClick={()=>void downloadGeneratedDocumentDocx({title:blueprint.title,content:generated.text,fileName:blueprint.slug+".docx"})} className="min-h-11 rounded-md border border-trust px-4 py-2 font-semibold text-trust">Скачать DOCX</button>
+    <button type="button" onClick={()=>void downloadGeneratedDocumentDocx({title:blueprint.title,content:generated,fileName:blueprint.slug+".docx"})} className="min-h-11 rounded-md border border-trust px-4 py-2 font-semibold text-trust">Скачать DOCX</button>
    </div>
   </section>:null}
  </section>;
