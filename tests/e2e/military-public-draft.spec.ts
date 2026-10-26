@@ -20,7 +20,7 @@ test("all 18 military situations follow family category, situation, questionnair
    await expect(page.getByRole("heading",{level:2,name:scenario.title})).toBeVisible();
    await expect(page.getByRole("heading",{name:"Похожие вопросы"})).toBeVisible();
    await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content",/noindex/);
-   await expect(page.getByRole("navigation",{name:"Этапы юридического маршрута"})).toHaveCount(1);
+   await expect(page.getByRole("navigation",{name:"Этапы юридического маршрута"})).toHaveCount(scenario.kind==="URGENT_INSTRUCTION"?0:1);
    await expect(page.getByRole("heading",{name:"Шаг 1. Выберите ситуацию"})).toHaveCount(0);
    if(scenario.kind!=="URGENT_INSTRUCTION"){
     await expect(page.getByRole("heading",{name:"Шаг 1. Обстоятельства и документы"})).toBeVisible();
