@@ -1,99 +1,165 @@
 /**
- * Each military situation asks only facts that cannot be established from
- * the selected scenario. Defaults represent explicit route context, not
- * independently verified facts about the applicant.
+ * A question belongs in the questionnaire only if its answer can change
+ * standing, applicable legal regime, the factual basis of the request, or
+ * the document/period that must be identified. Route selection is not proof
+ * of personal status or entitlement.
  */
-type IntakePlan={
+type IntakePlan = {
  fields:readonly string[];
  defaults?:Readonly<Record<string,string>>;
  labels:Readonly<Record<string,string>>;
+ hints:Readonly<Record<string,string>>;
+ reasons:Readonly<Record<string,string>>;
 };
+const commonReasons:Readonly<Record<string,string>>={
+ role:"Статус заявителя определяет право обращаться за личными сведениями и возможный порядок защиты прав.",
+ regime:"Нормы о контракте, призыве, мобилизации и увольнении различаются; выбранный раздел сайта не подтверждает фактический статус.",
+};
+const plan=(fields:string[],labels:Record<string,string>,hints:Record<string,string>,
+ reasons:Record<string,string>,defaults?:Record<string,string>):IntakePlan=>({
+ fields,labels,hints,reasons:{...commonReasons,...reasons},...(defaults?{defaults}:{})
+});
 export const MILITARY_INTAKE_PLANS:Readonly<Record<string,IntakePlan>>={
- "contract-check":{
-  fields:["role","contract"],defaults:{regime:"контракт"},
-  labels:{contract:"Какое условие контракта нужно уточнить?"}
- },
- "service-order-copy":{
-  fields:["role","order","authority"],defaults:{regime:"контракт"},
-  labels:{order:"Какой приказ или ответ вам нужен?",authority:"В какой орган или к какому должностному лицу обратитесь?"}
- },
- "transfer":{
-  fields:["role","order"],defaults:{regime:"контракт"},
-  labels:{order:"Что известно о переводе или приказе?"}
- },
- "discharge-basis":{
-  fields:["role","regime","grounds"],
-  labels:{grounds:"Какое основание увольнения указано или обсуждается?"}
- },
- "medical-discharge":{
-  fields:["role","regime","medical"],
-  labels:{medical:"Есть ли заключение ВВК и что в нём указано о годности? Без диагноза."}
- },
- "discharge-order":{
-  fields:["role","regime","order"],
-  labels:{order:"Какого приказа или расчёта вам не хватает?"}
- },
- "pay-breakdown":{
-  fields:["role","regime","payments","authority"],
-  labels:{payments:"За какой период нужны сведения о начислениях?",authority:"Кому направите запрос о выплатах?"}
- },
- "benefits":{
-  fields:["role","regime","payments"],
-  labels:{payments:"Какую выплату или компенсацию нужно проверить?"}
- },
- "family-benefits":{
-  fields:["regime","family","payments"],defaults:{role:"член семьи"},
-  labels:{regime:"Как проходил службу военнослужащий?",family:"Какие родство и обстоятельства подтверждены?",payments:"О какой выплате идёт речь?"}
- },
- "vvk-conclusion":{
-  fields:["role","regime","medical","urgency"],
-  labels:{medical:"Какое заключение ВВК получено и когда?",urgency:"Нужна ли помощь врача прямо сейчас?"}
- },
- "independent-review":{
-  fields:["role","regime","medical","urgency"],
-  labels:{medical:"Какое заключение ВВК хотите перепроверить?",urgency:"Нужна ли помощь врача прямо сейчас?"}
- },
- "request-explanation":{
-  fields:["role","regime","decision","authority"],
-  labels:{decision:"Какое решение или действие нужно разъяснить?",authority:"Кому направите запрос?"}
- },
- "challenge-decision":{
-  fields:["role","regime","decision","receipt"],
-  labels:{decision:"Какое решение вы оспариваете?",receipt:"Когда и как вы узнали о решении?"}
- },
- "inaction":{
-  fields:["role","regime","decision","receipt"],
-  labels:{decision:"На какое обращение не получили ответ?",receipt:"Когда вы направили обращение и чем это подтверждается?"}
- },
- "draft-notice":{
-  fields:["role","regime","summons"],
-  labels:{summons:"Какую повестку или решение получили и когда?"}
- },
- "deferment":{
-  fields:["role","regime","deferment"],
-  labels:{deferment:"Какое основание отсрочки подтверждают ваши документы?"}
- },
- "challenge-draft":{
-  fields:["role","regime","summons","receipt"],
-  labels:{summons:"Какое решение о призыве хотите оспорить?",receipt:"Когда и как вам вручили решение?"}
- }
+ "contract-check":plan(
+  ["role","contract"],
+  {contract:"Какое условие контракта нужно разъяснить?"},
+  {contract:"Укажите пункт или содержание условия и, если помните, дату заключения. Не загружайте контракт целиком и не указывайте номера частей."},
+  {contract:"Статья 32 Закона № 53-ФЗ связывает прохождение службы с условиями конкретного контракта; важен спорный пункт."},
+  {regime:"контракт"}
+ ),
+ "service-order-copy":plan(
+  ["role","order"],
+  {order:"Копию какого документа о вашей службе хотите получить?"},
+  {order:"Например: приказ о назначении, переводе или выписку. Если номер и дата неизвестны, укажите вид документа. Адресат определяется при подготовке проекта."},
+  {order:"Чтобы запрос был предметным, нужно идентифицировать относящийся к заявителю документ; его реквизиты не всегда известны."},
+  {regime:"контракт"}
+ ),
+ "transfer":plan(
+  ["role","order"],
+  {order:"Какое служебное изменение произошло или планируется?"},
+  {order:"Напишите: перевод в другое место службы, изменение должности или командировка; дата решения/приказа, если известна. Не указывайте местоположение части."},
+  {order:"Статья 15 Положения, утв. Указом № 1237, регулирует перевод; нужно отличить его от иных служебных перемещений."},
+  {regime:"контракт"}
+ ),
+ "discharge-basis":plan(
+  ["role","regime","grounds"],
+  {regime:"Как вы сейчас проходите службу?",grounds:"Какое основание увольнения рассматриваете?"},
+  {regime:"Выберите фактический вид службы. Даже если срок контракта закончился, это само по себе не подтверждает увольнение.",
+   grounds:"Например: предельный возраст, заключение ВВК или семейные обстоятельства. Укажите подтверждающий документ, если он есть."},
+  {grounds:"Основания увольнения зависят от ст. 51 Закона № 53-ФЗ и особенностей действующего режима (в том числе Указа № 647)."}
+ ),
+ "medical-discharge":plan(
+  ["role","regime","medical"],
+  {regime:"Как вы сейчас проходите службу?",medical:"Какая категория годности указана в заключении ВВК?"},
+  {medical:"Укажите только категорию (А, Б, В, Г или Д) и дату заключения, если она известна. Диагноз и медицинские сведения не вводите."},
+  {medical:"Правовое значение имеет официальная категория и заключение ВВК по Положению № 565, а не самостоятельно описанные симптомы."}
+ ),
+ "discharge-order":plan(
+  ["role","regime","order"],
+  {regime:"Вы ещё проходите службу или уже уволены?",order:"Какого документа или расчёта при увольнении не хватает?"},
+  {order:"Например: выписки из приказа об увольнении, сведений о дате исключения из списков или окончательного расчёта."},
+  {order:"Статья 34 Положения № 1237 и нормы о выплатах требуют различать приказ, исключение из списков и расчёт."}
+ ),
+ "pay-breakdown":plan(
+  ["role","regime","payments"],
+  {regime:"На каком основании проходите или проходили службу?",payments:"За какие месяцы и по какой выплате нужны сведения?"},
+  {payments:"Укажите месяц/год начала и окончания и, если знаете, вид начисления или удержания. Суммы и платёжные реквизиты необязательны."},
+  {payments:"Для проверки начислений по ст. 2 Закона № 306-ФЗ нужен определённый период и вид начисления."}
+ ),
+ "benefits":plan(
+  ["role","regime","payments"],
+  {regime:"Как вы проходите или проходили службу?",payments:"Какую конкретную выплату хотите проверить?"},
+  {payments:"Например: единовременную выплату, компенсацию или надбавку; укажите событие, в связи с которым она предполагается."},
+  {payments:"Условия разных выплат по Закону № 306-ФЗ не совпадают; название и юридическое событие определяют применимую норму."}
+ ),
+ "family-benefits":plan(
+  ["regime","family","payments"],
+  {regime:"Как военнослужащий проходил службу?",family:"Кем вы приходитесь военнослужащему и какое событие связано с выплатой?",payments:"О какой семейной выплате идёт речь?"},
+  {regime:"Если вид службы неизвестен, потребуется индивидуальная проверка.",
+   family:"Например: супруг(а), родитель, ребёнок; гибель, травма или иное событие. Не вводите ФИО и сведения о третьих лицах.",
+   payments:"Укажите вид выплаты, если знаете. Если название неизвестно, опишите её назначение, не указывая сумму."},
+  {family:"Родство и основание обращения определяют круг получателей по специальным нормам; одного факта родства недостаточно.",
+   payments:"Разные выплаты семьям предусмотрены разными нормами, в том числе ст. 3 Закона № 306-ФЗ."},
+  {role:"член семьи"}
+ ),
+ "vvk-conclusion":plan(
+  ["role","regime","medical"],
+  {regime:"По какому виду службы вы проходили ВВК?",medical:"Какое заключение вынесла ВВК и когда?"},
+  {medical:"Укажите категорию годности или итоговую формулировку из заключения и дату ознакомления, если известна. Диагноз не пишите."},
+  {medical:"По Положению № 565 порядок пересмотра зависит от содержания и даты заключения, а не от описания диагноза."}
+ ),
+ "independent-review":plan(
+  ["role","regime","medical","disagreement"],
+  {regime:"При каком виде службы получено заключение ВВК?",medical:"Какое заключение ВВК вы хотите перепроверить?",
+   disagreement:"С чем именно в заключении ВВК вы не согласны?"},
+  {medical:"Достаточно категории годности и даты заключения. Диагноз не пишите.",
+   disagreement:"Например: с категорией годности или выводом об ограничениях. Не описывайте заболевание; медицинские документы оцениваются специалистами вне анкеты."},
+  {medical:"Для обращения по Положению № 574 нужно установить наличие конкретного заключения, с которым не согласен заявитель.",
+   disagreement:"Положение № 574 предусматривает независимую экспертизу именно при несогласии с заключением ВВК."}
+ ),
+ "request-explanation":plan(
+  ["role","regime","decision"],
+  {regime:"Как вы проходите или проходили службу?",decision:"Какое решение или действие командования вам нужно разъяснить?"},
+  {decision:"Коротко назовите действие, дату и известный документ. Не указывайте сведения о месте службы или третьих лицах."},
+  {decision:"Чтобы применить порядок обращений и ст. 21 Закона № 76-ФЗ, нужно определить конкретный предмет запроса."}
+ ),
+ "challenge-decision":plan(
+  ["role","regime","decision","receipt"],
+  {regime:"Как вы проходите или проходили службу?",decision:"Какое конкретное решение хотите оспорить?",receipt:"Когда вы узнали об этом решении?"},
+  {decision:"Укажите вид решения и его дату/номер, если известны. Опишите, какое ваше право затронуто.",
+   receipt:"Укажите дату ознакомления или получения копии. Если документа нет, так и напишите."},
+  {decision:"Статья 21 Закона № 76-ФЗ и ст. 218 КАС РФ требуют определить оспариваемый акт и затронутое право.",
+   receipt:"Дата осведомлённости важна для проверки срока обращения по ст. 219 КАС РФ; срок не определяется автоматически."}
+ ),
+ "inaction":plan(
+  ["role","regime","decision","receipt"],
+  {regime:"Как вы проходите или проходили службу?",decision:"На какое ваше обращение не поступил ответ?",receipt:"Когда и каким способом вы направили обращение?"},
+  {decision:"Укажите, что именно просили и какой орган должен был ответить.",
+   receipt:"Дата отправки или регистрации, номер обращения (если есть), способ передачи. Это позволит проверить истечение применимого срока."},
+  {decision:"Чтобы оценить бездействие по ст. 21 Закона № 76-ФЗ и ст. 218 КАС РФ, нужно знать обязанность ответить.",
+   receipt:"Доказательство направления и момент регистрации необходимы для проверки срока, а не предположения о нарушении."}
+ ),
+ "draft-notice":plan(
+  ["role","regime","summons"],
+  {regime:"О каком призыве идёт речь?",summons:"Какой документ вы получили и когда?"},
+  {regime:"Обычный призыв на срочную службу и мобилизация регулируются разными нормами.",
+   summons:"Укажите вид повестки или решения и дату получения, если известна. Не переписывайте персональные данные."},
+  {summons:"Содержание и момент уведомления позволяют установить применимую процедуру по Закону № 53-ФЗ или правилам мобилизации."}
+ ),
+ "deferment":plan(
+  ["role","regime","deferment"],
+  {regime:"От какого призыва нужна отсрочка?",deferment:"Какое обстоятельство даёт основание просить отсрочку?"},
+  {regime:"Выберите обычный призыв или мобилизацию. Для них действуют разные основания отсрочки.",
+   deferment:"Например: обучение, состояние здоровья, семейный уход, бронь. Напишите, какой документ это подтверждает. Не указывайте диагноз."},
+  {deferment:"Для обычного призыва основания проверяются по ст. 24 Закона № 53-ФЗ, для мобилизации — в том числе по ст. 18 Закона № 31-ФЗ."}
+ ),
+ "challenge-draft":plan(
+  ["role","regime","summons","receipt"],
+  {regime:"Какой вид призыва касается решения?",summons:"Какое решение о призыве вы оспариваете?",receipt:"Когда и как вы узнали об этом решении?"},
+  {summons:"Укажите орган, вид решения и известную дату. Если копии нет, напишите «копию не выдавали».",
+   receipt:"Дата получения выписки, объявления решения или иного уведомления; не указывайте персональные данные."},
+  {summons:"Для обычного призыва право и порядок жалобы зависят от решения по ст. 28 и 35.1–35.3 Закона № 53-ФЗ; для мобилизации порядок проверяется отдельно.",
+   receipt:"Дата уведомления важна для выбора способа и проверки срока обжалования; автоматически приостановить решение нельзя."}
+ )
 };
 
 export function getMilitaryIntakePlan(scenarioKey:string):IntakePlan{
- const plan=MILITARY_INTAKE_PLANS[scenarioKey];
- if(!plan)throw new Error("Missing targeted military intake: "+scenarioKey);
- return plan;
+ const config=MILITARY_INTAKE_PLANS[scenarioKey];
+ if(!config)throw new Error("Missing legally grounded military intake: "+scenarioKey);
+ return config;
 }
-
-/** Do not overwrite user-provided values: contradictory facts still trigger safety checks. */
-export function resolveMilitaryIntakeAnswers(
- scenarioKey:string,
- answers:Readonly<Record<string,string|undefined>>
-):Record<string,string|undefined>{
+/** A default records only the selected context; it never establishes eligibility. */
+export function resolveMilitaryIntakeAnswers(scenarioKey:string,answers:Readonly<Record<string,string|undefined>>)
+ :Record<string,string|undefined>{
  const defaults=MILITARY_INTAKE_PLANS[scenarioKey]?.defaults??{};
  return {...defaults,...answers};
 }
-
 export function militaryIntakeQuestionLabel(scenarioKey:string,field:{key:string;label:string}):string{
  return MILITARY_INTAKE_PLANS[scenarioKey]?.labels[field.key]??field.label;
+}
+export function militaryIntakeHint(scenarioKey:string,key:string):string|undefined{
+ return MILITARY_INTAKE_PLANS[scenarioKey]?.hints[key];
+}
+export function militaryIntakeLegalReason(scenarioKey:string,key:string):string|undefined{
+ return MILITARY_INTAKE_PLANS[scenarioKey]?.reasons[key];
 }
