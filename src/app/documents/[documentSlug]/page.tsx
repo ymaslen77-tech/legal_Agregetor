@@ -44,6 +44,8 @@ import { getNavigatorDocument, navigatorDocuments } from "@/data/documents";
 import { getLaborDocumentScenario } from "@/data/labor-documents";
 import { getFamilyLaborDocumentMatch } from "@/data/family-labor-implemented-routes";
 import { FamilyLaborDocumentPage } from "@/components/documents/FamilyLaborRoutePages";
+import {getMilitaryFirstDocumentMatch} from "@/data/military-first-document-pages";
+import {MilitaryOfficialDocumentPage} from "@/components/documents/MilitaryOfficialDocumentPage";
 import { getFamilyAdditiveScenarioByDocumentSlug } from "@/data/family-additive-routes";
 import { buildDocumentQuestionContext, PROBLEM_QNA_CONTEXTS } from "@/data/related-questions-context";
 import {
@@ -167,6 +169,27 @@ export default async function DocumentPage({ params, searchParams }: PageProps) 
     </DocumentQna>
   );
 
+  const militaryDocument=getMilitaryFirstDocumentMatch(document.slug);
+  if(militaryDocument){
+   const item=militaryDocument.document;
+   const route="/voennoe-pravo/";
+   return <article className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+    <Link href={route} className="text-sm font-semibold text-trust underline">Военное право</Link>
+    <h1 className="mt-5 text-3xl font-semibold text-ink">{item.title}</h1>
+    <p className="mt-3 text-zinc-700">{item.heroDescription}</p>
+    <section className="mt-6 grid gap-4 md:grid-cols-2">
+     <div><h2 className="font-semibold">Когда использовать</h2><p className="mt-2 text-sm">{item.whenToUse.join(" ")}</p></div>
+     <div><h2 className="font-semibold">Что подготовить</h2><p className="mt-2 text-sm">{item.whatToPrepare.join("; ")}</p></div>
+     <div><h2 className="font-semibold">Куда направить</h2><p className="mt-2 text-sm">{item.whereToFile}</p></div>
+     <div><h2 className="font-semibold">После составления</h2><p className="mt-2 text-sm">{item.afterFiling.join("; ")}</p></div>
+    </section>
+    <MilitaryOfficialDocumentPage documentKey={militaryDocument.key}/>
+    <section className="mt-8 border-t border-line pt-6"><h2 className="text-xl font-semibold">Правовые основания и проверка</h2>
+     <ul className="mt-3 list-disc space-y-2 pl-5 text-sm">{item.legalBasis.map(source=><li key={source}>{source}</li>)}</ul>
+     <p className="mt-3 text-sm text-zinc-600">{item.disclaimer}</p>
+    </section>
+   </article>;
+  }
   const familyLaborMatch=getFamilyLaborDocumentMatch(document.slug);
   if(familyLaborMatch){
     return <FamilyLaborDocumentPage plan={familyLaborMatch.plan} scenarioKey={familyLaborMatch.scenarioKey}/>;
