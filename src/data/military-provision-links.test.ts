@@ -11,8 +11,10 @@ for(const id of ids){
  assert.ok(refs.length>0,"Every scenario must expose a specific source: "+id);
  for(const ref of refs){
   assert.equal(ref.checked,true,"Never expose unverified deep links");
-  assert.ok(ref.url.startsWith("https://www.consultant.ru/document/cons_doc_LAW_"));
-  assert.ok(/cons_doc_LAW_\d+\/[a-f0-9]{40}\/$/.test(ref.url)||Boolean(ref.textFragment&&/cons_doc_LAW_\d+\/$/.test(ref.url)),"Checked link must target a specific article or a text-fragment-qualified act");
+  const officialPlenum=ref.url==="https://vsrf.ru/documents/own/8382/" && ref.id.startsWith("plenum8-");
+  assert.ok(officialPlenum||ref.url.startsWith("https://www.consultant.ru/document/cons_doc_LAW_"));
+  assert.ok(officialPlenum||/cons_doc_LAW_\d+\/[a-f0-9]{40}\/$/.test(ref.url)||
+   Boolean(ref.textFragment&&/cons_doc_LAW_\d+\/$/.test(ref.url)),"Reference must target verified article or official Plenum decision");
  }
 }
 assert.equal(getMilitaryPinpointLinks("military-discharge","discharge-basis").some(x=>x.id==="53-51"),true);
