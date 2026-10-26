@@ -12,7 +12,7 @@ export type MilitaryProvisionId =
   | "76-12"|"76-16"|"76-21"|"76-23"|"76-24"
   | "1237-15"|"1237-34"|"306-2"|"306-3"|"565-8"|"574-reg"
   | "kas-218"|"kas-219"|"kas-220"|"31-18"
-  | "647-2"|"647-4"|"647-5"|"647-9"|"plenum8-jurisdiction"|"plenum8-discharge"|"plenum8-pay";
+  | "647-2"|"647-4"|"647-5"|"647-9"|"plenum8-jurisdiction"|"plenum8-discharge"|"plenum8-pay"|"plenum8-contract"|"plenum8-transfer";
 
 export type MilitaryProvision = {
   id: MilitaryProvisionId;
@@ -57,17 +57,19 @@ const registry: Record<MilitaryProvisionId, Entry> = {
  "647-4": {citation:"Указ Президента № 647, п. 4 — действие контрактов в период мобилизации",pinpoint:"пункт 4",url:cp+"cons_doc_LAW_426999/",textFragment:"4. Контракты о прохождении военной службы",checked:true},
  "647-5": {citation:"Указ Президента № 647, п. 5 — специальные основания увольнения",pinpoint:"пункт 5, подпункт определяется по делу",url:cp+"cons_doc_LAW_426999/",textFragment:"5. Установить в период частичной мобилизации",checked:true},
  "647-9": {citation:"Указ Президента № 647, п. 9 — отсрочка для ОПК",pinpoint:"пункт 9",url:cp+"cons_doc_LAW_426999/",textFragment:"9. Предоставить гражданам Российской Федерации",checked:true},
+ "plenum8-contract": {citation:"Постановление Пленума ВС РФ от 29.05.2014 № 8 (ред. от 28.10.2025), пп. 8–11 — контракт и военная служба",pinpoint:"пункты 8–11: статус и особенности прохождения службы",url:"https://vsrf.ru/documents/own/8382/",checked:true},
+ "plenum8-transfer": {citation:"Постановление Пленума ВС РФ от 29.05.2014 № 8 (ред. от 28.10.2025), п. 13 — перевод на воинские должности",pinpoint:"пункт 13: перевод и служебная необходимость",url:"https://vsrf.ru/documents/own/8382/",checked:true},
  "plenum8-jurisdiction": {citation:"Пленум ВС № 8 (ред. 28.10.2025) — раздел о подсудности военным судам",pinpoint:"раздел о подсудности",url:cp+"cons_doc_LAW_163741/e1abfd37123567ed0041e3b2fafc0d74b62c5cef/",checked:true},
  "plenum8-discharge": {citation:"Пленум ВС № 8 (ред. 28.10.2025) — раздел «Увольнение с военной службы»",pinpoint:"раздел об увольнении",url:cp+"cons_doc_LAW_163741/73bfc54ea01b3401df02ff65b273179bf0ba5e14/",checked:true},
  "plenum8-pay": {citation:"Пленум ВС № 8 (ред. 28.10.2025), п. 17 — денежное довольствие",pinpoint:"пункт 17",url:cp+"cons_doc_LAW_163741/56e49299dd50770bff421e4049e824a54c2d6200/",textFragment:"17. В соответствии",checked:true}
 };
 
 const scenarioReferences: Record<string, readonly MilitaryProvisionId[]> = {
- "service-contract/contract-check":["53-32","53-34","647-4"],
+ "service-contract/contract-check":["53-32","53-34","647-4","plenum8-contract"],
  "service-contract/service-order-copy":["53-32","76-21"],
- "service-contract/transfer":["53-44","1237-15"],
+ "service-contract/transfer":["53-44","1237-15","plenum8-transfer"],
  "military-discharge/discharge-basis":["53-51","1237-34","647-5","plenum8-discharge"],
- "military-discharge/medical-discharge":["53-51","76-16","565-8","647-5"],
+ "military-discharge/medical-discharge":["53-51","76-16","565-8","647-5","plenum8-discharge"],
  "military-discharge/discharge-order":["76-23","1237-34","306-3"],
  "military-pay/pay-breakdown":["76-12","306-2","plenum8-pay"],
  "military-pay/benefits":["306-3","76-12"],
