@@ -3,6 +3,7 @@ import {MILITARY_ROUTES} from "@/data/military-route-plans";
 import {MILITARY_LEGAL_DOCUMENTS,MILITARY_NAVIGATOR_DOCUMENTS,MILITARY_LEGAL_FIELDS,getMilitaryDocumentsForScenario} from "@/data/military-legal-documents";
 import {createMilitaryLegalDocumentResult,validateMilitaryLegalDocument} from "@/lib/military-legal-document-generator";
 import {documentResultSchema} from "@/lib/document-result-contract";
+import {validateSavedDocument} from "@/lib/saved-document-validation";
 import {getNavigatorDocument} from "@/data/documents";
 
 const id="11111111-1111-4111-8111-111111111111";
@@ -37,6 +38,9 @@ for(const doc of MILITARY_LEGAL_DOCUMENTS){
  assert.equal(result.documentTitle,doc.title);
  assert.equal(result.filingReady,false);
  assert.equal(result.requiresLegalReview,true);
+ assert.ok(validateSavedDocument(result),"Registered military legal document should support personal encrypted archive: "+doc.slug);
+ assert.equal(validateSavedDocument({...result,documentSlug:"military-unreviewed-fake"}),null);
+ assert.equal(validateSavedDocument({...result,filingReady:true}),null);
  assert.ok(result.documentText.includes("ПРОШУ"),doc.slug);
  assert.ok(result.documentText.includes("Приложения"),doc.slug);
  assert.ok(result.documentText.includes("Подпись"),doc.slug);
