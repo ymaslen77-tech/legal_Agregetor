@@ -90,8 +90,10 @@ for(const route of MILITARY_ROUTES){
   const unknown={...answers,role:"не знаю"};
   assert.equal(validateMilitaryIntake(route,scenario,unknown).complete,false);
   assert.throws(()=>createMilitaryDocumentResult(route,scenario,unknown,{versionId:id,createdAt:stamp}));
-  const oversized={...answers,event:"X".repeat(2001)};
-  assert.ok(validateMilitaryIntake(route,scenario,oversized).invalid.includes("event"));
+  const textKey=scenario.required.find(key=>!route.fields.find(field=>field.key===key)?.values);
+  assert.ok(textKey,"Every document needs a specific factual question");
+  const oversized={...answers,[textKey!]:"X".repeat(2001)};
+  assert.ok(validateMilitaryIntake(route,scenario,oversized).invalid.includes(textKey!));
  }
 }
 const draftRoute=getMilitaryRoute("mobilization-draft")!;
