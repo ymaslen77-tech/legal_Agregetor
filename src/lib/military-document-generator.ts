@@ -30,23 +30,25 @@ export function validateMilitaryIntake(route:MilitaryRoute,scenario:MilitaryScen
     (f.values&&!f.values.includes(value))||(!f.values&&value.length<MIN_TEXT))invalid.push(key);
  }
  const warnings:string[]=[];
+ let blocked=false;
+ const needsClarification=(message:string)=>{blocked=true;warnings.push(message);};
  if(isUncertain(answers.role?.trim()??"")||isUncertain(answers.regime?.trim()??""))
-  warnings.push("Не установлен статус заявителя и/или режим службы; до уточнения генерация заблокирована.");
+  needsClarification("Уточните, кто обращается и какой вид службы указан в документах.");
  if(UNSUPPORTED_MILITARY_REGIMES.has(answers.regime??""))
-  warnings.push("Для добровольческих формирований, военных сборов и мобилизационного резерва требуется отдельная юридическая процедура; генерация заблокирована.");
+  needsClarification("Для этого вида службы нужен другой порядок обращения. Обратитесь к юристу.");
  if(route.id==="military-medical"&&answers.urgency!=="нет")
-  warnings.push("При угрозе здоровью или неясной срочности сначала медицинская помощь; генерация заблокирована.");
+  needsClarification("Если медицинская помощь нужна сейчас, сначала обратитесь к врачу.");
  if(statusConflict(answers.role,answers.regime))
-  warnings.push("Указанные статусы заявителя и службы противоречат друг другу; генерация заблокирована.");
+  needsClarification("Проверьте статус заявителя и вид службы: ответы не совпадают.");
  if(scenario.kind==="DRAFT"&&answers.role!=="военнослужащий")
-  warnings.push("Проект запроса сведений доступен только самому военнослужащему; полномочия иных заявителей подлежат проверке.");
+  warnings.push("Для получения личных документов необходимо подтвердить право на их запрос.");
  if(route.id==="mobilization-draft" &&
   !((answers.role==="призывник" && ["доподготовка к призыву","призыв"].includes(answers.regime??"")) ||
     (answers.role==="военнослужащий" && answers.regime==="мобилизация")))
-  warnings.push("Статус заявителя не соответствует выбранной ситуации призыва или мобилизации; генерация заблокирована.");
+  needsClarification("Выбранная ситуация не соответствует указанному виду службы.");
  if(["mobilization-draft","military-discharge","military-medical"].includes(route.id))
-  warnings.push("Обязательна индивидуальная оценка специальных правовых режимов и применимой редакции норм.");
- return {missing,invalid,warnings,complete:!missing.length&&!invalid.length&&!warnings.some(s=>s.includes("генерация заблокирована"))};
+  warnings.push("Проверьте, какие правила действовали на дату события.");
+ return {missing,invalid,warnings,complete:!missing.length&&!invalid.length&&!blocked};
 }
 /**
  * Preliminary, non-filing information requests. No assumed entitlement,
@@ -88,7 +90,7 @@ export function createMilitaryDocumentResult(
  if(!route.scenarios.includes(scenario))throw new Error("Scenario does not belong to selected military route");
  if(scenario.kind==="URGENT_INSTRUCTION")throw new Error("Urgent instruction must not generate or export a document");
  const check=validateMilitaryIntake(route,scenario,answers);
- if(check.missing.length||check.invalid.length||!check.complete)throw new Error("Заполните и подтвердите обязательные факты: "+[...check.missing,...check.invalid,...check.warnings].join("; "));
+ if(check.missing.length||check.invalid.length||!check.complete)throw new Error("Проверьте данные в анкете: "+[...check.missing,...check.invalid,...check.warnings].join("; "));
  const purpose=MILITARY_DRAFT_PURPOSES[route.id+"/"+scenario.key];
  if(!purpose)throw new Error("Scenario-specific draft definition missing: "+route.id+"/"+scenario.key);
  const hasRecipient=Boolean(answers.authority?.trim())&&!isUncertain((answers.authority??"").trim());
