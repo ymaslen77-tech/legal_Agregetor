@@ -97,7 +97,7 @@ export function composeMilitaryDocument(
  const blueprint=getMilitaryDocumentBlueprint(scenarioKey);
  if(!blueprint)return {missing:["Документ не зарегистрирован"],document:null};
  const fields=getMilitaryDocumentFields(scenarioKey);
- const missing=fields.filter(field=>field.required && normalize(answers[field.key]).length<2).map(field=>field.label);
+ const missing=fields.filter(field=>(field.required && normalize(answers[field.key]).length<2)||(field.options&&normalize(answers[field.key])&&!field.options.includes(normalize(answers[field.key])))).map(field=>field.label);
  if(missing.length)return {missing,document:null};
  if(MILITARY_READY_DRAFT_KEYS.includes(scenarioKey as MilitaryReadyDraftKey)){
   const response=prepareMilitaryOfficialDraft(scenarioKey as MilitaryReadyDraftKey,answers as MilitaryDocumentFacts);
