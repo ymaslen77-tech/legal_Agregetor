@@ -28,8 +28,8 @@ export function MilitaryOfficialDocumentPage({documentKey}:{documentKey:string})
  async function downloadPdf(){
   if(!generated||!version)return;
   try{
-   const {createFamilyLaborPdfBlob}=await import("@/lib/family-labor-pdf");
-   const blob=await createFamilyLaborPdfBlob(documentResultSchema.parse({
+   const {createMilitaryLegalDocumentPdfBlob}=await import("@/lib/military-legal-document-pdf");
+   const blob=await createMilitaryLegalDocumentPdfBlob(documentResultSchema.parse({
     contractVersion:"DOCUMENT_RESULT_V1",
     versionId:version,createdAt:new Date().toISOString(),
     categorySlug:"voennoe-pravo",routeSlug:"military-documents",scenarioKey:documentKey,
