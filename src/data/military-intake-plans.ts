@@ -158,7 +158,7 @@ export function militaryIntakeQuestionLabel(scenarioKey:string,field:{key:string
  return MILITARY_INTAKE_PLANS[scenarioKey]?.labels[field.key]??field.label;
 }
 export function militaryIntakeHint(scenarioKey:string,key:string):string|undefined{
- return MILITARY_INTAKE_PLANS[scenarioKey]?.hints[key];
+ return MILITARY_INTAKE_PLANS[scenarioKey]?.hints[key]??(key==="regime"?"Выберите фактический вид службы: от него зависят применимые нормы и порядок обращения.":key==="role"?"Укажите, обращаетесь ли вы за себя или в интересах другого человека.":"");
 }
 export function militaryIntakeLegalReason(scenarioKey:string,key:string):string|undefined{
  return MILITARY_INTAKE_PLANS[scenarioKey]?.reasons[key];
