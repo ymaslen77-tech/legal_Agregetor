@@ -43,7 +43,6 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
  const validation=validateMilitaryIntake(route,scenario,answers);
  const active=versions.find(v=>v.documentResult.versionId===selectedVersion);
  const emergency=scenario.kind==="URGENT_INSTRUCTION";
- const completeCount=required.filter(f=>!validation.missing.includes(f.key)&&!validation.invalid.includes(f.key)).length;
 
  function resetFor(routeNext:MilitaryRoute,scenarioNext:MilitaryScenario){
   setRouteId(routeNext.id);setScenarioKey(scenarioNext.key);
@@ -112,8 +111,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
   <section className="mx-auto max-w-5xl min-w-0 px-4 py-5 sm:px-6 lg:px-8">
    {!compactFlow?<h1 className="text-2xl font-semibold text-ink sm:text-3xl">Военное право — юридические маршруты</h1>:null}
    <p className="mt-2 text-sm leading-6 text-zinc-700">
-    Указывайте только необходимые сведения. Не вводите персональные данные третьих лиц, диагнозы, номера частей и сведения о местоположении подразделений.
-    Перед использованием документа необходима юридическая проверка.
+    Указывайте только необходимые сведения. Не вводите данные третьих лиц, диагнозы, номера частей и сведения о местоположении подразделений.
    </p>
    {invalidSelection?<p role="alert" className="mt-4 rounded-lg border border-amber-400 bg-amber-50 p-3">
     Неизвестный адрес сценария. Показан первый доступный вариант; выберите нужный маршрут.</p>:null}
