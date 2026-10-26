@@ -1,3 +1,4 @@
+import {getMilitaryIntakePlan} from "@/data/military-intake-plans";
 /**
  * Military law first batch. Internal stage only: DO NOT register as published
  * legalProblems, documents or indexable routes before the legal acceptance gates.
@@ -55,9 +56,15 @@ const extra:Record<string,MilitaryField>={
  deferment:field("deferment","Чем подтверждается возможное право на отсрочку?"),
  family:field("family","Какие семейные обстоятельства подтверждены?")
 };
-const sc=(key:string,title:string,kind:MilitaryScenario["kind"],extras:readonly string[],sources:readonly MilitarySourceId[],safetyNotes:readonly string[],evidence:readonly string[]):MilitaryScenario=>({
- key,title,kind,required:kind==="URGENT_INSTRUCTION"?[]:[...common.map(f=>f.key),...extras],sources,safetyNotes,evidence
-});
+const sc=(key:string,title:string,kind:MilitaryScenario["kind"],extras:readonly string[],sources:readonly MilitarySourceId[],safetyNotes:readonly string[],evidence:readonly string[]):MilitaryScenario=>{
+ const required=kind==="URGENT_INSTRUCTION"?[]:getMilitaryIntakePlan(key).fields;
+ // Every scenario must ask its own document-specific details, but no redundant common questions.
+ for(const key of required){
+  if(!common.some(field=>field.key===key)&&!extras.includes(key))
+   throw new Error("Military intake field not registered for scenario: "+title+"/"+key);
+ }
+ return {key,title,kind,required,sources,safetyNotes,evidence};
+};
 const baseNotes=[
  "Установите фактический статус и применимое регулирование на дату события.",
  "Не назначайте адресата, срок обжалования, суд, госпошлину или основание увольнения без исследования документов.",

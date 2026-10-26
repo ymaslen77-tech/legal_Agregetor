@@ -3,6 +3,7 @@
 import Link from "next/link";
 import {useMemo,useState} from "react";
 import {MILITARY_ROUTES,type MilitaryRoute,type MilitaryScenario} from "@/data/military-route-plans";
+import {militaryIntakeQuestionLabel} from "@/data/military-intake-plans";
 import {getMilitaryPinpointLinks,militaryProvisionHref} from "@/data/military-provision-links";
 import {getMilitaryCaseReview} from "@/data/military-case-reviews";
 import {militaryPreviewHref,militaryPublicDraftHref,militaryCanonicalRouteHref} from "@/lib/military-preview-navigation";
@@ -158,11 +159,11 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
    </section>:null}
    {(step==="facts"||compactFlow)&&!emergency?<section className="mt-6 min-w-0 max-w-full rounded-lg border border-line bg-white p-4 sm:p-5" aria-label="Пошаговая анкета">
     <h2 className="text-xl font-semibold">Шаг 1. Обстоятельства и документы</h2>
-    <p className="mt-2 text-sm leading-6 text-zinc-700">Проверьте даты и правовой статус по документам.</p>
+    <p className="mt-2 text-sm leading-6 text-zinc-700">Ответьте только на вопросы по выбранной ситуации.</p>
 
     <div className="mt-5 grid min-w-0 gap-4">
      {required.map(field=><LegalFormField key={field.key} id={"military-"+field.key}
-      label={field.label} value={answers[field.key]??""} required
+      label={militaryIntakeQuestionLabel(scenario.key,field)} value={answers[field.key]??""} required
       kind={field.values?"select":"textarea"} rows={2}
       options={field.values?.map(v=>({value:v,label:v}))}
       hint={field.key==="urgency"?"Если требуется срочная помощь, сначала обратитесь к врачу.":
@@ -182,9 +183,9 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
     <h2 className="text-xl font-semibold">Шаг 2. Проверка ограничений</h2>
     <p className="mt-2 text-sm text-zinc-700">Проверьте сведения по документам.</p>
     {validation.missing.length?<p role="alert" className="mt-4 rounded-md bg-amber-50 p-3 text-sm">
-      Не заполнено: {validation.missing.map(k=>route.fields.find(f=>f.key===k)?.label??k).join("; ")}</p>:null}
+      Не заполнено: {validation.missing.map(k=>{const field=route.fields.find(f=>f.key===k);return field?militaryIntakeQuestionLabel(scenario.key,field):k;}).join("; ")}</p>:null}
     {validation.invalid.length?<p role="alert" className="mt-3 rounded-md bg-red-50 p-3 text-sm text-red-950">
-      Неверно заполнены поля: {validation.invalid.join("; ")}</p>:null}
+      Проверьте ответы: {validation.invalid.map(k=>{const field=route.fields.find(f=>f.key===k);return field?militaryIntakeQuestionLabel(scenario.key,field):k;}).join("; ")}</p>:null}
     {validation.warnings.map(w=><p role="alert" key={w} className="mt-3 rounded-md bg-amber-50 p-3 text-sm text-amber-950">{w}</p>)}
     <details className="mt-4 rounded-lg border border-line bg-white px-4 py-3 text-sm">
      <summary className="cursor-pointer font-semibold">Правовые основания и документы для проверки</summary>
