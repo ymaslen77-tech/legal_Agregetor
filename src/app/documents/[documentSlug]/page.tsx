@@ -44,7 +44,7 @@ import { getNavigatorDocument, navigatorDocuments } from "@/data/documents";
 import { getLaborDocumentScenario } from "@/data/labor-documents";
 import { getFamilyLaborDocumentMatch } from "@/data/family-labor-implemented-routes";
 import { FamilyLaborDocumentPage } from "@/components/documents/FamilyLaborRoutePages";
-import {getMilitaryFirstDocumentMatch} from "@/data/military-first-document-pages";
+import {getMilitaryFirstDocumentMatch,MILITARY_FIRST_DOCUMENT_PAGES} from "@/data/military-first-document-pages";
 import {getMilitaryDocumentBlueprint} from "@/data/military-document-blueprints";
 import {MilitaryOfficialDocumentPage} from "@/components/documents/MilitaryOfficialDocumentPage";
 import { getFamilyAdditiveScenarioByDocumentSlug } from "@/data/family-additive-routes";
@@ -136,11 +136,11 @@ export const dynamicParams = false;
 export const revalidate = 3600;
 
 export function generateStaticParams() {
-  return navigatorDocuments.map((document) => ({ documentSlug: document.slug }));
+  return [...navigatorDocuments,...MILITARY_FIRST_DOCUMENT_PAGES].map((document) => ({ documentSlug: document.slug }));
 }
 export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
   const { documentSlug } = await params;
-  const document = getNavigatorDocument(documentSlug);
+  const document = getNavigatorDocument(documentSlug) ?? getMilitaryFirstDocumentMatch(documentSlug)?.document;
   if (!document) notFound();
   const isZagsReference = document.slug === ZAGS_PROBLEM_ROUTE.documentSlug;
   const resolvedSearchParams = searchParams ? await searchParams : {};
@@ -161,7 +161,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
 
 export default async function DocumentPage({ params, searchParams }: PageProps) {
   const { documentSlug } = await params;
-  const document = getNavigatorDocument(documentSlug);
+  const document = getNavigatorDocument(documentSlug) ?? getMilitaryFirstDocumentMatch(documentSlug)?.document;
   if (!document) notFound();
 
   const withAfterDownload = (content: ReactNode) => (
