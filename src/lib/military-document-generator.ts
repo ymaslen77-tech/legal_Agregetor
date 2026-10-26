@@ -30,7 +30,7 @@ export function validateMilitaryIntake(route:MilitaryRoute,scenario:MilitaryScen
   const value=(data[key]??"").trim();
   if(!value){missing.push(key);continue;}
   if(value.length>2000||/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/.test(value)||
-    (f.values&&!f.values.includes(value))||(!f.values&&value.length<MIN_TEXT))invalid.push(key);
+    (f.values&&!f.values.includes(value))||(!f.values&&value.length<MIN_TEXT&&!(key==="medical"&&/^[АБВГД]$/u.test(value))))invalid.push(key);
  }
  const warnings:string[]=[];
  let blocked=false;
@@ -39,7 +39,7 @@ export function validateMilitaryIntake(route:MilitaryRoute,scenario:MilitaryScen
   needsClarification("Уточните, кто обращается и какой вид службы указан в документах.");
  if(UNSUPPORTED_MILITARY_REGIMES.has(data.regime??""))
   needsClarification("Для этого вида службы нужен другой порядок обращения. Обратитесь к юристу.");
- if(route.id==="military-medical"&&data.urgency!=="нет")
+ if(route.id==="military-medical"&&data.urgency && data.urgency!=="нет")
   needsClarification("Если медицинская помощь нужна сейчас, сначала обратитесь к врачу.");
  if(statusConflict(data.role,data.regime))
   needsClarification("Проверьте статус заявителя и вид службы: ответы не совпадают.");
