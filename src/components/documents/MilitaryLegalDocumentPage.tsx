@@ -4,7 +4,8 @@ import {MILITARY_LEGAL_SOURCES,getMilitaryDocumentsForScenario,getMilitaryRouteF
 import {MilitaryLegalDocumentEditor} from "@/components/documents/MilitaryLegalDocumentEditor";
 import {Breadcrumbs} from "@/components/Breadcrumbs";
 import {JsonLd} from "@/components/JsonLd";
-import {breadcrumbJsonLd,documentWebPageJsonLd} from "@/lib/jsonld";
+import {breadcrumbJsonLd} from "@/lib/jsonld";
+import {absoluteUrl} from "@/lib/seo";
 
 export function MilitaryLegalDocumentPage({document,seoDocument}:{document:MilitaryLegalDocument;seoDocument:NavigatorDocument}){
  const route=getMilitaryRouteForDocument(document);
