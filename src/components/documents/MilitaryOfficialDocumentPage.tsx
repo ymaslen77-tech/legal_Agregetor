@@ -60,7 +60,12 @@ export function MilitaryOfficialDocumentPage({documentKey}:{documentKey:string})
   <div className="mt-5 grid gap-4">
    {fields.map(field=><div key={field.key}>
     <label htmlFor={"military-doc-"+field.key} className="block text-sm font-semibold">{field.label}{field.required?" *":""}</label>
-    {field.multiline?<textarea id={"military-doc-"+field.key} value={values[field.key]??""}
+    {field.options?<select id={"military-doc-"+field.key} value={values[field.key]??""}
+     onChange={e=>change(field.key,e.target.value)}
+     className="mt-2 min-h-11 w-full rounded-md border border-line p-3 text-base">
+     <option value="">Выберите значение</option>
+     {field.options.map(option=><option value={option} key={option}>{option}</option>)}
+    </select>:field.multiline?<textarea id={"military-doc-"+field.key} value={values[field.key]??""}
       onChange={e=>change(field.key,e.target.value)} rows={3} maxLength={2000}
       className="mt-2 w-full rounded-md border border-line p-3 text-base"/>:
      <input id={"military-doc-"+field.key} value={values[field.key]??""}
