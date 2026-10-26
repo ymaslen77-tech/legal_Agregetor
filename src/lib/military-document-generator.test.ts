@@ -141,7 +141,9 @@ const draftFacts=Object.fromEntries(unknownAuthorityRoute.fields.map(f=>[f.key,f
 draftFacts.role="военнослужащий";
 draftFacts.regime="контракт";
 draftFacts.authority="не знаю";
-assert.equal(createMilitaryDocumentResult(unknownAuthorityRoute,unknownAuthorityScenario,draftFacts,{versionId:id,createdAt:stamp}).resultKind,"CHECKLIST");
+const missingAddressDraft=createMilitaryDocumentResult(unknownAuthorityRoute,unknownAuthorityScenario,draftFacts,{versionId:id,createdAt:stamp});
+assert.equal(missingAddressDraft.resultKind,"DRAFT","Unknown recipient is not a reason to collect unverified address information");
+assert.ok(missingAddressDraft.documentText.includes("[уполномоченный адресат устанавливается по документам]"));
 const requestRoute=MILITARY_ROUTES[0],requestScenario=requestRoute.scenarios[1];
 const memberAnswers=Object.fromEntries(requestRoute.fields.map(x=>[x.key,x.values?x.values[0]:"Документированное обращение"]));
 memberAnswers.role="член семьи";
