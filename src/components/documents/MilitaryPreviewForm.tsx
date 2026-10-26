@@ -26,7 +26,7 @@ type Snapshot={documentResult:DocumentResultV1;answers:Record<string,string>};
 type Props={initialRouteId:string;initialScenarioKey:string;invalidSelection?:boolean;publicDraft?:boolean;compactFlow?:boolean;reviewAvailable?:boolean};
 
 function safeLabel(kind:MilitaryScenario["kind"]):string {
- return kind==="URGENT_INSTRUCTION"?"Срочная инструкция":"Предварительный проект обращения или чек-лист";
+ return kind==="URGENT_INSTRUCTION"?"Срочная инструкция":"Предварительный проект юридического документа";
 }
 export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSelection=false,publicDraft=false,compactFlow=false,reviewAvailable=false}:Props){
  const routeHref=compactFlow?militaryCanonicalRouteHref:publicDraft?militaryPublicDraftHref:militaryPreviewHref;
@@ -149,7 +149,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
     {emergency?<div className="mt-5 rounded-lg border-l-4 border-red-700 bg-red-50 p-5" role="alert">
       <h3 className="font-semibold text-red-950">Сначала неотложная помощь</h3>
       {scenario.safetyNotes.map(t=><p key={t} className="mt-2 text-sm text-red-950">{t}</p>)}
-      <p className="mt-2 text-sm text-red-950">Заполнение анкеты и генерация файла не предусмотрены.</p>
+      <p className="mt-2 text-sm text-red-950">Подготовка юридического документа не предусмотрена при необходимости неотложной помощи.</p>
      </div>:<button type="button" onClick={()=>setStep("facts")}
      className="mt-6 min-h-11 rounded-md bg-trust px-6 py-3 text-sm font-semibold text-white">Перейти к подготовке документа</button>}
    </section>:null}
