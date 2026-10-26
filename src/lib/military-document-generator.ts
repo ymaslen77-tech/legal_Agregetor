@@ -1,6 +1,7 @@
 import {getMilitaryDocumentSlug,type MilitaryRoute,type MilitaryScenario} from "@/data/military-route-plans";
 import {documentResultSchema,DOCUMENT_RESULT_CONTRACT_VERSION,type DocumentResultV1} from "@/lib/document-result-contract";
 import {getMilitaryPinpointLinks,militaryProvisionHref} from "@/data/military-provision-links";
+import {resolveMilitaryIntakeAnswers,militaryIntakeQuestionLabel} from "@/data/military-intake-plans";
 
 type Answers=Record<string,string|undefined>;
 export type MilitaryValidation={missing:string[];invalid:string[];warnings:string[];complete:boolean};
@@ -18,13 +19,14 @@ function statusConflict(role:string|undefined,regime:string|undefined):boolean {
  return false;
 }
 export function validateMilitaryIntake(route:MilitaryRoute,scenario:MilitaryScenario,answers:Answers):MilitaryValidation {
+ const data=resolveMilitaryIntakeAnswers(scenario.key,answers);
  const missing:string[]=[],invalid:string[]=[];
  if(scenario.kind==="URGENT_INSTRUCTION")return {missing:[],invalid:[],warnings:[],complete:true};
  const fields=new Map(route.fields.map(f=>[f.key,f]));
  for(const key of scenario.required){
   const f=fields.get(key);
   if(!f)throw new Error("Missing intake field definition: "+route.id+"/"+scenario.key+"/"+key);
-  const value=(answers[key]??"").trim();
+  const value=(data[key]??"").trim();
   if(!value){missing.push(key);continue;}
   if(value.length>2000||/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/.test(value)||
     (f.values&&!f.values.includes(value))||(!f.values&&value.length<MIN_TEXT))invalid.push(key);
@@ -32,19 +34,19 @@ export function validateMilitaryIntake(route:MilitaryRoute,scenario:MilitaryScen
  const warnings:string[]=[];
  let blocked=false;
  const needsClarification=(message:string)=>{blocked=true;warnings.push(message);};
- if(isUncertain(answers.role?.trim()??"")||isUncertain(answers.regime?.trim()??""))
+ if(isUncertain(data.role?.trim()??"")||isUncertain(data.regime?.trim()??""))
   needsClarification("Уточните, кто обращается и какой вид службы указан в документах.");
- if(UNSUPPORTED_MILITARY_REGIMES.has(answers.regime??""))
+ if(UNSUPPORTED_MILITARY_REGIMES.has(data.regime??""))
   needsClarification("Для этого вида службы нужен другой порядок обращения. Обратитесь к юристу.");
- if(route.id==="military-medical"&&answers.urgency!=="нет")
+ if(route.id==="military-medical"&&data.urgency!=="нет")
   needsClarification("Если медицинская помощь нужна сейчас, сначала обратитесь к врачу.");
- if(statusConflict(answers.role,answers.regime))
+ if(statusConflict(data.role,data.regime))
   needsClarification("Проверьте статус заявителя и вид службы: ответы не совпадают.");
- if(scenario.kind==="DRAFT"&&answers.role!=="военнослужащий")
+ if(scenario.kind==="DRAFT"&&data.role!=="военнослужащий")
   warnings.push("Для получения личных документов необходимо подтвердить право на их запрос.");
  if(route.id==="mobilization-draft" &&
-  !((answers.role==="призывник" && ["доподготовка к призыву","призыв"].includes(answers.regime??"")) ||
-    (answers.role==="военнослужащий" && answers.regime==="мобилизация")))
+  !((data.role==="призывник" && ["доподготовка к призыву","призыв"].includes(data.regime??"")) ||
+    (data.role==="военнослужащий" && data.regime==="мобилизация")))
   needsClarification("Выбранная ситуация не соответствует указанному виду службы.");
  if(["mobilization-draft","military-discharge","military-medical"].includes(route.id))
   warnings.push("Проверьте, какие правила действовали на дату события.");
@@ -77,7 +79,7 @@ export const MILITARY_DRAFT_PURPOSES:Readonly<Record<string,{title:string;reques
 function factLines(route:MilitaryRoute,scenario:MilitaryScenario,answers:Answers):string[]{
  return scenario.required.map(key=>{
   const field=route.fields.find(f=>f.key===key)!;
-  return field.label+": "+(answers[key]??"").trim();
+  return militaryIntakeQuestionLabel(scenario.key,field)+": "+(answers[key]??"").trim();
  });
 }
 function heading(route:MilitaryRoute,scenario:MilitaryScenario):string{
@@ -89,42 +91,43 @@ export function createMilitaryDocumentResult(
 ):DocumentResultV1{
  if(!route.scenarios.includes(scenario))throw new Error("Scenario does not belong to selected military route");
  if(scenario.kind==="URGENT_INSTRUCTION")throw new Error("Urgent instruction must not generate or export a document");
+ const data=resolveMilitaryIntakeAnswers(scenario.key,answers);
  const check=validateMilitaryIntake(route,scenario,answers);
  if(check.missing.length||check.invalid.length||!check.complete)throw new Error("Проверьте данные в анкете: "+[...check.missing,...check.invalid,...check.warnings].join("; "));
  const purpose=MILITARY_DRAFT_PURPOSES[route.id+"/"+scenario.key];
  if(!purpose)throw new Error("Scenario-specific draft definition missing: "+route.id+"/"+scenario.key);
- const hasRecipient=Boolean(answers.authority?.trim())&&!isUncertain((answers.authority??"").trim());
+ const hasRecipient=Boolean(data.authority?.trim())&&!isUncertain((data.authority??"").trim());
  // Third-party standing is never assumed. A family member may request only
  // general procedural information about possible family benefits.
- const selfApplicant=["военнослужащий","призывник","уволенный военнослужащий"].includes(answers.role??"");
- const familyApplicant=answers.role==="член семьи"&&scenario.key==="family-benefits";
+ const selfApplicant=["военнослужащий","призывник","уволенный военнослужащий"].includes(data.role??"");
+ const familyApplicant=data.role==="член семьи"&&scenario.key==="family-benefits";
  const personalAccessRequest=["service-order-copy","pay-breakdown"].includes(scenario.key);
  const draftEligible=(selfApplicant||familyApplicant)&&
-   (!personalAccessRequest||answers.role==="военнослужащий")&&
+   (!personalAccessRequest||data.role==="военнослужащий")&&
    (!scenario.required.includes("authority")||hasRecipient);
- const sources=getMilitaryPinpointLinks(route.id,scenario.key,answers.regime)
+ const sources=getMilitaryPinpointLinks(route.id,scenario.key,data.regime)
    .map(ref=>ref.citation+" — "+ref.pinpoint+": "+militaryProvisionHref(ref));
- const namedRecipient=hasRecipient?answers.authority!.trim():"[уполномоченный адресат устанавливается по документам]";
+ const namedRecipient=hasRecipient?data.authority!.trim():"[уполномоченный адресат устанавливается по документам]";
  const reportedFacts=[
-  (answers.event??"").trim(),
-  "По представленным сведениям статус заявителя: "+answers.role+
-   "; вид службы/режим: "+answers.regime+".",
-  "Указанные заявителем даты и сведения о получении документов: "+(answers.dates??"").trim()+".",
-  ...(scenario.required.filter(key=>!["role","regime","event","dates","evidence","goal","authority"].includes(key))
-    .map(key=>{const label=route.fields.find(field=>field.key===key)?.label??key;
-      return label+": "+(answers[key]??"").trim()+"."; }))
+  "Вопрос: "+scenario.title+".",
+  "Статус заявителя: "+data.role+"; вид службы: "+data.regime+".",
+  ...scenario.required.filter(key=>!["role","regime","authority"].includes(key))
+    .map(key=>{
+      const field=route.fields.find(item=>item.key===key)!;
+      return militaryIntakeQuestionLabel(scenario.key,field)+": "+(data[key]??"").trim()+".";
+    })
  ];
  const draftText=draftEligible?[
   "ПРОЕКТ ДОКУМЕНТА — НЕ ГОТОВ К ПОДАЧЕ",
   "Кому: "+namedRecipient,
   "От: [ФИО и контактные данные заявитель вносит самостоятельно перед проверкой]",
-  "Статус заявителя: "+answers.role,
+  "Статус заявителя: "+data.role,
   "",
   purpose.title.toUpperCase(),
   "",
   "Обстоятельства",
   ...reportedFacts,
-  "Цель обращения: "+(answers.goal??"").trim()+".",
+  "Цель обращения: "+purpose.title+".",
   "",
   "Правовые основания",
   "Ситуация связана со следующими нормами и разъяснениями. Проверьте редакцию на дату события и применимость:",
@@ -136,7 +139,7 @@ export function createMilitaryDocumentResult(
   "",
   "Приложения (при наличии)",
   ...scenario.evidence.map(item=>"- "+item),
-  "- Другие подтверждающие документы: "+(answers.evidence??"").trim()+".",
+  ...(data.evidence?.trim()?["- Другие подтверждающие документы: "+data.evidence.trim()+"."]:[]),
   "",
   "Дата: [указать]     Подпись: [поставить перед отправкой]",
   "",
@@ -145,7 +148,7 @@ export function createMilitaryDocumentResult(
  ].join("\n"):[
   "ПРЕДВАРИТЕЛЬНЫЙ ЧЕК-ЛИСТ — НЕ ГОТОВ К ПОДАЧЕ",
   heading(route,scenario),"",
-  "Проверенные пользователем сведения:",...factLines(route,scenario,answers),"",
+  "Сведения по выбранной ситуации:",...factLines(route,scenario,data),"",
   "Прежде чем готовить обращение, необходимо проверить:",
   ...scenario.safetyNotes.map((note,index)=>(index+1)+". "+note),
   ...(personalAccessRequest&&!selfApplicant?["Не подтверждено право запрашивать сведения о третьем лице."]:[]),
@@ -164,7 +167,7 @@ export function createMilitaryDocumentResult(
    documentSlug:slug,resultKind:draftEligible?"DRAFT":"CHECKLIST",source:"DETERMINISTIC",
    documentTitle:(draftEligible?"Предварительный проект обращения: ":"Чек-лист: ")+scenario.title,
    documentText:draftText,usedRuleIds:[],placeholders:[],
-   legalRegistryReviewedAt:null,generatorVersion:"military-draft-3",
+   legalRegistryReviewedAt:null,generatorVersion:"military-draft-4",
    filingReady:false,requiresLegalReview:true
  });
 }
