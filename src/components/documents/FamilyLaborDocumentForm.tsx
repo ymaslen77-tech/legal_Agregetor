@@ -75,7 +75,7 @@ export function FamilyLaborDocumentForm({plan,scenarioKey}:{plan:FamilyLaborPlan
   }
   const result= getFamilyLaborGuidance(plan,scenarioKey,values);
   const supportsDraft=SUPPORTED_PROVISIONAL_DRAFTS.some(id=>id===plan.id+"/"+scenarioKey);
-  return <section id="fill-online" className="mt-6 min-w-0 max-w-full scroll-mt-24 rounded-lg border border-line bg-white p-4 sm:p-5" aria-label="Пошаговая анкета">
+  return <section id="fill-online" className="mt-6 min-w-0 max-w-full scroll-mt-24 rounded-lg border border-line bg-white p-4 sm:p-5" aria-label="Подготовка документа">
     <h2 className="text-xl font-semibold text-ink">Шаг 1. Обстоятельства и документы</h2>
     <p className="mt-2 text-sm leading-6 text-zinc-700">Вводите только необходимые данные. Они не отправляются на сервер при заполнении. Проверяйте даты и правовой статус по оригиналам документов.</p>
     <div className="mt-5 grid min-w-0 gap-4">
