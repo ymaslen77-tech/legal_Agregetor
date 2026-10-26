@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import {MILITARY_ROUTES,MILITARY_SOURCES,getMilitaryDocumentSlug,getMilitaryRoute} from "@/data/military-route-plans";
 import {validateMilitaryIntake,createMilitaryDocumentResult,MILITARY_DRAFT_PURPOSES} from "@/lib/military-document-generator";
 import {documentResultSchema} from "@/lib/document-result-contract";
+import {MILITARY_INTAKE_PLANS,militaryIntakeQuestionLabel,resolveMilitaryIntakeAnswers} from "@/data/military-intake-plans";
 
 const id="11111111-1111-4111-8111-111111111111",stamp="2026-10-21T00:00:00.000Z";
 const kasSource=MILITARY_SOURCES.kas;
@@ -12,6 +13,26 @@ assert.ok(Object.values(MILITARY_SOURCES).every(source=>new URL(source.url).path
 assert.equal(MILITARY_ROUTES.length,6);
 assert.equal(MILITARY_ROUTES.flatMap(r=>r.scenarios).length,18);
 assert.equal(Object.keys(MILITARY_DRAFT_PURPOSES).length,17);
+const tailored=MILITARY_ROUTES.flatMap(route=>route.scenarios.filter(s=>s.kind!=="URGENT_INSTRUCTION").map(s=>({route,scenario:s})));
+assert.equal(Object.keys(MILITARY_INTAKE_PLANS).length,17,"One independently designed questionnaire per document");
+const signatures=new Set<string>();
+for(const {route,scenario} of tailored){
+ const fields=scenario.required;
+ assert.ok(fields.length>=2&&fields.length<=4,"No overloaded form: "+scenario.key);
+ assert.ok(fields.every(key=>!["event","goal","evidence","dates"].includes(key)),"Generic questions are redundant");
+ const config=MILITARY_INTAKE_PLANS[scenario.key];
+ assert.ok(config,"Missing individual questionnaire "+scenario.key);
+ assert.deepEqual(fields,config.fields);
+ const titles=fields.map(key=>militaryIntakeQuestionLabel(scenario.key,route.fields.find(f=>f.key===key)!));
+ const signature=JSON.stringify(titles);
+ assert.ok(!signatures.has(signature),"Situation-specific prompts must differ: "+scenario.key);
+ signatures.add(signature);
+ if(route.id==="service-contract"){
+  assert.equal(config.defaults?.regime,"контракт");
+  assert.ok(!fields.includes("regime"),"Contract type already follows from route");
+  assert.equal(resolveMilitaryIntakeAnswers(scenario.key,{role:"военнослужащий"}).regime,"контракт");
+ }
+}
 const seenSlugs=new Set<string>();
 let generated=0,emergencies=0,drafts=0;
 for(const route of MILITARY_ROUTES){
