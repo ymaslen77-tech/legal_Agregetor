@@ -26,7 +26,7 @@ export async function MilitaryRelatedQuestions({
 
   return (
     <section id="military-related-questions" aria-labelledby="military-related-questions-title"
-      className="mx-auto max-w-5xl border-t border-line px-4 py-7 sm:px-6 lg:px-8">
+      className="mt-8 border-t border-line pt-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 id="military-related-questions-title" className="text-xl font-semibold text-ink">Похожие вопросы</h2>
         <Link href="/questions/" className="text-sm font-semibold text-trust underline underline-offset-2">
@@ -51,8 +51,7 @@ export async function MilitaryRelatedQuestions({
         </>
       ) : (
         <p className="mt-3 text-sm leading-6 text-zinc-600">
-          По выбранной ситуации пока нет доступных проверенных вопросов или база временно недоступна.
-          Демонстрационные вопросы не показываются.
+          Подборка вопросов по этой ситуации сейчас недоступна. Посмотрите другие обращения в каталоге.
         </p>
       )}
     </section>

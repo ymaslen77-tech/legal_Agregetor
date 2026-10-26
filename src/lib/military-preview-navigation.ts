@@ -30,3 +30,11 @@ export function militaryPublicDraftHref(routeId:string,scenarioKey?:string):stri
  if(scenarioKey)query.set("scenario",scenarioKey);
  return "/voennoe-pravo/marshrut/?"+query.toString();
 }
+
+export function militaryCanonicalRouteHref(routeId:string,scenarioKey?:string):string {
+ const route=MILITARY_ROUTES.find(x=>x.id===routeId);
+ if(!route)throw new Error('Unknown military route');
+ if(scenarioKey && !route.scenarios.some(x=>x.key===scenarioKey))throw new Error('Unknown military scenario');
+ const path='/voennoe-pravo/'+route.slug+'/';
+ return scenarioKey?path+'?scenario='+encodeURIComponent(scenarioKey):path;
+}
