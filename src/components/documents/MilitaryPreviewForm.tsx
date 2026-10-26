@@ -21,12 +21,12 @@ import {LegalFormField} from "@/components/documents/LegalFormField";
 
 type Step="choose"|"facts"|"review"|"result";
 type Snapshot={documentResult:DocumentResultV1;answers:Record<string,string>};
-type Props={initialRouteId:string;initialScenarioKey:string;invalidSelection?:boolean;publicDraft?:boolean;compactFlow?:boolean};
+type Props={initialRouteId:string;initialScenarioKey:string;invalidSelection?:boolean;publicDraft?:boolean;compactFlow?:boolean;reviewAvailable?:boolean};
 
 function safeLabel(kind:MilitaryScenario["kind"]):string {
  return kind==="URGENT_INSTRUCTION"?"Срочная инструкция":"Предварительный проект обращения или чек-лист";
 }
-export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSelection=false,publicDraft=false,compactFlow=false}:Props){
+export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSelection=false,publicDraft=false,compactFlow=false,reviewAvailable=false}:Props){
  const routeHref=compactFlow?militaryCanonicalRouteHref:publicDraft?militaryPublicDraftHref:militaryPreviewHref;
  const [routeId,setRouteId]=useState(initialRouteId);
  const route=MILITARY_ROUTES.find(x=>x.id===routeId)??MILITARY_ROUTES[0];
@@ -249,7 +249,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
     <div className="mt-5 flex flex-wrap gap-3" aria-label="Итоговые действия с документом">
      <button type="button" disabled={dirty} onClick={()=>void downloadPdf()}
       className="min-h-11 rounded-md bg-trust px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">Скачать PDF</button>
-     <MilitaryDocumentReviewForm key={active.documentResult.versionId} result={active.documentResult}/>
+     {reviewAvailable?<MilitaryDocumentReviewForm key={active.documentResult.versionId} result={active.documentResult}/>:<span className="text-sm text-zinc-600">Отправка на проверку сейчас недоступна. Скачайте PDF для передачи юристу.</span>}
     </div>
     <details className="mt-4 rounded-lg border border-line bg-white p-3">
      <summary className="cursor-pointer text-sm font-semibold">Редактировать документ и скачать DOCX</summary>
