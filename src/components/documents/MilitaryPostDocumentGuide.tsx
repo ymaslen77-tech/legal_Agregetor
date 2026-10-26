@@ -7,7 +7,7 @@ import {
 } from "@/data/military-post-document-directory";
 import type {DocumentResultV1} from "@/lib/document-result-contract";
 
-type Props={scenarioKey:string;resultKind:DocumentResultV1["resultKind"];evidence:readonly string[]};
+type Props={scenarioKey:string;resultKind:DocumentResultV1["resultKind"];evidence:readonly string[];initialRegion?:string};
 
 function AgencyCard({entry,region,reviewAcknowledged,canSubmit}:{
  entry:MilitaryAgencyEntry;region:string;reviewAcknowledged:boolean;canSubmit:boolean
@@ -32,8 +32,8 @@ function AgencyCard({entry,region,reviewAcknowledged,canSubmit}:{
   <p className="mt-3 text-xs text-zinc-600">Источник порядка обращения: <a href={entry.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline">правовая или ведомственная информация</a>.</p>
  </li>;
 }
-export function MilitaryPostDocumentGuide({scenarioKey,resultKind,evidence}:Props){
- const [region,setRegion]=useState("");
+export function MilitaryPostDocumentGuide({scenarioKey,resultKind,evidence,initialRegion=""}:Props){
+ const [region,setRegion]=useState(initialRegion);
  const [acknowledged,setAcknowledged]=useState(false);
  const [showAll,setShowAll]=useState(false);
  const [completed,setCompleted]=useState<string[]>([]);
