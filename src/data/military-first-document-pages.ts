@@ -45,7 +45,6 @@ export const MILITARY_FIRST_DOCUMENT_PAGES:NavigatorDocument[]=MILITARY_DOCUMENT
   generatorSeoDescription:`${blueprint.title} — персональный проект для проверки. Нужные сведения, необходимые документы и порядок направления.`,
   keywords:[blueprint.title.toLowerCase(),`${blueprint.title.toLowerCase()} образец`,`${blueprint.title.toLowerCase()} скачать pdf`],
   userQueries:[`${blueprint.title.toLowerCase()} составить`],
-  lastReviewedAt:"2026-10-26",
   disclaimer:"Рапорт не готов к направлению без проверки компетенции адресата и подтверждающих документов."
  } satisfies NavigatorDocument;
 });
