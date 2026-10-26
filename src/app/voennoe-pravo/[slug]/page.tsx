@@ -8,6 +8,7 @@ import { MilitaryPreviewForm } from '@/components/documents/MilitaryPreviewForm'
 import { MilitaryRelatedQuestions } from '@/components/questions/MilitaryRelatedQuestions';
 type Props={params:Promise<{slug:string}>;searchParams:Promise<{scenario?:string}>};
 export const dynamicParams=false;
+export const dynamic="force-dynamic";
 export const generateStaticParams=()=>MILITARY_ROUTES.map(r=>({slug:r.slug}));
 export async function generateMetadata({params}:Props):Promise<Metadata>{const {slug}=await params;const route=MILITARY_ROUTES.find(r=>r.slug===slug);return {title:route?.title??'Ситуация не найдена',robots:{index:false,follow:false}};}
 export default async function Page({params,searchParams}:Props){
