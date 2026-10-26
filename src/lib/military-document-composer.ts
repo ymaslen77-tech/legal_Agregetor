@@ -64,9 +64,13 @@ export function getMilitaryDocumentFields(scenarioKey:string):MilitaryDocumentFi
  const common=blueprint.type==="Административное исковое заявление"?judicial:base;
  const facts=blueprint.facts.map((label,index)=>({
    key:"fact-"+index,label,required:!/если извест/i.test(label),multiline:label.length>75,
-   help:"Укажите только подтверждённые документами обстоятельства, без предположений."
- }));
- return [...common,...facts,...(targeted[scenarioKey]??[])];
+   ...(index===0&&["deferment","draft-notice","challenge-draft"].includes(scenarioKey)?
+    {options:["Обычный призыв на военную службу","Призыв по мобилизации"]}:{}),
+   help:index===0&&["deferment","draft-notice","challenge-draft"].includes(scenarioKey)
+    ?"Для обычного призыва и мобилизации действуют разные основания и процедуры."
+    :"Укажите только подтверждённые документами обстоятельства, без предположений."
+  }));
+  return [...common,...facts,...(targeted[scenarioKey]??[])];
 }
 const normalize=(value:unknown)=>String(typeof value==="string"?value:"").replace(/[\u0000-\u001F<>]/g," ").trim();
 const specificRequests:Readonly<Record<string,readonly string[]>>={
@@ -109,7 +113,7 @@ export function composeMilitaryDocument(
   "Административный истец: "+normalize(answers.applicantName),
   "Дата и место рождения: "+normalize(answers.applicantBirth),
   "Адрес: "+normalize(answers.applicantAddress),
-  "Контакты: "+normalize(answers.contactMethod),
+  ...(normalize(answers.contactMethod)?["Контакты: "+normalize(answers.contactMethod)]:[]),
   "Административный ответчик: "+normalize(answers.respondentName),
   "Адрес ответчика: "+normalize(answers.respondentAddress),
   "",blueprint.title.toUpperCase(),"",
@@ -122,7 +126,7 @@ export function composeMilitaryDocument(
   "Правовые основания: статьи 124–126, 218–219 КАС РФ; применимость определяется обстоятельствами дела.",
   "С учётом изложенного и подтверждённых материалов ПРОШУ:",
   normalize(answers.requestedRelief)+".",
-  ...request.map((line,index)=>(index+1)+". "+line),
+  
   "",
   "Подтверждение направления копий другим участникам: "+normalize(answers.attachmentDelivery),
   "Государственная пошлина / освобождение / ходатайство: "+normalize(answers.courtFee),
@@ -137,6 +141,14 @@ export function composeMilitaryDocument(
   "",blueprint.title.toUpperCase(),"",
   "Обстоятельства обращения:",
   ...facts,
+  "",
+  "Нормативные источники, применимость которых подлежит проверке:",
+  ...blueprint.legalSources.map(s=>"- "+s.citation+"."),
+  ...(scenarioKey==="deferment"?[
+    answers["fact-0"]==="Призыв по мобилизации"
+      ?"Основание отсрочки проверяется по статье 18 Федерального закона № 31-ФЗ."
+      :"Основание отсрочки проверяется по статье 24 Федерального закона № 53-ФЗ."
+  ]:[]),
   "",
   "На основании подтверждённых мной сведений ПРОШУ:",
   ...request.map((line,index)=>(index+1)+". "+line),
