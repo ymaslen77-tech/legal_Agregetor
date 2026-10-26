@@ -1,6 +1,5 @@
 import {getMilitaryDocumentSlug,type MilitaryRoute,type MilitaryScenario} from "@/data/military-route-plans";
 import {documentResultSchema,DOCUMENT_RESULT_CONTRACT_VERSION,type DocumentResultV1} from "@/lib/document-result-contract";
-import {getMilitaryCaseReview} from "@/data/military-case-reviews";
 import {getMilitaryPinpointLinks,militaryProvisionHref} from "@/data/military-provision-links";
 
 type Answers=Record<string,string|undefined>;
