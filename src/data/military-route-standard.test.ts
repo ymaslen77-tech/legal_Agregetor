@@ -1,31 +1,39 @@
 import assert from "node:assert/strict";
 import {getMilitaryPreviewRoutes} from "@/data/military-route-standard";
 import {getLegalRouteRegistry} from "@/data/legal-route-standard";
+import {MILITARY_LEGAL_DOCUMENTS,MILITARY_LEGAL_FIELDS,getMilitaryDocumentsForScenario} from "@/data/military-legal-documents";
 const list=getMilitaryPreviewRoutes();
 assert.equal(list.length,6);
-assert.equal(getLegalRouteRegistry().length,51,"Military development must not change published legacy routes");
+assert.equal(getLegalRouteRegistry().length,51,"Military routes are hosted separately from legacy problems registry");
 const urls=new Set<string>(),docSlugs=new Set<string>();
 let count=0;
-for(const r of list){
- assert.equal(r.categorySlug,"voennoe-pravo");
- assert.equal(r.legalReviewedAt,null);
- assert.equal(r.migrationStatus,"ADAPTED_V1");
- assert.equal(r.source,"military-preview");
- assert.equal(r.riskLevel,"high");
- assert.ok(!urls.has(r.problemUrl));urls.add(r.problemUrl);
- assert.ok(r.scenarios.length>=3);
- for(const s of r.scenarios){
-  assert.equal(s.scenarioUrl,r.problemUrl+"?scenario="+encodeURIComponent(s.key));
-  assert.ok(s.inputs.every(f=>f.required&&f.key&&f.label));
-  if(s.outcome==="URGENT_INSTRUCTION"){
-   assert.equal(s.documentSlug,null);assert.equal(s.documentUrl,null);
+for(const route of list){
+ assert.equal(route.categorySlug,"voennoe-pravo");
+ assert.equal(route.legalReviewedAt,null);
+ assert.equal(route.migrationStatus,"ADAPTED_V1");
+ assert.equal(route.riskLevel,"high");
+ assert.ok(route.problemUrl.startsWith("/voennoe-pravo/"));
+ assert.ok(!urls.has(route.problemUrl));urls.add(route.problemUrl);
+ assert.ok(route.scenarios.length>=3);
+ for(const scenario of route.scenarios){
+  assert.equal(scenario.scenarioUrl,route.problemUrl+"?scenario="+encodeURIComponent(scenario.key));
+  assert.ok(scenario.inputs.every(field=>field.required&&field.key&&field.label));
+  const docs=getMilitaryDocumentsForScenario(scenario.key);
+  if(scenario.outcome==="URGENT_INSTRUCTION"){
+   assert.equal(scenario.documentSlug,null);assert.equal(scenario.documentUrl,null);
+   assert.equal(docs.length,0);
   }else{
-   assert.ok(s.documentSlug);
-   assert.equal(s.documentUrl,"/documents/"+s.documentSlug+"/");
-   assert.ok(!docSlugs.has(s.documentSlug!));docSlugs.add(s.documentSlug!);
+   assert.equal(scenario.outcome,"DRAFT");
+   assert.equal(scenario.documentSlug,docs[0]?.slug);
+   assert.equal(scenario.documentUrl,"/documents/"+scenario.documentSlug+"/");
+   assert.ok(!docSlugs.has(scenario.documentSlug!));docSlugs.add(scenario.documentSlug!);
+   assert.deepEqual(scenario.inputs.map(x=>x.key),docs[0].fields);
+   assert.ok(scenario.inputs.every(x=>MILITARY_LEGAL_FIELDS[x.key]));
   }
   count++;
  }
+ for(const slug of route.relatedDocumentSlugs)assert.ok(MILITARY_LEGAL_DOCUMENTS.some(d=>d.slug===slug));
 }
 assert.equal(count,18);assert.equal(docSlugs.size,17);
-console.log("Military internal LEGAL_ROUTE_STANDARD_V1: 6 canonical routes, 18 scenarios, 17 document slugs PASS");
+assert.equal(new Set(list.flatMap(route=>route.relatedDocumentSlugs)).size,23);
+console.log("Military document route standard: 6 routes, 18 situations, 23 actual filings PASS");
