@@ -261,7 +261,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
        className="min-h-11 rounded-md border border-line px-4 py-2 text-sm font-semibold">Изменить и создать новую версию</button>
      </div>
     </details>
-    <DocumentVersionHistory versions={versions.map(v=>v.documentResult)}
+    <DocumentVersionHistory hideIds versions={versions.map(v=>v.documentResult)}
      currentVersionId={active.documentResult.versionId} onSelect={selectVersion}/>
    </section>:null}
    {message&&step==="result"?<p role="status" className="mt-3 text-sm">{message}</p>:null}
