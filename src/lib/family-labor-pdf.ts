@@ -34,7 +34,7 @@ export async function createFamilyLaborPdfBlob(result:DocumentResultV1):Promise<
       body:{fontSize:10.5,lineHeight:1.45},
       footer:{fontSize:8,color:"#71717a"}
     },
-    info:{title:result.documentTitle,subject:"Предварительный юридический чек-лист"}
+    info:{title:result.documentTitle,subject:result.resultKind==="DRAFT"?"Проект юридического документа":"Информационный результат"}
   };
   return new Promise<Blob>((resolve,reject)=>{
     try{pdfMake.createPdf(definition).getBlob(resolve);}catch(error){reject(error);}

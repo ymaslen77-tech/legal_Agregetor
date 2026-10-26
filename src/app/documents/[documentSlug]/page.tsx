@@ -44,6 +44,8 @@ import { getNavigatorDocument, navigatorDocuments } from "@/data/documents";
 import { getLaborDocumentScenario } from "@/data/labor-documents";
 import { getFamilyLaborDocumentMatch } from "@/data/family-labor-implemented-routes";
 import { FamilyLaborDocumentPage } from "@/components/documents/FamilyLaborRoutePages";
+import {MilitaryLegalDocumentPage} from "@/components/documents/MilitaryLegalDocumentPage";
+import {getMilitaryLegalDocument} from "@/data/military-legal-documents";
 import { getFamilyAdditiveScenarioByDocumentSlug } from "@/data/family-additive-routes";
 import { buildDocumentQuestionContext, PROBLEM_QNA_CONTEXTS } from "@/data/related-questions-context";
 import {
@@ -166,6 +168,9 @@ export default async function DocumentPage({ params, searchParams }: PageProps) 
       <DocumentPageWithAfterDownload document={document}>{content}</DocumentPageWithAfterDownload>
     </DocumentQna>
   );
+
+  const militaryDocument=getMilitaryLegalDocument(document.slug);
+  if(militaryDocument)return withAfterDownload(<MilitaryLegalDocumentPage document={militaryDocument} seoDocument={document}/>);
 
   const familyLaborMatch=getFamilyLaborDocumentMatch(document.slug);
   if(familyLaborMatch){

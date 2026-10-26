@@ -1,109 +1,102 @@
 import {expect,test} from "@playwright/test";
 import {MILITARY_ROUTES} from "../../src/data/military-route-plans";
+import {MILITARY_LEGAL_DOCUMENTS,getMilitaryDocumentsForScenario} from "../../src/data/military-legal-documents";
 import {militaryCanonicalRouteHref,militaryPublicDraftHref} from "../../src/lib/military-preview-navigation";
 
-test("all 18 military situations follow family category, situation, questionnaire layout",async({page})=>{
+test("all 18 military situations link to named legal documents on dedicated SEO pages",async({page})=>{
  test.setTimeout(180000);
  await page.goto("/voennoe-pravo/");
  await expect(page.getByRole("heading",{level:1,name:"Военное право"})).toBeVisible();
  for(const route of MILITARY_ROUTES){
-  const routeHref=militaryCanonicalRouteHref(route.id);
-  await expect(page.locator(`a[href="${routeHref}"]`)).toHaveCount(1);
-  await page.goto(routeHref);
+  const href=militaryCanonicalRouteHref(route.id);
+  await expect(page.locator(`a[href="${href}"]`)).toHaveCount(1);
+  await page.goto(href);
   await expect(page.getByRole("heading",{level:1,name:route.title})).toBeVisible();
-  await expect(page.getByRole("heading",{name:"Шаг 1. Выберите ситуацию"})).toBeVisible();
+  await expect(page.getByRole("heading",{name:"Выберите ситуацию"})).toBeVisible();
   for(const scenario of route.scenarios){
-   const href=militaryCanonicalRouteHref(route.id,scenario.key);
-   await expect(page.locator(`a[href="${href}"]`)).toHaveCount(1);
-   const res=await page.goto(href);
-   expect(res?.status(),href).toBe(200);
+   const scenarioHref=militaryCanonicalRouteHref(route.id,scenario.key);
+   await expect(page.locator(`a[href="${scenarioHref}"]`)).toHaveCount(1);
+   const res=await page.goto(scenarioHref);
+   expect(res?.status()).toBe(200);
    await expect(page.getByRole("heading",{level:2,name:scenario.title})).toBeVisible();
-   await expect(page.getByRole("heading",{name:"Похожие вопросы"})).toBeVisible();
-   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content",/noindex/);
-   await expect(page.getByRole("navigation",{name:"Этапы юридического маршрута"})).toHaveCount(scenario.kind==="URGENT_INSTRUCTION"?0:1);
-   await expect(page.getByRole("heading",{name:"Шаг 1. Выберите ситуацию"})).toHaveCount(0);
-   if(scenario.kind!=="URGENT_INSTRUCTION"){
-    await expect(page.getByRole("heading",{name:"Шаг 1. Обстоятельства и документы"})).toBeVisible();
-    await expect(page.getByRole("heading",{name:"Шаг 2. Проверка ограничений"})).toBeVisible();
-    const intake=page.getByRole("region",{name:"Пошаговая анкета"});
-    await expect(intake.getByRole("textbox")).toHaveCount(scenario.required.filter(k=>!["role","regime","urgency"].includes(k)).length);
-    await expect(intake.locator("select")).toHaveCount(scenario.required.filter(k=>["role","regime","urgency"].includes(k)).length);
-    await expect(intake.getByText("Что произошло?",{exact:true})).toHaveCount(0);
-    await expect(intake.getByText("Что вы хотите получить?",{exact:true})).toHaveCount(0);
-    expect(scenario.required.length).toBeLessThanOrEqual(4);
+   if(scenario.kind==="URGENT_INSTRUCTION"){
+    await expect(page.getByRole("heading",{name:"Сначала неотложная помощь"})).toBeVisible();
+    await expect(page.locator('a[href^="/documents/"]')).toHaveCount(0);
+   }else{
+    const docs=getMilitaryDocumentsForScenario(scenario.key);
+    for(const doc of docs){
+     await expect(page.locator(`a[href="/documents/${doc.slug}/#fill-online"]`)).toHaveCount(1);
+    }
+    await expect(page.getByText("Пошаговая анкета")).toHaveCount(0);
+    await expect(page.getByText("Создать новую версию документа")).toHaveCount(0);
    }
-   await page.goto(routeHref);
+   await page.goto(href);
   }
   await page.goto("/voennoe-pravo/");
  }
 });
 
-test("legacy wizard URLs redirect to canonical family-style scenario",async({page})=>{
- await page.goto(militaryPublicDraftHref("service-contract","service-order-copy"));
- await expect(page).toHaveURL(/\/voennoe-pravo\/prokhozhdenie-voennoy-sluzhby-po-kontraktu\/\?scenario=service-order-copy/);
-});
-
-test("emergency military scenario prioritizes immediate care without document",async({page})=>{
- await page.goto(militaryCanonicalRouteHref("military-medical","medical-emergency"));
- await expect(page.getByRole("heading",{name:"Сначала неотложная помощь"})).toBeVisible();
- await expect(page.getByRole("button",{name:/Создать новую версию документа/})).toHaveCount(0);
- await expect(page.getByRole("button",{name:"Скачать PDF"})).toHaveCount(0);
-});
-
-test("military draft retains legal status and sends no questionnaire posts",async({page})=>{
- const posts:string[]=[];
- page.on("request",request=>{if(request.method()==="POST")posts.push(request.url());});
- await page.goto(militaryCanonicalRouteHref("service-contract","service-order-copy"));
- const form=page.getByRole("region",{name:"Пошаговая анкета"});
- await form.getByLabel("Кто обращается?").selectOption("военнослужащий");
- for(const input of await form.locator("textarea").all()){
-  await input.fill("Подтвержденные обезличенные обстоятельства по документам");
+test("all 23 documents publish canonical SEO destination and actual generator",async({page})=>{
+ test.setTimeout(180000);
+ for(const doc of MILITARY_LEGAL_DOCUMENTS){
+  const response=await page.goto("/documents/"+doc.slug+"/");
+  expect(response?.status(),doc.slug).toBe(200);
+  await expect(page.getByRole("heading",{level:1,name:doc.title})).toBeVisible();
+  await expect(page.getByRole("region",{name:"Подготовка юридического документа"})).toBeVisible();
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute("content",/воен|рапорт|заявлен|жалоб|исков/i);
+  await expect(page.locator('meta[name="robots"]')).not.toHaveAttribute("content",/noindex/);
  }
- const review=page.getByRole("region",{name:"Проверка перед генерацией"});
- await review.getByRole("checkbox").check();
- await review.getByRole("button",{name:/Создать новую версию документа/}).click();
- const result=page.getByRole("region",{name:"Предварительный результат"});
- await expect(result).toContainText("НЕ ГОТОВ К ПОДАЧЕ");
+});
+
+test("downloadable report uses legally necessary fields, regional guide and no form POST",async({page})=>{
+ const requests:string[]=[];
+ page.on("request",request=>{if(request.method()==="POST")requests.push(request.url());});
+ const doc=MILITARY_LEGAL_DOCUMENTS.find(d=>d.scenarioKey==="service-order-copy")!;
+ await page.goto(militaryCanonicalRouteHref("service-contract","service-order-copy"));
+ await expect(page.getByRole("link",{name:/Сформировать рапорт/})).toBeVisible();
+ await page.goto("/documents/"+doc.slug+"/#fill-online");
+ const editor=page.getByRole("region",{name:"Подготовка юридического документа"});
+ for(const key of doc.fields){
+  const input=editor.locator('[id="military-document-'+doc.slug+'-'+key+'"]');
+  await input.fill("Подтверждённые сведения заявителя по документу");
+ }
+ await editor.getByRole("checkbox",{name:/Я проверил введённые сведения/}).check();
+ await editor.getByRole("button",{name:/Сформировать рапорт/}).click();
+ const result=editor.getByRole("region",{name:"Сформированный юридический документ"});
+ await expect(result).toContainText("РАПОРТ");
+ await expect(result).toContainText("ПРОШУ");
  await expect(result.getByRole("button",{name:"Скачать PDF"})).toBeEnabled();
+ await expect(result.getByRole("button",{name:"Скачать DOCX"})).toBeEnabled();
  const guide=result.getByRole("region",{name:"Памятка после формирования военного документа"});
  await expect(guide.getByRole("heading",{name:"Памятка: что делать с документом дальше"})).toBeVisible();
- await expect(guide.getByRole("list",{name:"Последующие действия"}).getByRole("listitem")).toHaveCount(6);
- await expect(guide.getByRole("link",{name:/Перейти на портал Минобороны/})).toHaveCount(0);
  await guide.getByLabel("В каком регионе вы находитесь или планируете обращаться?").selectOption("region-moscow");
  await expect(guide.getByText("Выбрано: Москва")).toBeVisible();
+ await expect(guide.getByRole("link",{name:/Перейти на портал Минобороны/})).toHaveCount(0);
  await guide.getByRole("checkbox",{name:/Я понимаю, что документ требует/}).check();
  await expect(guide.getByRole("link",{name:/Перейти на портал Минобороны/})).toBeVisible();
- await guide.getByRole("button",{name:/Показать весь справочник/}).click();
- await expect(guide.getByRole("heading",{name:"Территориальное отделение Социального фонда России"})).toBeVisible();
- await expect(guide.getByRole("link",{name:"Направить электронное обращение в СФР"})).toBeVisible();
-
- await expect(result.getByRole("button",{name:"Сохранить в мои документы"})).toHaveCount(0);
- expect(posts).toEqual([]);
+ expect(requests).toEqual([]);
 });
 
-test("military PDF review requires two consents and supports secure withdrawal",async({page})=>{
- test.skip(process.env.E2E_SUBMIT_REVIEW!=="true","Only the isolated review test database may accept a submission");
- await page.goto(militaryCanonicalRouteHref("service-contract","service-order-copy"));
- const form=page.getByRole("region",{name:"Пошаговая анкета"});
- await form.getByLabel("Кто обращается?").selectOption("военнослужащий");
- for(const input of await form.locator("textarea").all())
-  await input.fill("Подтверждённые обстоятельства по документам, без личных сведений");
- const check=page.getByRole("region",{name:"Проверка перед генерацией"});
- await check.getByRole("checkbox").check();
- await check.getByRole("button",{name:"Создать новую версию документа"}).click();
- const result=page.getByRole("region",{name:"Предварительный результат"});
- await result.getByRole("button",{name:"Отправить на проверку юристу"}).click();
- const review=page.getByRole("region",{name:"Передача документа на юридическую проверку"});
- await review.getByLabel("Имя").fill("Тестовый заявитель");
- await review.getByLabel("Телефон").fill("+79990000000");
- const send=review.getByRole("button",{name:"Подтвердить отправку PDF"});
- await expect(send).toBeDisabled();
- await review.getByRole("checkbox").nth(0).check();
- await expect(send).toBeDisabled();
- await review.getByRole("checkbox").nth(1).check();
- await expect(send).toBeEnabled();
- await send.click();
- await expect(review).toContainText("ожидает назначения юриста");
- await review.getByRole("button",{name:"Отозвать согласие и удалить PDF"}).click();
- await expect(review).toContainText("Согласие отозвано, файл удалён.");
+test("court filing has mandatory court and party requisites and does not claim filing readiness",async({page})=>{
+ const doc=MILITARY_LEGAL_DOCUMENTS.find(d=>d.kind==="court"&&d.scenarioKey==="challenge-decision")!;
+ await page.goto("/documents/"+doc.slug+"/");
+ const editor=page.getByRole("region",{name:"Подготовка юридического документа"});
+ for(const key of doc.fields){
+  const value=["birthDate","date"].includes(key)?"01.10.2026":"Подтверждённый реквизит по процессуальному документу";
+  await editor.locator('[id="military-document-'+doc.slug+'-'+key+'"]').fill(value);
+ }
+ await editor.getByRole("checkbox",{name:/Я проверил введённые сведения/}).check();
+ await editor.getByRole("button",{name:/Сформировать административное исковое заявление/}).click();
+ const result=editor.getByRole("region",{name:"Сформированный юридический документ"});
+ await expect(result).toContainText("Административный истец:");
+ await expect(result).toContainText("Административный ответчик:");
+ await expect(result).toContainText("ПРОШУ СУД:");
+ await expect(result).toContainText("статьям 125 и 126 КАС РФ");
+ await expect(result).toContainText("юридическ");
+});
+
+test("legacy URLs redirect to the document-selection route",async({page})=>{
+ await page.goto(militaryPublicDraftHref("service-contract","service-order-copy"));
+ await expect(page).toHaveURL(/\/voennoe-pravo\/prokhozhdenie-voennoy-sluzhby-po-kontraktu\/\?scenario=service-order-copy/);
+ await expect(page.getByRole("link",{name:/Сформировать рапорт/})).toBeVisible();
 });

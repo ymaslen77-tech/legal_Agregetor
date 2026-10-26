@@ -7,7 +7,7 @@ import {
 } from "@/data/military-post-document-directory";
 import type {DocumentResultV1} from "@/lib/document-result-contract";
 
-type Props={scenarioKey:string;resultKind:DocumentResultV1["resultKind"];evidence:readonly string[]};
+type Props={scenarioKey:string;resultKind:DocumentResultV1["resultKind"];evidence:readonly string[];initialRegion?:string};
 
 function AgencyCard({entry,region,reviewAcknowledged,canSubmit}:{
  entry:MilitaryAgencyEntry;region:string;reviewAcknowledged:boolean;canSubmit:boolean
@@ -26,14 +26,14 @@ function AgencyCard({entry,region,reviewAcknowledged,canSubmit}:{
    {entry.onlineUrl&&canSubmit&&reviewAcknowledged?<a className="font-semibold text-trust underline underline-offset-2" href={entry.onlineUrl} target="_blank" rel="noopener noreferrer">{entry.onlineLabel}</a>:null}
   </div>:null}
   {entry.onlineUrl&&!reviewAcknowledged?<p className="mt-2 text-xs text-zinc-600">Переход к онлайн-обращению доступен после ознакомления с предупреждением.</p>:null}
-  {entry.onlineUrl&&reviewAcknowledged&&!canSubmit?<p className="mt-2 text-xs text-zinc-600">Это чек-лист, не готовое заявление. Онлайн-подачу уточняйте после составления и правовой проверки обращения.</p>:null}
+  {entry.onlineUrl&&reviewAcknowledged&&!canSubmit?<p className="mt-2 text-xs text-zinc-600">Этот результат не является готовым заявлением. Онлайн-подачу уточняйте после составления и правовой проверки обращения.</p>:null}
   {entry.onlineUrl&&reviewAcknowledged&&entry.regional&&!regionLabel?<p className="mt-2 text-xs text-zinc-600">Выберите регион, прежде чем переходить к онлайн-приёмной.</p>:null}
   {entry.onlineUrl&&reviewAcknowledged&&canSubmit&&isRegionReady?<p className="mt-2 text-xs text-zinc-600">Ссылка открывает официальный сайт: ПравоПоиск не передаёт документ автоматически, не входит в личный кабинет и не гарантирует доступность формы.</p>:null}
   <p className="mt-3 text-xs text-zinc-600">Источник порядка обращения: <a href={entry.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline">правовая или ведомственная информация</a>.</p>
  </li>;
 }
-export function MilitaryPostDocumentGuide({scenarioKey,resultKind,evidence}:Props){
- const [region,setRegion]=useState("");
+export function MilitaryPostDocumentGuide({scenarioKey,resultKind,evidence,initialRegion=""}:Props){
+ const [region,setRegion]=useState(initialRegion);
  const [acknowledged,setAcknowledged]=useState(false);
  const [showAll,setShowAll]=useState(false);
  const [completed,setCompleted]=useState<string[]>([]);
@@ -53,7 +53,7 @@ export function MilitaryPostDocumentGuide({scenarioKey,resultKind,evidence}:Prop
   <h3 className="text-xl font-semibold text-ink">Памятка: что делать с документом дальше</h3>
   <div role="alert" className="mt-4 rounded-md border border-amber-300 bg-amber-50 p-4 text-sm leading-6 text-amber-950">
    <p className="font-semibold">До направления документа необходима юридическая проверка.</p>
-   <p className="mt-2">Сформированный материал — {canSubmit?"предварительный проект, не готовый к подаче":"чек-лист, а не заявление"}. Подбор ведомств — справочная подсказка, не подтверждение компетенции, права на выплату, способа обжалования или подсудности. Не передавайте сведения о дислокации, диагнозах и данные третьих лиц через незащищённые формы.</p>
+   <p className="mt-2">Сформированный материал — {canSubmit?"предварительный проект, не готовый к подаче":"информационный материал, не готовый к подаче"}. Подбор ведомств — справочная подсказка, не подтверждение компетенции, права на выплату, способа обжалования или подсудности. Не передавайте сведения о дислокации, диагнозах и данные третьих лиц через незащищённые формы.</p>
   </div>
   <h4 className="mt-5 font-semibold">Пошаговые действия</h4>
   <ol className="mt-3 space-y-3" aria-label="Последующие действия">

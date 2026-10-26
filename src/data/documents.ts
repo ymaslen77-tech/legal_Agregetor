@@ -25,6 +25,7 @@ import { EMANCIPATION_DOCUMENT } from "@/data/emancipation-document";
 import { LABOR_DOCUMENTS } from "@/data/labor-documents";
 import { FAMILY_LABOR_NEW_DOCUMENTS } from "@/data/family-labor-route-documents";
 import { FAMILY_ADDITIVE_DOCUMENTS } from "@/data/family-additive-documents";
+import { MILITARY_NAVIGATOR_DOCUMENTS } from "@/data/military-legal-documents";
 
 export type DocumentFaqItem = {
   question: string;
@@ -317,7 +318,8 @@ RELATIVE_CHILD_CONTACT_DOCUMENT,
 EMANCIPATION_DOCUMENT,
 ...FAMILY_ADDITIVE_DOCUMENTS,
 ...LABOR_DOCUMENTS,
-...FAMILY_LABOR_NEW_DOCUMENTS
+...FAMILY_LABOR_NEW_DOCUMENTS,
+...MILITARY_NAVIGATOR_DOCUMENTS
 ];
 
 export const navigatorDocuments: NavigatorDocument[] = navigatorDocumentDefinitions.map((document) => ({

@@ -33,7 +33,7 @@ export function FamilyLaborProblemPage({plan,scenarioKey}:{plan:FamilyLaborPlan;
         {plan.scenarios.map(s=><Link key={s.key} href={path+"?scenario="+encodeURIComponent(s.key)}
           className="block rounded-md border border-line bg-white p-5 hover:border-trust focus:ring-2 focus:ring-trust/20">
           <span className="block font-semibold">{s.title}</span>
-          <span className="mt-2 block text-sm text-zinc-600">{s.emergencyFirst?"Экстренные действия без анкеты.":"Проверка фактов и подготовка чек-листа."}</span>
+          <span className="mt-2 block text-sm text-zinc-600">{s.emergencyFirst?"Экстренные действия без подготовки документа.":"Проверка фактов и подготовка чек-листа."}</span>
         </Link>)}
       </div>
     </section>:<section className="mt-6">
@@ -47,7 +47,7 @@ export function FamilyLaborProblemPage({plan,scenarioKey}:{plan:FamilyLaborPlan;
       </Link>:null}
     </section>}
     <footer className="mt-8 border-t border-line pt-5 text-sm text-zinc-600">
-      <p>Вопросы анкеты не являются подтверждением правовой позиции. Источники, подсудность и сроки требуют отдельной юридической проверки.</p>
+      <p>Введённые сведения не являются подтверждением правовой позиции. Источники, подсудность и сроки требуют отдельной юридической проверки.</p>
     </footer>
   </article>
   </>;
