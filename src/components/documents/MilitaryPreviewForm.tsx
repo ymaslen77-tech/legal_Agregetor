@@ -18,6 +18,7 @@ import {LegalRouteJourney} from "@/components/documents/LegalRouteJourney";
 import {DocumentResultSummary} from "@/components/documents/DocumentResultSummary";
 import {MilitaryDocumentReviewForm} from "@/components/documents/MilitaryDocumentReviewForm";
 import {LegalFormField} from "@/components/documents/LegalFormField";
+import {MilitaryPostDocumentGuide} from "@/components/documents/MilitaryPostDocumentGuide";
 
 
 type Step="choose"|"facts"|"review"|"result";
@@ -238,6 +239,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
       Проект требует проверки юристом перед использованием.
      </p>
     </section>
+    <MilitaryPostDocumentGuide key={active.documentResult.versionId} scenarioKey={active.documentResult.scenarioKey} resultKind={active.documentResult.resultKind} evidence={review.evidenceToCheck}/>
     <section className="mt-5" aria-label="Официальные источники для проверки">
      <h3 className="font-semibold">Нормативные источники для проверки</h3>
      <ul className="mt-3 list-disc space-y-2 pl-5 text-sm">{getMilitaryPinpointLinks(route.id,scenario.key,answers.regime).map(ref=><li key={ref.id}><a className="break-words text-trust underline underline-offset-2" href={militaryProvisionHref(ref)} target="_blank" rel="noreferrer noopener">{ref.citation}</a> — {ref.pinpoint}</li>)}</ul>
