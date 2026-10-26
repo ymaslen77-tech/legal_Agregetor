@@ -65,6 +65,18 @@ test("military draft retains legal status and sends no questionnaire posts",asyn
  const result=page.getByRole("region",{name:"Предварительный результат"});
  await expect(result).toContainText("НЕ ГОТОВ К ПОДАЧЕ");
  await expect(result.getByRole("button",{name:"Скачать PDF"})).toBeEnabled();
+ const guide=result.getByRole("region",{name:"Памятка после формирования военного документа"});
+ await expect(guide.getByRole("heading",{name:"Памятка: что делать с документом дальше"})).toBeVisible();
+ await expect(guide.getByRole("list",{name:"Последующие действия"}).getByRole("listitem")).toHaveCount(6);
+ await expect(guide.getByRole("link",{name:/Перейти на портал Минобороны/})).toHaveCount(0);
+ await guide.getByLabel("В каком регионе вы находитесь или планируете обращаться?").selectOption("region-moscow");
+ await expect(guide.getByText("Выбрано: Москва")).toBeVisible();
+ await guide.getByRole("checkbox",{name:/Я понимаю, что документ требует/}).check();
+ await expect(guide.getByRole("link",{name:/Перейти на портал Минобороны/})).toBeVisible();
+ await guide.getByRole("button",{name:/Показать весь справочник/}).click();
+ await expect(guide.getByRole("heading",{name:"Территориальное отделение Социального фонда России"})).toBeVisible();
+ await expect(guide.getByRole("link",{name:"Направить электронное обращение в СФР"})).toBeVisible();
+
  await expect(result.getByRole("button",{name:"Сохранить в мои документы"})).toHaveCount(0);
  expect(posts).toEqual([]);
 });
