@@ -160,7 +160,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
    {(step==="facts"||compactFlow)&&!emergency?<section className="mt-6 min-w-0 max-w-full rounded-lg border border-line bg-white p-4 sm:p-5" aria-label="Пошаговая анкета">
     <h2 className="text-xl font-semibold">Шаг 1. Обстоятельства и документы</h2>
     <p className="mt-2 text-sm leading-6 text-zinc-700">Проверьте даты и правовой статус по документам.</p>
-    <p className="mt-3 text-xs text-zinc-600">Заполнено: {completeCount} из {required.length} обязательных полей.</p>
+
     <div className="mt-5 grid min-w-0 gap-4">
      {required.map(field=><LegalFormField key={field.key} id={"military-"+field.key}
       label={field.label} value={answers[field.key]??""} required
@@ -205,6 +205,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
       onChange={e=>setAcknowledged(e.target.checked)} className="mt-1 h-5 w-5" />
      <span>Я проверил введённые факты по своим документам и понимаю, что это предварительный материал, который нельзя подавать без юридической проверки.</span>
     </label>
+    {compactFlow?<h2 className="mt-5 text-xl font-semibold text-ink">Шаг 3. Подготовка результата</h2>:null}
     <div className="mt-5 flex flex-wrap gap-3">
      {!compactFlow?<button type="button" onClick={backToFacts}
       className="min-h-11 rounded-md border border-line px-5 py-3 text-sm font-semibold">Изменить данные</button>:null}
@@ -212,7 +213,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
       className="min-h-11 rounded-md border border-line px-5 py-3 text-sm font-semibold">Отменить изменения</button>:null}
      <button type="button" disabled={!validation.complete||!acknowledged} onClick={generate}
       className="min-h-11 rounded-md bg-trust px-5 py-3 text-sm font-semibold text-white disabled:opacity-50">
-      Шаг 3. Создать новую версию документа
+      Создать новую версию документа
      </button>
     </div>
     {message?<p role="status" className="mt-3 text-sm">{message}</p>:null}
@@ -220,7 +221,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
 
    {step==="result"&&active?<section className="mt-7" aria-label="Предварительный результат">
     <h2 className="text-xl font-semibold">Полученный документ</h2>
-    <DocumentResultSummary result={active.documentResult} hideArchive>
+    <DocumentResultSummary result={active.documentResult} hideArchive hideVersionId>
      <p className="mt-2 text-sm">Этот проект необходимо проверить перед подачей.</p>
     </DocumentResultSummary>
 
