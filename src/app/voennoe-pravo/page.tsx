@@ -19,7 +19,7 @@ const routeSummaries:Record<string,string>={
 export const metadata:Metadata=buildMetadata({
  title:"Военное право — юридические ситуации",
  description:"Военная служба, увольнение, выплаты, ВВК, обращения к командованию, призыв и мобилизация. Выберите ситуацию и подготовьте документ.",
- path:"/voennoe-pravo/",isIndexable:false
+ path:"/voennoe-pravo/",isIndexable:true
 });
 
 export default function MilitaryLawTopicsPage(){
@@ -45,7 +45,7 @@ export default function MilitaryLawTopicsPage(){
       <p className="mt-2 text-sm leading-6 text-zinc-600">{routeSummaries[route.id]}</p>
       <Link href={militaryCanonicalRouteHref(route.id)}
        className="mt-4 inline-flex min-h-11 items-center rounded-md border border-trust px-4 py-2 text-sm font-semibold text-trust hover:bg-emerald-50">
-       Понять, что делать
+       Выбрать юридический документ
       </Link>
      </article>)}
     </div>
