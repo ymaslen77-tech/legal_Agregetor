@@ -48,7 +48,7 @@ export function MilitaryLegalDocumentEditor({document}: {document:MilitaryLegalD
   try{
    const blob=await createFamilyLaborPdfBlob(active.result);
    const url=URL.createObjectURL(blob);
-   const a=document.createElement("a");a.href=url;
+   const a=window.document.createElement("a");a.href=url;
    a.download=document.slug+"-"+active.result.versionId+".pdf";
    window.document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
    setMessage("PDF проекта сформирован.");
