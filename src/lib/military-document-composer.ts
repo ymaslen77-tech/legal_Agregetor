@@ -7,7 +7,7 @@ import {prepareMilitaryOfficialDraft,type MilitaryDocumentFacts,type MilitaryRea
  * judicial requisites, rather than receiving invented persons, courts, dates
  * or facts. Readiness for filing is NEVER inferred from filled fields.
  */
-export type MilitaryDocumentField={key:string;label:string;required:boolean;help?:string;multiline?:boolean};
+export type MilitaryDocumentField={key:string;label:string;required:boolean;help?:string;multiline?:boolean;options?:readonly string[]};
 const base:MilitaryDocumentField[]=[
  {key:"recipient",label:"Кому направляется документ (орган и должность)",required:true,help:"Получателя уточните по служебным документам и ведомственной компетенции."},
  {key:"applicantName",label:"Фамилия, имя и отчество заявителя",required:true},
@@ -21,7 +21,7 @@ const judicial:MilitaryDocumentField[]=[
  {key:"applicantName",label:"ФИО административного истца",required:true},
  {key:"applicantBirth",label:"Дата и место рождения административного истца",required:true},
  {key:"applicantAddress",label:"Место жительства или пребывания истца",required:true},
- {key:"contactMethod",label:"Контакт для судебных извещений (если используется)",required:true},
+ {key:"contactMethod",label:"Контакт для судебных извещений (при наличии)",required:false},
  {key:"respondentName",label:"Орган или должностное лицо — административный ответчик",required:true},
  {key:"respondentAddress",label:"Адрес административного ответчика",required:true},
  {key:"actDate",label:"Дата оспариваемого решения либо период бездействия",required:true},
@@ -100,7 +100,7 @@ export function composeMilitaryDocument(
   if(response.missing.length||!response.draft)return {missing:response.missing,document:null};
   return {missing:[],document:{title:blueprint.title,slug:blueprint.slug,text:response.draft,requiresLegalReview:true,filingReady:false}};
  }
- const facts=blueprint.facts.map((label,index)=>label+": "+normalize(answers["fact-"+index])+".");
+ const facts=blueprint.facts.map((label,index)=>({label,value:normalize(answers["fact-"+index])})).filter(x=>Boolean(x.value)).map(x=>x.label+": "+x.value+".");
  const request=specificRequests[scenarioKey];
  if(!request||!request.length)throw Error("No specific legally researched demand for "+scenarioKey);
  const judicialDocument=blueprint.type==="Административное исковое заявление";
