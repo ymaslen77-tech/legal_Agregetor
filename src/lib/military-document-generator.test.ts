@@ -3,6 +3,7 @@ import {MILITARY_ROUTES,MILITARY_SOURCES,getMilitaryDocumentSlug,getMilitaryRout
 import {validateMilitaryIntake,createMilitaryDocumentResult,MILITARY_DRAFT_PURPOSES} from "@/lib/military-document-generator";
 import {documentResultSchema} from "@/lib/document-result-contract";
 import {MILITARY_INTAKE_PLANS,militaryIntakeQuestionLabel,militaryIntakeHint,militaryIntakeLegalReason,resolveMilitaryIntakeAnswers} from "@/data/military-intake-plans";
+import {MILITARY_DIRECTORY_REGIONS,MILITARY_AGENCIES,MILITARY_POST_DOCUMENT_PLANS,selectMilitaryPostDocumentAgencies} from "@/data/military-post-document-directory";
 
 const id="11111111-1111-4111-8111-111111111111",stamp="2026-10-21T00:00:00.000Z";
 const kasSource=MILITARY_SOURCES.kas;
@@ -13,6 +14,32 @@ assert.ok(Object.values(MILITARY_SOURCES).every(source=>new URL(source.url).path
 assert.equal(MILITARY_ROUTES.length,6);
 assert.equal(MILITARY_ROUTES.flatMap(r=>r.scenarios).length,18);
 assert.equal(Object.keys(MILITARY_DRAFT_PURPOSES).length,17);
+assert.equal(MILITARY_DIRECTORY_REGIONS.length,89,"Regional picker covers 89 listed subjects");
+assert.equal(new Set(MILITARY_DIRECTORY_REGIONS.map(r=>r.id)).size,MILITARY_DIRECTORY_REGIONS.length);
+assert.equal(Object.keys(MILITARY_POST_DOCUMENT_PLANS).length,17,"Every generated military outcome has a recipient routing plan");
+for(const agency of Object.values(MILITARY_AGENCIES)){
+ const allowed=["mil.ru","epp.genproc.gov.ru","sfr.gov.ru","lkg.mil.ru","sudrf.ru","www.consultant.ru"];
+ for(const link of [agency.lookupUrl,agency.onlineUrl,agency.sourceUrl].filter((value):value is string=>Boolean(value))){
+  const url=new URL(link);
+  assert.equal(url.protocol,"https:","All agency links must use HTTPS");
+  assert.ok(allowed.includes(url.hostname),"Do not add an unverified third-party submission endpoint: "+url.hostname);
+ }
+}
+for(const route of MILITARY_ROUTES)for(const scenario of route.scenarios){
+ if(scenario.kind==="URGENT_INSTRUCTION")continue;
+ const plan=selectMilitaryPostDocumentAgencies(scenario.key);
+ assert.ok(plan.recommended.length>0,"Missing primary destination: "+scenario.key);
+ assert.ok(plan.reason.length>30,"Explain routing criteria to the citizen: "+scenario.key);
+ assert.equal(new Set([...plan.recommended,...plan.additional].map(a=>a.id)).size,plan.recommended.length+plan.additional.length);
+}
+assert.ok(selectMilitaryPostDocumentAgencies("pay-breakdown").recommended.every(a=>a.id!=="sfr"),
+ "Military pay must not be routed automatically to the Social Fund");
+assert.ok(selectMilitaryPostDocumentAgencies("deferment").recommended.some(a=>a.id==="commissariat"),
+ "Draft deferment requires the military registration authority");
+assert.ok(selectMilitaryPostDocumentAgencies("family-benefits").recommended.some(a=>a.id==="sfr"),
+ "Some family benefits require a regional SFR office, subject to legal competence");
+assert.ok(!Object.keys(MILITARY_POST_DOCUMENT_PLANS).includes("medical-emergency"),
+ "Medical emergency must never offer an intake or submission guide");
 const tailored=MILITARY_ROUTES.flatMap(route=>route.scenarios.filter(s=>s.kind!=="URGENT_INSTRUCTION").map(s=>({route,scenario:s})));
 assert.equal(Object.keys(MILITARY_INTAKE_PLANS).length,17,"One independently designed questionnaire per document");
 const signatures=new Set<string>();
