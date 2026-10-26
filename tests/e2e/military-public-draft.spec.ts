@@ -25,6 +25,12 @@ test("all 18 military situations follow family category, situation, questionnair
    if(scenario.kind!=="URGENT_INSTRUCTION"){
     await expect(page.getByRole("heading",{name:"Шаг 1. Обстоятельства и документы"})).toBeVisible();
     await expect(page.getByRole("heading",{name:"Шаг 2. Проверка ограничений"})).toBeVisible();
+    const intake=page.getByRole("region",{name:"Пошаговая анкета"});
+    await expect(intake.getByRole("textbox")).toHaveCount(scenario.required.filter(k=>!["role","regime","urgency"].includes(k)).length);
+    await expect(intake.locator("select")).toHaveCount(scenario.required.filter(k=>["role","regime","urgency"].includes(k)).length);
+    await expect(intake.getByText("Что произошло?",{exact:true})).toHaveCount(0);
+    await expect(intake.getByText("Что вы хотите получить?",{exact:true})).toHaveCount(0);
+    expect(scenario.required.length).toBeLessThanOrEqual(4);
    }
    await page.goto(routeHref);
   }
@@ -50,7 +56,6 @@ test("military draft retains legal status and sends no questionnaire posts",asyn
  await page.goto(militaryCanonicalRouteHref("service-contract","service-order-copy"));
  const form=page.getByRole("region",{name:"Пошаговая анкета"});
  await form.getByLabel("Кто обращается?").selectOption("военнослужащий");
- await form.getByLabel("Правовой статус и вид службы").selectOption("контракт");
  for(const input of await form.locator("textarea").all()){
   await input.fill("Подтвержденные обезличенные обстоятельства по документам");
  }
@@ -69,7 +74,6 @@ test("military PDF review requires two consents and supports secure withdrawal",
  await page.goto(militaryCanonicalRouteHref("service-contract","service-order-copy"));
  const form=page.getByRole("region",{name:"Пошаговая анкета"});
  await form.getByLabel("Кто обращается?").selectOption("военнослужащий");
- await form.getByLabel("Правовой статус и вид службы").selectOption("контракт");
  for(const input of await form.locator("textarea").all())
   await input.fill("Подтверждённые обстоятельства по документам, без личных сведений");
  const check=page.getByRole("region",{name:"Проверка перед генерацией"});
