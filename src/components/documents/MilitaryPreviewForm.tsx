@@ -3,7 +3,7 @@
 import Link from "next/link";
 import {useMemo,useState} from "react";
 import {MILITARY_ROUTES,type MilitaryRoute,type MilitaryScenario} from "@/data/military-route-plans";
-import {militaryIntakeQuestionLabel} from "@/data/military-intake-plans";
+import {militaryIntakeQuestionLabel,militaryIntakeHint,militaryIntakeLegalReason} from "@/data/military-intake-plans";
 import {getMilitaryPinpointLinks,militaryProvisionHref} from "@/data/military-provision-links";
 import {getMilitaryCaseReview} from "@/data/military-case-reviews";
 import {militaryPreviewHref,militaryPublicDraftHref,militaryCanonicalRouteHref} from "@/lib/military-preview-navigation";
@@ -166,8 +166,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
       label={militaryIntakeQuestionLabel(scenario.key,field)} value={answers[field.key]??""} required
       kind={field.values?"select":"textarea"} rows={2}
       options={field.values?.map(v=>({value:v,label:v}))}
-      hint={field.key==="urgency"?"Если требуется срочная помощь, сначала обратитесь к врачу.":
-        field.key==="medical"?"Не пишите диагноз.":undefined}
+      hint={[militaryIntakeHint(scenario.key,field.key),militaryIntakeLegalReason(scenario.key,field.key)].filter(Boolean).join(" ")||undefined}
       error={validation.invalid.includes(field.key)?"Проверьте корректность заполнения.":undefined}
       onChange={v=>changeValue(field.key,v)}/>)}
     </div>
@@ -198,7 +197,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
      {review.evidenceToCheck.map(e=><li key={e}>{e}</li>)}
     </ul>
     <h3 className="mt-5 font-semibold">Нормативные источники — требуют сверки редакций</h3>
-    <ul className="mt-2 list-disc space-y-2 pl-6 text-sm">{getMilitaryPinpointLinks(route.id,scenario.key,answers.regime).map(ref=><li key={ref.id}><a className="underline underline-offset-2" href={militaryProvisionHref(ref)} target="_blank" rel="noreferrer noopener">{ref.citation}</a><span className="ml-2 text-zinc-600">({ref.pinpoint}; применимость и редакция на дату события требуют проверки)</span></li>)}</ul>
+    <ul className="mt-2 list-disc space-y-2 pl-6 text-sm">{getMilitaryPinpointLinks(route.id,scenario.key,validation.complete?((scenario.required.includes("regime")?answers.regime:undefined)??(route.id==="service-contract"?"контракт":undefined)):answers.regime).map(ref=><li key={ref.id}><a className="underline underline-offset-2" href={militaryProvisionHref(ref)} target="_blank" rel="noreferrer noopener">{ref.citation}</a><span className="ml-2 text-zinc-600">({ref.pinpoint}; применимость и редакция на дату события требуют проверки)</span></li>)}</ul>
     </details>
     <label className="mt-4 flex items-start gap-3 rounded-md border border-line p-4 text-sm leading-6">
      <input type="checkbox" checked={acknowledged} disabled={!validation.complete}
