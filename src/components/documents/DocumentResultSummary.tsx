@@ -7,13 +7,15 @@ export function DocumentResultSummary({
   label,
   children,
   archiveDisabled = false,
-  hideArchive = false
+  hideArchive = false,
+  hideVersionId = false
 }: {
   result: DocumentResultV1;
   label?: string;
   children?: ReactNode;
   archiveDisabled?: boolean;
   hideArchive?: boolean;
+  hideVersionId?: boolean;
 }) {
   return (
     <section className="border-l-4 border-amber-400 bg-amber-50 p-4 text-amber-950" aria-label="Юридический статус документа">
@@ -27,7 +29,7 @@ export function DocumentResultSummary({
         Готовность к подаче не подтверждена.
         {result.requiresLegalReview ? " Требуется индивидуальная юридическая проверка." : " Сверьте результат с официальной процедурой и формой."}
       </p>
-      <p className="mt-2 break-all text-xs">ID версии: {result.versionId}</p>
+      {!hideVersionId ? <p className="mt-2 break-all text-xs">ID версии: {result.versionId}</p> : null}
       {children}
       {!hideArchive ? <SaveLegalDocumentButton key={result.versionId} result={result} disabled={archiveDisabled} /> : null}
     </section>
