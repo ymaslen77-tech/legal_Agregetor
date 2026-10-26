@@ -16,6 +16,7 @@ function statusConflict(role:string|undefined,regime:string|undefined):boolean {
  if(role==="призывник" && ["контракт","уволен"].includes(regime??""))return true;
  if(role==="уволенный военнослужащий" && regime!=="уволен")return true;
  if(role==="военнослужащий" && regime==="доподготовка к призыву")return true;
+ if(role==="гражданин в запасе" && !["мобилизация","доподготовка к призыву"].includes(regime??""))return true;
  return false;
 }
 export function validateMilitaryIntake(route:MilitaryRoute,scenario:MilitaryScenario,answers:Answers):MilitaryValidation {
@@ -46,7 +47,7 @@ export function validateMilitaryIntake(route:MilitaryRoute,scenario:MilitaryScen
   warnings.push("Для получения личных документов необходимо подтвердить право на их запрос.");
  if(route.id==="mobilization-draft" &&
   !((data.role==="призывник" && ["доподготовка к призыву","призыв"].includes(data.regime??"")) ||
-    (data.role==="военнослужащий" && data.regime==="мобилизация")))
+    (["военнослужащий","гражданин в запасе"].includes(data.role??"") && data.regime==="мобилизация")))
   needsClarification("Выбранная ситуация не соответствует указанному виду службы.");
  if(["mobilization-draft","military-discharge","military-medical"].includes(route.id))
   warnings.push("Проверьте, какие правила действовали на дату события.");
@@ -101,8 +102,9 @@ export function createMilitaryDocumentResult(
  // general procedural information about possible family benefits.
  const selfApplicant=["военнослужащий","призывник","уволенный военнослужащий"].includes(data.role??"");
  const familyApplicant=data.role==="член семьи"&&scenario.key==="family-benefits";
+ const reserveApplicant=data.role==="гражданин в запасе"&&route.id==="mobilization-draft";
  const personalAccessRequest=["service-order-copy","pay-breakdown"].includes(scenario.key);
- const draftEligible=(selfApplicant||familyApplicant)&&
+ const draftEligible=(selfApplicant||familyApplicant||reserveApplicant)&&
    (!personalAccessRequest||data.role==="военнослужащий")&&
    (!scenario.required.includes("authority")||hasRecipient);
  const sources=getMilitaryPinpointLinks(route.id,scenario.key,data.regime)
