@@ -93,7 +93,7 @@ export function MilitaryDocumentReviewForm({result}:{result:DocumentResultV1}){
     </label>
     <label className="flex items-start gap-2 text-sm leading-6">
      <input type="checkbox" required checked={transferConsent} onChange={e=>setTransferConsent(e.target.checked)} className="mt-1"/>
-     <span>Согласен на передачу PDF и контактов специалисту после назначения. Файл хранится до 30 дней; согласие можно отозвать.</span>
+     <span>Согласен на передачу PDF и контактов специалисту после назначения. Доступ к PDF ограничен 30 днями. Согласие можно отозвать.</span>
     </label>
     <button type="submit" disabled={busy||!personalConsent||!transferConsent} className="min-h-11 rounded-md bg-trust px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">
      {busy?"Отправляем…":"Подтвердить отправку PDF"}
