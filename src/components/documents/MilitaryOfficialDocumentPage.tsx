@@ -7,13 +7,12 @@ import {documentResultSchema} from "@/lib/document-result-contract";
 import {MilitaryPostDocumentGuide} from "@/components/documents/MilitaryPostDocumentGuide";
 
 export function MilitaryOfficialDocumentPage({documentKey}:{documentKey:string}){
- const blueprint=getMilitaryDocumentBlueprint(documentKey);
+ const blueprint=getMilitaryDocumentBlueprint(documentKey)!;
  const [values,setValues]=useState<Record<string,string>>({});
  const [generated,setGenerated]=useState<string|null>(null);
  const [version,setVersion]=useState("");
  const [notice,setNotice]=useState("");
  const [approved,setApproved]=useState(false);
- if(!blueprint)return <p role="alert">Юридический документ не найден.</p>;
  const fields=getMilitaryDocumentFields(documentKey);
  function change(key:string,value:string){
   setValues(p=>({...p,[key]:value}));setGenerated(null);setVersion("");setNotice("");setApproved(false);
