@@ -17,8 +17,8 @@ const routeSummaries:Record<string,string>={
 };
 
 export const metadata:Metadata=buildMetadata({
- title:"Военное право — юридические ситуации",
- description:"Военная служба, увольнение, выплаты, ВВК, обращения к командованию, призыв и мобилизация. Выберите ситуацию и подготовьте документ.",
+ title:"Военное право — рапорты, заявления, жалобы и иски: скачать PDF",
+ description:"Рапорты, заявления, жалобы и административные иски по военной службе: контракты, увольнение, денежное довольствие, ВВК, мобилизация. Сформировать документ онлайн, скачать PDF или DOCX.",
  path:"/voennoe-pravo/",isIndexable:true
 });
 
@@ -35,7 +35,7 @@ export default function MilitaryLawTopicsPage(){
    <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
     <p className="text-sm font-semibold uppercase tracking-wide text-trust">Правовой навигатор</p>
     <h1 className="mt-2 text-4xl font-semibold text-ink">Военное право</h1>
-    <p className="mt-4 max-w-3xl text-lg leading-8 text-zinc-700">Выберите жизненную ситуацию, чтобы получить порядок действий и подготовить документ для юридической проверки.</p>
+    <p className="mt-4 max-w-3xl text-lg leading-8 text-zinc-700">Выберите направление и конкретный документ: рапорт, заявление, жалобу или административное исковое заявление. Подготовьте его онлайн и скачайте PDF или DOCX.</p>
    </section>
    <section className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8" aria-label="Юридические ситуации">
     <h2 className="text-2xl font-semibold text-ink">Ситуации</h2>
