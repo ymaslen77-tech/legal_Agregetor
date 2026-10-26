@@ -90,9 +90,6 @@ export function createMilitaryDocumentResult(
  if(scenario.kind==="URGENT_INSTRUCTION")throw new Error("Urgent instruction must not generate or export a document");
  const check=validateMilitaryIntake(route,scenario,answers);
  if(check.missing.length||check.invalid.length||!check.complete)throw new Error("Заполните и подтвердите обязательные факты: "+[...check.missing,...check.invalid,...check.warnings].join("; "));
- const pinpointLinks=getMilitaryPinpointLinks(route.id,scenario.key,answers.regime);
- const sourceLines=pinpointLinks.map(ref=>"- "+ref.citation+" ("+ref.pinpoint+"): "+militaryProvisionHref(ref));
- const review=getMilitaryCaseReview(route.id,scenario.key);
  const purpose=MILITARY_DRAFT_PURPOSES[route.id+"/"+scenario.key];
  if(!purpose)throw new Error("Scenario-specific draft definition missing: "+route.id+"/"+scenario.key);
  const hasRecipient=Boolean(answers.authority?.trim())&&!isUncertain((answers.authority??"").trim());
@@ -120,30 +117,30 @@ export function createMilitaryDocumentResult(
   "ПРОЕКТ ДОКУМЕНТА — НЕ ГОТОВ К ПОДАЧЕ",
   "Кому: "+namedRecipient,
   "От: [ФИО и контактные данные заявитель вносит самостоятельно перед проверкой]",
-  "Статус заявителя (со слов пользователя): "+answers.role,
+  "Статус заявителя: "+answers.role,
   "",
   purpose.title.toUpperCase(),
   "",
-  "Изложение обстоятельств.",
+  "Обстоятельства",
   ...reportedFacts,
+  "Цель обращения: "+(answers.goal??"").trim()+".",
+  "",
+  "Правовые основания",
+  "Ситуация связана со следующими нормами и разъяснениями. Проверьте редакцию на дату события и применимость:",
+  ...sources.map(item=>"- "+item),
   "",
   "С учётом изложенного прошу:",
   ...purpose.requests.map((request,index)=>(index+1)+". "+request),
+  "Прошу направить ответ по указанным в обращении контактам.",
   "",
-  "При необходимости прошу сообщить о результате рассмотрения по законному способу связи, указанному заявителем после проверки.",
-  "",
-  "Предполагаемые приложения (наличие и допустимость передачи проверить):",
+  "Приложения (при наличии)",
   ...scenario.evidence.map(item=>"- "+item),
-  "- Иные подтверждающие документы: "+(answers.evidence??"").trim()+".",
+  "- Другие подтверждающие документы: "+(answers.evidence??"").trim()+".",
   "",
-  "Нормативные материалы для проверки применимости и редакции, а не безусловное правовое основание:",
-  ...sources.map(item=>"- "+item),
+  "Дата: [указать]     Подпись: [поставить перед отправкой]",
   "",
-  "ПЕРЕД ПОДАЧЕЙ: юрист должен подтвердить вид обращения, компетентного адресата,",
-  "полномочия заявителя, правовой режим, специальные исключения, сроки, форму и приложения.",
-  "Ни одно из этих обстоятельств автоматически не установлено.",
-  "",
-  "Дата: [вписать после проверки]     Подпись: [подписать после проверки]"
+  "Перед направлением юрист должен проверить адресата, полномочия заявителя,",
+  "правовые основания, сроки и приложения."
  ].join("\n"):[
   "ПРЕДВАРИТЕЛЬНЫЙ ЧЕК-ЛИСТ — НЕ ГОТОВ К ПОДАЧЕ",
   heading(route,scenario),"",
@@ -166,7 +163,7 @@ export function createMilitaryDocumentResult(
    documentSlug:slug,resultKind:draftEligible?"DRAFT":"CHECKLIST",source:"DETERMINISTIC",
    documentTitle:(draftEligible?"Предварительный проект обращения: ":"Чек-лист: ")+scenario.title,
    documentText:draftText,usedRuleIds:[],placeholders:[],
-   legalRegistryReviewedAt:null,generatorVersion:"military-draft-2",
+   legalRegistryReviewedAt:null,generatorVersion:"military-draft-3",
    filingReady:false,requiresLegalReview:true
  });
 }
