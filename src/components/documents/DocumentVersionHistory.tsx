@@ -5,11 +5,13 @@ import type { DocumentResultV1 } from "@/lib/document-result-contract";
 export function DocumentVersionHistory({
   versions,
   currentVersionId,
-  onSelect
+  onSelect,
+  hideIds = false
 }: {
   versions: readonly DocumentResultV1[];
   currentVersionId: string | null;
   onSelect: (versionId: string) => void;
+  hideIds?: boolean;
 }) {
   if (versions.length < 2) return null;
   return <section className="mt-6 border-t border-line pt-5" aria-label="Версии сформированного результата">
@@ -19,7 +21,7 @@ export function DocumentVersionHistory({
       {versions.map((item) => <li key={item.versionId} className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-line p-3">
         <div className="min-w-0">
           <p className="font-medium text-ink">{item.documentTitle}</p>
-          <p className="break-all text-xs text-zinc-600">{item.versionId}</p>
+          {!hideIds ? <p className="break-all text-xs text-zinc-600">{item.versionId}</p> : null}
         </div>
         <button type="button" aria-pressed={currentVersionId === item.versionId} disabled={currentVersionId === item.versionId} onClick={() => onSelect(item.versionId)} className="min-h-11 rounded-md border border-trust px-3 text-sm font-semibold text-trust disabled:opacity-60">
           {currentVersionId === item.versionId ? "Текущая версия" : "Открыть версию"}
