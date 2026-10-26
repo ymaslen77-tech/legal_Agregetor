@@ -57,7 +57,7 @@ for(const blueprint of MILITARY_DOCUMENT_BLUEPRINTS){
  const empty=composeMilitaryDocument(blueprint.scenarioKey,{});
  assert.equal(empty.document,null,"Incomplete legal document must not be fabricated");
  assert.ok(empty.missing.length>0);
- const answers=Object.fromEntries(fields.map(f=>[f.key,
+ const answers=Object.fromEntries(fields.map(f=>[f.key,f.options?f.options[0]:
   f.key==="date"?"26.10.2026":
   f.key==="applicantName"?"Иванов Иван Иванович":
   f.key==="applicantBirth"?"01.01.1985, город Москва":
