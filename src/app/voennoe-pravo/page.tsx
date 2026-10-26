@@ -7,6 +7,15 @@ import {buildMetadata} from "@/lib/seo";
 import {MILITARY_ROUTES} from "@/data/military-route-plans";
 import {militaryCanonicalRouteHref} from "@/lib/military-preview-navigation";
 
+const routeSummaries:Record<string,string>={
+ "service-contract":"Условия контракта, получение приказов и перевод.",
+ "military-discharge":"Основания увольнения, состояние здоровья и расчёт.",
+ "military-pay":"Денежное довольствие, компенсации и выплаты членам семьи.",
+ "military-medical":"Медицинская помощь, заключение ВВК и независимая экспертиза.",
+ "command-appeal":"Обращения, решения командования и отсутствие ответа.",
+ "mobilization-draft":"Повестки, отсрочки и обжалование решений."
+};
+
 export const metadata:Metadata=buildMetadata({
  title:"Военное право — юридические ситуации",
  description:"Военная служба, увольнение, выплаты, ВВК, обращения к командованию, призыв и мобилизация. Выберите ситуацию и подготовьте документ.",
@@ -33,7 +42,7 @@ export default function MilitaryLawTopicsPage(){
     <div className="mt-6 grid gap-4 md:grid-cols-2">
      {MILITARY_ROUTES.map(route=><article key={route.id} className="rounded-lg border border-line bg-white p-5 shadow-sm">
       <h3 className="text-lg font-semibold text-ink">{route.title}</h3>
-      <p className="mt-2 text-sm leading-6 text-zinc-600">{route.scenarios.map(item=>item.title).join(" · ")}</p>
+      <p className="mt-2 text-sm leading-6 text-zinc-600">{routeSummaries[route.id]}</p>
       <Link href={militaryCanonicalRouteHref(route.id)}
        className="mt-4 inline-flex min-h-11 items-center rounded-md border border-trust px-4 py-2 text-sm font-semibold text-trust hover:bg-emerald-50">
        Понять, что делать
