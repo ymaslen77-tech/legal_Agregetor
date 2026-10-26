@@ -4,6 +4,7 @@ import {useMemo,useState} from "react";
 import type {DocumentResultV1} from "@/lib/document-result-contract";
 import {createMilitaryLegalDocumentResult,validateMilitaryLegalDocument} from "@/lib/military-legal-document-generator";
 import {MILITARY_LEGAL_FIELDS,type MilitaryLegalDocument} from "@/data/military-legal-documents";
+import {MILITARY_AGENCIES,MILITARY_DIRECTORY_REGIONS,selectMilitaryPostDocumentAgencies} from "@/data/military-post-document-directory";
 import {MILITARY_ROUTES} from "@/data/military-route-plans";
 import {MilitaryPostDocumentGuide} from "@/components/documents/MilitaryPostDocumentGuide";
 import {DocumentResultSummary} from "@/components/documents/DocumentResultSummary";
@@ -20,6 +21,10 @@ export function MilitaryLegalDocumentEditor({document}: {document:MilitaryLegalD
  const [dirty,setDirty]=useState(true);
  const [message,setMessage]=useState("");
  const [legalAcknowledgement,setLegalAcknowledgement]=useState(false);
+ const [region,setRegion]=useState("");
+ const agencyPlan=selectMilitaryPostDocumentAgencies(document.scenarioKey);
+ const preferredAgencies=document.kind==="court"?[MILITARY_AGENCIES.court]:agencyPlan.recommended;
+ const regionLabel=MILITARY_DIRECTORY_REGIONS.find(item=>item.id===region)?.label;
  const validation=useMemo(()=>validateMilitaryLegalDocument(document,values),[document,values]);
  const active=versions.find(v=>v.result.versionId===selectedVersion);
  const scenario=MILITARY_ROUTES.flatMap(route=>route.scenarios).find(s=>s.key===document.scenarioKey);
@@ -77,6 +82,22 @@ export function MilitaryLegalDocumentEditor({document}: {document:MilitaryLegalD
    Укажите реквизиты, необходимые для этого вида юридического документа. Не переписывайте секретные сведения, сведения о дислокации подразделений или медицинские диагнозы.
    Введённые данные остаются в браузере до явного сохранения или отправки.
   </p>
+  <section className="mt-5 rounded-md border border-line p-4" aria-label="Найти компетентное ведомство">
+   <h3 className="font-semibold">Найдите реквизиты получателя документа</h3>
+   <p className="mt-2 text-sm leading-6 text-zinc-700">Выберите регион для поиска контактов. Подчинённость военного органа, место воинского учёта и подсудность не определяются одним регионом.</p>
+   <select aria-label="Регион для поиска компетентного адресата" value={region} onChange={event=>setRegion(event.target.value)} className="mt-3 min-h-11 w-full rounded-md border border-line p-2 text-base">
+    <option value="">Выберите регион</option>
+    {[...MILITARY_DIRECTORY_REGIONS].sort((a,b)=>a.label.localeCompare(b.label,"ru")).map(item=><option key={item.id} value={item.id}>{item.label}</option>)}
+   </select>
+   {regionLabel?<p className="mt-2 text-sm text-trust">Регион поиска: {regionLabel}</p>:null}
+   <ul className="mt-3 list-disc space-y-2 pl-5 text-sm">
+    {preferredAgencies.map(agency=><li key={agency.id}>
+     <a href={agency.lookupUrl} target="_blank" rel="noopener noreferrer" className="font-semibold text-trust underline underline-offset-2">{agency.title}: официальный поиск контактов</a>
+     <p className="mt-1 leading-5 text-zinc-600">{agency.warning}</p>
+    </li>)}
+   </ul>
+   <p className="mt-3 text-xs text-zinc-600">Перенесите проверенное название адресата в юридический документ. Сайт не присваивает адреса ведомствам автоматически.</p>
+  </section>
   <div className="mt-5 grid gap-4">
    {document.fields.map((key,index)=>{
     const def=MILITARY_LEGAL_FIELDS[key];
@@ -126,7 +147,7 @@ export function MilitaryLegalDocumentEditor({document}: {document:MilitaryLegalD
     <button type="button" disabled={dirty} onClick={()=>void downloadDocx()} className="min-h-11 rounded-md border border-trust px-5 py-3 font-semibold text-trust disabled:opacity-50">Скачать DOCX</button>
    </div>
    <DocumentVersionHistory versions={versions.map(x=>x.result)} currentVersionId={active.result.versionId} onSelect={restore} hideIds/>
-   <MilitaryPostDocumentGuide key={active.result.versionId} scenarioKey={document.scenarioKey} resultKind={active.result.resultKind} evidence={scenario?.evidence??[]}/>
+   <MilitaryPostDocumentGuide key={active.result.versionId} scenarioKey={document.scenarioKey} resultKind={active.result.resultKind} evidence={scenario?.evidence??[]} initialRegion={region}/>
   </section>:null}
  </section>;
 }
