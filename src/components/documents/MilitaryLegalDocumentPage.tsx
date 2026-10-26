@@ -17,7 +17,7 @@ export function MilitaryLegalDocumentPage({document,seoDocument}:{document:Milit
   {name:document.title,path}
  ];
  return <>
-  <JsonLd data={[breadcrumbJsonLd(crumbs),documentWebPageJsonLd(path,document.title,seoDocument.shortDescription)]}/>
+  <JsonLd data={[breadcrumbJsonLd(crumbs),{"@context":"https://schema.org","@type":"WebPage",name:document.title,description:seoDocument.shortDescription,url:absoluteUrl(path)}]}/>
   <Breadcrumbs items={crumbs}/>
   <article className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
    <header className="border-b border-line pb-7">
