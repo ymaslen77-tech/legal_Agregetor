@@ -170,7 +170,7 @@ export default async function DocumentPage({ params, searchParams }: PageProps) 
   );
 
   const militaryDocument=getMilitaryLegalDocument(document.slug);
-  if(militaryDocument)return <MilitaryLegalDocumentPage document={militaryDocument} seoDocument={document}/>;
+  if(militaryDocument)return withAfterDownload(<MilitaryLegalDocumentPage document={militaryDocument} seoDocument={document}/>);
 
   const familyLaborMatch=getFamilyLaborDocumentMatch(document.slug);
   if(familyLaborMatch){
