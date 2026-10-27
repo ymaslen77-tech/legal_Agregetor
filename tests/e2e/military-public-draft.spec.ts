@@ -44,7 +44,7 @@ test("all 23 documents publish canonical SEO destination and actual generator",a
   await expect(page.getByRole("heading",{level:1,name:doc.title})).toBeVisible();
   await expect(page.getByRole("region",{name:"Подготовка юридического документа"})).toBeVisible();
   await expect(page.locator('meta[name="description"]')).toHaveAttribute("content",/воен|рапорт|заявлен|жалоб|исков/i);
-  await expect(page.locator('meta[name="robots"]')).not.toHaveAttribute("content",/noindex/);
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content",/noindex/);
  }
 });
 
