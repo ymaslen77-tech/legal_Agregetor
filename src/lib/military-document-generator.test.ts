@@ -135,7 +135,7 @@ const wrongRole=Object.fromEntries(draftRoute.fields.map(f=>[f.key,
  f.values?f.values[0]:"Подтверждённые обстоятельства"]));
 wrongRole.role="военнослужащий";wrongRole.regime="контракт";
 assert.equal(validateMilitaryIntake(draftRoute,inapplicable,wrongRole).complete,false);
-assert.throws(()=>createMilitaryDocumentResult(draftRoute,inapplicable,wrongRole,{versionId:id,createdAt:stamp}),/Проверьте данные в анкете/);
+assert.throws(()=>createMilitaryDocumentResult(draftRoute,inapplicable,wrongRole,{versionId:id,createdAt:stamp}),/Проверьте данные документа/);
 const medicalRoute=getMilitaryRoute("military-medical")!;
 const medicalScenario=medicalRoute.scenarios.find(x=>x.key==="vvk-conclusion")!;
 const medicallyRelevantAnswers:Record<string,string>=Object.fromEntries(
@@ -152,7 +152,7 @@ assert.equal(createMilitaryDocumentResult(medicalRoute,medicalScenario,medically
 const urgentAnswers=Object.fromEntries(medicalRoute.fields.map(x=>[x.key,x.values?x.values[0]:"Есть документ"]));
 urgentAnswers.urgency="да";
 assert.equal(validateMilitaryIntake(medicalRoute,medicalScenario,urgentAnswers).complete,false);
-assert.throws(()=>createMilitaryDocumentResult(medicalRoute,medicalScenario,urgentAnswers,{versionId:id,createdAt:stamp}),/Проверьте данные в анкете/);
+assert.throws(()=>createMilitaryDocumentResult(medicalRoute,medicalScenario,urgentAnswers,{versionId:id,createdAt:stamp}),/Проверьте данные документа/);
 urgentAnswers.urgency="не знаю";
 assert.equal(validateMilitaryIntake(medicalRoute,medicalScenario,urgentAnswers).complete,false);
 for(const unsupportedRegime of ["добровольческое формирование","военные сборы","мобилизационный людской резерв"]){
