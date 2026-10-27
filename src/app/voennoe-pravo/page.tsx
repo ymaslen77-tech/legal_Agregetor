@@ -26,8 +26,8 @@ export default function MilitaryTopicsPage() {
       <header className="max-w-4xl">
         <p className="text-sm font-semibold uppercase tracking-wide text-trust">Правовой навигатор</p>
         <h1 className="mt-2 text-4xl font-semibold text-ink">Военное право</h1>
-        <p className="mt-4 text-lg leading-8 text-zinc-700">Выберите тему и конкретный вопрос. Для справочных ситуаций достаточно информации; юридические документы будут доступны только там, где они необходимы и проверены.</p>
-        <p className="mt-3 text-sm text-zinc-600">Новый раздел находится на юридической проверке. До завершения проверки генераторы документов не включены.</p>
+        <p className="mt-4 text-lg leading-8 text-zinc-700">Выберите тему и конкретный вопрос. Информационные вопросы не требуют заполнения данных. Для отдельных обращений можно подготовить проект юридического документа.</p>
+        <p className="mt-3 text-sm text-zinc-600">Материалы проходят индивидуальную юридическую проверку. Проекты документов требуют проверки перед подачей.</p>
       </header>
       <section className="mt-10" aria-label="Темы военного права">
         <h2 className="text-2xl font-semibold text-ink">Темы</h2>

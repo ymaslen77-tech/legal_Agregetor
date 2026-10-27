@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { getMilitaryTopic, MILITARY_TOPICS, MILITARY_LEGACY_TOPIC_REDIRECTS } from "@/data/military-catalog";
+import { getMilitaryGuide } from "@/data/military-guidance";
 type Props = { params: Promise<{ slug: string }> };
 export const dynamicParams = false;
 export function generateStaticParams() {
@@ -19,6 +20,7 @@ export default async function MilitaryTopicPage({params}: Props) {
   if (replacement) permanentRedirect(`/voennoe-pravo/${replacement}/`);
   const topic = getMilitaryTopic(slug);
   if (!topic) notFound();
+  const guide = getMilitaryGuide(topic.slug);
   const crumbs = [
     {name:"Главная",path:"/"}, {name:"Военное право",path:"/voennoe-pravo/"},
     {name:topic.title,path:`/voennoe-pravo/${topic.slug}/`}
@@ -29,7 +31,21 @@ export default async function MilitaryTopicPage({params}: Props) {
       <Link href="/voennoe-pravo/" className="text-sm font-semibold text-trust underline">Все темы военного права</Link>
       <h1 className="mt-4 text-3xl font-semibold text-ink">{topic.title}</h1>
       <p className="mt-3 text-zinc-700">{topic.description}</p>
-      <p className="mt-2 text-sm text-zinc-600">Ситуации готовятся к юридической проверке. Информационные страницы не требуют заполнения данных, генераторы пока не подключены.</p>
+      <p className="mt-2 text-sm text-zinc-600">Ситуации готовятся к юридической проверке. Информационные страницы не требуют заполнения данных. В отдельных ситуациях доступен проект документа без проверки права на его подачу.</p>
+      <section className="mt-7 border-t border-line pt-6" aria-labelledby="military-topic-basics">
+        <h2 className="text-xl font-semibold text-ink" id="military-topic-basics">Основные правовые вопросы</h2>
+        <p className="mt-3 leading-7 text-zinc-700">{guide.context}</p>
+        <h3 className="mt-5 font-semibold text-ink">На что обратить внимание</h3>
+        <ol className="mt-3 grid list-decimal gap-2 pl-6 text-zinc-700">
+          {guide.steps.map(step=><li key={step}>{step}</li>)}
+        </ol>
+        <p className="mt-4 text-sm leading-6 text-zinc-700">{guide.caution}</p>
+        <p className="mt-4 text-sm font-semibold text-ink">Нормативные акты</p>
+        <ul className="mt-2 list-disc pl-6 text-sm leading-6">
+          {guide.sources.map(source=><li key={source.id}><a className="text-trust underline" href={source.url} target="_blank" rel="noopener noreferrer">{source.name}</a></li>)}
+        </ul>
+        <p className="mt-3 text-xs text-zinc-600">Ссылки приведены справочно. Редакцию и применимость нормы следует проверять на дату конкретного события.</p>
+      </section>
       <section className="mt-8" aria-label="Конкретные ситуации">
         <h2 className="text-xl font-semibold text-ink">Выберите вопрос</h2>
         <ul className="mt-4 grid gap-3">
@@ -41,6 +57,7 @@ export default async function MilitaryTopicPage({params}: Props) {
           </li>)}
         </ul>
       </section>
+      <p className="mt-8"><Link href={`/questions/?q=${encodeURIComponent(topic.title)}`} className="font-semibold text-trust underline">Искать вопросы и ответы по теме</Link></p>
     </main>
   </>;
 }
