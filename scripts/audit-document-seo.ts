@@ -194,7 +194,7 @@ function hasCanonical(html: string, path: string) {
 function hasNoindex(html: string) {
   const robots = html.match(/<meta[^>]+name=["']robots["'][^>]+content=["']([^"']+)["']/iu)?.[1]
     ?? html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+name=["']robots["']/iu)?.[1];
-  return Boolean(robots && /\\bnoindex\\b/iu.test(robots));
+  return Boolean(robots && /\bnoindex\b/iu.test(robots));
 }
 
 function hasIndexFollow(html: string) {
