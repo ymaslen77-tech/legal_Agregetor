@@ -7,7 +7,7 @@
 import {RUSSIAN_REGIONS} from "@/data/guardianship-territories";
 
 export const MILITARY_DIRECTORY_REGIONS=RUSSIAN_REGIONS.map(r=>({id:r.id,label:r.label}));
-export type MilitaryAgencyId="command"|"minoborony"|"military-prosecutor"|"sfr"|"commissariat"|"vvk"|"court";
+export type MilitaryAgencyId="command"|"minoborony"|"military-prosecutor"|"sfr"|"commissariat"|"vvk"|"independent-expert"|"court";
 export type MilitaryAgencyEntry={
  id:MilitaryAgencyId;
  title:string;
