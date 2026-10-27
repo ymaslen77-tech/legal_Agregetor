@@ -70,7 +70,7 @@ export default async function Page({params,searchParams}:Props){
      {scenario.safetyNotes.map(note=><p key={note} className="mt-2 text-sm">{note}</p>)}
      <p className="mt-2 text-sm">При угрозе жизни или здоровью обратитесь за неотложной помощью; оформление документа не должно откладывать её получение.</p>
     </section>}
-    <MilitaryRelatedQuestions routeId={route.id} scenarioKey={scenario.key}/>
+    {blueprint?<MilitaryRelatedQuestions routeId={route.id} scenarioKey={scenario.key}/>:null}
    </section>}
    <footer className="mt-8 border-t border-line pt-5 text-sm text-zinc-600">Перед подачей требуется индивидуальная правовая проверка компетенции адресата, соответствия документа процессуальному порядку и подтверждающих сведений.</footer>
   </article>
