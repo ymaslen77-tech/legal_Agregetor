@@ -2,6 +2,7 @@
 import {MILITARY_ROUTES} from "@/data/military-route-plans";
 import {MILITARY_LEGAL_DOCUMENTS,MILITARY_LEGAL_FIELDS,getMilitaryDocumentsForScenario} from "@/data/military-legal-documents";
 import {militaryCanonicalRouteHref} from "@/lib/military-preview-navigation";
+import {isMilitaryDocumentFieldRequired} from "@/lib/military-legal-document-generator";
 import {LEGAL_ROUTE_STANDARD_VERSION,type LegalRouteV1,type LegalRouteScenarioV1} from "@/data/legal-route-standard";
 export type MilitaryRouteV1=Omit<LegalRouteV1,"source">&{source:"military-preview"};
 export function getMilitaryPreviewRoutes():MilitaryRouteV1[]{
@@ -15,7 +16,7 @@ export function getMilitaryPreviewRoutes():MilitaryRouteV1[]{
     inputs:(primary?.fields??[]).map(key=>{
      const def=MILITARY_LEGAL_FIELDS[key];
      if(!def)throw new Error("Missing legal requisites: "+s.key+"/"+key);
-     return {key,label:def.label,required:true,type:["facts","proof","violation","grounds","desired"].includes(key)?"textarea":"text"};
+     return {key,label:def.label,required:isMilitaryDocumentFieldRequired(key),type:["facts","proof","violation","grounds","desired"].includes(key)?"textarea":"text"};
     }),
     scenarioUrl:militaryCanonicalRouteHref(route.id,s.key),
     documentUrl:documentSlug?"/documents/"+documentSlug+"/":null
