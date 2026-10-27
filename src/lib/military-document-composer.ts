@@ -37,6 +37,7 @@ const judicial:MilitaryDocumentField[]=[
 const targeted={
  "service-order-copy":[],
  "pay-breakdown":[],
+ "independent-review":[{key:"passportDetails",label:"Паспортные данные заявителя для независимой экспертизы",required:true,help:"По пункту 8 Положения № 574 заявление должно содержать паспортные данные. Не передавайте их через посторонние сайты; ввод остаётся в браузере."}],
 } as Record<string,MilitaryDocumentField[]>;
 export function getMilitaryDocumentFields(scenarioKey:string):MilitaryDocumentField[]{
  const blueprint=getMilitaryDocumentBlueprint(scenarioKey);
@@ -141,6 +142,7 @@ export function composeMilitaryDocument(
   "",blueprint.title.toUpperCase(),"",
   "Обстоятельства обращения:",
   ...facts,
+  ...(scenarioKey==="independent-review"?["Паспортные данные заявителя: "+normalize(answers.passportDetails)+"."]:[]),
   "",
   "Нормативные источники, применимость которых подлежит проверке:",
   ...blueprint.legalSources.map(s=>"- "+s.citation+"."),
