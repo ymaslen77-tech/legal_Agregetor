@@ -141,7 +141,8 @@ export function MilitaryLegalDocumentEditor({document}: {document:MilitaryLegalD
   {message?<p role="status" className="mt-3 text-sm">{message}</p>:null}
   {active?<section className="mt-7 border-t border-line pt-6" aria-label="Сформированный юридический документ">
    <h3 className="text-xl font-semibold">Ваш документ: {active.result.documentTitle}</h3>
-   <DocumentResultSummary result={active.result} hideVersionId/>
+   {dirty?<p role="status" className="mt-3 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-950">Внесённые изменения ещё не включены в документ. Сформируйте новую версию или откройте предыдущую из истории.</p>:null}
+   <DocumentResultSummary result={active.result} archiveDisabled={dirty} hideVersionId/>
    <pre className="mt-4 max-h-[40rem] max-w-full overflow-y-auto whitespace-pre-wrap break-words rounded-md border border-line bg-zinc-50 p-4 font-serif text-sm leading-7">{active.result.documentText}</pre>
    <div className="mt-4 flex flex-wrap gap-3">
     <button type="button" disabled={dirty} onClick={()=>void downloadPdf()} className="min-h-11 rounded-md bg-trust px-5 py-3 font-semibold text-white disabled:opacity-50">Скачать PDF</button>
