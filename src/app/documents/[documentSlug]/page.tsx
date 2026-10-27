@@ -46,6 +46,7 @@ import { getFamilyLaborDocumentMatch } from "@/data/family-labor-implemented-rou
 import { FamilyLaborDocumentPage } from "@/components/documents/FamilyLaborRoutePages";
 import {MilitaryLegalDocumentPage} from "@/components/documents/MilitaryLegalDocumentPage";
 import {getMilitaryLegalDocument} from "@/data/military-legal-documents";
+import {canIndexMilitaryLegalDocument} from "@/lib/military-document-indexing";
 import { getFamilyAdditiveScenarioByDocumentSlug } from "@/data/family-additive-routes";
 import { buildDocumentQuestionContext, PROBLEM_QNA_CONTEXTS } from "@/data/related-questions-context";
 import {
@@ -153,7 +154,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
       ? zagsScenario?.seoDescription ?? "Выберите процедуру ЗАГС, откройте официальный образец формы, подготовьте сведения и скачайте утверждённый бланк для подачи."
       : document.seoDescription ?? document.shortDescription,
     path: `/documents/${document.slug}/`,
-    isIndexable: getFamilyLaborDocumentMatch(document.slug) === null,
+    isIndexable: getFamilyLaborDocumentMatch(document.slug) === null && (!getMilitaryLegalDocument(document.slug) || canIndexMilitaryLegalDocument(document.slug)),
     searchParams: resolvedSearchParams
   });
 }
