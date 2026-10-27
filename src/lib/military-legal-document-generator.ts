@@ -6,13 +6,28 @@ import {MILITARY_ROUTES} from "@/data/military-route-plans";
 export type MilitaryDocumentAnswers=Record<string,string>;
 export type MilitaryLegalValidation={missing:string[];invalid:string[];complete:boolean};
 /** All required facts originate in a real document's standard legal requisites. */
+/** The selected document already defines the remedy; extra requests are optional. */
+export const MILITARY_OPTIONAL_DOCUMENT_FIELDS = new Set<string>(["desired"]);
+export function isMilitaryDocumentFieldRequired(field:string):boolean{
+ return !MILITARY_OPTIONAL_DOCUMENT_FIELDS.has(field);
+}
+function isRealCalendarDate(value:string):boolean{
+ const match=/^(\d{2})\.(\d{2})\.(\d{4})$/.exec(value);
+ if(!match)return false;
+ const day=Number(match[1]),month=Number(match[2]),year=Number(match[3]);
+ if(year<1900||year>2100)return false;
+ const parsed=new Date(Date.UTC(year,month-1,day));
+ return parsed.getUTCFullYear()===year&&parsed.getUTCMonth()===month-1&&parsed.getUTCDate()===day;
+}
 export function validateMilitaryLegalDocument(doc:MilitaryLegalDocument,answers:MilitaryDocumentAnswers):MilitaryLegalValidation{
- const missing=doc.fields.filter(key=>!(answers[key]??"").trim());
- const invalid=doc.fields.filter(key=>(answers[key]??"").length>1600 ||
-   (key==="birthDate"&&Boolean(answers[key])&&!/^\d{2}\.\d{2}\.\d{4}$/.test(answers[key])) ||
-   (key==="date"&&Boolean(answers[key])&&!/^\d{2}\.\d{2}\.\d{4}$/.test(answers[key])));
+ const missing=doc.fields.filter(key=>isMilitaryDocumentFieldRequired(key)&&!(answers[key]??"").trim());
+ const invalid=doc.fields.filter(key=>{
+  const value=(answers[key]??"").trim();
+  return value.length>1600 || (Boolean(value)&&["birthDate","date"].includes(key)&&!isRealCalendarDate(value));
+ });
  return {missing,invalid,complete:missing.length===0&&invalid.length===0};
 }
+
 function trim(answers:MilitaryDocumentAnswers,key:string){return (answers[key]??"").trim();}
 function section(label:string,content?:string){return content?label+" "+content+"\n":"";}
 function legalLines(doc:MilitaryLegalDocument){
@@ -40,6 +55,11 @@ function statementBody(doc:MilitaryLegalDocument,a:MilitaryDocumentAnswers){
  return details.join("\n");
 }
 function renderOrdinary(doc:MilitaryLegalDocument,a:MilitaryDocumentAnswers):string{
+ const requests=[
+  doc.request,
+  ...(trim(a,"desired")?["Уточнение заявителя: "+trim(a,"desired")]:[]),
+  "Сообщить о принятом решении и порядке получения ответа."
+ ];
  const greeting=[
   "Кому: "+trim(a,"recipient"),
   "От: "+trim(a,"applicant"),
@@ -54,9 +74,7 @@ function renderOrdinary(doc:MilitaryLegalDocument,a:MilitaryDocumentAnswers):str
   legalLines(doc),
   "",
   "ПРОШУ:",
-  "1. "+doc.request,
-  ...(trim(a,"desired")?["2. В пределах компетенции рассмотреть следующее уточнение заявителя: "+trim(a,"desired")+"."]:[]),
-  "3. Сообщить мне о принятом решении и порядке получения ответа.",
+  ...requests.map((request,index)=>(index+1)+". "+request),
   "",
   "Приложения:",
   (trim(a,"proof")?trim(a,"proof"):"Перечень подтверждающих документов необходимо уточнить и приложить перед направлением."),
@@ -68,6 +86,10 @@ function renderOrdinary(doc:MilitaryLegalDocument,a:MilitaryDocumentAnswers):str
  return greeting.filter((part,index)=>part!==""||index>0).join("\n");
 }
 function renderCourt(doc:MilitaryLegalDocument,a:MilitaryDocumentAnswers):string{
+ const requests=[
+  doc.request,
+  ...(trim(a,"desired")?["Дополнительное требование заявителя (проверить процессуальную допустимость): "+trim(a,"desired")]:[])
+ ];
  return [
   "В "+trim(a,"court"),
   "Административный истец: "+trim(a,"applicant"),
@@ -90,9 +112,7 @@ function renderCourt(doc:MilitaryLegalDocument,a:MilitaryDocumentAnswers):string
   legalLines(doc),
   "",
   "ПРОШУ СУД:",
-  "1. "+doc.request,
-  ...(trim(a,"desired")?["2. Рассмотреть уточнённое требование при его процессуальной допустимости: "+trim(a,"desired")+"."]:[]),
-  "3. Исследовать прилагаемые документы и истребовать необходимые доказательства, если основания для этого будут заявлены в установленном порядке.",
+  ...requests.map((request,index)=>(index+1)+". "+request),
   "",
   "Приложения:",
   trim(a,"proof"),
