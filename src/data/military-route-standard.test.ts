@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import {getMilitaryPreviewRoutes} from "@/data/military-route-standard";
 import {getLegalRouteRegistry} from "@/data/legal-route-standard";
+import {isMilitaryDocumentFieldRequired} from "@/lib/military-legal-document-generator";
 import {MILITARY_LEGAL_DOCUMENTS,MILITARY_LEGAL_FIELDS,getMilitaryDocumentsForScenario} from "@/data/military-legal-documents";
 const list=getMilitaryPreviewRoutes();
 assert.equal(list.length,6);
@@ -17,7 +18,7 @@ for(const route of list){
  assert.ok(route.scenarios.length>=3);
  for(const scenario of route.scenarios){
   assert.equal(scenario.scenarioUrl,route.problemUrl+"?scenario="+encodeURIComponent(scenario.key));
-  assert.ok(scenario.inputs.every(field=>field.required&&field.key&&field.label));
+  assert.ok(scenario.inputs.every(field=>field.key&&field.label&&field.required===isMilitaryDocumentFieldRequired(field.key)), "Contract must follow actual document requirements");
   const docs=getMilitaryDocumentsForScenario(scenario.key);
   if(scenario.outcome==="URGENT_INSTRUCTION"){
    assert.equal(scenario.documentSlug,null);assert.equal(scenario.documentUrl,null);
