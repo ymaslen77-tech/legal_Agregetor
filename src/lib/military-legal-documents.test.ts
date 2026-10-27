@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import {MILITARY_ROUTES} from "@/data/military-route-plans";
 import {MILITARY_LEGAL_DOCUMENTS,MILITARY_NAVIGATOR_DOCUMENTS,MILITARY_LEGAL_FIELDS,getMilitaryDocumentsForScenario} from "@/data/military-legal-documents";
-import {createMilitaryLegalDocumentResult,validateMilitaryLegalDocument} from "@/lib/military-legal-document-generator";
+import {createMilitaryLegalDocumentResult,validateMilitaryLegalDocument,isMilitaryDocumentFieldRequired} from "@/lib/military-legal-document-generator";
 import {documentResultSchema} from "@/lib/document-result-contract";
 import {validateSavedDocument} from "@/lib/saved-document-validation";
 import {getNavigatorDocument} from "@/data/documents";
@@ -55,7 +55,17 @@ for(const doc of MILITARY_LEGAL_DOCUMENTS){
  }
  const missing=validateMilitaryLegalDocument(doc,{});
  assert.equal(missing.complete,false);
- assert.equal(missing.missing.length,doc.fields.length);
+ assert.equal(missing.missing.length,doc.fields.filter(isMilitaryDocumentFieldRequired).length);
+ const withoutExtra={...answers};delete withoutExtra.desired;
+ assert.equal(validateMilitaryLegalDocument(doc,withoutExtra).complete,true,"Optional extra request must not block "+doc.slug);
+ const withoutExtraResult=createMilitaryLegalDocumentResult(doc.slug,withoutExtra,{versionId:id,createdAt:time});
+ assert.ok(withoutExtraResult.documentText.includes("1. "+doc.request));
+ assert.ok(withoutExtraResult.documentText.includes("2. Сообщить")||doc.kind==="court");
+ assert.ok(!withoutExtraResult.documentText.includes("3. Сообщить"));
+ if(doc.fields.includes("date")){
+  assert.equal(validateMilitaryLegalDocument(doc,{...answers,date:"31.02.2026"}).complete,false,"Reject nonexistent date");
+  assert.equal(validateMilitaryLegalDocument(doc,{...answers,date:"29.02.2024"}).complete,true,"Accept leap day");
+ }
  assert.throws(()=>createMilitaryLegalDocumentResult(doc.slug,{},{versionId:id,createdAt:time}));
 }
 assert.ok(MILITARY_LEGAL_DOCUMENTS.some(doc=>doc.kind==="court"));
