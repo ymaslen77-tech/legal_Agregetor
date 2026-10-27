@@ -94,7 +94,9 @@ async function auditDocument(document: NavigatorDocument): Promise<DocumentResul
 
   requireValue(checks, "identity", document.slug && document.title && document.category, "Есть slug, название и категория.", "Не заполнены slug, название или категория.");
   requireValue(checks, "title-name", containsDocumentName(seoTitle, document), "Title содержит название документа.", "Title не содержит узнаваемое название документа.");
-  requireValue(checks, "title-sample", /образец/iu.test(seoTitle), "Title содержит слово «образец».", "В title нет обязательного слова «образец».");
+  requireValue(checks, "title-sample", isUnreleasedMilitary ? /проект/iu.test(seoTitle) && !/образец/iu.test(seoTitle) : /образец/iu.test(seoTitle),
+    isUnreleasedMilitary ? "Заголовок точно описывает предварительный проект и не обещает проверенный образец." : "Title содержит слово «образец».",
+    isUnreleasedMilitary ? "До правовой приёмки недопустимо обещать проверенный образец." : "В title нет обязательного слова «образец».");
   requireValue(checks, "title-download", /скач/iu.test(seoTitle), "Title содержит намерение скачать результат.", "В title нет обязательного слова «скачать».");
   requireValue(checks, "meta-description", Boolean(seoDescription.trim()), "Meta description заполнена.", "Meta description отсутствует.");
   requireValue(checks, "unique-title", (titleOwners.get(normalize(seoTitle))?.length ?? 0) === 1, "Title уникален.", "Title дублируется у другого документа.");
