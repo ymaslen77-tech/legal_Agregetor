@@ -23,9 +23,9 @@ test("all 18 military situations follow family category, situation, questionnair
    await expect(page.getByRole("navigation",{name:"Этапы юридического маршрута"})).toHaveCount(scenario.kind==="URGENT_INSTRUCTION"?0:1);
    await expect(page.getByRole("heading",{name:"Шаг 1. Выберите ситуацию"})).toHaveCount(0);
    if(scenario.kind!=="URGENT_INSTRUCTION"){
-    await expect(page.getByRole("heading",{name:"Шаг 1. Обстоятельства и документы"})).toBeVisible();
+    await expect(page.getByRole("heading",{name:"Шаг 1. Данные для документа"})).toBeVisible();
     await expect(page.getByRole("heading",{name:"Шаг 2. Проверка ограничений"})).toBeVisible();
-    const intake=page.getByRole("region",{name:"Пошаговая анкета"});
+    const intake=page.getByRole("region",{name:"Данные для документа"});
     await expect(intake.getByRole("textbox")).toHaveCount(scenario.required.filter(k=>!["role","regime","urgency"].includes(k)).length);
     await expect(intake.locator("select")).toHaveCount(scenario.required.filter(k=>["role","regime","urgency"].includes(k)).length);
     await expect(intake.getByText("Что произошло?",{exact:true})).toHaveCount(0);
@@ -54,8 +54,8 @@ test("military draft retains legal status and sends no questionnaire posts",asyn
  const posts:string[]=[];
  page.on("request",request=>{if(request.method()==="POST")posts.push(request.url());});
  await page.goto(militaryCanonicalRouteHref("service-contract","service-order-copy"));
- const form=page.getByRole("region",{name:"Пошаговая анкета"});
- await form.getByLabel("Кто обращается?").selectOption("военнослужащий");
+ const form=page.getByRole("region",{name:"Данные для документа"});
+ await form.getByLabel("Статус заявителя").selectOption("военнослужащий");
  for(const input of await form.locator("textarea").all()){
   await input.fill("Подтвержденные обезличенные обстоятельства по документам");
  }
@@ -72,8 +72,8 @@ test("military draft retains legal status and sends no questionnaire posts",asyn
 test("military PDF review requires two consents and supports secure withdrawal",async({page})=>{
  test.skip(process.env.E2E_SUBMIT_REVIEW!=="true","Only the isolated review test database may accept a submission");
  await page.goto(militaryCanonicalRouteHref("service-contract","service-order-copy"));
- const form=page.getByRole("region",{name:"Пошаговая анкета"});
- await form.getByLabel("Кто обращается?").selectOption("военнослужащий");
+ const form=page.getByRole("region",{name:"Данные для документа"});
+ await form.getByLabel("Статус заявителя").selectOption("военнослужащий");
  for(const input of await form.locator("textarea").all())
   await input.fill("Подтверждённые обстоятельства по документам, без личных сведений");
  const check=page.getByRole("region",{name:"Проверка перед генерацией"});
