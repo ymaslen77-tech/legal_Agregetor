@@ -3,7 +3,7 @@
 import Link from "next/link";
 import {useMemo,useState} from "react";
 import {MILITARY_ROUTES,type MilitaryRoute,type MilitaryScenario} from "@/data/military-route-plans";
-import {militaryIntakeQuestionLabel,militaryIntakeHint,militaryIntakeLegalReason} from "@/data/military-intake-plans";
+import {militaryIntakeQuestionLabel,militaryIntakeHint} from "@/data/military-intake-plans";
 import {getMilitaryPinpointLinks,militaryProvisionHref} from "@/data/military-provision-links";
 import {getMilitaryCaseReview} from "@/data/military-case-reviews";
 import {militaryPreviewHref,militaryPublicDraftHref,militaryCanonicalRouteHref} from "@/lib/military-preview-navigation";
@@ -110,7 +110,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
   {compactFlow&&emergency?null:<LegalRouteJourney stage="document" title={route.title}
    problemUrl={compactFlow?militaryCanonicalRouteHref(route.id):routeHref(route.id)}
    scenarioUrl={compactFlow?militaryCanonicalRouteHref(route.id,scenario.key):routeHref(route.id,scenario.key)}
-   activeStep={step==="choose"?0:step==="facts"?2:step==="review"?2:3}/>}
+   activeStep={step==="choose"?0:step==="facts"?2:step==="review"?2:3} detailsStepLabel="Данные документа" showGuidance={false}/>}
   <section className="mx-auto max-w-5xl min-w-0 px-4 py-5 sm:px-6 lg:px-8">
    {!compactFlow?<h1 className="text-2xl font-semibold text-ink sm:text-3xl">Военное право — юридические маршруты</h1>:null}
    <p className="mt-2 text-sm leading-6 text-zinc-700">
@@ -149,25 +149,25 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
     {emergency?<div className="mt-5 rounded-lg border-l-4 border-red-700 bg-red-50 p-5" role="alert">
       <h3 className="font-semibold text-red-950">Сначала неотложная помощь</h3>
       {scenario.safetyNotes.map(t=><p key={t} className="mt-2 text-sm text-red-950">{t}</p>)}
-      <p className="mt-2 text-sm text-red-950">Заполнение анкеты и генерация файла не предусмотрены.</p>
+      <p className="mt-2 text-sm text-red-950">При неотложном состоянии сначала получите медицинскую помощь.</p>
      </div>:<button type="button" onClick={()=>setStep("facts")}
-     className="mt-6 min-h-11 rounded-md bg-trust px-6 py-3 text-sm font-semibold text-white">Перейти к анкете</button>}
+     className="mt-6 min-h-11 rounded-md bg-trust px-6 py-3 text-sm font-semibold text-white">Перейти к заполнению документа</button>}
    </section>:null}
 
    {compactFlow&&emergency?<section className="mt-6 border-l-4 border-red-700 bg-red-50 p-5" role="alert">
     <h3 className="text-xl font-semibold text-red-950">Сначала неотложная помощь</h3>
     {scenario.safetyNotes.map(note=><p key={note} className="mt-2 text-sm text-red-950">{note}</p>)}
    </section>:null}
-   {(step==="facts"||compactFlow)&&!emergency?<section className="mt-6 min-w-0 max-w-full rounded-lg border border-line bg-white p-4 sm:p-5" aria-label="Пошаговая анкета">
-    <h2 className="text-xl font-semibold">Шаг 1. Обстоятельства и документы</h2>
-    <p className="mt-2 text-sm leading-6 text-zinc-700">Ответьте только на вопросы по выбранной ситуации.</p>
+   {(step==="facts"||compactFlow)&&!emergency?<section className="mt-6 min-w-0 max-w-full rounded-lg border border-line bg-white p-4 sm:p-5" aria-label="Данные для документа">
+    <h2 className="text-xl font-semibold">Шаг 1. Данные для документа</h2>
+    <p className="mt-2 text-sm leading-6 text-zinc-700">Укажите только сведения, необходимые для выбранного документа.</p>
 
     <div className="mt-5 grid min-w-0 gap-4">
      {required.map(field=><LegalFormField key={field.key} id={"military-"+field.key}
       label={militaryIntakeQuestionLabel(scenario.key,field)} value={answers[field.key]??""} required
       kind={field.values?"select":"textarea"} rows={2}
       options={field.values?.map(v=>({value:v,label:v}))}
-      hint={[militaryIntakeHint(scenario.key,field.key),militaryIntakeLegalReason(scenario.key,field.key)].filter(Boolean).join(" ")||undefined}
+      hint={militaryIntakeHint(scenario.key,field.key)||undefined}
       error={validation.invalid.includes(field.key)?"Проверьте корректность заполнения.":undefined}
       onChange={v=>changeValue(field.key,v)}/>)}
     </div>
@@ -189,7 +189,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
     {validation.warnings.map(w=><p role="alert" key={w} className="mt-3 rounded-md bg-amber-50 p-3 text-sm text-amber-950">{w}</p>)}
     <details className="mt-4 rounded-lg border border-line bg-white px-4 py-3 text-sm">
      <summary className="cursor-pointer font-semibold">Правовые основания и документы для проверки</summary>
-     <h3 className="mt-4 font-semibold">Правовые вопросы конкретного сценария</h3>
+     <h3 className="mt-4 font-semibold">Что проверить перед подачей</h3>
     <ol className="mt-2 list-decimal space-y-2 pl-6 text-sm leading-6">
      {[review.scopeToCheck,review.standingToCheck,review.addresseeToCheck,review.timeToCheck,review.exclusionToCheck].map(t=><li key={t}>{t}</li>)}
     </ol>
@@ -231,7 +231,7 @@ export function MilitaryPreviewForm({initialRouteId,initialScenarioKey,invalidSe
     <section className="mt-6 rounded-lg border border-line bg-white p-4" aria-label="Дальнейшие действия">
      <h3 className="font-semibold">Что необходимо сделать до использования результата</h3>
      <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm leading-6">
-      <li>Сверьте введённые факты, подтверждённый статус и даты с оригиналами документов. Если сведения неверны, измените анкету и сформируйте новую версию.</li>
+      <li>Сверьте введённые факты, подтверждённый статус и даты с оригиналами документов. Если сведения неверны, исправьте данные документа и сформируйте новую версию.</li>
       <li>Подготовьте доказательства для индивидуальной проверки: {review.evidenceToCheck.join("; ")}.</li>
       <li>Передайте проект компетентному юристу на проверку полномочий, адресата, сроков, особого режима и применимого порядка. Автоматическое определение подсудности не производится.</li>
      </ol>
