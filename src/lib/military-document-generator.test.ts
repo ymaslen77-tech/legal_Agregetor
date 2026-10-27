@@ -18,7 +18,7 @@ assert.equal(MILITARY_DIRECTORY_REGIONS.length,89,"Regional picker covers 89 lis
 assert.equal(new Set(MILITARY_DIRECTORY_REGIONS.map(r=>r.id)).size,MILITARY_DIRECTORY_REGIONS.length);
 assert.equal(Object.keys(MILITARY_POST_DOCUMENT_PLANS).length,17,"Every generated military outcome has a recipient routing plan");
 for(const agency of Object.values(MILITARY_AGENCIES)){
- const allowed=["mil.ru","epp.genproc.gov.ru","sfr.gov.ru","lkg.mil.ru","sudrf.ru","www.consultant.ru"];
+ const allowed=["mil.ru","epp.genproc.gov.ru","sfr.gov.ru","lkg.mil.ru","sudrf.ru","www.consultant.ru","roszdravnadzor.gov.ru","mchs.gov.ru"];
  for(const link of [agency.lookupUrl,agency.onlineUrl,agency.sourceUrl].filter((value):value is string=>Boolean(value))){
   const url=new URL(link);
   assert.equal(url.protocol,"https:","All agency links must use HTTPS");
