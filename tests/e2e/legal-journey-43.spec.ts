@@ -19,12 +19,12 @@ test("document pages retain the same route stages", async ({ page }) => {
   await page.goto("/documents/mesto-zhitelstva-rebenka-posle-razvoda/");
   const journey = page.getByRole("navigation", { name: "Этапы юридического маршрута" });
   await expect(journey).toBeVisible();
-  await expect(journey.locator('[aria-current="step"]')).toContainText("Анкета");
+  await expect(journey.locator('[aria-current="step"]')).toContainText("Подготовка");
 });
 
 test("labor document pages use the shared journey too", async ({ page }) => {
   await page.goto("/documents/zapros-osnovaniy-planiruemogo-uvolneniya/");
   const journey = page.getByRole("navigation", { name: "Этапы юридического маршрута" });
   await expect(journey).toBeVisible();
-  await expect(journey.locator('[aria-current="step"]')).toContainText("Анкета");
+  await expect(journey.locator('[aria-current="step"]')).toContainText("Подготовка");
 });
