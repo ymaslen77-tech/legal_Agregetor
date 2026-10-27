@@ -66,7 +66,7 @@ export default async function Page({params,searchParams}:Props){
      </Link>
      <p className="mt-3 text-xs leading-5 text-zinc-600">Откроется отдельная страница документа. Перед направлением необходимо проверить применимое право, адресата и приложения.</p>
     </>:<section className="mt-5 border-l-4 border-red-700 bg-red-50 p-4" role="alert">
-     <h3 className="font-semibold text-red-950">Неотложная медицинская помощь</h3>
+     <h3 className="font-semibold text-red-950">Порядок действий в экстренной ситуации</h3>
      {scenario.safetyNotes.map(note=><p key={note} className="mt-2 text-sm">{note}</p>)}
      <p className="mt-2 text-sm">При угрозе жизни или здоровью обратитесь за неотложной помощью; оформление документа не должно откладывать её получение.</p>
     </section>}
