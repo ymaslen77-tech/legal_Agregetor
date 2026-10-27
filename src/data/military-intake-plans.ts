@@ -11,71 +11,71 @@ type IntakePlan={
 export const MILITARY_INTAKE_PLANS:Readonly<Record<string,IntakePlan>>={
  "contract-check":{
   fields:["role","contract"],defaults:{regime:"контракт"},
-  labels:{contract:"Какое условие контракта нужно уточнить?"}
+  labels:{contract:"Условие контракта, требующее разъяснения"}
  },
  "service-order-copy":{
   fields:["role","order","authority"],defaults:{regime:"контракт"},
-  labels:{order:"Какой приказ или ответ вам нужен?",authority:"В какой орган или к какому должностному лицу обратитесь?"}
+  labels:{order:"Нужный приказ или ответ (номер и дата, если известны)",authority:"Адресат обращения"}
  },
  "transfer":{
   fields:["role","order"],defaults:{regime:"контракт"},
-  labels:{order:"Что известно о переводе или приказе?"}
+  labels:{order:"Сведения о переводе или приказе"}
  },
  "discharge-basis":{
   fields:["role","regime","grounds"],
-  labels:{grounds:"Какое основание увольнения указано или обсуждается?"}
+  labels:{grounds:"Указанное основание увольнения"}
  },
  "medical-discharge":{
   fields:["role","regime","medical"],
-  labels:{medical:"Есть ли заключение ВВК и что в нём указано о годности? Без диагноза."}
+  labels:{medical:"Заключение ВВК и категория годности (без диагноза)"}
  },
  "discharge-order":{
   fields:["role","regime","order"],
-  labels:{order:"Какого приказа или расчёта вам не хватает?"}
+  labels:{order:"Недостающий приказ или расчёт"}
  },
  "pay-breakdown":{
   fields:["role","regime","payments","authority"],
-  labels:{payments:"За какой период нужны сведения о начислениях?",authority:"Кому направите запрос о выплатах?"}
+  labels:{payments:"Период спорных начислений",authority:"Адресат запроса о начислениях"}
  },
  "benefits":{
   fields:["role","regime","payments"],
-  labels:{payments:"Какую выплату или компенсацию нужно проверить?"}
+  labels:{payments:"Выплата или компенсация"}
  },
  "family-benefits":{
   fields:["regime","family","payments"],defaults:{role:"член семьи"},
-  labels:{regime:"Как проходил службу военнослужащий?",family:"Какие родство и обстоятельства подтверждены?",payments:"О какой выплате идёт речь?"}
+  labels:{regime:"Вид службы военнослужащего",family:"Родство и подтверждённые обстоятельства",payments:"Выплата, за которой обращаетесь"}
  },
  "vvk-conclusion":{
   fields:["role","regime","medical","urgency"],
-  labels:{medical:"Какое заключение ВВК получено и когда?",urgency:"Нужна ли помощь врача прямо сейчас?"}
+  labels:{medical:"Заключение ВВК: дата и вывод о годности",urgency:"Неотложная помощь необходима сейчас?"}
  },
  "independent-review":{
   fields:["role","regime","medical","urgency"],
-  labels:{medical:"Какое заключение ВВК хотите перепроверить?",urgency:"Нужна ли помощь врача прямо сейчас?"}
+  labels:{medical:"Заключение ВВК для перепроверки",urgency:"Неотложная помощь необходима сейчас?"}
  },
  "request-explanation":{
   fields:["role","regime","decision","authority"],
-  labels:{decision:"Какое решение или действие нужно разъяснить?",authority:"Кому направите запрос?"}
+  labels:{decision:"Решение или действие для разъяснения",authority:"Адресат запроса"}
  },
  "challenge-decision":{
   fields:["role","regime","decision","receipt"],
-  labels:{decision:"Какое решение вы оспариваете?",receipt:"Когда и как вы узнали о решении?"}
+  labels:{decision:"Оспариваемое решение (номер, дата)",receipt:"Дата и способ получения решения"}
  },
  "inaction":{
   fields:["role","regime","decision","receipt"],
-  labels:{decision:"На какое обращение не получили ответ?",receipt:"Когда вы направили обращение и чем это подтверждается?"}
+  labels:{decision:"Обращение, оставшееся без ответа",receipt:"Дата направления и подтверждение отправки"}
  },
  "draft-notice":{
   fields:["role","regime","summons"],
-  labels:{summons:"Какую повестку или решение получили и когда?"}
+  labels:{summons:"Повестка или решение: дата и вид"}
  },
  "deferment":{
   fields:["role","regime","deferment"],
-  labels:{deferment:"Какое основание отсрочки подтверждают ваши документы?"}
+  labels:{deferment:"Основание возможной отсрочки и документы"}
  },
  "challenge-draft":{
   fields:["role","regime","summons","receipt"],
-  labels:{summons:"Какое решение о призыве хотите оспорить?",receipt:"Когда и как вам вручили решение?"}
+  labels:{summons:"Оспариваемое решение о призыве",receipt:"Дата и способ вручения решения"}
  }
 };
 
@@ -95,5 +95,6 @@ export function resolveMilitaryIntakeAnswers(
 }
 
 export function militaryIntakeQuestionLabel(scenarioKey:string,field:{key:string;label:string}):string{
- return MILITARY_INTAKE_PLANS[scenarioKey]?.labels[field.key]??field.label;
+ const standardLabels:Readonly<Record<string,string>>={role:"Статус заявителя",regime:"Вид службы"};
+ return MILITARY_INTAKE_PLANS[scenarioKey]?.labels[field.key]??standardLabels[field.key]??field.label;
 }
