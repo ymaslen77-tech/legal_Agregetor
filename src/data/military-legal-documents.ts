@@ -142,6 +142,14 @@ export const MILITARY_LEGAL_SOURCES:Readonly<Record<string,{title:string;url:str
   "kas": {
     "title": "КАС РФ — статьи 125, 126, 218 и 219 (проверить вид производства)",
     "url": "https://www.consultant.ru/document/cons_doc_LAW_176147/bebad06c9038fc6556a1f0e652969414cf2e57f1/"
+  },
+  "plenum8": {
+    "title": "Пленум Верховного Суда РФ от 29.05.2014 № 8 — военная служба и подсудность",
+    "url": "https://www.vsrf.ru/documents/all/8382"
+  },
+  "plenum21": {
+    "title": "Пленум Верховного Суда РФ от 28.10.2025 № 21 — изменения к Пленуму № 8",
+    "url": "https://www.vsrf.ru/documents/all/34814"
   }
 };
 export const MILITARY_LEGAL_DOCUMENTS:readonly MilitaryLegalDocument[]=[
@@ -611,7 +619,9 @@ export const MILITARY_LEGAL_DOCUMENTS:readonly MilitaryLegalDocument[]=[
     ],
     "sourceIds": [
       "kas",
-      "76fz"
+      "76fz",
+      "plenum8",
+      "plenum21"
     ],
     "exampleUrl": "https://base.garant.ru/1969894/",
     "routeId": "command-appeal"
@@ -642,7 +652,9 @@ export const MILITARY_LEGAL_DOCUMENTS:readonly MilitaryLegalDocument[]=[
     ],
     "sourceIds": [
       "kas",
-      "76fz"
+      "76fz",
+      "plenum8",
+      "plenum21"
     ],
     "exampleUrl": "https://www.consultant.ru/document/cons_doc_LAW_176147/bebad06c9038fc6556a1f0e652969414cf2e57f1/",
     "routeId": "command-appeal"
@@ -675,7 +687,9 @@ export const MILITARY_LEGAL_DOCUMENTS:readonly MilitaryLegalDocument[]=[
       "kas",
       "53fz",
       "1237",
-      "647"
+      "647",
+      "plenum8",
+      "plenum21"
     ],
     "exampleUrl": "https://base.garant.ru/1969893/",
     "routeId": "military-discharge"
@@ -709,7 +723,9 @@ export const MILITARY_LEGAL_DOCUMENTS:readonly MilitaryLegalDocument[]=[
     "sourceIds": [
       "kas",
       "306fz",
-      "76fz"
+      "76fz",
+      "plenum8",
+      "plenum21"
     ],
     "exampleUrl": "https://www.consultant.ru/document/cons_doc_LAW_163741/56e49299dd50770bff421e4049e824a54c2d6200/",
     "routeId": "military-pay"
@@ -741,7 +757,9 @@ export const MILITARY_LEGAL_DOCUMENTS:readonly MilitaryLegalDocument[]=[
     ],
     "sourceIds": [
       "kas",
-      "53fz"
+      "53fz",
+      "plenum8",
+      "plenum21"
     ],
     "exampleUrl": "https://www.consultant.ru/document/cons_doc_LAW_176147/bebad06c9038fc6556a1f0e652969414cf2e57f1/",
     "routeId": "mobilization-draft"
