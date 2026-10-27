@@ -44,7 +44,7 @@ for(const doc of MILITARY_LEGAL_DOCUMENTS){
  assert.equal(validateSavedDocument({...result,documentSlug:"military-unreviewed-fake"}),null);
  assert.equal(validateSavedDocument({...result,filingReady:true}),null);
  assert.ok(result.documentText.includes("ПРОШУ"),doc.slug);
- assert.ok(result.documentText.includes("Приложения"),doc.slug);
+ assert.equal(result.documentText.includes("Приложения:"),doc.kind==="court"||doc.fields.includes("proof"),"Only actual appendices appear in document: "+doc.slug);
  assert.ok(result.documentText.includes("Подпись"),doc.slug);
  if(doc.kind==="court"){
   assert.ok(result.documentText.includes("Административный истец:"));
@@ -53,6 +53,7 @@ for(const doc of MILITARY_LEGAL_DOCUMENTS){
   assert.ok(result.documentText.includes("ПРОШУ СУД:"));
   assert.ok(doc.sourceIds.includes("plenum8")&&doc.sourceIds.includes("plenum21"),"Court documents must cite current Supreme Court plenums");
   assert.ok(result.documentText.includes("28.10.2025"),"Latest relevant Supreme Court plenary amendments must be visible");
+  assert.equal((result.documentText.match(/Предыдущие обращения и результат:/g)||[]).length,1,"Prior appeals cannot be duplicated");
  }else{
   assert.ok(result.documentText.includes("Кому:"));
   assert.ok(result.documentText.includes("От:"));
