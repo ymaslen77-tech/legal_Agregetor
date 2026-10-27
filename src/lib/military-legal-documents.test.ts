@@ -51,6 +51,8 @@ for(const doc of MILITARY_LEGAL_DOCUMENTS){
   assert.ok(result.documentText.includes("Административный ответчик:"));
   assert.ok(result.documentText.includes("статьям 125 и 126 КАС РФ"));
   assert.ok(result.documentText.includes("ПРОШУ СУД:"));
+  assert.ok(doc.sourceIds.includes("plenum8")&&doc.sourceIds.includes("plenum21"),"Court documents must cite current Supreme Court plenums");
+  assert.ok(result.documentText.includes("28.10.2025"),"Latest relevant Supreme Court plenary amendments must be visible");
  }else{
   assert.ok(result.documentText.includes("Кому:"));
   assert.ok(result.documentText.includes("От:"));
