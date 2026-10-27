@@ -701,7 +701,7 @@ export const MILITARY_LEGAL_DOCUMENTS:readonly MilitaryLegalDocument[]=[
     "formLabel": "Административное исковое заявление",
     "kind": "court",
     "subject": "Сумма и период невыплаты, действие финансового органа",
-    "request": "Проверить возможность признания незаконным оспариваемого решения либо бездействия и применения надлежащего способа защиты.",
+    "request": "Признать незаконным оспариваемое решение либо бездействие в части неначисления или невыплаты денежного довольствия за указанный период и обязать устранить установленное нарушение в пределах компетенции административного ответчика.",
     "fields": [
       "court",
       "applicant",
@@ -811,7 +811,7 @@ export const MILITARY_NAVIGATOR_DOCUMENTS:NavigatorDocument[]=MILITARY_LEGAL_DOC
    {question:"Что проверить перед отправкой?",answer:note}
   ],
   relatedProblemSlugs:route?[route.slug]:[],legalReferenceKeys:[],
-  seoTitle:doc.title+": образец, составить онлайн, скачать PDF и DOCX",
+  seoTitle:doc.title+": составить проект онлайн, скачать PDF и DOCX",
   seoDescription:doc.title+". "+doc.subject+". Подготовьте проект по подтверждённым сведениям, скачайте PDF или DOCX. Правовые основания, адресат, сроки и порядок подачи.",
   generatorSeoTitle:"Сформировать "+doc.title.toLowerCase()+" онлайн",
   generatorSeoDescription:"Укажите необходимые сведения для "+doc.title.toLowerCase()+" и скачайте проект в PDF или DOCX.",
