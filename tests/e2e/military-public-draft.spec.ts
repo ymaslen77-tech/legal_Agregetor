@@ -46,6 +46,12 @@ test("all 23 documents publish canonical SEO destination and actual generator",a
   await expect(page.locator('meta[name="description"]')).toHaveAttribute("content",/воен|рапорт|заявлен|жалоб|исков/i);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content",/noindex/);
  }
+ const sitemap=await page.request.get("/sitemap-documents.xml");
+ expect(sitemap.ok()).toBe(true);
+ const xml=await sitemap.text();
+ for(const doc of MILITARY_LEGAL_DOCUMENTS){
+  expect(xml).not.toContain("/documents/"+doc.slug+"/");
+ }
 });
 
 test("downloadable report uses legally necessary fields, regional guide and no form POST",async({page})=>{
@@ -74,6 +80,12 @@ test("downloadable report uses legally necessary fields, regional guide and no f
  await expect(guide.getByRole("link",{name:/Перейти на портал Минобороны/})).toHaveCount(0);
  await guide.getByRole("checkbox",{name:/Я понимаю, что документ требует/}).check();
  await expect(guide.getByRole("link",{name:/Перейти на портал Минобороны/})).toBeVisible();
+ // A changed field invalidates the displayed snapshot for save/export until regeneration.
+ await editor.locator('[id="military-document-'+doc.slug+'-'+doc.fields[0]+'"]').fill("Обновлённые данные заявителя");
+ await expect(result.getByRole("button",{name:"Скачать PDF"})).toBeDisabled();
+ await expect(result.getByRole("button",{name:"Скачать DOCX"})).toBeDisabled();
+ await expect(result.getByRole("button",{name:"Сохранить в мои документы"})).toBeDisabled();
+ await expect(result).toContainText("Внесённые изменения ещё не включены в документ");
  expect(requests).toEqual([]);
 });
 
