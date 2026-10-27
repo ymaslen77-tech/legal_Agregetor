@@ -14,18 +14,18 @@ assert.equal(MILITARY_ROUTES.length,6);
 assert.equal(MILITARY_ROUTES.flatMap(r=>r.scenarios).length,18);
 assert.equal(Object.keys(MILITARY_DRAFT_PURPOSES).length,17);
 const tailored=MILITARY_ROUTES.flatMap(route=>route.scenarios.filter(s=>s.kind!=="URGENT_INSTRUCTION").map(s=>({route,scenario:s})));
-assert.equal(Object.keys(MILITARY_INTAKE_PLANS).length,17,"One independently designed questionnaire per document");
+assert.equal(Object.keys(MILITARY_INTAKE_PLANS).length,17,"One unique document-data set per military document");
 const signatures=new Set<string>();
 for(const {route,scenario} of tailored){
  const fields=scenario.required;
- assert.ok(fields.length>=2&&fields.length<=4,"No overloaded form: "+scenario.key);
+ assert.ok(fields.length>=2&&fields.length<=4, "No excessive document fields: "+scenario.key);
  assert.ok(fields.every(key=>!["event","goal","evidence","dates"].includes(key)),"Generic questions are redundant");
  const config=MILITARY_INTAKE_PLANS[scenario.key];
- assert.ok(config,"Missing individual questionnaire "+scenario.key);
+ assert.ok(config, "Missing document data for scenario "+scenario.key);
  assert.deepEqual(fields,config.fields);
  const titles=fields.map(key=>militaryIntakeQuestionLabel(scenario.key,route.fields.find(f=>f.key===key)!));
  const signature=JSON.stringify(titles);
- assert.ok(!signatures.has(signature),"Situation-specific prompts must differ: "+scenario.key);
+ assert.ok(!signatures.has(signature), "Document details must differ by scenario: "+scenario.key);
  signatures.add(signature);
  if(route.id==="service-contract"){
   assert.equal(config.defaults?.regime,"контракт");
@@ -102,13 +102,13 @@ const wrongRole=Object.fromEntries(draftRoute.fields.map(f=>[f.key,
  f.values?f.values[0]:"Подтверждённые обстоятельства"]));
 wrongRole.role="военнослужащий";wrongRole.regime="контракт";
 assert.equal(validateMilitaryIntake(draftRoute,inapplicable,wrongRole).complete,false);
-assert.throws(()=>createMilitaryDocumentResult(draftRoute,inapplicable,wrongRole,{versionId:id,createdAt:stamp}),/Проверьте данные в анкете/);
+assert.throws(()=>createMilitaryDocumentResult(draftRoute,inapplicable,wrongRole,{versionId:id,createdAt:stamp}),/Проверьте данные документа/);
 const medicalRoute=getMilitaryRoute("military-medical")!;
 const medicalScenario=medicalRoute.scenarios.find(x=>x.key==="vvk-conclusion")!;
 const urgentAnswers=Object.fromEntries(medicalRoute.fields.map(x=>[x.key,x.values?x.values[0]:"Есть документ"]));
 urgentAnswers.urgency="да";
 assert.equal(validateMilitaryIntake(medicalRoute,medicalScenario,urgentAnswers).complete,false);
-assert.throws(()=>createMilitaryDocumentResult(medicalRoute,medicalScenario,urgentAnswers,{versionId:id,createdAt:stamp}),/Проверьте данные в анкете/);
+assert.throws(()=>createMilitaryDocumentResult(medicalRoute,medicalScenario,urgentAnswers,{versionId:id,createdAt:stamp}),/Проверьте данные документа/);
 urgentAnswers.urgency="не знаю";
 assert.equal(validateMilitaryIntake(medicalRoute,medicalScenario,urgentAnswers).complete,false);
 for(const unsupportedRegime of ["добровольческое формирование","военные сборы","мобилизационный людской резерв"]){
