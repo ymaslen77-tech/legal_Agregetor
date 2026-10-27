@@ -29,5 +29,5 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm test
-      - name: Audit all 17 military draft PDF and DOCX files
-        run: npm run audit:military-files
+      - name: Verify new military routes and safe draft mapping
+        run: npm run test:military
