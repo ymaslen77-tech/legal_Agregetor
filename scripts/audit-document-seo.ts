@@ -1,6 +1,8 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { navigatorDocuments, type NavigatorDocument } from "@/data/documents";
+import {getMilitaryLegalDocument} from "@/data/military-legal-documents";
+import {canIndexMilitaryLegalDocument} from "@/lib/military-document-indexing";
 
 type Status = "PASS" | "FAIL" | "MANUAL_REVIEW" | "NOT_APPLICABLE";
 type Check = { id: string; status: Status; message: string };
@@ -88,6 +90,7 @@ async function auditDocument(document: NavigatorDocument): Promise<DocumentResul
   const path = `/documents/${document.slug}/`;
   const seoTitle = resolvedSeoTitle(document);
   const seoDescription = resolvedSeoDescription(document);
+  const isUnreleasedMilitary = Boolean(getMilitaryLegalDocument(document.slug)) && !canIndexMilitaryLegalDocument(document.slug);
 
   requireValue(checks, "identity", document.slug && document.title && document.category, "Есть slug, название и категория.", "Не заполнены slug, название или категория.");
   requireValue(checks, "title-name", containsDocumentName(seoTitle, document), "Title содержит название документа.", "Title не содержит узнаваемое название документа.");
@@ -115,7 +118,9 @@ async function auditDocument(document: NavigatorDocument): Promise<DocumentResul
     const live = await fetchText(`${baseUrl}${path}`);
     requireValue(checks, "http-200", live.status === 200, "Страница возвращает HTTP 200.", `Получен HTTP ${live.status}.`);
     requireValue(checks, "canonical", hasCanonical(live.text, path), "Self-canonical корректен.", "Self-canonical отсутствует или не совпадает с URL.");
-    requireValue(checks, "robots", hasIndexFollow(live.text), "Robots разрешает индексацию.", "Нет однозначного index, follow.");
+    requireValue(checks, "robots", isUnreleasedMilitary ? !hasIndexFollow(live.text) && hasNoindex(live.text) : hasIndexFollow(live.text),
+      isUnreleasedMilitary ? "До правового допуска документ защищён noindex." : "Robots разрешает индексацию.",
+      isUnreleasedMilitary ? "Непроверенный юридический документ ошибочно открыт для индексации." : "Нет однозначного index, follow.");
     requireValue(checks, "h1", /<h1\b[^>]*>[\s\S]*?<\/h1>/iu.test(live.text), "На странице есть H1.", "H1 не найден.");
     requireValue(checks, "generator", /id=["']fill-online["']/iu.test(live.text), "Доступен блок подготовки результата.", "Не найден действующий блок подготовки результата.");
     requireValue(checks, "official-source", /Официальн(?:ый|ая) (?:источник|информация)|Правовой реестр/iu.test(live.text), "Официальные источники видимы пользователю.", "На странице не найден видимый официальный источник.");
@@ -123,7 +128,9 @@ async function auditDocument(document: NavigatorDocument): Promise<DocumentResul
     requireValue(checks, "visible-after-download", /Что делать (?:дальше|после скачивания)/iu.test(live.text), "Дальнейшие действия видимы.", "На странице не найден видимый блок дальнейших действий.");
     requireValue(checks, "breadcrumb-jsonld", live.text.includes('\\"@type\\":\\"BreadcrumbList\\"') || live.text.includes('"@type":"BreadcrumbList"'), "Есть BreadcrumbList.", "BreadcrumbList не найден.");
     requireValue(checks, "webpage-jsonld", live.text.includes('\\"@type\\":\\"WebPage\\"') || live.text.includes('"@type":"WebPage"'), "Есть WebPage.", "WebPage не найден.");
-    requireValue(checks, "sitemap", sitemap.text.includes(path), "URL присутствует в sitemap-documents.xml.", "URL отсутствует в sitemap-documents.xml.");
+    requireValue(checks, "sitemap", isUnreleasedMilitary ? !sitemap.text.includes(path) : sitemap.text.includes(path),
+      isUnreleasedMilitary ? "Непроверенный документ исключён из sitemap." : "URL присутствует в sitemap-documents.xml.",
+      isUnreleasedMilitary ? "Непроверенный документ нельзя включать в sitemap." : "URL отсутствует в sitemap-documents.xml.");
     if (/Похожие вопросы/iu.test(live.text)) {
       requireValue(checks, "qna-not-qapage", !live.text.includes('"@type":"QAPage"') && !live.text.includes('\\"@type\\":\\"QAPage\\"'), "Похожий Q&A не размечен как QAPage.", "Страница с похожими вопросами ошибочно размечена как QAPage.");
     } else {
@@ -182,6 +189,12 @@ function hasCanonical(html: string, path: string) {
   const canonical = html.match(/<link[^>]+rel=["']canonical["'][^>]+href=["']([^"']+)["']/iu)?.[1]
     ?? html.match(/<link[^>]+href=["']([^"']+)["'][^>]+rel=["']canonical["']/iu)?.[1];
   return Boolean(canonical && new URL(canonical, baseUrl).pathname === path);
+}
+
+function hasNoindex(html: string) {
+  const robots = html.match(/<meta[^>]+name=["']robots["'][^>]+content=["']([^"']+)["']/iu)?.[1]
+    ?? html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+name=["']robots["']/iu)?.[1];
+  return Boolean(robots && /\\bnoindex\\b/iu.test(robots));
 }
 
 function hasIndexFollow(html: string) {
