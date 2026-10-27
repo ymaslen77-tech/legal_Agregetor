@@ -83,6 +83,8 @@ jobs:
           exit 1
       - name: Install Chromium, Firefox and WebKit for route and responsive acceptance
         run: npx playwright install --with-deps chromium firefox webkit
+      - name: Smoke all 17 military legal-document pages before broader E2E
+        run: npx playwright test tests/e2e/military-public-draft.spec.ts --workers=2
       - name: Cross-browser responsive layouts and lab navigation timing
         run: npx playwright test --config=playwright.responsive.config.ts --workers=2
       - name: Run all family and labor route acceptance
