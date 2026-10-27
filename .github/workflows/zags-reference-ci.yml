@@ -83,6 +83,8 @@ jobs:
           exit 1
       - name: Install Chromium, Firefox and WebKit for route and responsive acceptance
         run: npx playwright install --with-deps chromium firefox webkit
+      - name: Smoke all 17 military legal-document pages before broader E2E
+        run: npx playwright test tests/e2e/military-public-draft.spec.ts --workers=2
       - name: Cross-browser responsive layouts and lab navigation timing
         run: npx playwright test --config=playwright.responsive.config.ts --workers=2
       - name: Run all family and labor route acceptance
@@ -121,6 +123,15 @@ jobs:
             test "${pages:-0}" -gt 0
             pdftotext "$pdf" - | grep -q 'НЕ ГОТОВ К ПОДАЧЕ'
           done
+      - name: Generate and inspect all 17 military legal-document PDF/DOCX files
+        run: |
+          npm run audit:military-official
+          test "$(find artifacts/military-official-documents -maxdepth 1 -name '*.pdf' | wc -l)" -eq 17
+          test "$(find artifacts/military-official-documents -maxdepth 1 -name '*.docx' | wc -l)" -eq 17
+          for pdf in artifacts/military-official-documents/*.pdf; do
+            test "$(pdfinfo "$pdf" | awk '/^Pages:/ {print $2}')" -gt 0
+            pdftotext "$pdf" - | grep -q 'ПРОЕКТ ЮРИДИЧЕСКОГО ДОКУМЕНТА'
+          done
       - name: Upload PDF and browser acceptance artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -133,3 +144,4 @@ jobs:
             artifacts/responsive-metrics.ndjson
             artifacts/responsive-browser-results.json
             artifacts/family-labor-file-audit
+            artifacts/military-official-documents

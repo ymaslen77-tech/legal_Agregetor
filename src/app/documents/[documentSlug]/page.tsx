@@ -44,6 +44,9 @@ import { getNavigatorDocument, navigatorDocuments } from "@/data/documents";
 import { getLaborDocumentScenario } from "@/data/labor-documents";
 import { getFamilyLaborDocumentMatch } from "@/data/family-labor-implemented-routes";
 import { FamilyLaborDocumentPage } from "@/components/documents/FamilyLaborRoutePages";
+import {getMilitaryFirstDocumentMatch,MILITARY_FIRST_DOCUMENT_PAGES} from "@/data/military-first-document-pages";
+import {getMilitaryDocumentBlueprint} from "@/data/military-document-blueprints";
+import {MilitaryOfficialDocumentPage} from "@/components/documents/MilitaryOfficialDocumentPage";
 import { getFamilyAdditiveScenarioByDocumentSlug } from "@/data/family-additive-routes";
 import { buildDocumentQuestionContext, PROBLEM_QNA_CONTEXTS } from "@/data/related-questions-context";
 import {
@@ -129,15 +132,15 @@ type PageProps = {
   searchParams?: Promise<{ variant?: string }>;
 };
 
-export const dynamicParams = false;
+export const dynamicParams = true;
 export const revalidate = 3600;
 
 export function generateStaticParams() {
-  return navigatorDocuments.map((document) => ({ documentSlug: document.slug }));
+  return [...navigatorDocuments,...MILITARY_FIRST_DOCUMENT_PAGES].map((document) => ({ documentSlug: document.slug }));
 }
 export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
   const { documentSlug } = await params;
-  const document = getNavigatorDocument(documentSlug);
+  const document = getNavigatorDocument(documentSlug) ?? getMilitaryFirstDocumentMatch(documentSlug)?.document;
   if (!document) notFound();
   const isZagsReference = document.slug === ZAGS_PROBLEM_ROUTE.documentSlug;
   const resolvedSearchParams = searchParams ? await searchParams : {};
@@ -151,14 +154,14 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
       ? zagsScenario?.seoDescription ?? "Выберите процедуру ЗАГС, откройте официальный образец формы, подготовьте сведения и скачайте утверждённый бланк для подачи."
       : document.seoDescription ?? document.shortDescription,
     path: `/documents/${document.slug}/`,
-    isIndexable: getFamilyLaborDocumentMatch(document.slug) === null,
+    isIndexable: getFamilyLaborDocumentMatch(document.slug) === null && getMilitaryFirstDocumentMatch(document.slug) === null,
     searchParams: resolvedSearchParams
   });
 }
 
 export default async function DocumentPage({ params, searchParams }: PageProps) {
   const { documentSlug } = await params;
-  const document = getNavigatorDocument(documentSlug);
+  const document = getNavigatorDocument(documentSlug) ?? getMilitaryFirstDocumentMatch(documentSlug)?.document;
   if (!document) notFound();
 
   const withAfterDownload = (content: ReactNode) => (
@@ -167,6 +170,48 @@ export default async function DocumentPage({ params, searchParams }: PageProps) 
     </DocumentQna>
   );
 
+  const militaryDocument=getMilitaryFirstDocumentMatch(document.slug);
+  if(militaryDocument){
+   const item=militaryDocument.document;
+   const blueprint=getMilitaryDocumentBlueprint(militaryDocument.key)!;
+   const docUrl="/documents/"+document.slug+"/";
+   const crumbs=[
+    {name:"Главная",path:"/"},
+    {name:"Документы",path:"/documents/"},
+    {name:item.title,path:docUrl}
+   ];
+   return <>
+    <JsonLd data={[breadcrumbJsonLd(crumbs),documentWebPageJsonLd(docUrl,item.title,item.shortDescription)]}/>
+    <Breadcrumbs items={crumbs}/>
+    <article className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+     <Link href={"/voennoe-pravo/"} className="text-sm font-semibold text-trust underline">Все ситуации военного права</Link>
+     <header className="mt-5 border-b border-line pb-7">
+      <p className="text-sm font-semibold uppercase tracking-wide text-trust">{item.category}</p>
+      <h1 className="mt-3 text-3xl font-semibold leading-tight text-ink sm:text-5xl">{item.title}</h1>
+      <p className="mt-4 max-w-3xl text-lg leading-8 text-zinc-700">{item.heroDescription}</p>
+      <a href="#fill-online" className="mt-5 inline-flex min-h-11 items-center rounded-md bg-trust px-5 py-3 text-sm font-semibold text-white">Сформировать документ</a>
+     </header>
+     <section className="mt-7 grid gap-4 md:grid-cols-2">
+      <div className="border-t-4 border-trust bg-white p-5"><h2 className="text-lg font-semibold">Когда подходит</h2><p className="mt-3 text-sm leading-6">{item.whenToUse.join(" ")}</p></div>
+      <div className="border-t-4 border-line bg-white p-5"><h2 className="text-lg font-semibold">Что потребуется</h2><ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-6">{item.whatToPrepare.map(v=><li key={v}>{v}</li>)}</ul></div>
+      <div className="border-t-4 border-line bg-white p-5"><h2 className="text-lg font-semibold">Куда направляется</h2><p className="mt-3 text-sm leading-6">{item.whereToFile}</p></div>
+      <div className="border-t-4 border-line bg-white p-5"><h2 className="text-lg font-semibold">Что проверить</h2><p className="mt-3 text-sm leading-6">{item.whenNotToUse.join(" ")}</p></div>
+     </section>
+     <MilitaryOfficialDocumentPage documentKey={militaryDocument.key}/>
+     <section className="mt-8 border-t border-line pt-6">
+      <h2 className="text-xl font-semibold">Нормативные основания</h2>
+      <p className="mt-2 text-sm text-zinc-700">Проверьте редакцию закона и применимость на дату обстоятельств. Наличие нормы не подтверждает ваше право без анализа документов.</p>
+      <ul className="mt-3 list-disc space-y-3 pl-5 text-sm">
+       {blueprint.legalSources.map(source=><li key={source.citation}>
+        <a href={source.url} target="_blank" rel="noopener noreferrer" className="font-semibold text-trust underline">{source.citation}</a>
+        <p className="mt-1 text-zinc-600">{source.scope}</p>
+       </li>)}
+      </ul>
+      <p className="mt-4 text-xs text-zinc-600">{item.disclaimer}</p>
+     </section>
+    </article>
+   </>;
+  }
   const familyLaborMatch=getFamilyLaborDocumentMatch(document.slug);
   if(familyLaborMatch){
     return <FamilyLaborDocumentPage plan={familyLaborMatch.plan} scenarioKey={familyLaborMatch.scenarioKey}/>;

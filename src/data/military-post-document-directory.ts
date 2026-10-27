@@ -7,7 +7,7 @@
 import {RUSSIAN_REGIONS} from "@/data/guardianship-territories";
 
 export const MILITARY_DIRECTORY_REGIONS=RUSSIAN_REGIONS.map(r=>({id:r.id,label:r.label}));
-export type MilitaryAgencyId="command"|"minoborony"|"military-prosecutor"|"sfr"|"commissariat"|"vvk"|"court";
+export type MilitaryAgencyId="command"|"minoborony"|"military-prosecutor"|"sfr"|"commissariat"|"vvk"|"independent-expert"|"court";
 export type MilitaryAgencyEntry={
  id:MilitaryAgencyId;
  title:string;
@@ -74,6 +74,16 @@ export const MILITARY_AGENCIES:Readonly<Record<MilitaryAgencyId,MilitaryAgencyEn
   warning:"Компетенция зависит от того, какая комиссия вынесла заключение и где проводилось освидетельствование. Регион проживания не подтверждает конкретную ВВК. Не отправляйте диагнозы через незащищённую форму.",
   sourceUrl:"https://www.consultant.ru/document/cons_doc_LAW_149096/b06f3fcb8a015f0a73e9a1d093f4277babecce16/"
  }),
+ "independent-expert":agency({
+  id:"independent-expert",
+  title:"Выбранное экспертное учреждение для независимой ВВЭ",
+  purpose:"При несогласии с заключением ВВК гражданин выбирает экспертное учреждение и подаёт ему письменное заявление; условия, лицензия и договор проверяются до подачи.",
+  lookupUrl:"https://roszdravnadzor.gov.ru/services/licenses",
+  lookupLabel:"Проверить медицинскую лицензию выбранной организации в Росздравнадзоре",
+  regional:true,
+  warning:"По пунктам 5, 7–9 Положения, утверждённого постановлением № 574, гражданин выбирает экспертное учреждение; заявление подаётся в выбранное учреждение, с паспортными данными и заверенной копией заключения ВВК. Реестр лицензий не является сервисом подачи заявления на экспертизу.",
+  sourceUrl:"https://mchs.gov.ru/dokumenty/693"
+ }),
  court:agency({
   id:"court",title:"Компетентный суд (после проверки подсудности)",
   purpose:"Судебная защита, когда она допустима и выбран надлежащий способ обращения, включая особые правила военной службы и призыва.",
@@ -95,7 +105,7 @@ export const MILITARY_POST_DOCUMENT_PLANS:Readonly<Record<string,AgencyPlan>>={
  benefits:p(["command","minoborony"],["sfr","military-prosecutor"],"Сначала выясните нормативный акт и орган, который назначает конкретную выплату."),
  "family-benefits":p(["sfr","minoborony"],["military-prosecutor"],"Семейные выплаты могут администрироваться разными ведомствами: СФР подходит только для его компетенции."),
  "vvk-conclusion":p(["vvk","command"],["military-prosecutor","court"],"Нужна комиссия, вынесшая заключение, или компетентная вышестоящая ВВК."),
- "independent-review":p(["vvk"],["minoborony","court"],"Независимая экспертиза регулируется отдельным порядком; не подменяйте её обычной жалобой."),
+ "independent-review":p(["independent-expert"],["vvk","court"],"Заявление о независимой военно-врачебной экспертизе подают в выбранное гражданином экспертное учреждение, а не в прежнюю ВВК. Проверьте лицензию, паспортные сведения, заверенную копию заключения и условия договора."),
  "request-explanation":p(["command","minoborony"],["military-prosecutor"],"Адресат зависит от того, какой орган принимал решение."),
  "challenge-decision":p(["command","military-prosecutor"],["court"],"Выберите ведомственное или судебное обжалование с учётом сроков; обращение в прокуратуру не обязательно заменяет иск."),
  inaction:p(["command","military-prosecutor"],["court"],"Подтвердите направление первого обращения и обязанность органа дать ответ."),
