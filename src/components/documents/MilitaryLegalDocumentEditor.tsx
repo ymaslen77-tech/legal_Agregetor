@@ -2,7 +2,7 @@
 
 import {useMemo,useState} from "react";
 import type {DocumentResultV1} from "@/lib/document-result-contract";
-import {createMilitaryLegalDocumentResult,validateMilitaryLegalDocument} from "@/lib/military-legal-document-generator";
+import {createMilitaryLegalDocumentResult,validateMilitaryLegalDocument,isMilitaryDocumentFieldRequired} from "@/lib/military-legal-document-generator";
 import {MILITARY_LEGAL_FIELDS,type MilitaryLegalDocument} from "@/data/military-legal-documents";
 import {MILITARY_AGENCIES,MILITARY_DIRECTORY_REGIONS,selectMilitaryPostDocumentAgencies} from "@/data/military-post-document-directory";
 import {MILITARY_ROUTES} from "@/data/military-route-plans";
@@ -104,13 +104,14 @@ export function MilitaryLegalDocumentEditor({document}: {document:MilitaryLegalD
     if(!def)return null;
     const isLong=["facts","proof","violation","grounds","desired","disagreement"].includes(key);
     const id="military-document-"+document.slug+"-"+key;
+    const required=isMilitaryDocumentFieldRequired(key);
     return <div key={key} className="min-w-0">
-     <label htmlFor={id} className="text-sm font-semibold text-ink">{index+1}. {def.label} <span className="text-amber-900">*</span></label>
-     {isLong?<textarea id={id} rows={3} maxLength={1600} required value={values[key]??""}
+     <label htmlFor={id} className="text-sm font-semibold text-ink">{index+1}. {def.label} {required?<span className="text-amber-900">*</span>:<span className="text-zinc-500">(необязательно)</span>}</label>
+     {isLong?<textarea id={id} rows={3} maxLength={1600} required={required} value={values[key]??""}
        onChange={e=>change(key,e.target.value)}
        aria-invalid={validation.invalid.includes(key)||undefined}
        className="mt-2 w-full rounded-md border border-line px-3 py-2 text-base"/>:
-      <input id={id} type="text" maxLength={1600} required value={values[key]??""}
+      <input id={id} type="text" maxLength={1600} required={required} value={values[key]??""}
        onChange={e=>change(key,e.target.value)}
        placeholder={key==="date"||key==="birthDate"?"ДД.ММ.ГГГГ":undefined}
        aria-invalid={validation.invalid.includes(key)||undefined}
