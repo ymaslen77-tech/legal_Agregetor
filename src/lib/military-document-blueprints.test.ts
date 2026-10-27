@@ -4,6 +4,7 @@ import {MILITARY_ROUTES} from "@/data/military-route-plans";
 import {MILITARY_READY_DRAFT_KEYS,getMilitaryDraftFields,prepareMilitaryOfficialDraft} from "@/lib/military-official-document-drafts";
 import {MILITARY_COMPOSABLE_SCENARIOS,getMilitaryDocumentFields,composeMilitaryDocument} from "@/lib/military-document-composer";
 import {MILITARY_FIRST_DOCUMENT_PAGES} from "@/data/military-first-document-pages";
+import {isUnknownNavigatorPath} from "@/lib/navigator-paths";
 
 const scenarioKeys=MILITARY_ROUTES.flatMap(route=>route.scenarios.filter(s=>s.kind!=="URGENT_INSTRUCTION").map(s=>s.key));
 assert.deepEqual([...MILITARY_DOCUMENT_BLUEPRINTS.map(b=>b.scenarioKey)].sort(),[...scenarioKeys].sort());
@@ -74,6 +75,7 @@ for(const blueprint of MILITARY_DOCUMENT_BLUEPRINTS){
  assert.equal(result.document!.filingReady,false);
  const seo=MILITARY_FIRST_DOCUMENT_PAGES.find(doc=>doc.slug===blueprint.slug);
  assert.ok(seo,"Canonical document metadata missing: "+blueprint.scenarioKey);
+ assert.equal(isUnknownNavigatorPath("/documents/"+blueprint.slug+"/"),false,"Middleware must permit all registered military pages");
  assert.ok(seo!.seoTitle?.includes("скачать PDF"));
  assert.ok(seo!.seoDescription&&seo!.seoDescription.length>80);
  if(blueprint.type==="Административное исковое заявление"){
