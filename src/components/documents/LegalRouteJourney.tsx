@@ -3,19 +3,20 @@ import Link from "next/link";
 type Stage = "situation" | "document";
 
 export function LegalRouteJourney({
-  stage, title, problemUrl, scenarioUrl, activeStep
+  stage, title, problemUrl, scenarioUrl, activeStep, detailsStepLabel = "Анкета"
 }: {
   stage: Stage;
   title: string;
   problemUrl?: string;
   scenarioUrl?: string;
   activeStep?: number;
+  detailsStepLabel?: string;
 }) {
   const active = activeStep ?? (stage === "situation" ? 0 : 2);
   const steps = [
     { label: "Ситуация", href: problemUrl },
     { label: "Выбор пути", href: scenarioUrl },
-    { label: "Анкета", href: undefined },
+    { label: detailsStepLabel, href: undefined },
     { label: "Результат", href: undefined },
     { label: "Проверка", href: undefined }
   ];
