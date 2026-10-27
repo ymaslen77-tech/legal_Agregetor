@@ -142,6 +142,14 @@ export const MILITARY_LEGAL_SOURCES:Readonly<Record<string,{title:string;url:str
   "kas": {
     "title": "КАС РФ — статьи 125, 126, 218 и 219 (проверить вид производства)",
     "url": "https://www.consultant.ru/document/cons_doc_LAW_176147/bebad06c9038fc6556a1f0e652969414cf2e57f1/"
+  },
+  "plenum8": {
+    "title": "Пленум Верховного Суда РФ от 29.05.2014 № 8 — военная служба и подсудность",
+    "url": "https://www.vsrf.ru/documents/all/8382"
+  },
+  "plenum21": {
+    "title": "Пленум Верховного Суда РФ от 28.10.2025 № 21 — изменения к Пленуму № 8",
+    "url": "https://www.vsrf.ru/documents/all/34814"
   }
 };
 export const MILITARY_LEGAL_DOCUMENTS:readonly MilitaryLegalDocument[]=[
@@ -611,7 +619,9 @@ export const MILITARY_LEGAL_DOCUMENTS:readonly MilitaryLegalDocument[]=[
     ],
     "sourceIds": [
       "kas",
-      "76fz"
+      "76fz",
+      "plenum8",
+      "plenum21"
     ],
     "exampleUrl": "https://base.garant.ru/1969894/",
     "routeId": "command-appeal"
@@ -642,7 +652,9 @@ export const MILITARY_LEGAL_DOCUMENTS:readonly MilitaryLegalDocument[]=[
     ],
     "sourceIds": [
       "kas",
-      "76fz"
+      "76fz",
+      "plenum8",
+      "plenum21"
     ],
     "exampleUrl": "https://www.consultant.ru/document/cons_doc_LAW_176147/bebad06c9038fc6556a1f0e652969414cf2e57f1/",
     "routeId": "command-appeal"
@@ -675,7 +687,9 @@ export const MILITARY_LEGAL_DOCUMENTS:readonly MilitaryLegalDocument[]=[
       "kas",
       "53fz",
       "1237",
-      "647"
+      "647",
+      "plenum8",
+      "plenum21"
     ],
     "exampleUrl": "https://base.garant.ru/1969893/",
     "routeId": "military-discharge"
@@ -687,7 +701,7 @@ export const MILITARY_LEGAL_DOCUMENTS:readonly MilitaryLegalDocument[]=[
     "formLabel": "Административное исковое заявление",
     "kind": "court",
     "subject": "Сумма и период невыплаты, действие финансового органа",
-    "request": "Проверить возможность признания незаконным оспариваемого решения либо бездействия и применения надлежащего способа защиты.",
+    "request": "Признать незаконным оспариваемое решение либо бездействие в части неначисления или невыплаты денежного довольствия за указанный период и обязать устранить установленное нарушение в пределах компетенции административного ответчика.",
     "fields": [
       "court",
       "applicant",
@@ -709,7 +723,9 @@ export const MILITARY_LEGAL_DOCUMENTS:readonly MilitaryLegalDocument[]=[
     "sourceIds": [
       "kas",
       "306fz",
-      "76fz"
+      "76fz",
+      "plenum8",
+      "plenum21"
     ],
     "exampleUrl": "https://www.consultant.ru/document/cons_doc_LAW_163741/56e49299dd50770bff421e4049e824a54c2d6200/",
     "routeId": "military-pay"
@@ -741,7 +757,9 @@ export const MILITARY_LEGAL_DOCUMENTS:readonly MilitaryLegalDocument[]=[
     ],
     "sourceIds": [
       "kas",
-      "53fz"
+      "53fz",
+      "plenum8",
+      "plenum21"
     ],
     "exampleUrl": "https://www.consultant.ru/document/cons_doc_LAW_176147/bebad06c9038fc6556a1f0e652969414cf2e57f1/",
     "routeId": "mobilization-draft"
@@ -768,7 +786,7 @@ export const MILITARY_NAVIGATOR_DOCUMENTS:NavigatorDocument[]=MILITARY_LEGAL_DOC
   whenToUse:[doc.subject,"При наличии документов и фактов, подтверждающих соответствующее право обращения."],
   whenNotToUse:["Если фактический вид службы, орган или вид производства отличается от указанного в документе.","Если отсутствует документ, на котором основано соответствующее требование."],
   beforeFillingChecklist:["Уточните компетентного адресата по официальным сведениям.","Подготовьте документы, подтверждающие обстоятельства.","Сверьте правовой режим и сроки на дату события."],
-  requiredData:doc.fields.map(k=>MILITARY_LEGAL_FIELDS[k]?.label??k),
+  requiredData:doc.fields.filter(k=>k!=="desired").map(k=>MILITARY_LEGAL_FIELDS[k]?.label??k),
   whatToPrepare:["Подтверждающие правовой статус и обстоятельства документы.","Копии решений, приказов и ответов при наличии."],
   whatToInclude:[doc.subject,"Конкретное требование и правовые основания.","Реквизиты адресата, дата, подпись и приложения."],
   howToFill:["Укажите только подтверждённые юридические факты.","Проверьте компетенцию выбранного ведомства или суда.","Если обязательное сведение неизвестно, уточните его до подготовки проекта."],
@@ -793,7 +811,7 @@ export const MILITARY_NAVIGATOR_DOCUMENTS:NavigatorDocument[]=MILITARY_LEGAL_DOC
    {question:"Что проверить перед отправкой?",answer:note}
   ],
   relatedProblemSlugs:route?[route.slug]:[],legalReferenceKeys:[],
-  seoTitle:doc.title+": образец, составить онлайн, скачать PDF и DOCX",
+  seoTitle:doc.title+": составить проект онлайн, скачать PDF и DOCX",
   seoDescription:doc.title+". "+doc.subject+". Подготовьте проект по подтверждённым сведениям, скачайте PDF или DOCX. Правовые основания, адресат, сроки и порядок подачи.",
   generatorSeoTitle:"Сформировать "+doc.title.toLowerCase()+" онлайн",
   generatorSeoDescription:"Укажите необходимые сведения для "+doc.title.toLowerCase()+" и скачайте проект в PDF или DOCX.",

@@ -2,7 +2,7 @@
 
 import {useMemo,useState} from "react";
 import type {DocumentResultV1} from "@/lib/document-result-contract";
-import {createMilitaryLegalDocumentResult,validateMilitaryLegalDocument} from "@/lib/military-legal-document-generator";
+import {createMilitaryLegalDocumentResult,validateMilitaryLegalDocument,isMilitaryDocumentFieldRequired} from "@/lib/military-legal-document-generator";
 import {MILITARY_LEGAL_FIELDS,type MilitaryLegalDocument} from "@/data/military-legal-documents";
 import {MILITARY_AGENCIES,MILITARY_DIRECTORY_REGIONS,selectMilitaryPostDocumentAgencies} from "@/data/military-post-document-directory";
 import {MILITARY_ROUTES} from "@/data/military-route-plans";
@@ -104,13 +104,14 @@ export function MilitaryLegalDocumentEditor({document}: {document:MilitaryLegalD
     if(!def)return null;
     const isLong=["facts","proof","violation","grounds","desired","disagreement"].includes(key);
     const id="military-document-"+document.slug+"-"+key;
+    const required=isMilitaryDocumentFieldRequired(key);
     return <div key={key} className="min-w-0">
-     <label htmlFor={id} className="text-sm font-semibold text-ink">{index+1}. {def.label} <span className="text-amber-900">*</span></label>
-     {isLong?<textarea id={id} rows={3} maxLength={1600} required value={values[key]??""}
+     <label htmlFor={id} className="text-sm font-semibold text-ink">{index+1}. {def.label} {required?<span className="text-amber-900">*</span>:<span className="text-zinc-500">(необязательно)</span>}</label>
+     {isLong?<textarea id={id} rows={3} maxLength={1600} required={required} value={values[key]??""}
        onChange={e=>change(key,e.target.value)}
        aria-invalid={validation.invalid.includes(key)||undefined}
        className="mt-2 w-full rounded-md border border-line px-3 py-2 text-base"/>:
-      <input id={id} type="text" maxLength={1600} required value={values[key]??""}
+      <input id={id} type="text" maxLength={1600} required={required} value={values[key]??""}
        onChange={e=>change(key,e.target.value)}
        placeholder={key==="date"||key==="birthDate"?"ДД.ММ.ГГГГ":undefined}
        aria-invalid={validation.invalid.includes(key)||undefined}
@@ -140,7 +141,8 @@ export function MilitaryLegalDocumentEditor({document}: {document:MilitaryLegalD
   {message?<p role="status" className="mt-3 text-sm">{message}</p>:null}
   {active?<section className="mt-7 border-t border-line pt-6" aria-label="Сформированный юридический документ">
    <h3 className="text-xl font-semibold">Ваш документ: {active.result.documentTitle}</h3>
-   <DocumentResultSummary result={active.result} hideVersionId/>
+   {dirty?<p role="status" className="mt-3 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-950">Внесённые изменения ещё не включены в документ. Сформируйте новую версию или откройте предыдущую из истории.</p>:null}
+   <DocumentResultSummary result={active.result} archiveDisabled={dirty} hideVersionId/>
    <pre className="mt-4 max-h-[40rem] max-w-full overflow-y-auto whitespace-pre-wrap break-words rounded-md border border-line bg-zinc-50 p-4 font-serif text-sm leading-7">{active.result.documentText}</pre>
    <div className="mt-4 flex flex-wrap gap-3">
     <button type="button" disabled={dirty} onClick={()=>void downloadPdf()} className="min-h-11 rounded-md bg-trust px-5 py-3 font-semibold text-white disabled:opacity-50">Скачать PDF</button>

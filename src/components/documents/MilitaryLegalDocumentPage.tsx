@@ -46,7 +46,7 @@ export function MilitaryLegalDocumentPage({document,seoDocument}:{document:Milit
    </section>
    <MilitaryLegalDocumentEditor document={document}/>
    <section className="mt-9 border-t border-line pt-6">
-    <h2 className="text-2xl font-semibold">Правовые основания и образец структуры</h2>
+    <h2 className="text-2xl font-semibold">Правовые основания и материалы для сверки</h2>
     <p className="mt-3 text-sm leading-6 text-zinc-700">
      Источники помогают установить правовую основу, но их актуальная редакция, применимость к вашему статусу, порядок подачи и допустимость требования должны проверяться отдельно.
     </p>
@@ -59,15 +59,24 @@ export function MilitaryLegalDocumentPage({document,seoDocument}:{document:Milit
      })}
     </ul>
     <div className="mt-5 rounded-md border border-line p-4">
-     <h3 className="font-semibold">Опубликованный пример структуры документа</h3>
-     <p className="mt-2 text-sm">Для определения реквизитов использован опубликованный пример. Это не официальное одобрение автоматически сформированного текста и не подтверждение применимости образца к вашей ситуации.</p>
-     <a className="mt-2 inline-block text-sm font-semibold text-trust underline underline-offset-2" href={document.exampleUrl} target="_blank" rel="noopener noreferrer">Посмотреть источник примера</a>
+     <h3 className="font-semibold">Материал для проверки реквизитов и правовой основы</h3>
+     <p className="mt-2 text-sm">Ссылка может вести на законодательство или справочную публикацию, а не на готовый бланк. Сверьте процессуальные требования и актуальную редакцию до подготовки обращения.</p>
+     <a className="mt-2 inline-block text-sm font-semibold text-trust underline underline-offset-2" href={document.exampleUrl} target="_blank" rel="noopener noreferrer">Открыть материал для сверки</a>
     </div>
    </section>
    <section className="mt-9 border-t border-line pt-6">
     <h2 className="text-2xl font-semibold">Как подготовить и направить документ</h2>
     <ol className="mt-4 list-decimal space-y-2 pl-6 text-sm leading-6">{seoDocument.filingProcedure.map(x=><li key={x}>{x}</li>)}</ol>
     <p className="mt-4 text-sm leading-6 text-zinc-700">PDF и DOCX доступны после ввода юридически значимых реквизитов. Персональные сведения не включаются в URL и поисковые метаданные.</p>
+   </section>
+   <section className="mt-9 border-t border-line pt-6">
+    <h2 className="text-2xl font-semibold">Что делать после скачивания документа</h2>
+    <ol className="mt-4 list-decimal space-y-2 pl-6 text-sm leading-6">
+     <li>Сверьте сформированный текст с подлинными документами и проверьте, нет ли в нём лишних или отсутствующих сведений.</li>
+     <li>Проверьте текущую правовую норму, статус заявителя, полномочия адресата, применимый срок и необходимые приложения.</li>
+     <li>До подписания и подачи получите индивидуальную юридическую проверку документа: автоматически сформированный текст пока не имеет допуска к подаче.</li>
+     <li>После проверки выберите надлежащий способ направления и сохраните подтверждение вручения либо регистрации.</li>
+    </ol>
    </section>
    {siblingDocs.length?<section className="mt-9 border-t border-line pt-6">
     <h2 className="text-xl font-semibold">Другие документы по этой ситуации</h2>

@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
 import {MILITARY_ROUTES} from "@/data/military-route-plans";
 import {MILITARY_LEGAL_DOCUMENTS,MILITARY_NAVIGATOR_DOCUMENTS,MILITARY_LEGAL_FIELDS,getMilitaryDocumentsForScenario} from "@/data/military-legal-documents";
-import {createMilitaryLegalDocumentResult,validateMilitaryLegalDocument} from "@/lib/military-legal-document-generator";
+import {createMilitaryLegalDocumentResult,validateMilitaryLegalDocument,isMilitaryDocumentFieldRequired} from "@/lib/military-legal-document-generator";
 import {documentResultSchema} from "@/lib/document-result-contract";
 import {validateSavedDocument} from "@/lib/saved-document-validation";
 import {getNavigatorDocument} from "@/data/documents";
+import {canIndexMilitaryLegalDocument} from "@/lib/military-document-indexing";
 
 const id="11111111-1111-4111-8111-111111111111";
 const time="2026-10-26T00:00:00.000Z";
@@ -26,6 +27,7 @@ for(const doc of MILITARY_LEGAL_DOCUMENTS){
  assert.ok(!/checklist|check-list|questionnaire|anketa/i.test(doc.slug+" "+doc.title));
  const seo=getNavigatorDocument(doc.slug);
  assert.ok(seo,"Military document must be registered with global catalog "+doc.slug);
+ assert.equal(canIndexMilitaryLegalDocument(doc.slug),false,"Unapproved military drafts cannot enter SEO index: "+doc.slug);
  assert.ok(seo?.seoTitle?.includes("скачать PDF"),"Document-specific SEO title "+doc.slug);
  assert.ok(seo?.seoDescription&&seo.seoDescription.length>=100,"Document-specific meta description");
  assert.ok(!seo?.seoDescription?.includes("ПРОЕКТ ДОКУМЕНТА"));
@@ -42,20 +44,33 @@ for(const doc of MILITARY_LEGAL_DOCUMENTS){
  assert.equal(validateSavedDocument({...result,documentSlug:"military-unreviewed-fake"}),null);
  assert.equal(validateSavedDocument({...result,filingReady:true}),null);
  assert.ok(result.documentText.includes("ПРОШУ"),doc.slug);
- assert.ok(result.documentText.includes("Приложения"),doc.slug);
+ assert.equal(result.documentText.includes("Приложения:"),doc.kind==="court"||doc.fields.includes("proof"),"Only actual appendices appear in document: "+doc.slug);
  assert.ok(result.documentText.includes("Подпись"),doc.slug);
  if(doc.kind==="court"){
   assert.ok(result.documentText.includes("Административный истец:"));
   assert.ok(result.documentText.includes("Административный ответчик:"));
   assert.ok(result.documentText.includes("статьям 125 и 126 КАС РФ"));
   assert.ok(result.documentText.includes("ПРОШУ СУД:"));
+  assert.ok(doc.sourceIds.includes("plenum8")&&doc.sourceIds.includes("plenum21"),"Court documents must cite current Supreme Court plenums");
+  assert.ok(result.documentText.includes("28.10.2025"),"Latest relevant Supreme Court plenary amendments must be visible");
+  assert.equal((result.documentText.match(/Предыдущие обращения и результат:/g)||[]).length,1,"Prior appeals cannot be duplicated");
  }else{
   assert.ok(result.documentText.includes("Кому:"));
   assert.ok(result.documentText.includes("От:"));
  }
  const missing=validateMilitaryLegalDocument(doc,{});
  assert.equal(missing.complete,false);
- assert.equal(missing.missing.length,doc.fields.length);
+ assert.equal(missing.missing.length,doc.fields.filter(isMilitaryDocumentFieldRequired).length);
+ const withoutExtra={...answers};delete withoutExtra.desired;
+ assert.equal(validateMilitaryLegalDocument(doc,withoutExtra).complete,true,"Optional extra request must not block "+doc.slug);
+ const withoutExtraResult=createMilitaryLegalDocumentResult(doc.slug,withoutExtra,{versionId:id,createdAt:time});
+ assert.ok(withoutExtraResult.documentText.includes("1. "+doc.request));
+ assert.ok(withoutExtraResult.documentText.includes("2. Сообщить")||doc.kind==="court");
+ assert.ok(!withoutExtraResult.documentText.includes("3. Сообщить"));
+ if(doc.fields.includes("date")){
+  assert.equal(validateMilitaryLegalDocument(doc,{...answers,date:"31.02.2026"}).complete,false,"Reject nonexistent date");
+  assert.equal(validateMilitaryLegalDocument(doc,{...answers,date:"29.02.2024"}).complete,true,"Accept leap day");
+ }
  assert.throws(()=>createMilitaryLegalDocumentResult(doc.slug,{},{versionId:id,createdAt:time}));
 }
 assert.ok(MILITARY_LEGAL_DOCUMENTS.some(doc=>doc.kind==="court"));
