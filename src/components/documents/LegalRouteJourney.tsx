@@ -3,19 +3,21 @@ import Link from "next/link";
 type Stage = "situation" | "document";
 
 export function LegalRouteJourney({
-  stage, title, problemUrl, scenarioUrl, activeStep
+  stage, title, problemUrl, scenarioUrl, activeStep, detailsStepLabel = "Анкета", showGuidance = true
 }: {
   stage: Stage;
   title: string;
   problemUrl?: string;
   scenarioUrl?: string;
   activeStep?: number;
+  detailsStepLabel?: string;
+  showGuidance?: boolean;
 }) {
   const active = activeStep ?? (stage === "situation" ? 0 : 2);
   const steps = [
     { label: "Ситуация", href: problemUrl },
     { label: "Выбор пути", href: scenarioUrl },
-    { label: "Анкета", href: undefined },
+    { label: detailsStepLabel, href: undefined },
     { label: "Результат", href: undefined },
     { label: "Проверка", href: undefined }
   ];
@@ -34,9 +36,9 @@ export function LegalRouteJourney({
           </li>;
         })}
       </ol>
-      <p className="mt-2 text-xs leading-5 text-zinc-500">
+      {showGuidance?<p className="mt-2 text-xs leading-5 text-zinc-500">
         Правовые условия определяются выбранным сценарием; одинаковые шаги не означают одинаковых правовых оснований.
-      </p>
+      </p>:null}
     </div>
   </nav>;
 }
