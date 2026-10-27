@@ -1,4 +1,5 @@
 import { getNavigatorDocument } from "@/data/documents";
+import {getMilitaryFirstDocumentMatch} from "@/data/military-first-document-pages";
 import { getLegalCategory } from "@/data/legal-categories";
 import { getLegalProblem } from "@/data/legal-problems";
 import { navigatorTools } from "@/data/tools";
@@ -8,7 +9,7 @@ export function isUnknownNavigatorPath(pathname: string) {
 
   if (segments[0] === "documents") {
     if (segments.length === 1) return false;
-    return segments.length !== 2 || !getNavigatorDocument(segments[1]);
+    return segments.length !== 2 || (!getNavigatorDocument(segments[1]) && !getMilitaryFirstDocumentMatch(segments[1]));
   }
 
   if (segments[0] === "problems") {
