@@ -5,6 +5,7 @@ import {createMilitaryLegalDocumentResult,validateMilitaryLegalDocument,isMilita
 import {documentResultSchema} from "@/lib/document-result-contract";
 import {validateSavedDocument} from "@/lib/saved-document-validation";
 import {getNavigatorDocument} from "@/data/documents";
+import {canIndexMilitaryLegalDocument} from "@/lib/military-document-indexing";
 
 const id="11111111-1111-4111-8111-111111111111";
 const time="2026-10-26T00:00:00.000Z";
@@ -26,6 +27,7 @@ for(const doc of MILITARY_LEGAL_DOCUMENTS){
  assert.ok(!/checklist|check-list|questionnaire|anketa/i.test(doc.slug+" "+doc.title));
  const seo=getNavigatorDocument(doc.slug);
  assert.ok(seo,"Military document must be registered with global catalog "+doc.slug);
+ assert.equal(canIndexMilitaryLegalDocument(doc.slug),false,"Unapproved military drafts cannot enter SEO index: "+doc.slug);
  assert.ok(seo?.seoTitle?.includes("скачать PDF"),"Document-specific SEO title "+doc.slug);
  assert.ok(seo?.seoDescription&&seo.seoDescription.length>=100,"Document-specific meta description");
  assert.ok(!seo?.seoDescription?.includes("ПРОЕКТ ДОКУМЕНТА"));
