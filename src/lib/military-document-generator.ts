@@ -93,7 +93,7 @@ export function createMilitaryDocumentResult(
  if(scenario.kind==="URGENT_INSTRUCTION")throw new Error("Urgent instruction must not generate or export a document");
  const data=resolveMilitaryIntakeAnswers(scenario.key,answers);
  const check=validateMilitaryIntake(route,scenario,answers);
- if(check.missing.length||check.invalid.length||!check.complete)throw new Error("Проверьте данные в анкете: "+[...check.missing,...check.invalid,...check.warnings].join("; "));
+ if(check.missing.length||check.invalid.length||!check.complete)throw new Error("Проверьте данные документа: "+[...check.missing,...check.invalid,...check.warnings].join("; "));
  const purpose=MILITARY_DRAFT_PURPOSES[route.id+"/"+scenario.key];
  if(!purpose)throw new Error("Scenario-specific draft definition missing: "+route.id+"/"+scenario.key);
  const hasRecipient=Boolean(data.authority?.trim())&&!isUncertain((data.authority??"").trim());
@@ -109,7 +109,7 @@ export function createMilitaryDocumentResult(
    .map(ref=>ref.citation+" — "+ref.pinpoint+": "+militaryProvisionHref(ref));
  const namedRecipient=hasRecipient?data.authority!.trim():"[уполномоченный адресат устанавливается по документам]";
  const reportedFacts=[
-  "Вопрос: "+scenario.title+".",
+  "Предмет обращения: "+scenario.title+".",
   "Статус заявителя: "+data.role+"; вид службы: "+data.regime+".",
   ...scenario.required.filter(key=>!["role","regime","authority"].includes(key))
     .map(key=>{
