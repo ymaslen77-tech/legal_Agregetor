@@ -1,6 +1,7 @@
 "use client";
 import {useState} from "react";
-import {downloadGeneratedDocumentDocx,downloadGeneratedDocumentPdf} from "@/lib/document-export";
+import {downloadGeneratedDocumentDocx} from "@/lib/document-export";
+import {createMilitaryPdfBlob} from "@/lib/military-pdf";
 import {buildMilitaryDraft,type MilitaryDocumentCandidate} from "@/data/military-document-candidates";
 type Props={candidate:MilitaryDocumentCandidate;slug:string};
 type InputKey="applicant"|"recipient"|"facts"|"request"|"attachments";
@@ -22,10 +23,17 @@ export function MilitaryDraftForm({candidate,slug}:Props){
    catch{setError("Не удалось подготовить DOCX-файл.");}
    finally{setBusy(false);}
  }
- function printPdf(){
+ async function downloadPdf(){
    if(!prepared)return;
-   try{downloadGeneratedDocumentPdf({title:candidate.title,content:prepared});}
-   catch{setError("Не удалось открыть окно печати. Разрешите всплывающие окна.");}
+   setBusy(true);setError(null);
+   try{
+     const blob=await createMilitaryPdfBlob(candidate.title,prepared);
+     const url=URL.createObjectURL(blob);
+     const link=document.createElement("a");
+     link.href=url;link.download="voennoe-pravo-"+slug+"-proekt.pdf";
+     document.body.appendChild(link);link.click();link.remove();URL.revokeObjectURL(url);
+   }catch{setError("Не удалось сформировать PDF-файл.");}
+   finally{setBusy(false);}
  }
  const fields:ReadonlyArray<{key:InputKey;label:string;hint:string;required:boolean;rows:number}>=[
    {key:"applicant",label:"Заявитель: ФИО, статус и данные для ответа",hint:"Реквизиты, которые должны быть отражены в обращении",required:true,rows:2},
@@ -52,7 +60,7 @@ export function MilitaryDraftForm({candidate,slug}:Props){
       <pre className="mt-3 whitespace-pre-wrap break-words rounded-md bg-zinc-50 p-4 text-sm leading-6 text-zinc-800">{prepared}</pre>
       <div className="mt-4 flex flex-wrap gap-3">
         <button type="button" disabled={busy} onClick={downloadDocx} className="min-h-11 rounded-md border border-trust px-4 py-2 font-semibold text-trust disabled:opacity-60">Скачать DOCX</button>
-        <button type="button" onClick={printPdf} className="min-h-11 rounded-md border border-trust px-4 py-2 font-semibold text-trust">Печать / сохранить PDF</button>
+        <button type="button" onClick={downloadPdf} className="min-h-11 rounded-md border border-trust px-4 py-2 font-semibold text-trust">Скачать PDF</button>
       </div>
       <p className="mt-3 text-xs text-zinc-600">Проверьте документ, ссылки на нормы, полномочия заявителя, реквизиты адресата и приложения перед использованием.</p>
     </section>:null}
