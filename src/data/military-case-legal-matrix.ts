@@ -4009,17 +4009,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 0,
     "situationTitle": "Какие существуют способы жилищного обеспечения военнослужащих?",
     "situationKind": "information",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Разделить НИС, служебное жильё, жилищную субсидию и иные гарантии.",
+    "evidenceToConfirm": "Вид службы, выслуга, сведения о жилищном статусе.",
+    "competentRecipientToVerify": "Уполномоченный орган жилищного обеспечения / НИС и командование; суд после определения компетенции.",
+    "plannedResultToVerify": "Информация без генератора.",
+    "sourceCandidates": [
+      {
+        "id": "117",
+        "title": "ФЗ № 117-ФЗ о накопительно-ипотечной системе",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "housing",
+        "title": "ЖК РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не обещать одинаковую жилищную гарантию всем категориям службы.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "voennaya-ipoteka-i-zhile",
@@ -4027,17 +4046,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 1,
     "situationTitle": "Как вступить в накопительно-ипотечную систему?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Установить основание участия в НИС и порядок включения в реестр.",
+    "evidenceToConfirm": "Контракт, сведения о звании, должности и дате начала службы.",
+    "competentRecipientToVerify": "Уполномоченный орган жилищного обеспечения / НИС и командование; суд после определения компетенции.",
+    "plannedResultToVerify": "Рапорт о включении в реестр НИС при применимости.",
+    "sourceCandidates": [
+      {
+        "id": "117",
+        "title": "ФЗ № 117-ФЗ о накопительно-ипотечной системе",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "housing",
+        "title": "ЖК РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Для части категорий включение происходит не по произвольному заявлению.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "voennaya-ipoteka-i-zhile",
@@ -4045,17 +4083,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 2,
     "situationTitle": "Что делать, если отказали во включении в реестр НИС?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Определить отказ, категорию участника и нормативное основание включения.",
+    "evidenceToConfirm": "Письменный отказ, контракт, служебные документы.",
+    "competentRecipientToVerify": "Уполномоченный орган жилищного обеспечения / НИС и командование; суд после определения компетенции.",
+    "plannedResultToVerify": "Жалоба на отказ во включении в НИС.",
+    "sourceCandidates": [
+      {
+        "id": "117",
+        "title": "ФЗ № 117-ФЗ о накопительно-ипотечной системе",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "housing",
+        "title": "ЖК РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не путать дату включения в реестр с правом использования накоплений.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "voennaya-ipoteka-i-zhile",
@@ -4063,17 +4120,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 3,
     "situationTitle": "Как обжаловать нарушение порядка начисления накоплений?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Проверить правильность учёта накоплений, индивидуальный счёт и периоды.",
+    "evidenceToConfirm": "Выписка из именного счёта, документы службы, расчёт.",
+    "competentRecipientToVerify": "Уполномоченный орган жилищного обеспечения / НИС и командование; суд после определения компетенции.",
+    "plannedResultToVerify": "Заявление о проверке начисления накоплений.",
+    "sourceCandidates": [
+      {
+        "id": "117",
+        "title": "ФЗ № 117-ФЗ о накопительно-ипотечной системе",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "housing",
+        "title": "ЖК РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Размер накоплений не вычислять без официальных данных.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "voennaya-ipoteka-i-zhile",
@@ -4081,17 +4157,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 4,
     "situationTitle": "Как защитить жилищные права при увольнении со службы?",
     "situationKind": "mixed",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Определить последствия увольнения для НИС, займа и иных гарантий.",
+    "evidenceToConfirm": "Основание увольнения, договор целевого жилищного займа, сведения об учёте.",
+    "competentRecipientToVerify": "Уполномоченный орган жилищного обеспечения / НИС и командование; суд после определения компетенции.",
+    "plannedResultToVerify": "Заявление о реализации жилищного права или возражение по требованию возврата.",
+    "sourceCandidates": [
+      {
+        "id": "117",
+        "title": "ФЗ № 117-ФЗ о накопительно-ипотечной системе",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "housing",
+        "title": "ЖК РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не считать увольнение автоматическим освобождением от обязательств.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "voennaya-ipoteka-i-zhile",
@@ -4099,17 +4194,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 5,
     "situationTitle": "Как обжаловать отказ в предоставлении жилья или жилищной субсидии?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Установить правовой режим обеспечения жильём и причину отказа.",
+    "evidenceToConfirm": "Жилищное дело, письменный отказ, сведения о членах семьи.",
+    "competentRecipientToVerify": "Уполномоченный орган жилищного обеспечения / НИС и командование; суд после определения компетенции.",
+    "plannedResultToVerify": "Жалоба на отказ / иск по соответствующей процедуре.",
+    "sourceCandidates": [
+      {
+        "id": "117",
+        "title": "ФЗ № 117-ФЗ о накопительно-ипотечной системе",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "housing",
+        "title": "ЖК РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не объединять споры о НИС и жилищной субсидии в один универсальный иск.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "voinskiy-uchet-i-dokumenty",
@@ -4117,17 +4231,24 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 0,
     "situationTitle": "Кто обязан состоять на воинском учёте?",
     "situationKind": "information",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Разграничить случаи обязательного воинского учёта и исключения.",
+    "evidenceToConfirm": "Гражданство, возраст, статус воинской обязанности, место проживания.",
+    "competentRecipientToVerify": "Военный комиссариат или орган госуслуги по предмету обращения; судебный орган при надлежащем споре.",
+    "plannedResultToVerify": "Информация без генератора.",
+    "sourceCandidates": [
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      }
+    ],
+    "criticalLimitations": "Не путать воинский учёт с немедленной обязанностью служить.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "voinskiy-uchet-i-dokumenty",
@@ -4135,17 +4256,24 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 1,
     "situationTitle": "Как встать на воинский учёт?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Проверить обязанность и процесс постановки на воинский учёт.",
+    "evidenceToConfirm": "Документ о регистрации, воинские документы, данные заявителя.",
+    "competentRecipientToVerify": "Военный комиссариат или орган госуслуги по предмету обращения; судебный орган при надлежащем споре.",
+    "plannedResultToVerify": "Заявление о постановке на воинский учёт при необходимой процедуре.",
+    "sourceCandidates": [
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      }
+    ],
+    "criticalLimitations": "Не утверждать обязательность личной явки для каждой ситуации.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "voinskiy-uchet-i-dokumenty",
@@ -4153,17 +4281,24 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 2,
     "situationTitle": "Как сняться с воинского учёта при наличии законных оснований?",
     "situationKind": "mixed",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Уточнить основание снятия с учёта и соответствующий орган.",
+    "evidenceToConfirm": "Документы о статусе, месте проживания или освобождении.",
+    "competentRecipientToVerify": "Военный комиссариат или орган госуслуги по предмету обращения; судебный орган при надлежащем споре.",
+    "plannedResultToVerify": "Заявление о снятии с воинского учёта при законном основании.",
+    "sourceCandidates": [
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      }
+    ],
+    "criticalLimitations": "Выезд сам по себе не всегда автоматически прекращает обязанности.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "voinskiy-uchet-i-dokumenty",
@@ -4171,17 +4306,24 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 3,
     "situationTitle": "Как оформить воинский учёт при проживании за границей?",
     "situationKind": "mixed",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Проверить режим учёта при проживании за рубежом и сроки уведомления.",
+    "evidenceToConfirm": "Сведения о месте жительства, датах выезда и воинском статусе.",
+    "competentRecipientToVerify": "Военный комиссариат или орган госуслуги по предмету обращения; судебный орган при надлежащем споре.",
+    "plannedResultToVerify": "Уведомление или заявление по конкретной процедуре.",
+    "sourceCandidates": [
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      }
+    ],
+    "criticalLimitations": "Не считать иностранное проживание универсальным освобождением.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "voinskiy-uchet-i-dokumenty",
@@ -4189,17 +4331,24 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 4,
     "situationTitle": "Как восстановить утерянный военный билет?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Установить факт утраты, действующий порядок выдачи взамен и полномочия органа.",
+    "evidenceToConfirm": "Документ личности, сведения воинского учёта, обстоятельства утраты.",
+    "competentRecipientToVerify": "Военный комиссариат или орган госуслуги по предмету обращения; судебный орган при надлежащем споре.",
+    "plannedResultToVerify": "Заявление о выдаче военного билета взамен утраченного.",
+    "sourceCandidates": [
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      }
+    ],
+    "criticalLimitations": "Не обещать освобождение от обязанностей из-за отсутствия билета.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "voinskiy-uchet-i-dokumenty",
@@ -4207,17 +4356,24 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 5,
     "situationTitle": "Что делать при отказе в выдаче военного билета?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Проверить форму и мотивы отказа выдать документ воинского учёта.",
+    "evidenceToConfirm": "Письменный отказ, предыдущее заявление, документы о статусе.",
+    "competentRecipientToVerify": "Военный комиссариат или орган госуслуги по предмету обращения; судебный орган при надлежащем споре.",
+    "plannedResultToVerify": "Жалоба на отказ в выдаче военного билета.",
+    "sourceCandidates": [
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      }
+    ],
+    "criticalLimitations": "Не считать право на конкретный документ независимым от учётного статуса.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "voinskiy-uchet-i-dokumenty",
@@ -4225,17 +4381,24 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 6,
     "situationTitle": "Как обжаловать отказ в оформлении гражданского паспорта из-за отсутствия военного билета?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Разграничить паспортную процедуру и требования воинского учёта.",
+    "evidenceToConfirm": "Отказ в госуслуге, заявление о выдаче паспорта, документы личности.",
+    "competentRecipientToVerify": "Военный комиссариат или орган госуслуги по предмету обращения; судебный орган при надлежащем споре.",
+    "plannedResultToVerify": "Жалоба на отказ в паспортной услуге / судебное оспаривание.",
+    "sourceCandidates": [
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      }
+    ],
+    "criticalLimitations": "Не переносить правила выдачи военного билета на паспортную процедуру.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "alternativnaya-grazhdanskaya-sluzhba",
@@ -4243,17 +4406,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 0,
     "situationTitle": "Кому и при каких условиях может быть доступна альтернативная гражданская служба?",
     "situationKind": "information",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Проверить конституционные и законные основания замены военной службы альтернативной.",
+    "evidenceToConfirm": "Сведения о убеждениях, статусе призыва и сроках подачи.",
+    "competentRecipientToVerify": "Призывная комиссия и соответствующий военный комиссариат; вышестоящий орган или суд по процедуре.",
+    "plannedResultToVerify": "Информация без генератора.",
+    "sourceCandidates": [
+      {
+        "id": "113",
+        "title": "ФЗ № 113-ФЗ об альтернативной гражданской службе",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      },
+      {
+        "id": "412-2025",
+        "title": "ФЗ № 412-ФЗ (2025)",
+        "url": "https://publication.pravo.gov.ru/document/0001202511040014",
+        "type": "OFFICIAL_RECORD_CANDIDATE_UNCONFIRMED"
+      }
+    ],
+    "criticalLimitations": "Нельзя гарантировать замену службы без соблюдения условий.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "alternativnaya-grazhdanskaya-sluzhba",
@@ -4261,17 +4443,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 1,
     "situationTitle": "Как подать заявление о замене военной службы альтернативной гражданской?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Проверить статус и сроки обращения о замене по 113-ФЗ и изменённой процедуре.",
+    "evidenceToConfirm": "Заявление, сведения об убеждениях, документы о призывном статусе.",
+    "competentRecipientToVerify": "Призывная комиссия и соответствующий военный комиссариат; вышестоящий орган или суд по процедуре.",
+    "plannedResultToVerify": "Заявление о замене военной службы альтернативной гражданской.",
+    "sourceCandidates": [
+      {
+        "id": "113",
+        "title": "ФЗ № 113-ФЗ об альтернативной гражданской службе",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      },
+      {
+        "id": "412-2025",
+        "title": "ФЗ № 412-ФЗ (2025)",
+        "url": "https://publication.pravo.gov.ru/document/0001202511040014",
+        "type": "OFFICIAL_RECORD_CANDIDATE_UNCONFIRMED"
+      }
+    ],
+    "criticalLimitations": "Требования к сроку и форме особенно важны при изменениях 2026 года.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "alternativnaya-grazhdanskaya-sluzhba",
@@ -4279,17 +4480,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 2,
     "situationTitle": "Как обжаловать отказ в замене военной службы?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Определить причины отказа и порядок его обжалования.",
+    "evidenceToConfirm": "Решение комиссии, копия заявления, подтверждения.",
+    "competentRecipientToVerify": "Призывная комиссия и соответствующий военный комиссариат; вышестоящий орган или суд по процедуре.",
+    "plannedResultToVerify": "Жалоба на отказ / административный иск при законном основании.",
+    "sourceCandidates": [
+      {
+        "id": "113",
+        "title": "ФЗ № 113-ФЗ об альтернативной гражданской службе",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      },
+      {
+        "id": "412-2025",
+        "title": "ФЗ № 412-ФЗ (2025)",
+        "url": "https://publication.pravo.gov.ru/document/0001202511040014",
+        "type": "OFFICIAL_RECORD_CANDIDATE_UNCONFIRMED"
+      }
+    ],
+    "criticalLimitations": "Не утверждать автоматическое приостановление исполнения.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "alternativnaya-grazhdanskaya-sluzhba",
@@ -4297,17 +4517,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 3,
     "situationTitle": "Как оспорить нарушение процедуры рассмотрения заявления?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Выявить нарушения порядка слушания и оценки заявления об АГС.",
+    "evidenceToConfirm": "Заявление, повестка, протокол заседания, ответ.",
+    "competentRecipientToVerify": "Призывная комиссия и соответствующий военный комиссариат; вышестоящий орган или суд по процедуре.",
+    "plannedResultToVerify": "Жалоба на нарушение процедуры рассмотрения.",
+    "sourceCandidates": [
+      {
+        "id": "113",
+        "title": "ФЗ № 113-ФЗ об альтернативной гражданской службе",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      },
+      {
+        "id": "412-2025",
+        "title": "ФЗ № 412-ФЗ (2025)",
+        "url": "https://publication.pravo.gov.ru/document/0001202511040014",
+        "type": "OFFICIAL_RECORD_CANDIDATE_UNCONFIRMED"
+      }
+    ],
+    "criticalLimitations": "Общие формулировки об убеждениях не заменяют фактическое обоснование.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "alternativnaya-grazhdanskaya-sluzhba",
@@ -4315,17 +4554,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 4,
     "situationTitle": "Как добиться пересмотра решения об отказе?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Определить основание пересмотра и полномочия соответствующей комиссии.",
+    "evidenceToConfirm": "Отказ, новое доказательство, процессуальные даты.",
+    "competentRecipientToVerify": "Призывная комиссия и соответствующий военный комиссариат; вышестоящий орган или суд по процедуре.",
+    "plannedResultToVerify": "Жалоба или заявление о пересмотре решения об АГС.",
+    "sourceCandidates": [
+      {
+        "id": "113",
+        "title": "ФЗ № 113-ФЗ об альтернативной гражданской службе",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      },
+      {
+        "id": "412-2025",
+        "title": "ФЗ № 412-ФЗ (2025)",
+        "url": "https://publication.pravo.gov.ru/document/0001202511040014",
+        "type": "OFFICIAL_RECORD_CANDIDATE_UNCONFIRMED"
+      }
+    ],
+    "criticalLimitations": "Не выдавать повторное заявление за гарантированный пересмотр.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "veterany-pensii-i-lgoty",
@@ -4333,17 +4591,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 0,
     "situationTitle": "Какие меры социальной поддержки предусмотрены для ветеранов боевых действий?",
     "situationKind": "information",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Уточнить точный круг федеральных и региональных гарантий ветеранам.",
+    "evidenceToConfirm": "Документы о статусе и регионе, подтверждение участия.",
+    "competentRecipientToVerify": "Ведомственный орган определения статуса, назначения пенсии или соцподдержки по конкретной мере.",
+    "plannedResultToVerify": "Информация без генератора.",
+    "sourceCandidates": [
+      {
+        "id": "5",
+        "title": "ФЗ № 5-ФЗ о ветеранах",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "4468",
+        "title": "Закон РФ № 4468-1 о военных пенсиях",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не все меры поддержки возникают автоматически.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "veterany-pensii-i-lgoty",
@@ -4351,17 +4628,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 1,
     "situationTitle": "Как получить удостоверение ветерана боевых действий?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Определить документально подтверждённое основание статуса и ведомственный порядок выдачи.",
+    "evidenceToConfirm": "Служебные приказы, сведения об участии, документы личности.",
+    "competentRecipientToVerify": "Ведомственный орган определения статуса, назначения пенсии или соцподдержки по конкретной мере.",
+    "plannedResultToVerify": "Заявление о выдаче удостоверения ветерана боевых действий.",
+    "sourceCandidates": [
+      {
+        "id": "5",
+        "title": "ФЗ № 5-ФЗ о ветеранах",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "4468",
+        "title": "Закон РФ № 4468-1 о военных пенсиях",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не присваивать статус только из пользовательского описания.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "veterany-pensii-i-lgoty",
@@ -4369,17 +4665,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 2,
     "situationTitle": "Что делать при отказе в признании статуса ветерана?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Проверить конкретный отказ в признании статуса и компетенцию органа.",
+    "evidenceToConfirm": "Письменный отказ, сведения о службе и участии.",
+    "competentRecipientToVerify": "Ведомственный орган определения статуса, назначения пенсии или соцподдержки по конкретной мере.",
+    "plannedResultToVerify": "Жалоба на отказ в признании статуса ветерана.",
+    "sourceCandidates": [
+      {
+        "id": "5",
+        "title": "ФЗ № 5-ФЗ о ветеранах",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "4468",
+        "title": "Закон РФ № 4468-1 о военных пенсиях",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Требуется разграничить статус ветерана и участника СВО.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "veterany-pensii-i-lgoty",
@@ -4387,17 +4702,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 3,
     "situationTitle": "Как оформить военную пенсию?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Установить вид пенсионного обеспечения, выслугу, основание и получателя.",
+    "evidenceToConfirm": "Документы о стаже, службе, увольнении и инвалидности.",
+    "competentRecipientToVerify": "Ведомственный орган определения статуса, назначения пенсии или соцподдержки по конкретной мере.",
+    "plannedResultToVerify": "Заявление о назначении военной пенсии.",
+    "sourceCandidates": [
+      {
+        "id": "5",
+        "title": "ФЗ № 5-ФЗ о ветеранах",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "4468",
+        "title": "Закон РФ № 4468-1 о военных пенсиях",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Нельзя выводить пенсионное право только по возрасту.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "veterany-pensii-i-lgoty",
@@ -4405,17 +4739,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 4,
     "situationTitle": "Как обжаловать неправильный расчёт военной пенсии?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Проверить пенсионный расчёт, периоды и применимые коэффициенты.",
+    "evidenceToConfirm": "Решение о назначении, расчёт, сведения о выслуге.",
+    "competentRecipientToVerify": "Ведомственный орган определения статуса, назначения пенсии или соцподдержки по конкретной мере.",
+    "plannedResultToVerify": "Заявление о перерасчёте пенсии.",
+    "sourceCandidates": [
+      {
+        "id": "5",
+        "title": "ФЗ № 5-ФЗ о ветеранах",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "4468",
+        "title": "Закон РФ № 4468-1 о военных пенсиях",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не рассчитывать суммы по устаревшим нормативам.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "veterany-pensii-i-lgoty",
@@ -4423,17 +4776,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 5,
     "situationTitle": "Как получить меры социальной поддержки после увольнения?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Определить конкретную социальную льготу после увольнения и её условия.",
+    "evidenceToConfirm": "Статус ветерана, пенсионные и региональные документы.",
+    "competentRecipientToVerify": "Ведомственный орган определения статуса, назначения пенсии или соцподдержки по конкретной мере.",
+    "plannedResultToVerify": "Заявление о назначении выбранной меры соцподдержки.",
+    "sourceCandidates": [
+      {
+        "id": "5",
+        "title": "ФЗ № 5-ФЗ о ветеранах",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "4468",
+        "title": "Закон РФ № 4468-1 о военных пенсиях",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Разные льготы оформляются через разные органы.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "veterany-pensii-i-lgoty",
@@ -4441,17 +4813,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 6,
     "situationTitle": "Как добиться предоставления медицинских и санаторно-курортных гарантий при наличии права?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Подтвердить медицинское и санаторное право по статусу и ведомству.",
+    "evidenceToConfirm": "Медицинские рекомендации, документ о статусе, письменный отказ.",
+    "competentRecipientToVerify": "Ведомственный орган определения статуса, назначения пенсии или соцподдержки по конкретной мере.",
+    "plannedResultToVerify": "Заявление о предоставлении медицинской/санаторной гарантии.",
+    "sourceCandidates": [
+      {
+        "id": "5",
+        "title": "ФЗ № 5-ФЗ о ветеранах",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "4468",
+        "title": "Закон РФ № 4468-1 о военных пенсиях",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Медицинская рекомендация и право на бесплатную услугу не тождественны.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "sudebnaya-zashchita",
@@ -4459,17 +4850,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 0,
     "situationTitle": "Как определить компетентный суд по военному спору?",
     "situationKind": "information",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Определить предмет спора, правовую природу требования и суд по подсудности.",
+    "evidenceToConfirm": "Служебный статус, оспариваемый акт и адреса сторон.",
+    "competentRecipientToVerify": "Компетентный суд, определяемый видом спора, подведомственностью и территориальной подсудностью.",
+    "plannedResultToVerify": "Информация без генератора.",
+    "sourceCandidates": [
+      {
+        "id": "kas",
+        "title": "КАС РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "upk",
+        "title": "УПК РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      }
+    ],
+    "criticalLimitations": "Военный суд компетентен не по любому спору военнослужащего.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "sudebnaya-zashchita",
@@ -4477,17 +4887,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 1,
     "situationTitle": "Как подать административное исковое заявление об оспаривании решения должностного лица?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Проверить публично-правовой характер решения и требования к административному иску.",
+    "evidenceToConfirm": "Решение должностного лица, дата ознакомления, доказательства нарушения.",
+    "competentRecipientToVerify": "Компетентный суд, определяемый видом спора, подведомственностью и территориальной подсудностью.",
+    "plannedResultToVerify": "Административное исковое заявление.",
+    "sourceCandidates": [
+      {
+        "id": "kas",
+        "title": "КАС РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "upk",
+        "title": "УПК РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      }
+    ],
+    "criticalLimitations": "Не генерировать иск без надлежащего ответчика, подсудности и срока.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "sudebnaya-zashchita",
@@ -4495,17 +4924,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 2,
     "situationTitle": "Как обжаловать бездействие командования в суде?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Установить обязанность должностного лица, срок действия и подтверждённое бездействие.",
+    "evidenceToConfirm": "Обращение, подтверждение регистрации, переписка.",
+    "competentRecipientToVerify": "Компетентный суд, определяемый видом спора, подведомственностью и территориальной подсудностью.",
+    "plannedResultToVerify": "Административный иск об оспаривании бездействия.",
+    "sourceCandidates": [
+      {
+        "id": "kas",
+        "title": "КАС РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "upk",
+        "title": "УПК РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      }
+    ],
+    "criticalLimitations": "Нерассмотрение обращения не означает автоматически удовлетворение требования.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "sudebnaya-zashchita",
@@ -4513,17 +4961,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 3,
     "situationTitle": "Как обжаловать отказ военной прокуратуры при наличии предусмотренных законом оснований?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Разграничить внесудебный ответ прокурора и предмет судебного оспаривания.",
+    "evidenceToConfirm": "Ответ прокуратуры, заявление, доказательства нарушенного права.",
+    "competentRecipientToVerify": "Компетентный суд, определяемый видом спора, подведомственностью и территориальной подсудностью.",
+    "plannedResultToVerify": "Процессуальная жалоба или административный иск по применимому порядку.",
+    "sourceCandidates": [
+      {
+        "id": "kas",
+        "title": "КАС РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "upk",
+        "title": "УПК РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      }
+    ],
+    "criticalLimitations": "Не всякий отказ прокуратуры оспаривается одним способом.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "sudebnaya-zashchita",
@@ -4531,17 +4998,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 4,
     "situationTitle": "Как подать ходатайство по рассматриваемому делу?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Определить стадию и предмет ходатайства в соответствующем деле.",
+    "evidenceToConfirm": "Номер дела, процессуальный статус, судебные документы.",
+    "competentRecipientToVerify": "Компетентный суд, определяемый видом спора, подведомственностью и территориальной подсудностью.",
+    "plannedResultToVerify": "Ходатайство по установленному виду судопроизводства.",
+    "sourceCandidates": [
+      {
+        "id": "kas",
+        "title": "КАС РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "upk",
+        "title": "УПК РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      }
+    ],
+    "criticalLimitations": "Форма и сроки зависят от рассматриваемого дела.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   },
   {
     "topicSlug": "sudebnaya-zashchita",
@@ -4549,17 +5035,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 5,
     "situationTitle": "Как подать апелляционную жалобу на решение суда?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Установить вид судопроизводства, дату решения и доступный апелляционный путь.",
+    "evidenceToConfirm": "Решение суда, дата получения, сведения об участниках.",
+    "competentRecipientToVerify": "Компетентный суд, определяемый видом спора, подведомственностью и территориальной подсудностью.",
+    "plannedResultToVerify": "Апелляционная жалоба по соответствующему процессуальному кодексу.",
+    "sourceCandidates": [
+      {
+        "id": "kas",
+        "title": "КАС РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "upk",
+        "title": "УПК РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      }
+    ],
+    "criticalLimitations": "Не подменять жалобу по КАС РФ жалобой по УПК или ГПК.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план; официальный источник, редакция, применимость и процессуальные сроки требуют отдельной проверки."
   }
 ] as const;
 export function getMilitaryLegalCaseCard(topicSlug:string,situationTitle:string){return MILITARY_LEGAL_CASE_CARDS.find(c=>c.topicSlug===topicSlug&&c.situationTitle===situationTitle)??null;}
