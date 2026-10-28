@@ -1,0 +1,10 @@
+{
+  "repository": "ymaslen77-tech/legal_Agregetor",
+  "coolify_application_uuid": "kb99djixwheewgcqwccw4lue",
+  "source_branch": "infra/coolify-russian-vps",
+  "approved": false,
+  "approved_sha": "",
+  "legal_reviewed": false,
+  "database_backup_verified": false,
+  "note": "Production release is locked until legal review, current exact-source CI success, database backup, and Coolify branch alignment are verified. No unchecked auto-release."
+}
