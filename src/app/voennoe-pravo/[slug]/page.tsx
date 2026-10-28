@@ -4,6 +4,7 @@ import { notFound, permanentRedirect } from "next/navigation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { getMilitaryTopic, MILITARY_TOPICS, MILITARY_LEGACY_TOPIC_REDIRECTS } from "@/data/military-catalog";
 import { getMilitaryGuide } from "@/data/military-guidance";
+import { getMilitaryRelatedTopics } from "@/data/military-related-links";
 type Props = { params: Promise<{ slug: string }> };
 export const dynamicParams = false;
 export function generateStaticParams() {
@@ -53,6 +54,18 @@ export default async function MilitaryTopicPage({params}: Props) {
             <Link href={`/voennoe-pravo/${topic.slug}/${situation.slug}/`} className="block rounded-lg border border-line bg-white p-5 hover:border-trust">
               <span className="font-semibold text-ink">{situation.title}</span>
               <span className="mt-1 block text-sm text-zinc-600">{situation.kind === "information" ? "Информационная ситуация" : situation.kind === "document" ? "Возможное юридическое обращение" : "Информация и возможное обращение"}</span>
+            </Link>
+          </li>)}
+        </ul>
+      </section>
+      <section className="mt-9 border-t border-line pt-7" aria-labelledby="military-related-topics">
+        <h2 id="military-related-topics" className="text-xl font-semibold text-ink">Связанные темы военного права</h2>
+        <p className="mt-2 text-sm text-zinc-600">Другие разделы, которые могут потребоваться для защиты права или подготовки документов.</p>
+        <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+          {getMilitaryRelatedTopics(topic).map(link=><li key={link.href}>
+            <Link href={link.href} className="block rounded-lg border border-line p-4 hover:border-trust focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trust">
+              <span className="block font-semibold text-trust underline underline-offset-2">{link.title}</span>
+              <span className="mt-2 block text-sm text-zinc-600">{link.detail}</span>
             </Link>
           </li>)}
         </ul>
