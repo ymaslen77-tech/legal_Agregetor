@@ -75,6 +75,7 @@ jobs:
             '.uuid==$uuid and .git_repository==$repo and ((.fqdn//"")|contains("pravopoisk.ru"))' \
             "$status_file" >/dev/null || { echo "::error::Wrong Coolify application/repository/domain"; exit 1; }
           deployed_branch="$(jq -r '.git_branch // "unknown"' "$status_file")"
+          echo "COOLIFY_SAFE_CONFIG_KEYS=$(jq -r 'keys | map(select(test("auto|deploy|webhook|setting";"i"))) | join(",")' "$status_file")"
           auto_flag="$(jq -r 'if (.is_auto_deploy_enabled | type) == "boolean" then (.is_auto_deploy_enabled | tostring) else "unknown" end' "$status_file")"
           app_status="$(jq -r '.status // "unknown"' "$status_file")"
           echo "COOLIFY_READ_CONNECTION=PASS app=$uuid branch=$deployed_branch auto_deploy=$auto_flag status=$app_status"
