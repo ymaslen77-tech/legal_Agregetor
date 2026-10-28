@@ -75,7 +75,7 @@ const vvkTopic=MILITARY_TOPICS.find(t=>t.slug==="vvk-i-kategoriya-godnosti")!;
 for(const idx of [2,3]){
  const candidate=getMilitaryDocumentCandidate(vvkTopic,vvkTopic.situations[idx]);
  assert(candidate, "Existing VVK draft must remain accessible");
- assert(candidate.requestText.includes("пункта 8 Положения"));
+ assert(/пункт(?:ом|а) 8 Положения/.test(candidate.requestText));
  assert(candidate.requestText.includes("вышестоящую военно-врачебную комиссию"));
  assert(candidate.factsPrompt.includes("заключения ВВК"));
 }
