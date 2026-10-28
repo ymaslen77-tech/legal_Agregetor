@@ -49,7 +49,7 @@ export function MilitaryDraftForm({candidate,slug}:Props){
    <form onSubmit={generate} className="mt-5 grid gap-4">
       {fields.map(field=><label key={field.key} className="block text-sm font-semibold text-ink">
         <span>{field.label}{field.required?" *":""}</span>
-        <textarea className="mt-2 block w-full rounded-md border border-line px-3 py-2 text-base font-normal leading-6 text-ink focus:border-trust focus:outline-none focus:ring-2 focus:ring-trust/25" required={field.required} minLength={field.required?field.key==="facts"?15:field.key==="request"?10:5:undefined} maxLength={field.key==="applicant"||field.key==="recipient"?500:field.key==="attachments"?1500:3000} rows={field.rows} value={values[field.key]} onChange={event=>set(field.key,event.target.value)} aria-describedby={"hint-"+field.key} />
+        <textarea className="mt-2 block w-full rounded-md border border-line px-3 py-2 text-base font-normal leading-6 text-ink focus:border-trust focus:outline-none focus:ring-2 focus:ring-trust/25" required={field.required} minLength={field.required?field.key==="facts"?15:5:undefined} maxLength={field.key==="applicant"||field.key==="recipient"?500:field.key==="attachments"?1500:3000} rows={field.rows} value={values[field.key]} onChange={event=>set(field.key,event.target.value)} aria-describedby={"hint-"+field.key} />
         <span id={"hint-"+field.key} className="mt-1 block font-normal text-zinc-500">{field.hint}</span>
       </label>)}
       <button className="min-h-11 rounded-md bg-trust px-5 py-3 font-semibold text-white hover:bg-ink" type="submit">Сформировать проект документа</button>
