@@ -1,0 +1,160 @@
+name: Pravopoisk approved release to Russian Coolify VPS
+on:
+  push:
+    branches: [main]
+    paths:
+      - ops/release/pravopoisk-vps.json
+      - .github/workflows/pravopoisk-coolify-release.yml
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: "check = validate safely; release = deploy only the approved SHA"
+        type: choice
+        options: [check, release]
+        required: true
+        default: check
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: pravopoisk-production-vps-release
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      ready: ${{ steps.guard.outputs.ready }}
+      expected_sha: ${{ steps.guard.outputs.expected_sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify signed-off release manifest, immutable source and complete public CI
+        id: guard
+        env:
+          GH_READ_TOKEN: ${{ github.token }}
+          OPERATION: ${{ inputs.operation }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "ready=false" >> "$GITHUB_OUTPUT"
+          repo="ymaslen77-tech/legal_Agregetor"
+          branch="infra/coolify-russian-vps"
+          uuid="kb99djixwheewgcqwccw4lue"
+          manifest="ops/release/pravopoisk-vps.json"
+          jq -e --arg repo "$repo" --arg branch "$branch" --arg uuid "$uuid" \
+            '.repository==$repo and .source_branch==$branch and .coolify_application_uuid==$uuid' "$manifest" >/dev/null \
+            || { echo "::error::Release manifest points to an unexpected project"; exit 1; }
+          ref="$(curl -fsS --retry 2 -H "Authorization: Bearer $GH_READ_TOKEN" \
+            -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$repo/git/ref/heads/$branch")"
+          latest="$(printf '%s' "$ref" | jq -r '.object.sha')"
+          [[ "$latest" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::Missing source branch"; exit 1; }
+          echo "expected_sha=$latest" >> "$GITHUB_OUTPUT"
+          echo "SOURCE_BRANCH=$branch SOURCE_SHA=$latest"
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ] && [ "$OPERATION" = check ]; then
+            echo "CHECK_ONLY: source reachable; production unchanged"
+            exit 0
+          fi
+          approved="$(jq -r '.approved == true and .legal_reviewed == true and .database_backup_verified == true' "$manifest")"
+          approved_sha="$(jq -r '.approved_sha // ""' "$manifest")"
+          if [ "$approved" != true ] || [ "$approved_sha" != "$latest" ]; then
+            echo "RELEASE_LOCKED: legal review, verified database backup or approved source SHA missing"
+            exit 0
+          fi
+          runs="$(curl -fsS --retry 2 -H "Authorization: Bearer $GH_READ_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$repo/actions/runs?branch=infra%2Fcoolify-russian-vps&per_page=50")"
+          result="$(printf '%s' "$runs" | jq -r --arg sha "$latest" \
+            '[.workflow_runs[] | select(.name=="Legal reference routes CI" and .event=="push" and .head_sha==$sha)] | first | .conclusion // "missing"')"
+          if [ "$result" != success ]; then
+            echo "::error::Full source CI not passing for approved commit: $result"
+            exit 1
+          fi
+          echo "APPROVED_SOURCE_AND_CI=PASS sha=$latest"
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    needs: preflight
+    if: needs.preflight.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+    environment: pravopoisk-production
+    timeout-minutes: 30
+    env:
+      COOLIFY_READ_TOKEN: ${{ secrets.PRAVOPOISK_COOLIFY_READ_TOKEN }}
+      COOLIFY_DEPLOY_TOKEN: ${{ secrets.PRAVOPOISK_COOLIFY_DEPLOY_TOKEN }}
+      GH_READ_TOKEN: ${{ github.token }}
+      EXPECTED_SHA: ${{ needs.preflight.outputs.expected_sha }}
+    steps:
+      - name: Verify the exact existing Coolify app, branch and absence of active deployments
+        shell: bash
+        run: |
+          set -euo pipefail
+          [ -n "${COOLIFY_READ_TOKEN:-}" ] && [ -n "${COOLIFY_DEPLOY_TOKEN:-}" ] || {
+            echo "::error::Two dedicated Coolify repository secrets required: READ and DEPLOY"
+            exit 1
+          }
+          base="https://coolify.dgi-pravo.ru/api/v1"
+          app="kb99djixwheewgcqwccw4lue"
+          temp="$(mktemp)"
+          trap 'rm -f "$temp"' EXIT
+          code="$(curl -sS --connect-timeout 10 --max-time 30 -o "$temp" -w '%{http_code}' \
+            -H "Authorization: Bearer $COOLIFY_READ_TOKEN" "$base/applications/$app")"
+          [ "$code" = 200 ] || { echo "::error::Coolify read failed HTTP $code"; exit 1; }
+          jq -e --arg uuid "$app" \
+            '.uuid==$uuid and .git_repository=="ymaslen77-tech/legal_Agregetor" and .git_branch=="infra/coolify-russian-vps" and
+             ((.fqdn//"")|contains("pravopoisk.ru")) and (.is_auto_deploy_enabled==false)' "$temp" >/dev/null ||
+            { echo "::error::Coolify source, domain or automatic deploy setting differs from approved configuration; refusing release"; exit 1; }
+          code="$(curl -sS --connect-timeout 10 --max-time 30 -o "$temp" -w '%{http_code}' \
+            -H "Authorization: Bearer $COOLIFY_READ_TOKEN" "$base/deployments/applications/$app?take=10")"
+          [ "$code" = 200 ] || { echo "::error::Unable to inspect deployment queue"; exit 1; }
+          jq -e '[((if type=="array" then . elif (.data?|type)=="array" then .data else [] end)[]) |
+            select(.status=="queued" or .status=="in_progress" or .status=="pending")] | length==0' "$temp" >/dev/null ||
+            { echo "::error::An application deployment is already active"; exit 1; }
+          latest="$(curl -fsS --retry 2 -H "Authorization: Bearer $GH_READ_TOKEN" \
+            "https://api.github.com/repos/ymaslen77-tech/legal_Agregetor/git/ref/heads/infra/coolify-russian-vps" | jq -r '.object.sha')"
+          [ "$latest" = "$EXPECTED_SHA" ] || { echo "::error::Source moved after approval"; exit 1; }
+          echo "COOLIFY_APP_AND_APPROVED_REVISION_VERIFIED"
+
+      - name: Deploy approved source through Coolify (build runs on Russian VPS)
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://coolify.dgi-pravo.ru/api/v1"
+          app="kb99djixwheewgcqwccw4lue"
+          temp="$(mktemp)"
+          trap 'rm -f "$temp"' EXIT
+          code="$(curl -sS --connect-timeout 10 --max-time 45 -X POST -o "$temp" -w '%{http_code}' \
+            -H "Authorization: Bearer $COOLIFY_DEPLOY_TOKEN" "$base/deploy?uuid=$app")"
+          [ "$code" = 200 ] || { echo "::error::Coolify deployment not accepted HTTP $code"; exit 1; }
+          deployment="$(jq -r '.deployments[0].deployment_uuid // .deployment_uuid // empty' "$temp")"
+          [[ "$deployment" =~ ^[a-zA-Z0-9_-]{8,80}$ ]] || { echo "::error::No valid Coolify deployment UUID"; exit 1; }
+          echo "COOLIFY_DEPLOYMENT_QUEUED=$deployment"
+          for attempt in $(seq 1 100); do
+            sleep 10
+            code="$(curl -sS --connect-timeout 10 --max-time 30 -o "$temp" -w '%{http_code}' \
+              -H "Authorization: Bearer $COOLIFY_READ_TOKEN" "$base/deployments/$deployment")"
+            [ "$code" = 200 ] || { echo "::error::Cannot verify Coolify deployment HTTP $code"; exit 1; }
+            status="$(jq -r '.status // ""' "$temp")"
+            case "$status" in
+              finished|success|completed)
+                sha="$(jq -r '.commit // ""' "$temp")"
+                [ "$sha" = "$EXPECTED_SHA" ] || { echo "::error::Deployed SHA does not match approved source"; exit 1; }
+                echo "COOLIFY_RELEASE_CONFIRMED=$sha"
+                for route in / /voennoe-pravo/ /sitemap.xml; do
+                  http="$(curl -sS -L --connect-timeout 10 --max-time 30 \
+                    -o /dev/null -w '%{http_code}' "https://pravopoisk.ru$route")"
+                  [ "$http" = 200 ] || { echo "::error::Production smoke check failed $route HTTP $http"; exit 1; }
+                done
+                echo "PRAVOPOISK_PUBLIC_RELEASE_SUCCESS=$sha"
+                exit 0 ;;
+              failed|error|cancelled|canceled)
+                echo "::error::Coolify reported deployment status=$status"
+                exit 1 ;;
+            esac
+          done
+          echo "::error::Deployment verification timed out"
+          exit 1
