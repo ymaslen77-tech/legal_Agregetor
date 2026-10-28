@@ -28,7 +28,7 @@ const laws:Record<string,readonly [string,string]> = {
   ],
   "52": [
     "Федеральный закон № 52-ФЗ об обязательном государственном страховании жизни и здоровья",
-    "https://www.consultant.ru/document/cons_doc_LAW_18611/"
+    "https://www.consultant.ru/document/cons_doc_LAW_18259/"
   ],
   "53": [
     "Федеральный закон № 53-ФЗ «О воинской обязанности и военной службе»",
