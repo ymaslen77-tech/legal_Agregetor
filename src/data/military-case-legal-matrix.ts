@@ -814,7 +814,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "legalQuestion": "Проверить дату принятия решения и полномочия заявителя получить его копию.",
     "evidenceToConfirm": "Дата заседания, военкомат, данные заявителя.",
     "competentRecipientToVerify": "Военный комиссариат и призывная комиссия.",
-    "plannedResultToVerify": "Заявление о выдаче копии решения.",
+    "plannedResultToVerify": "Заявление о выдаче выписки из протокола заседания призывной комиссии по пункту 6 статьи 28 Закона № 53-ФЗ.",
     "sourceCandidates": [
       {
         "id": "53",
@@ -829,7 +829,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "type": "OFFICIAL_RECORD_CANDIDATE_UNCONFIRMED"
       }
     ],
-    "criticalLimitations": "Не подменять копию решения справочным ответом.",
+    "criticalLimitations": "Действующая статья 28 предусматривает выписку из протокола по письменному запросу в военный комиссариат; срок — пять рабочих дней. Не обещать полную копию протокола.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
