@@ -13,6 +13,9 @@ for(const topic of MILITARY_TOPICS)for(const situation of topic.situations){
  assert(doc.factsPrompt.length>30);
  assert(doc.requestText.length>40);
  assert(content.includes(doc.requestText));
+ assert(doc.sourceRefs && doc.sourceRefs.length > 0);
+ assert(content.includes("ИСТОЧНИКИ ДЛЯ ПРАВОВОЙ СВЕРКИ"));
+ assert(content.includes(doc.sourceRefs[0].url));
  assert(!content.includes("Прошу предоставить мотивированный ответ"),"Generator must use a case-specific request, not a generic input");
  assert(content.includes("Приложения:"));
 }
