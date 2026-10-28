@@ -1,0 +1,48 @@
+name: Pravopoisk VPS live read-only release audit
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/pravopoisk-vps-live-audit.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    env:
+      COOLIFY_READ_TOKEN: ${{ secrets.PRAVOPOISK_COOLIFY_READ_TOKEN }}
+    steps:
+      - name: Inspect current Coolify application, deployment revision and public HTTP
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='https://coolify.dgi-pravo.ru/api/v1'
+          uuid='kb99djixwheewgcqwccw4lue'
+          [ -n "${COOLIFY_READ_TOKEN:-}" ] || { echo "::error::Missing Read token"; exit 1; }
+          tmp="$(mktemp)"
+          trap 'rm -f "$tmp"' EXIT
+          request() {
+            local status
+            status="$(curl --silent --show-error --connect-timeout 10 --max-time 30 \
+              -o "$tmp" -w '%{http_code}' -H "Authorization: Bearer $COOLIFY_READ_TOKEN" "$1")"
+            [ "$status" = 200 ] || { echo "::error::Coolify read-only check HTTP $status"; exit 1; }
+          }
+          request "$base/applications/$uuid"
+          jq -e --arg u "$uuid" '.uuid==$u and .git_repository=="ymaslen77-tech/legal_Agregetor" and
+            .git_branch=="infra/coolify-russian-vps" and ((.fqdn//"")|contains("pravopoisk.ru"))' "$tmp" >/dev/null || exit 1
+          jq -r '"LIVE_APP uuid=" + .uuid + " status=" + (.status//"unknown") +
+            " branch=" + (.git_branch//"unknown") +
+            " auto_deploy=" + ((.settings.is_auto_deploy_enabled//"absent") | tostring)' "$tmp"
+          request "$base/deployments/applications/$uuid?take=5"
+          jq -r '((if type=="array" then . elif (.data?|type)=="array" then .data else [] end) |
+            .[:5] | .[] | "DEPLOYMENT status="+(.status//"unknown")+
+            " commit="+(.commit//"unknown")+
+            " created="+(.created_at//"unknown"))' "$tmp"
+          for path in / /voennoe-pravo/ /sitemap.xml /robots.txt; do
+            http="$(curl -sS -L --connect-timeout 8 --max-time 30 \
+              -o /dev/null -w '%{http_code}' "https://pravopoisk.ru$path" || true)"
+            echo "PUBLIC_HTTP path=$path status=$http"
+          done
+          echo 'READ_ONLY_LIVE_AUDIT_COMPLETE; no deploy, database or configuration writes'
