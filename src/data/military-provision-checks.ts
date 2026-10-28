@@ -26,7 +26,6 @@ export type MilitaryProvisionCheck = Readonly<{
 const FZ53 = "Федеральный закон от 28.03.1998 № 53-ФЗ";
 const U647 = "Указ Президента РФ от 21.09.2022 № 647";
 const U998 = "Указ Президента РФ от 29.12.2025 № 998";
-const FZ412 = "Федеральный закон от 04.11.2025 № 412-ФЗ";
 const art32 = "https://www.consultant.ru/document/cons_doc_LAW_18260/083f4e80303ab0460e020b32948cf1d6c2c98352/";
 const art51 = "https://www.consultant.ru/document/Cons_doc_LAW_18260/d8ba8171f6e944b1dc563df7d03c02836a574238/";
 const art28 = "https://www.consultant.ru/document/cons_doc_LAW_18260/d59956cb788efc251374ecb04c6d90f337a047fd/";
