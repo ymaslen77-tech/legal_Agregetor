@@ -38,6 +38,8 @@ jobs:
         env:
           GH_READ_TOKEN: ${{ github.token }}
           OPERATION: ${{ inputs.operation }}
+          COOLIFY_READ_TOKEN: ${{ secrets.PRAVOPOISK_COOLIFY_READ_TOKEN }}
+          COOLIFY_DEPLOY_TOKEN: ${{ secrets.PRAVOPOISK_COOLIFY_DEPLOY_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
@@ -55,8 +57,32 @@ jobs:
           [[ "$latest" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::Missing source branch"; exit 1; }
           echo "expected_sha=$latest" >> "$GITHUB_OUTPUT"
           echo "SOURCE_BRANCH=$branch SOURCE_SHA=$latest"
+          # Validate the real Coolify connection in both check and release modes.
+          # A deploy-only token cannot safely prove deploy permissions by a read
+          # request, so we verify it is configured but do not deploy during check.
+          [ -n "${COOLIFY_READ_TOKEN:-}" ] || { echo "::error::PRAVOPOISK_COOLIFY_READ_TOKEN is missing"; exit 1; }
+          [ -n "${COOLIFY_DEPLOY_TOKEN:-}" ] || { echo "::error::PRAVOPOISK_COOLIFY_DEPLOY_TOKEN is missing"; exit 1; }
+          status_file="$(mktemp)"
+          trap 'rm -f "$status_file"' EXIT
+          status_code="$(curl -sS --connect-timeout 10 --max-time 30 -o "$status_file" -w '%{http_code}' \
+            -H "Authorization: Bearer $COOLIFY_READ_TOKEN" \
+            "https://coolify.dgi-pravo.ru/api/v1/applications/$uuid")"
+          if [ "$status_code" != 200 ]; then
+            echo "::error::Coolify read authorization or connectivity failed (HTTP $status_code)"
+            exit 1
+          fi
+          jq -e --arg uuid "$uuid" --arg repo "$repo" \
+            '.uuid==$uuid and .git_repository==$repo and ((.fqdn//"")|contains("pravopoisk.ru"))' \
+            "$status_file" >/dev/null || { echo "::error::Wrong Coolify application/repository/domain"; exit 1; }
+          deployed_branch="$(jq -r '.git_branch // "unknown"' "$status_file")"
+          auto_flag="$(jq -r '.is_auto_deploy_enabled // "unknown"' "$status_file")"
+          app_status="$(jq -r '.status // "unknown"' "$status_file")"
+          echo "COOLIFY_READ_CONNECTION=PASS app=$uuid branch=$deployed_branch auto_deploy=$auto_flag status=$app_status"
+          echo "COOLIFY_DEPLOY_TOKEN_CONFIGURED=YES (deployment authorization not tested)"
           if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ] && [ "$OPERATION" = check ]; then
-            echo "CHECK_ONLY: source reachable; production unchanged"
+            [ "$deployed_branch" = "$branch" ] || { echo "::error::Coolify source branch is not the VPS branch"; exit 1; }
+            [ "$auto_flag" = false ] || { echo "::error::Coolify Auto Deploy must be disabled"; exit 1; }
+            echo "COOLIFY_SAFE_PREFLIGHT=PASS; no site changes"
             exit 0
           fi
           approved="$(jq -r '.approved == true and .legal_reviewed == true and .database_backup_verified == true' "$manifest")"
