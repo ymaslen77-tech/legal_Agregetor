@@ -16,4 +16,10 @@ for(const topic of MILITARY_TOPICS){
   assert(content.limitation.length>20);
  }
 }
-console.log("20 legal topic guides and 143 case-specific rendered procedural instructions found.");
+const draft2026=getMilitaryGuide("prizyv");
+assert(draft2026.sources.some(s=>s.url==="https://publication.pravo.gov.ru/document/0001202511040014"));
+assert(draft2026.sources.some(s=>s.url==="https://publication.pravo.gov.ru/document/0001202512290111"));
+assert(draft2026.caution.includes("2026") || draft2026.caution.includes("412-ФЗ"));
+const alternative=getMilitaryGuide("alternativnaya-grazhdanskaya-sluzhba");
+assert(alternative.sources.some(s=>s.url==="https://publication.pravo.gov.ru/document/0001202511040014"));
+console.log("20 topic guides; 2026 conscription and alternative-service sources registered.");
