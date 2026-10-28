@@ -1,6 +1,7 @@
 import type { MilitarySituation, MilitaryTopic } from "@/data/military-catalog";
+import { getMilitaryGuide } from "@/data/military-guidance";
 export type MilitaryDocumentType = "REQUEST_COPY"|"VVK_REVIEW"|"REPORT"|"COMPLAINT"|"PAYMENT_REQUEST";
-export type MilitaryDocumentCandidate = Readonly<{kind:MilitaryDocumentType;subject:string;title:string;requestText:string;factsPrompt:string}>;
+export type MilitaryDocumentCandidate = Readonly<{kind:MilitaryDocumentType;subject:string;title:string;requestText:string;factsPrompt:string;sourceRefs?:readonly {name:string;url:string}[]}>;
 const candidates:Readonly<Record<string,MilitaryDocumentCandidate>>={
   "kontraktnaya-sluzhba|Как получить копию заключённого контракта?":{kind:"REQUEST_COPY",subject:"Копия контракта о прохождении военной службы",title:"Как получить копию заключённого контракта?",requestText:"Прошу выдать мне заверенную копию заключённого со мной контракта о прохождении военной службы с имеющимися дополнительными соглашениями.",factsPrompt:"Укажите дату заключения контракта, подразделение и имеющиеся реквизиты договора."},
   "prizyv|Как получить копию решения призывной комиссии?":{kind:"REQUEST_COPY",subject:"Копия решения призывной комиссии",title:"Как получить копию решения призывной комиссии?",requestText:"Прошу предоставить копию решения призывной комиссии, принятого в отношении меня, с указанием даты и номера решения при их наличии.",factsPrompt:"Укажите дату заседания призывной комиссии и военный комиссариат, если известны."},
@@ -27,7 +28,9 @@ const candidates:Readonly<Record<string,MilitaryDocumentCandidate>>={
  */
 export function getMilitaryDocumentCandidate(topic:MilitaryTopic,situation:MilitarySituation):MilitaryDocumentCandidate|null {
  if(situation.kind==="information")return null;
- return candidates[topic.slug+"|"+situation.title]??null;
+ const candidate=candidates[topic.slug+"|"+situation.title];
+ if(!candidate)return null;
+ return {...candidate,sourceRefs:getMilitaryGuide(topic.slug).sources.map(source=>({name:source.name,url:source.url}))};
 }
 export function militaryDraftCandidateCount(){return Object.keys(candidates).length;}
 export type MilitaryDraftInput=Readonly<{applicant:string;recipient:string;facts:string;request?:string;attachments?:string}>;
@@ -51,6 +54,10 @@ export function buildMilitaryDraft(candidate:MilitaryDocumentCandidate,input:Mil
   intro,candidate.requestText,"",
   ...(attachments?["Приложения:",attachments,""]:[]),
   "Дата: "+date,"Подпись: __________________","",
+  ...(candidate.sourceRefs?.length?[
+    "ИСТОЧНИКИ ДЛЯ ПРАВОВОЙ СВЕРКИ (НЕ АВТОМАТИЧЕСКОЕ ОБОСНОВАНИЕ ТРЕБОВАНИЯ):",
+    ...candidate.sourceRefs.map(source=>source.name+" — "+source.url),""
+  ]:[]),
   "Примечание: перед направлением проверьте компетенцию адресата, полномочия заявителя, форму обращения и действующие нормы."
  ].join("\n");
 }
