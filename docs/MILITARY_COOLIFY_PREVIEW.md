@@ -33,6 +33,11 @@ and **no filing-ready document certification**. The historical Q&A category has
 not yet been verified question-by-question. Keep `noindex` until legal review,
 content quality and SEO acceptance pass.
 
-Only after successful tests and legal acceptance should a reviewed commit be
-merged to `main` and the **existing Coolify production resource** deployed
-from that exact commit. Do not redeploy via the legacy Vercel project.
+Only after successful tests, case-by-case legal acceptance and a verified production
+PostgreSQL backup should the approved commit be merged to
+`infra/coolify-russian-vps` and the **existing Coolify production resource** deployed
+from that exact commit by `.github/workflows/pravopoisk-coolify-release.yml`
+using the approved-release manifest from `main`. Never release unapproved
+military drafts, never auto-deploy feature branch pushes, and do not redeploy
+via the legacy Vercel project. Review the current release blockers in
+`docs/MILITARY_RELEASE_AUDIT_2026-10-28.md`.
