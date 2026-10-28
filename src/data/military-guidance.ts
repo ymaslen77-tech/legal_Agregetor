@@ -48,7 +48,7 @@ const laws:Record<string,readonly [string,string]> = {
   ],
   "306": [
     "Федеральный закон № 306-ФЗ «О денежном довольствии военнослужащих»",
-    "https://www.consultant.ru/document/cons_doc_LAW_121446/"
+    "https://www.consultant.ru/document/cons_doc_LAW_121273/"
   ],
   "565": [
     "Постановление Правительства РФ № 565 «О военно-врачебной экспертизе»",
@@ -56,7 +56,7 @@ const laws:Record<string,readonly [string,string]> = {
   ],
   "574": [
     "Постановление Правительства РФ № 574 «О независимой военно-врачебной экспертизе»",
-    "https://www.consultant.ru/document/cons_doc_LAW_78729/"
+    "https://www.consultant.ru/document/cons_doc_LAW_78918/"
   ],
   "647": [
     "Указ Президента РФ от 21.09.2022 № 647",
