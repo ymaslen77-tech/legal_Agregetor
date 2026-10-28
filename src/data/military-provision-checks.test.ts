@@ -71,5 +71,13 @@ assert(doc.requestText.includes("выписку из протокола"));
 assert(doc.requestText.includes("пяти рабочих дней"));
 assert(!doc.requestText.includes("Прошу предоставить копию решения"));
 assert(MILITARY_LEGAL_CASE_CARDS.some(c=>c.topicSlug==="prizyv"&&c.situationIndex===4&&c.plannedResultToVerify?.includes("выписки из протокола")));
+const vvkTopic=MILITARY_TOPICS.find(t=>t.slug==="vvk-i-kategoriya-godnosti")!;
+for(const idx of [2,3]){
+ const candidate=getMilitaryDocumentCandidate(vvkTopic,vvkTopic.situations[idx]);
+ assert(candidate, "Existing VVK draft must remain accessible");
+ assert(candidate.requestText.includes("пункта 8 Положения"));
+ assert(candidate.requestText.includes("вышестоящую военно-врачебную комиссию"));
+ assert(candidate.factsPrompt.includes("заключения ВВК"));
+}
 assert(MILITARY_LEGAL_AUDIT_REFERENCE_LINKS.article35_3.startsWith("https://"));
 console.log(JSON.stringify({...coverage,staleGovReprintsFlagged:excerpt.length,wrongDecisionCopyGeneratorRemoved:true}));
