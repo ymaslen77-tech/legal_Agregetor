@@ -7,6 +7,7 @@ import { getMilitaryGuide } from "@/data/military-guidance";
 import { getMilitarySituationContent } from "@/lib/military-situation-content";
 import { getMilitaryDocumentCandidate } from "@/data/military-document-candidates";
 import { MilitaryDraftForm } from "@/components/documents/MilitaryDraftForm";
+import { getMilitaryRelatedSituations, getMilitaryRelatedTopics, getMilitaryRelatedDocuments } from "@/data/military-related-links";
 
 type Props={params:Promise<{slug:string;situation:string}>};
 export const dynamicParams=false;
@@ -25,6 +26,9 @@ export default async function MilitarySituationPage({params}:Props){
  const guide=getMilitaryGuide(topic.slug);
  const content=getMilitarySituationContent(topic,situation);
  const candidate=getMilitaryDocumentCandidate(topic,situation);
+ const relatedQuestions=getMilitaryRelatedSituations(topic,situation);
+ const relatedTopics=getMilitaryRelatedTopics(topic);
+ const relatedDocuments=getMilitaryRelatedDocuments(topic,situation);
  return <>
    <Breadcrumbs items={[
      {name:"Главная",path:"/"},{name:"Военное право",path:"/voennoe-pravo/"},
@@ -55,6 +59,38 @@ export default async function MilitarySituationPage({params}:Props){
        <p className="mt-3 text-sm text-zinc-600"><strong>Куда обращаться:</strong> {content.recipient}</p>
      </section>:null}
      {candidate?<MilitaryDraftForm key={situation.slug} candidate={candidate} slug={situation.slug}/>:situation.kind!=="information"?<p className="mt-7 rounded-md border border-line bg-zinc-50 p-4 text-sm leading-6 text-zinc-700">Для этого вопроса автоматический генератор ещё не подтверждён. Если требуется обращение, предварительно определите его правовую форму и компетентный орган. Универсальный документ здесь не подставляется.</p>:null}
+     <section className="mt-9 border-t border-line pt-7" aria-labelledby="military-related-questions">
+       <h2 id="military-related-questions" className="text-xl font-semibold text-ink">Связанные вопросы и следующие действия</h2>
+       <p className="mt-2 text-sm text-zinc-600">Смежные ситуации, подтверждающие документы и процедуры обжалования. Переход на другую страницу не означает, что её правовые условия автоматически применимы к вашему делу.</p>
+       <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+         {relatedQuestions.map(link=><li key={link.href}>
+           <Link href={link.href} className="block h-full rounded-lg border border-line p-4 hover:border-trust focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trust">
+             <span className="block font-semibold text-trust underline underline-offset-2">{link.title}</span>
+             <span className="mt-2 block text-sm text-zinc-600">{link.detail}</span>
+           </Link>
+         </li>)}
+       </ul>
+     </section>
+     {relatedDocuments.length>0?<section className="mt-8" aria-labelledby="military-related-documents">
+       <h2 id="military-related-documents" className="text-xl font-semibold text-ink">Документы по смежным ситуациям</h2>
+       <p className="mt-2 text-sm text-zinc-600">Ссылки ведут только на реально существующие генераторы проектов PDF/DOCX. Такие проекты требуют проверки перед подачей.</p>
+       <ul className="mt-4 grid gap-2">
+         {relatedDocuments.map(link=><li key={link.href}>
+           <Link href={link.href} className="inline-flex font-semibold text-trust underline underline-offset-2">{link.title}</Link>
+           <p className="mt-1 text-sm text-zinc-600">{link.detail}</p>
+         </li>)}
+       </ul>
+     </section>:null}
+     <section className="mt-8" aria-labelledby="military-related-categories">
+       <h2 id="military-related-categories" className="text-xl font-semibold text-ink">Другие связанные темы</h2>
+       <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+         {relatedTopics.map(link=><li key={link.href}>
+           <Link href={link.href} className="block rounded-lg border border-line p-3 font-medium text-trust hover:border-trust">
+             {link.title}
+           </Link>
+         </li>)}
+       </ul>
+     </section>
      <section className="mt-8 border-t border-line pt-6" aria-labelledby="military-references">
        <h2 className="text-xl font-semibold text-ink" id="military-references">Нормативное регулирование</h2>
        <p className="mt-2 text-sm text-zinc-600">Ссылки на тексты нормативных актов приведены справочно. Применимость нормы и её редакцию необходимо проверить на дату обстоятельств.</p>
