@@ -6,8 +6,8 @@ import { getMilitaryProvisionCheck, getMilitaryProvisionCoverage, MILITARY_PROVI
 
 const coverage=getMilitaryProvisionCoverage();
 assert.equal(coverage.cases,143);
-assert.equal(coverage.provisionsCrosschecked,8);
-assert.equal(coverage.categoriesTouched,2);
+assert.equal(coverage.provisionsCrosschecked,21);
+assert.equal(coverage.categoriesTouched,5);
 assert.equal(coverage.officialTextVerified,0,"Do not claim to have read blocked official portal original");
 assert.equal(coverage.legallyApproved,0);
 const unique=new Set<string>();
@@ -34,6 +34,27 @@ for(const item of MILITARY_PROVISION_CHECKS){
  assert.equal(card.legalReviewConfirmed,false);
  assert.equal(card.officialPublicationChecked,false);
  assert.equal(getMilitaryProvisionCheck(item.topicSlug,item.situationIndex),item);
+}
+const requiredCases:readonly [string,number,string][]=[
+ ["otsrochka-ot-sluzhby",1,"статья 24"],
+ ["otsrochka-ot-sluzhby",2,"статья 24"],
+ ["otsrochka-ot-sluzhby",3,"статья 24"],
+ ["otsrochka-ot-sluzhby",5,"статья 24"],
+ ["uvolnenie-s-voennoy-sluzhby",1,"статья 51"],
+ ["uvolnenie-s-voennoy-sluzhby",2,"статья 51"],
+ ["uvolnenie-s-voennoy-sluzhby",3,"статья 51"],
+ ["uvolnenie-s-voennoy-sluzhby",4,"статья 51"],
+ ["vvk-i-kategoriya-godnosti",2,"пункт 8"],
+ ["vvk-i-kategoriya-godnosti",3,"пункт 8"],
+ ["vvk-i-kategoriya-godnosti",5,"пункт 8"],
+ ["vvk-i-kategoriya-godnosti",6,"пункт 8"],
+ ["prizyv",8,"статья 35.3"]
+];
+for(const [slug,index,rule] of requiredCases){
+ const item=getMilitaryProvisionCheck(slug,index);
+ assert(item, "Missing legal research for "+slug+" #"+index);
+ assert(item.provisions.some(p=>p.article.includes(rule)), "Wrong article: "+slug+" #"+index);
+ assert(item.caution.length>45,"Missing caveat: "+slug+" #"+index);
 }
 const excerpt=MILITARY_LEGAL_CASE_CARDS.filter(c=>c.sourceCandidates.some(s=>s.id==="53"));
 assert(excerpt.length>0);
