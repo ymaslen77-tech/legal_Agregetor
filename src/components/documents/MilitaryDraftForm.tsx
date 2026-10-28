@@ -49,7 +49,7 @@ export function MilitaryDraftForm({candidate,slug}:Props){
  return <section className="mt-8 rounded-lg border border-line bg-white p-5 sm:p-6" aria-labelledby="military-document-preparation">
    <p className="text-sm font-semibold uppercase text-trust">Подготовка юридического документа</p>
    <h2 className="mt-2 text-xl font-semibold text-ink" id="military-document-preparation">{candidate.title}</h2>
-   <p className="mt-3 text-sm leading-6 text-zinc-700">Это проект для проверки, а не готовое заявление для подачи. Заполняются только реквизиты самого документа, без анкетирования. Сведения обрабатываются в браузере и не отправляются на сервер этим компонентом.</p>
+   <p className="mt-3 text-sm leading-6 text-zinc-700">Это проект для проверки, а не готовое заявление для подачи. Заполняются только необходимые реквизиты документа и факты, которые не определяются выбранной ситуацией. Сведения обрабатываются в браузере и не отправляются на сервер этим компонентом.</p>
    <p className="mt-3 rounded-md border border-line bg-zinc-50 p-3 text-sm text-zinc-700"><strong>Требование для выбранной ситуации:</strong> {candidate.requestText}</p>
    <form onSubmit={generate} className="mt-5 grid gap-4">
       {fields.map(field=><label key={field.key} className="block text-sm font-semibold text-ink">
