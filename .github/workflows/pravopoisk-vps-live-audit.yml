@@ -35,6 +35,11 @@ jobs:
           jq -r '"LIVE_APP uuid=" + .uuid + " status=" + (.status//"unknown") +
             " branch=" + (.git_branch//"unknown") +
             " auto_deploy=" + ((.settings.is_auto_deploy_enabled//"absent") | tostring)' "$tmp"
+          request "$base/applications"
+          jq -r '[.[] | select(.git_repository=="ymaslen77-tech/legal_Agregetor")] |
+            .[] | "PRAVOPOISK_APP uuid="+.uuid+" name="+(.name//"unknown")+
+            " branch="+(.git_branch//"unknown")+
+            " status="+(.status//"unknown")' "$tmp"
           request "$base/deployments/applications/$uuid?take=5"
           jq -r '((if type=="array" then . elif (.data?|type)=="array" then .data else [] end) |
             .[:5] | .[] | "DEPLOYMENT status="+(.status//"unknown")+
