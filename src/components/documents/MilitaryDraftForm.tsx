@@ -4,9 +4,9 @@ import {downloadGeneratedDocumentDocx} from "@/lib/document-export";
 import {createMilitaryPdfBlob} from "@/lib/military-pdf";
 import {buildMilitaryDraft,type MilitaryDocumentCandidate} from "@/data/military-document-candidates";
 type Props={candidate:MilitaryDocumentCandidate;slug:string};
-type InputKey="applicant"|"recipient"|"facts"|"request"|"attachments";
+type InputKey="applicant"|"recipient"|"facts"|"attachments";
 export function MilitaryDraftForm({candidate,slug}:Props){
- const [values,setValues]=useState<Record<InputKey,string>>({applicant:"",recipient:"",facts:"",request:"",attachments:""});
+ const [values,setValues]=useState<Record<InputKey,string>>({applicant:"",recipient:"",facts:"",attachments:""});
  const [error,setError]=useState<string|null>(null);
  const [busy,setBusy]=useState(false);
  const [prepared,setPrepared]=useState<string|null>(null);
@@ -37,15 +37,15 @@ export function MilitaryDraftForm({candidate,slug}:Props){
  }
  const fields:ReadonlyArray<{key:InputKey;label:string;hint:string;required:boolean;rows:number}>=[
    {key:"applicant",label:"Заявитель: ФИО, статус и данные для ответа",hint:"Реквизиты, которые должны быть отражены в обращении",required:true,rows:2},
-   {key:"recipient",label:"Получатель: наименование органа или должность",hint:"Заполняется заявителем — сервис не определяет компетенцию автоматически",required:true,rows:2},
-   {key:"facts",label:"Конкретные обстоятельства и даты",hint:"Только обстоятельства, важные для этого документа",required:true,rows:4},
-   {key:"request",label:"Что именно просите",hint:"Сформулируйте юридическое требование своими словами",required:true,rows:3},
+   {key:"recipient",label:"Адресат: наименование органа или должность",hint:"Укажите проверенного получателя — компетенция зависит от обстоятельств",required:true,rows:2},
+   {key:"facts",label:"Обстоятельства, даты и реквизиты для документа",hint:candidate.factsPrompt,required:true,rows:4},
    {key:"attachments",label:"Приложения, если имеются",hint:"Названия подтверждающих документов",required:false,rows:2}
  ];
  return <section className="mt-8 rounded-lg border border-line bg-white p-5 sm:p-6" aria-labelledby="military-document-preparation">
    <p className="text-sm font-semibold uppercase text-trust">Подготовка юридического документа</p>
    <h2 className="mt-2 text-xl font-semibold text-ink" id="military-document-preparation">{candidate.title}</h2>
    <p className="mt-3 text-sm leading-6 text-zinc-700">Это проект для проверки, а не готовое заявление для подачи. Заполняются только реквизиты самого документа, без анкетирования. Сведения обрабатываются в браузере и не отправляются на сервер этим компонентом.</p>
+   <p className="mt-3 rounded-md border border-line bg-zinc-50 p-3 text-sm text-zinc-700"><strong>Требование для выбранной ситуации:</strong> {candidate.requestText}</p>
    <form onSubmit={generate} className="mt-5 grid gap-4">
       {fields.map(field=><label key={field.key} className="block text-sm font-semibold text-ink">
         <span>{field.label}{field.required?" *":""}</span>
