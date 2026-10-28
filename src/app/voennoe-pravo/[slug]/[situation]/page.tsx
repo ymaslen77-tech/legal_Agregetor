@@ -5,6 +5,7 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { getMilitaryTopic, getMilitarySituation, MILITARY_TOPICS } from "@/data/military-catalog";
 import { getMilitaryGuide } from "@/data/military-guidance";
 import { getMilitarySituationContent } from "@/lib/military-situation-content";
+import { getMilitaryProvisionCheck } from "@/data/military-provision-checks";
 import { getMilitaryDocumentCandidate } from "@/data/military-document-candidates";
 import { MilitaryDraftForm } from "@/components/documents/MilitaryDraftForm";
 import { getMilitaryRelatedSituations, getMilitaryRelatedTopics, getMilitaryRelatedDocuments } from "@/data/military-related-links";
@@ -25,6 +26,7 @@ export default async function MilitarySituationPage({params}:Props){
  if(!topic||!situation)notFound();
  const guide=getMilitaryGuide(topic.slug);
  const content=getMilitarySituationContent(topic,situation);
+ const researchedProvisions=getMilitaryProvisionCheck(topic.slug,topic.situations.findIndex(item=>item.slug===situation.slug));
  const candidate=getMilitaryDocumentCandidate(topic,situation);
  const relatedQuestions=getMilitaryRelatedSituations(topic,situation);
  const relatedTopics=getMilitaryRelatedTopics(topic);
@@ -91,6 +93,18 @@ export default async function MilitarySituationPage({params}:Props){
          </li>)}
        </ul>
      </section>
+     {researchedProvisions?<section className="mt-8 border-t border-line pt-6" aria-labelledby="military-individual-provisions">
+       <h2 id="military-individual-provisions" className="text-xl font-semibold text-ink">Нормы для проверки по данной ситуации</h2>
+       <p className="mt-2 text-sm leading-6 text-zinc-600">Подобраны отдельные положения с учётом действующего законодательства. Их применимость к вашему делу, редакция на дату события и официальные тексты ещё не подтверждены индивидуальной юридической проверкой. Не используйте этот список как окончательное правовое заключение.</p>
+       <ul className="mt-4 grid gap-4">
+         {researchedProvisions.provisions.map((rule,index)=><li key={index} className="rounded-md border border-line p-4">
+           <a href={rule.textUrl} target="_blank" rel="noopener noreferrer" className="font-semibold text-trust underline underline-offset-2">{rule.act}, {rule.article}</a>
+           <p className="mt-2 text-sm leading-6 text-zinc-700">{rule.applicability}</p>
+           {rule.officialPublicationUrl?<p className="mt-2 text-xs"><a href={rule.officialPublicationUrl} target="_blank" rel="noopener noreferrer" className="text-trust underline underline-offset-2">Найти официальную публикацию этого акта</a> (её применимость к редакции не подтверждена)</p>:null}
+         </li>)}
+       </ul>
+       <p className="mt-3 text-sm text-zinc-600"><strong>Ограничение:</strong> {researchedProvisions.caution}</p>
+     </section>:null}
      <section className="mt-8 border-t border-line pt-6" aria-labelledby="military-references">
        <h2 className="text-xl font-semibold text-ink" id="military-references">Нормативное регулирование</h2>
        <p className="mt-2 text-sm text-zinc-600">Ссылки на тексты нормативных актов приведены справочно. Применимость нормы и её редакцию необходимо проверить на дату обстоятельств.</p>
