@@ -6,7 +6,7 @@ import { getMilitaryProvisionCheck, getMilitaryProvisionCoverage, MILITARY_PROVI
 
 const coverage=getMilitaryProvisionCoverage();
 assert.equal(coverage.cases,143);
-assert.equal(coverage.provisionsCrosschecked,43);
+assert.equal(coverage.provisionsCrosschecked,48);
 assert.equal(coverage.categoriesTouched,11);
 assert.equal(coverage.officialTextVerified,0,"Do not claim to have read blocked official portal original");
 assert.equal(coverage.legallyApproved,0);
@@ -79,6 +79,23 @@ for(const index of [0,1,2,3,4,5]){
 }
 assert(getMilitaryProvisionCheck("otpusk-voennosluzhashchego",1)!.provisions[0].applicability.includes("30, 35, 40 либо 45"));
 assert(getMilitaryProvisionCheck("otpusk-voennosluzhashchego",2)!.provisions[0].applicability.includes("до 10 суток"));
+// Monetary-allowance review: five additional situation-specific checks, all still not legally approved.
+for(const index of [0,1,2,3,4,5,6]){
+ const money=getMilitaryProvisionCheck("denezhnoe-dovolstvie",index);
+ assert(money,"Missing monetary allowance provision: "+index);
+ assert(money.provisions.some(p=>p.act.includes("306-ФЗ")));
+ assert.equal(money.legalReviewConfirmed,false);
+ assert.equal(money.officialTextVerified,false);
+}
+const moneyCourt=getMilitaryProvisionCheck("denezhnoe-dovolstvie",2)!;
+assert(moneyCourt.provisions.some(p=>p.act==="КАС РФ"&&p.article.includes("219")));
+assert(moneyCourt.caution.includes("различаются"));
+const moneyWithheld=getMilitaryProvisionCheck("denezhnoe-dovolstvie",4)!;
+assert(moneyWithheld.caution.includes("налоговые"));
+const moneyPremium=getMilitaryProvisionCheck("denezhnoe-dovolstvie",5)!;
+assert(moneyPremium.caution.includes("фиксированный процент"));
+const moneyEvidence=getMilitaryProvisionCheck("denezhnoe-dovolstvie",6)!;
+assert(moneyEvidence.caution.includes("выдуманный срок"));
 const mHealth=getMilitaryProvisionCheck("mobilizaciya",4)!;
 assert(mHealth.provisions.some(p=>p.applicability.includes("шести месяцев")));
 assert(!mHealth.provisions.some(p=>p.applicability.includes("до одного года")));
