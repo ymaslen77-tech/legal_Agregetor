@@ -6,8 +6,8 @@ import { getMilitaryProvisionCheck, getMilitaryProvisionCoverage, MILITARY_PROVI
 
 const coverage=getMilitaryProvisionCoverage();
 assert.equal(coverage.cases,143);
-assert.equal(coverage.provisionsCrosschecked,21);
-assert.equal(coverage.categoriesTouched,5);
+assert.equal(coverage.provisionsCrosschecked,37);
+assert.equal(coverage.categoriesTouched,10);
 assert.equal(coverage.officialTextVerified,0,"Do not claim to have read blocked official portal original");
 assert.equal(coverage.legallyApproved,0);
 const unique=new Set<string>();
@@ -56,6 +56,28 @@ for(const [slug,index,rule] of requiredCases){
  assert(item.provisions.some(p=>p.article.includes(rule)), "Wrong article: "+slug+" #"+index);
  assert(item.caution.length>45,"Missing caveat: "+slug+" #"+index);
 }
+const nextBatch:readonly [string,number][]=[
+ ["mobilizaciya",0],["mobilizaciya",1],["mobilizaciya",2],["mobilizaciya",3],
+ ["mobilizaciya",4],["mobilizaciya",5],["mobilizaciya",6],
+ ["gibel-i-vyplaty-seme",0],["gibel-i-vyplaty-seme",1],
+ ["ranenie-travma-gospital",0],["ranenie-travma-gospital",4],["ranenie-travma-gospital",5],
+ ["denezhnoe-dovolstvie",0],["denezhnoe-dovolstvie",1],
+ ["vyplaty-za-uchastie-v-svo",0],["vyplaty-za-uchastie-v-svo",3]
+];
+for(const [topic,index] of nextBatch) {
+ const entry=getMilitaryProvisionCheck(topic,index);
+ assert(entry,"Missing researched case: "+topic+"/"+index);
+ assert(entry.provisions.every(p=>p.textUrl.startsWith("https://")),"Invalid published text URL");
+ assert(entry.caution.length>40,"Missing limitation "+topic+"/"+index);
+}
+const mHealth=getMilitaryProvisionCheck("mobilizaciya",4)!;
+assert(mHealth.provisions.some(p=>p.applicability.includes("шести месяцев")));
+assert(!mHealth.provisions.some(p=>p.applicability.includes("до одного года")));
+const benefits=getMilitaryProvisionCheck("vyplaty-za-uchastie-v-svo",3)!;
+assert(benefits.provisions.some(p=>p.applicability.includes("после получения всех необходимых документов")));
+assert(benefits.caution.includes("30 дней"));
+assert(getMilitaryProvisionCheck("gibel-i-vyplaty-seme",0)!.provisions.some(p=>p.act.includes("52-ФЗ")));
+assert(nextBatch.every(([topic,index])=>getMilitaryProvisionCheck(topic,index)!.officialTextVerified===false));
 const excerpt=MILITARY_LEGAL_CASE_CARDS.filter(c=>c.sourceCandidates.some(s=>s.id==="53"));
 assert(excerpt.length>0);
 for(const caseCard of excerpt){
