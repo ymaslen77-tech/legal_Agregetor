@@ -2709,17 +2709,42 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 0,
     "situationTitle": "Какие виды выплат предусмотрены для участников СВО?",
     "situationKind": "information",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Разделить федеральные, ведомственные и региональные меры по правовому статусу.",
+    "evidenceToConfirm": "Статус участника, приказы, данные о периодах службы.",
+    "competentRecipientToVerify": "Военно-финансовый или региональный уполномоченный орган по конкретной выплате; для обжалования проверить порядок.",
+    "plannedResultToVerify": "Информация без генератора.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "306",
+        "title": "ФЗ № 306-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "647",
+        "title": "Указ № 647",
+        "url": "https://publication.pravo.gov.ru/Document/View/0001202209210001",
+        "type": "OFFICIAL_RECORD_CANDIDATE"
+      },
+      {
+        "id": "52",
+        "title": "ФЗ № 52-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Название выплаты не подтверждает право на неё.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "vyplaty-za-uchastie-v-svo",
@@ -2727,17 +2752,42 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 1,
     "situationTitle": "Как оформить единовременную выплату при заключении контракта?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Проверить вид контракта, дату его заключения и применимое основание единовременной выплаты.",
+    "evidenceToConfirm": "Контракт, приказ о зачислении, реквизиты выплаты.",
+    "competentRecipientToVerify": "Военно-финансовый или региональный уполномоченный орган по конкретной выплате; для обжалования проверить порядок.",
+    "plannedResultToVerify": "Заявление о назначении единовременной выплаты.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "306",
+        "title": "ФЗ № 306-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "647",
+        "title": "Указ № 647",
+        "url": "https://publication.pravo.gov.ru/Document/View/0001202209210001",
+        "type": "OFFICIAL_RECORD_CANDIDATE"
+      },
+      {
+        "id": "52",
+        "title": "ФЗ № 52-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не подставлять сумму без конкретной программы.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "vyplaty-za-uchastie-v-svo",
@@ -2745,17 +2795,42 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 2,
     "situationTitle": "Как добиться выплаты за участие в СВО?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Установить фактическое участие и основания конкретной выплаты.",
+    "evidenceToConfirm": "Приказы, сведения об участии, платёжные документы.",
+    "competentRecipientToVerify": "Военно-финансовый или региональный уполномоченный орган по конкретной выплате; для обжалования проверить порядок.",
+    "plannedResultToVerify": "Заявление о выплате за участие в СВО.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "306",
+        "title": "ФЗ № 306-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "647",
+        "title": "Указ № 647",
+        "url": "https://publication.pravo.gov.ru/Document/View/0001202209210001",
+        "type": "OFFICIAL_RECORD_CANDIDATE"
+      },
+      {
+        "id": "52",
+        "title": "ФЗ № 52-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Сам факт военной службы не гарантирует любую выплату.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "vyplaty-za-uchastie-v-svo",
@@ -2763,17 +2838,42 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 3,
     "situationTitle": "Что делать при задержке положенной выплаты?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Определить дату назначения и наступления срока перечисления.",
+    "evidenceToConfirm": "Назначение выплаты, выписка счёта, зарегистрированное обращение.",
+    "competentRecipientToVerify": "Военно-финансовый или региональный уполномоченный орган по конкретной выплате; для обжалования проверить порядок.",
+    "plannedResultToVerify": "Жалоба на задержку выплаты.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "306",
+        "title": "ФЗ № 306-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "647",
+        "title": "Указ № 647",
+        "url": "https://publication.pravo.gov.ru/Document/View/0001202209210001",
+        "type": "OFFICIAL_RECORD_CANDIDATE"
+      },
+      {
+        "id": "52",
+        "title": "ФЗ № 52-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не утверждать просрочку без проверки даты возникновения обязанности.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "vyplaty-za-uchastie-v-svo",
@@ -2781,17 +2881,42 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 4,
     "situationTitle": "Как обжаловать отказ в назначении выплаты?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Изучить письменный отказ и условия выбранной федеральной или региональной выплаты.",
+    "evidenceToConfirm": "Решение об отказе, документы о статусе, основания выплаты.",
+    "competentRecipientToVerify": "Военно-финансовый или региональный уполномоченный орган по конкретной выплате; для обжалования проверить порядок.",
+    "plannedResultToVerify": "Жалоба на отказ / судебное заявление при наличии оснований.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "306",
+        "title": "ФЗ № 306-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "647",
+        "title": "Указ № 647",
+        "url": "https://publication.pravo.gov.ru/Document/View/0001202209210001",
+        "type": "OFFICIAL_RECORD_CANDIDATE"
+      },
+      {
+        "id": "52",
+        "title": "ФЗ № 52-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не выбирать процессуальную форму без определения плательщика.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "vyplaty-za-uchastie-v-svo",
@@ -2799,17 +2924,42 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 5,
     "situationTitle": "Как получить региональную выплату при наличии оснований?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Определить регион, дату регистрации и право на конкретную региональную меру.",
+    "evidenceToConfirm": "Документы о регионе, контракте и виде службы.",
+    "competentRecipientToVerify": "Военно-финансовый или региональный уполномоченный орган по конкретной выплате; для обжалования проверить порядок.",
+    "plannedResultToVerify": "Заявление о региональной выплате.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "306",
+        "title": "ФЗ № 306-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "647",
+        "title": "Указ № 647",
+        "url": "https://publication.pravo.gov.ru/Document/View/0001202209210001",
+        "type": "OFFICIAL_RECORD_CANDIDATE"
+      },
+      {
+        "id": "52",
+        "title": "ФЗ № 52-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Региональные критерии различаются; не обещать выплату по федеральной норме.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "vyplaty-za-uchastie-v-svo",
@@ -2817,17 +2967,42 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 6,
     "situationTitle": "Как взыскать назначенную, но не перечисленную выплату?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Разделить назначение выплаты и факт неперечисления денег.",
+    "evidenceToConfirm": "Решение о назначении, банковские сведения, запрос финансовому органу.",
+    "competentRecipientToVerify": "Военно-финансовый или региональный уполномоченный орган по конкретной выплате; для обжалования проверить порядок.",
+    "plannedResultToVerify": "Требование о перечислении назначенной выплаты; судебное обращение по процедуре.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "306",
+        "title": "ФЗ № 306-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "647",
+        "title": "Указ № 647",
+        "url": "https://publication.pravo.gov.ru/Document/View/0001202209210001",
+        "type": "OFFICIAL_RECORD_CANDIDATE"
+      },
+      {
+        "id": "52",
+        "title": "ФЗ № 52-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Нельзя автоматически считать долг денежным довольствием.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "ranenie-travma-gospital",
@@ -2835,17 +3010,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 0,
     "situationTitle": "Какие гарантии медицинской помощи предусмотрены военнослужащим?",
     "situationKind": "information",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Определить права на лечение по статусу военнослужащего и действующей медицинской процедуре.",
+    "evidenceToConfirm": "Статус, ранение, медицинское состояние.",
+    "competentRecipientToVerify": "Командование, военно-медицинская организация либо ВВК в пределах соответствующей компетенции.",
+    "plannedResultToVerify": "Информация без генератора.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "565",
+        "title": "Постановление № 565",
+        "url": "https://mchs.gov.ru/dokumenty/553",
+        "type": "GOVERNMENT_REPRINT"
+      },
+      {
+        "id": "52",
+        "title": "ФЗ № 52-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Экстренная помощь не зависит от предварительного заполнения формы.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "ranenie-travma-gospital",
@@ -2853,17 +3047,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 1,
     "situationTitle": "Как получить медицинскую помощь после ранения?",
     "situationKind": "mixed",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Установить необходимость первичной или экстренной помощи после ранения.",
+    "evidenceToConfirm": "Медицинские документы, дата ранения, сведения о неотложности.",
+    "competentRecipientToVerify": "Командование, военно-медицинская организация либо ВВК в пределах соответствующей компетенции.",
+    "plannedResultToVerify": "Рапорт о направлении на лечение, если требуется; при угрозе — экстренные службы.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "565",
+        "title": "Постановление № 565",
+        "url": "https://mchs.gov.ru/dokumenty/553",
+        "type": "GOVERNMENT_REPRINT"
+      },
+      {
+        "id": "52",
+        "title": "ФЗ № 52-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не задерживать лечение ради документа.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "ranenie-travma-gospital",
@@ -2871,17 +3084,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 2,
     "situationTitle": "Что делать, если командование не направляет на лечение?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Подтвердить медицинские показания и факт отказа направить на лечение.",
+    "evidenceToConfirm": "Назначение врача, рапорт, письменный ответ командования.",
+    "competentRecipientToVerify": "Командование, военно-медицинская организация либо ВВК в пределах соответствующей компетенции.",
+    "plannedResultToVerify": "Рапорт или жалоба о направлении на лечение.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "565",
+        "title": "Постановление № 565",
+        "url": "https://mchs.gov.ru/dokumenty/553",
+        "type": "GOVERNMENT_REPRINT"
+      },
+      {
+        "id": "52",
+        "title": "ФЗ № 52-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не утверждать нарушение без данных о медицинских показаниях.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "ranenie-travma-gospital",
@@ -2889,17 +3121,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 3,
     "situationTitle": "Как добиться госпитализации военнослужащего?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Проверить медицинские показания для госпитализации и компетенцию направляющего органа.",
+    "evidenceToConfirm": "Медицинское заключение, отказ, обращения.",
+    "competentRecipientToVerify": "Командование, военно-медицинская организация либо ВВК в пределах соответствующей компетенции.",
+    "plannedResultToVerify": "Рапорт о госпитализации по назначению врачей.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "565",
+        "title": "Постановление № 565",
+        "url": "https://mchs.gov.ru/dokumenty/553",
+        "type": "GOVERNMENT_REPRINT"
+      },
+      {
+        "id": "52",
+        "title": "ФЗ № 52-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Сервис не определяет медицинскую необходимость госпитализации.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "ranenie-travma-gospital",
@@ -2907,17 +3158,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 4,
     "situationTitle": "Как оформить документы, подтверждающие военную травму?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Установить факт, время и обстоятельства травмы и орган, оформляющий документы.",
+    "evidenceToConfirm": "Медицинская карта, рапорт о событии, материалы расследования.",
+    "competentRecipientToVerify": "Командование, военно-медицинская организация либо ВВК в пределах соответствующей компетенции.",
+    "plannedResultToVerify": "Заявление о выдаче справки об обстоятельствах травмы.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "565",
+        "title": "Постановление № 565",
+        "url": "https://mchs.gov.ru/dokumenty/553",
+        "type": "GOVERNMENT_REPRINT"
+      },
+      {
+        "id": "52",
+        "title": "ФЗ № 52-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не формулировать фиктивные обстоятельства получения ранения.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "ranenie-travma-gospital",
@@ -2925,17 +3195,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 5,
     "situationTitle": "Как установить причинную связь заболевания или травмы с прохождением службы?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Разделить фиксацию травмы, причинную связь и медицинскую экспертизу.",
+    "evidenceToConfirm": "История болезни, документы службы, результаты обследования.",
+    "competentRecipientToVerify": "Командование, военно-медицинская организация либо ВВК в пределах соответствующей компетенции.",
+    "plannedResultToVerify": "Рапорт на установление причинной связи через ВВК.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "565",
+        "title": "Постановление № 565",
+        "url": "https://mchs.gov.ru/dokumenty/553",
+        "type": "GOVERNMENT_REPRINT"
+      },
+      {
+        "id": "52",
+        "title": "ФЗ № 52-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Причинную связь устанавливает компетентная комиссия, а не генератор.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "ranenie-travma-gospital",
@@ -2943,17 +3232,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 6,
     "situationTitle": "Как обжаловать отказ в медицинской помощи?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Определить характер отказа и экстренность ситуации.",
+    "evidenceToConfirm": "Медицинское назначение, письменный отказ, даты обращения.",
+    "competentRecipientToVerify": "Командование, военно-медицинская организация либо ВВК в пределах соответствующей компетенции.",
+    "plannedResultToVerify": "Жалоба на отказ в медицинской помощи.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "565",
+        "title": "Постановление № 565",
+        "url": "https://mchs.gov.ru/dokumenty/553",
+        "type": "GOVERNMENT_REPRINT"
+      },
+      {
+        "id": "52",
+        "title": "ФЗ № 52-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "При немедленной угрозе здоровью сначала обеспечить помощь.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "ranenie-travma-gospital",
@@ -2961,17 +3269,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 7,
     "situationTitle": "Что делать, если военнослужащего с незавершённым лечением направляют к исполнению обязанностей службы?",
     "situationKind": "mixed",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Проверить противопоказания к служебным обязанностям в период лечения.",
+    "evidenceToConfirm": "Медицинские назначения, лист лечения, приказ о возвращении.",
+    "competentRecipientToVerify": "Командование, военно-медицинская организация либо ВВК в пределах соответствующей компетенции.",
+    "plannedResultToVerify": "Рапорт о продолжении лечения/медицинской оценке.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "565",
+        "title": "Постановление № 565",
+        "url": "https://mchs.gov.ru/dokumenty/553",
+        "type": "GOVERNMENT_REPRINT"
+      },
+      {
+        "id": "52",
+        "title": "ФЗ № 52-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не формировать общие рекомендации о самовольном неисполнении обязанностей.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "gibel-i-vyplaty-seme",
@@ -2979,17 +3306,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 0,
     "situationTitle": "Кто из членов семьи может иметь право на выплаты при гибели военнослужащего?",
     "situationKind": "information",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Разделить разные основания выплаты семье, круг получателей и зависимость от статуса.",
+    "evidenceToConfirm": "Родство, статус погибшего и официальные документы.",
+    "competentRecipientToVerify": "Орган назначения выбранной выплаты, военный комиссариат либо суд по конкретному виду требования.",
+    "plannedResultToVerify": "Информация без генератора.",
+    "sourceCandidates": [
+      {
+        "id": "52",
+        "title": "ФЗ № 52-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "5",
+        "title": "ФЗ № 5-ФЗ о ветеранах",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Семейная связь сама по себе не гарантирует конкретную выплату.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "gibel-i-vyplaty-seme",
@@ -2997,17 +3343,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 1,
     "situationTitle": "Как оформить выплаты семье погибшего военнослужащего?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Подтвердить право конкретного члена семьи на выбранную выплату.",
+    "evidenceToConfirm": "Документы о родстве, гибели, назначении и платёжных реквизитах.",
+    "competentRecipientToVerify": "Орган назначения выбранной выплаты, военный комиссариат либо суд по конкретному виду требования.",
+    "plannedResultToVerify": "Заявление о назначении выплаты члену семьи.",
+    "sourceCandidates": [
+      {
+        "id": "52",
+        "title": "ФЗ № 52-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "5",
+        "title": "ФЗ № 5-ФЗ о ветеранах",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не обещать всем родственникам одинаковый объём прав.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "gibel-i-vyplaty-seme",
@@ -3015,17 +3380,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 2,
     "situationTitle": "Что делать, если отказали в выплатах родственникам погибшего?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Уточнить отказ, вид выплаты и право заявителя на получение.",
+    "evidenceToConfirm": "Отказ, заявление, документы о статусе родственника.",
+    "competentRecipientToVerify": "Орган назначения выбранной выплаты, военный комиссариат либо суд по конкретному виду требования.",
+    "plannedResultToVerify": "Жалоба на отказ в выплате.",
+    "sourceCandidates": [
+      {
+        "id": "52",
+        "title": "ФЗ № 52-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "5",
+        "title": "ФЗ № 5-ФЗ о ветеранах",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Неправильный адресат может лишить рассмотрения по существу.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "gibel-i-vyplaty-seme",
@@ -3033,17 +3417,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 3,
     "situationTitle": "Как получить документы, подтверждающие обстоятельства гибели?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Выяснить орган хранения документов о гибели и законный объём доступа.",
+    "evidenceToConfirm": "Документы о родстве, запрос, известные реквизиты происшествия.",
+    "competentRecipientToVerify": "Орган назначения выбранной выплаты, военный комиссариат либо суд по конкретному виду требования.",
+    "plannedResultToVerify": "Заявление о выдаче подтверждающих документов.",
+    "sourceCandidates": [
+      {
+        "id": "52",
+        "title": "ФЗ № 52-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "5",
+        "title": "ФЗ № 5-ФЗ о ветеранах",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не требовать закрытые материалы сверх прав заявителя.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "gibel-i-vyplaty-seme",
@@ -3051,17 +3454,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 4,
     "situationTitle": "Как оформить выплаты при признании военнослужащего безвестно отсутствующим или умершим?",
     "situationKind": "mixed",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Разделить юридические статусы безвестного отсутствия и объявления умершим.",
+    "evidenceToConfirm": "Сведения о пропаже, документы службы, акты и решения.",
+    "competentRecipientToVerify": "Орган назначения выбранной выплаты, военный комиссариат либо суд по конкретному виду требования.",
+    "plannedResultToVerify": "Заявление о соответствующей выплате и, если требуется, обращение в суд.",
+    "sourceCandidates": [
+      {
+        "id": "52",
+        "title": "ФЗ № 52-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "5",
+        "title": "ФЗ № 5-ФЗ о ветеранах",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не заменять судебный статус произвольной справкой.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "gibel-i-vyplaty-seme",
@@ -3069,17 +3491,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 5,
     "situationTitle": "Как установить юридический факт, необходимый для оформления выплат?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Установить факт, от которого зависит право, и допустимость особого производства.",
+    "evidenceToConfirm": "Документы о событии, невозможность получить официальный документ, письменный отказ.",
+    "competentRecipientToVerify": "Орган назначения выбранной выплаты, военный комиссариат либо суд по конкретному виду требования.",
+    "plannedResultToVerify": "Заявление об установлении юридического факта в надлежащем суде.",
+    "sourceCandidates": [
+      {
+        "id": "52",
+        "title": "ФЗ № 52-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "5",
+        "title": "ФЗ № 5-ФЗ о ветеранах",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "В случае спора о праве особое производство может быть неприменимо.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "gibel-i-vyplaty-seme",
@@ -3087,17 +3528,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 6,
     "situationTitle": "Как обжаловать отказ в признании права на выплату?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Проверить статус получателя, предмет отказа и процессуальный способ оспаривания.",
+    "evidenceToConfirm": "Отказ, расчёты, родственные документы, доказательства подачи.",
+    "competentRecipientToVerify": "Орган назначения выбранной выплаты, военный комиссариат либо суд по конкретному виду требования.",
+    "plannedResultToVerify": "Жалоба на отказ / судебное заявление по надлежащей процедуре.",
+    "sourceCandidates": [
+      {
+        "id": "52",
+        "title": "ФЗ № 52-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "5",
+        "title": "ФЗ № 5-ФЗ о ветеранах",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не подменять административный иск гражданским без анализа природы спора.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "gibel-i-vyplaty-seme",
@@ -3105,17 +3565,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 7,
     "situationTitle": "Как защитить права детей и других членов семьи погибшего военнослужащего?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Определить законное представительство ребёнка и самостоятельные права членов семьи.",
+    "evidenceToConfirm": "Свидетельства о рождении, опеке, документация о выплатах.",
+    "competentRecipientToVerify": "Орган назначения выбранной выплаты, военный комиссариат либо суд по конкретному виду требования.",
+    "plannedResultToVerify": "Заявление в интересах ребёнка или иной предусмотренный документ.",
+    "sourceCandidates": [
+      {
+        "id": "52",
+        "title": "ФЗ № 52-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "5",
+        "title": "ФЗ № 5-ФЗ о ветеранах",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не раскрывать детские данные в публичном интерфейсе.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "disciplinarnye-vzyskaniya",
@@ -3123,17 +3602,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 0,
     "situationTitle": "Какие дисциплинарные взыскания предусмотрены для военнослужащих?",
     "situationKind": "information",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Сверить допустимые дисциплинарные меры и служебный статус.",
+    "evidenceToConfirm": "Приказы, категория военнослужащего.",
+    "competentRecipientToVerify": "Командование, вышестоящий руководитель либо компетентный суд по виду дисциплинарного спора.",
+    "plannedResultToVerify": "Информация без генератора.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "kas",
+        "title": "КАС РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не переносить меры дисциплинарной ответственности из трудового права.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "disciplinarnye-vzyskaniya",
@@ -3141,17 +3639,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 1,
     "situationTitle": "Как обжаловать дисциплинарное взыскание?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Проверить основания взыскания, процедуру разбирательства и сроки.",
+    "evidenceToConfirm": "Приказ, объяснения, материалы служебного расследования.",
+    "competentRecipientToVerify": "Командование, вышестоящий руководитель либо компетентный суд по виду дисциплинарного спора.",
+    "plannedResultToVerify": "Жалоба на дисциплинарное взыскание.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "kas",
+        "title": "КАС РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не считать любое взыскание незаконным без проверки обстоятельств.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "disciplinarnye-vzyskaniya",
@@ -3159,17 +3676,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 2,
     "situationTitle": "Что делать при незаконном привлечении к дисциплинарной ответственности?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Определить нарушение порядка привлечения к дисциплинарной ответственности.",
+    "evidenceToConfirm": "Приказ, уведомления, служебные объяснения.",
+    "competentRecipientToVerify": "Командование, вышестоящий руководитель либо компетентный суд по виду дисциплинарного спора.",
+    "plannedResultToVerify": "Жалоба на незаконное привлечение.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "kas",
+        "title": "КАС РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не подменять дисциплинарную процедуру уголовной.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "disciplinarnye-vzyskaniya",
@@ -3177,17 +3713,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 3,
     "situationTitle": "Как получить материалы разбирательства?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Уточнить доступ военнослужащего к материалам дисциплинарного разбирательства.",
+    "evidenceToConfirm": "Реквизиты разбирательства, отказ в ознакомлении.",
+    "competentRecipientToVerify": "Командование, вышестоящий руководитель либо компетентный суд по виду дисциплинарного спора.",
+    "plannedResultToVerify": "Рапорт о предоставлении доступа к материалам.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "kas",
+        "title": "КАС РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Закон может ограничивать доступ к отдельным сведениям.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "disciplinarnye-vzyskaniya",
@@ -3195,17 +3750,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 4,
     "situationTitle": "Как подать жалобу на нарушение порядка применения взыскания?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Сопоставить фактическую процедуру взыскания с действующими нормами.",
+    "evidenceToConfirm": "Акты расследования, даты, объяснения и приказ.",
+    "competentRecipientToVerify": "Командование, вышестоящий руководитель либо компетентный суд по виду дисциплинарного спора.",
+    "plannedResultToVerify": "Жалоба о нарушении процедуры.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "kas",
+        "title": "КАС РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Общий текст жалобы без конкретного нарушения не подходит.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "disciplinarnye-vzyskaniya",
@@ -3213,17 +3787,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 5,
     "situationTitle": "Как добиться отмены незаконного дисциплинарного приказа?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Установить законный способ отмены дисциплинарного приказа.",
+    "evidenceToConfirm": "Приказ, доказательства существенных процессуальных нарушений.",
+    "competentRecipientToVerify": "Командование, вышестоящий руководитель либо компетентный суд по виду дисциплинарного спора.",
+    "plannedResultToVerify": "Жалоба на приказ / судебное оспаривание.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "kas",
+        "title": "КАС РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Судебная компетенция определяется статусом и видом требования.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "samovolnoe-ostavlenie-chasti",
@@ -3231,17 +3824,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 0,
     "situationTitle": "Чем различаются дисциплинарные и уголовно-правовые последствия отсутствия на службе?",
     "situationKind": "information",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Различить состав дисциплинарного нарушения и уголовно-правовые составы.",
+    "evidenceToConfirm": "Даты отсутствия, статус службы, сведения о причинах.",
+    "competentRecipientToVerify": "Дознаватель, следователь, прокурор или суд в зависимости от стадии и процессуального статуса.",
+    "plannedResultToVerify": "Информация без генератора.",
+    "sourceCandidates": [
+      {
+        "id": "uk",
+        "title": "УК РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "upk",
+        "title": "УПК РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не давать инструкций по уклонению от служебных обязанностей.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "samovolnoe-ostavlenie-chasti",
@@ -3249,17 +3861,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 1,
     "situationTitle": "Как оспорить необоснованное обвинение в самовольном оставлении части?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Установить процессуальный статус лица и доказательства ошибочности обвинения.",
+    "evidenceToConfirm": "Постановление по делу, материалы защиты, объективные данные.",
+    "competentRecipientToVerify": "Дознаватель, следователь, прокурор или суд в зависимости от стадии и процессуального статуса.",
+    "plannedResultToVerify": "Процессуальное ходатайство/жалоба через защитника.",
+    "sourceCandidates": [
+      {
+        "id": "uk",
+        "title": "УК РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "upk",
+        "title": "УПК РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Правильная защитительная позиция требует изучения дела.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "samovolnoe-ostavlenie-chasti",
@@ -3267,17 +3898,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 2,
     "situationTitle": "Как заявить об уважительных причинах отсутствия на службе?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Выделить документально подтверждённые объективные причины отсутствия.",
+    "evidenceToConfirm": "Медицинские справки, приказы, сообщения и объяснения.",
+    "competentRecipientToVerify": "Дознаватель, следователь, прокурор или суд в зависимости от стадии и процессуального статуса.",
+    "plannedResultToVerify": "Заявление и ходатайство о приобщении доказательств.",
+    "sourceCandidates": [
+      {
+        "id": "uk",
+        "title": "УК РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "upk",
+        "title": "УПК РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не предлагать придумывать уважительные причины.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "samovolnoe-ostavlenie-chasti",
@@ -3285,17 +3935,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 3,
     "situationTitle": "Как обжаловать незаконные действия при расследовании?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Установить статус и конкретное действие следователя для оспаривания.",
+    "evidenceToConfirm": "Постановление, протокол, дата и процессуальный статус.",
+    "competentRecipientToVerify": "Дознаватель, следователь, прокурор или суд в зависимости от стадии и процессуального статуса.",
+    "plannedResultToVerify": "Процессуальная жалоба в предусмотренном УПК порядке.",
+    "sourceCandidates": [
+      {
+        "id": "uk",
+        "title": "УК РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "upk",
+        "title": "УПК РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не использовать КАС РФ вместо уголовно-процессуальной жалобы.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "samovolnoe-ostavlenie-chasti",
@@ -3303,17 +3972,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 4,
     "situationTitle": "Как подать ходатайство или жалобу в рамках уголовного дела?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Определить стадию уголовного дела и право участника заявить ходатайство.",
+    "evidenceToConfirm": "Номер уголовного дела, процессуальный документ, полномочия представителя.",
+    "competentRecipientToVerify": "Дознаватель, следователь, прокурор или суд в зависимости от стадии и процессуального статуса.",
+    "plannedResultToVerify": "Ходатайство или жалоба по УПК РФ.",
+    "sourceCandidates": [
+      {
+        "id": "uk",
+        "title": "УК РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "upk",
+        "title": "УПК РФ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не генерировать документ без процессуального статуса лица.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционная индивидуальная карта; оценка юридических оснований и редакции источника ещё не проведена."
   },
   {
     "topicSlug": "voennaya-ipoteka-i-zhile",
