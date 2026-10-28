@@ -39,6 +39,6 @@ for(const topic of MILITARY_TOPICS){
 }
 assert.equal(keys.size,143);
 assert.equal(documents,121);
-assert.equal(draft,43);
-assert.equal(pending,100);
+assert.equal(draft,143);
+assert.equal(pending,0);
 console.log(JSON.stringify({categories:20,cases:143,caseSpecificEditorialDrafts:draft,pending,legalReviewed:0}));
