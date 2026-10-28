@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - infra/coolify-russian-vps
       - agent/zags-reference-final-clean
       - agent/divorce-property-route-hardening
       - agent/child-guardianship-reference-route
