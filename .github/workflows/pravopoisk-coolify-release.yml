@@ -76,7 +76,7 @@ jobs:
             "$status_file" >/dev/null || { echo "::error::Wrong Coolify application/repository/domain"; exit 1; }
           deployed_branch="$(jq -r '.git_branch // "unknown"' "$status_file")"
           echo "COOLIFY_SAFE_CONFIG_KEYS=$(jq -r 'keys | map(select(test("auto|deploy|webhook|setting";"i"))) | join(",")' "$status_file")"
-          auto_flag="$(jq -r 'if (.is_auto_deploy_enabled | type) == "boolean" then (.is_auto_deploy_enabled | tostring) else "unknown" end' "$status_file")"
+          auto_flag="$(jq -r 'if (.settings.is_auto_deploy_enabled | type) == "boolean" then (.settings.is_auto_deploy_enabled | tostring) elif (.is_auto_deploy_enabled | type) == "boolean" then (.is_auto_deploy_enabled | tostring) else "unknown" end' "$status_file")"
           app_status="$(jq -r '.status // "unknown"' "$status_file")"
           echo "COOLIFY_READ_CONNECTION=PASS app=$uuid branch=$deployed_branch auto_deploy=$auto_flag status=$app_status"
           echo "COOLIFY_DEPLOY_TOKEN_CONFIGURED=YES (deployment authorization not tested)"
@@ -133,7 +133,7 @@ jobs:
           [ "$code" = 200 ] || { echo "::error::Coolify read failed HTTP $code"; exit 1; }
           jq -e --arg uuid "$app" \
             '.uuid==$uuid and .git_repository=="ymaslen77-tech/legal_Agregetor" and .git_branch=="infra/coolify-russian-vps" and
-             ((.fqdn//"")|contains("pravopoisk.ru")) and (.is_auto_deploy_enabled==false)' "$temp" >/dev/null ||
+             ((.fqdn//"")|contains("pravopoisk.ru")) and ((.settings.is_auto_deploy_enabled==false) or (.is_auto_deploy_enabled==false))' "$temp" >/dev/null ||
             { echo "::error::Coolify source, domain or automatic deploy setting differs from approved configuration; refusing release"; exit 1; }
           code="$(curl -sS --connect-timeout 10 --max-time 30 -o "$temp" -w '%{http_code}' \
             -H "Authorization: Bearer $COOLIFY_READ_TOKEN" "$base/deployments/applications/$app?take=10")"
