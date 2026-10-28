@@ -10,7 +10,7 @@ export function getMilitaryReleaseReadiness() {
   const categories = MILITARY_TOPICS.map((topic) => {
     const expectedDocuments = topic.situations.filter((item) => item.kind !== "information");
     const documented = expectedDocuments.filter((item) => getMilitaryDocumentCandidate(topic, item) !== null);
-    const legallyReviewed = topic.situations.filter((item) => item.legalReviewed === true);
+    const legallyReviewed = topic.situations.filter((item) => Boolean(item.legalReviewed));
     return {
       slug: topic.slug,
       title: topic.title,
