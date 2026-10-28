@@ -50,7 +50,7 @@ export type MilitaryDocumentSpecification = Readonly<{
   expectedAttachments: readonly string[];
   reviewStatus: "PENDING" | "VERIFIED";
   /** Same metadata contract used by family; no false ready-to-file promise. */
-  resultKind: DocumentResultV1["resultKind"];
+  resultKind: Exclude<DocumentResultV1["resultKind"], "CHECKLIST" | "PREPARED_DATA" | "URGENT_INSTRUCTION" | "LEGAL_REVIEW_ONLY">;
   filingReady: false;
   requiresLegalReview: true;
   canonicalDocumentUrl: string;
