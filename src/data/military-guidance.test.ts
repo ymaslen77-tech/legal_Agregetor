@@ -22,4 +22,9 @@ assert(draft2026.sources.some(s=>s.url==="https://publication.pravo.gov.ru/docum
 assert(draft2026.caution.includes("2026") || draft2026.caution.includes("412-ФЗ"));
 const alternative=getMilitaryGuide("alternativnaya-grazhdanskaya-sluzhba");
 assert(alternative.sources.some(s=>s.url==="https://publication.pravo.gov.ru/document/0001202511040014"));
+const salaryGuide=getMilitaryGuide("denezhnoe-dovolstvie");
+assert(salaryGuide.sources.some(s=>s.name.includes("306-ФЗ")&&s.url==="https://www.consultant.ru/document/cons_doc_LAW_121273/"));
+assert(!Object.values(MILITARY_GUIDES).flatMap(g=>g.sources).some(s=>s.url.includes("LAW_121446")||s.url.includes("LAW_78729")));
+const commissionGuide=getMilitaryGuide("vvk-i-kategoriya-godnosti");
+assert(commissionGuide.sources.some(s=>s.name.includes("574")&&s.url==="https://www.consultant.ru/document/cons_doc_LAW_78918/"));
 console.log("20 topic guides; 2026 conscription and alternative-service sources registered.");
