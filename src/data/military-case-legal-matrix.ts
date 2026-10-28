@@ -1707,7 +1707,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       },
       {
         "id": "76",
@@ -1750,7 +1750,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       },
       {
         "id": "76",
@@ -1793,7 +1793,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       },
       {
         "id": "76",
@@ -1836,7 +1836,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       },
       {
         "id": "76",
@@ -1879,7 +1879,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       },
       {
         "id": "76",
@@ -1922,7 +1922,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       },
       {
         "id": "76",
@@ -1965,7 +1965,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       },
       {
         "id": "76",
@@ -2008,7 +2008,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       },
       {
         "id": "76",
@@ -2051,7 +2051,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       },
       {
         "id": "76",
@@ -2094,7 +2094,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       },
       {
         "id": "76",
@@ -2131,7 +2131,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       },
       {
         "id": "76",
@@ -2168,7 +2168,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       },
       {
         "id": "76",
@@ -2205,7 +2205,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       },
       {
         "id": "76",
@@ -2242,7 +2242,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       },
       {
         "id": "76",
@@ -2279,7 +2279,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       },
       {
         "id": "76",
@@ -4241,7 +4241,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       }
     ],
     "criticalLimitations": "Не путать воинский учёт с немедленной обязанностью служить.",
@@ -4266,7 +4266,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       }
     ],
     "criticalLimitations": "Не утверждать обязательность личной явки для каждой ситуации.",
@@ -4291,7 +4291,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       }
     ],
     "criticalLimitations": "Выезд сам по себе не всегда автоматически прекращает обязанности.",
@@ -4316,7 +4316,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       }
     ],
     "criticalLimitations": "Не считать иностранное проживание универсальным освобождением.",
@@ -4341,7 +4341,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       }
     ],
     "criticalLimitations": "Не обещать освобождение от обязанностей из-за отсутствия билета.",
@@ -4366,7 +4366,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       }
     ],
     "criticalLimitations": "Не считать право на конкретный документ независимым от учётного статуса.",
@@ -4391,7 +4391,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       }
     ],
     "criticalLimitations": "Не переносить правила выдачи военного билета на паспортную процедуру.",
@@ -4422,7 +4422,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       },
       {
         "id": "412-2025",
@@ -4459,7 +4459,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       },
       {
         "id": "412-2025",
@@ -4496,7 +4496,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       },
       {
         "id": "412-2025",
@@ -4533,7 +4533,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       },
       {
         "id": "412-2025",
@@ -4570,7 +4570,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       },
       {
         "id": "412-2025",
@@ -4872,7 +4872,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       }
     ],
     "criticalLimitations": "Военный суд компетентен не по любому спору военнослужащего.",
@@ -4909,7 +4909,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       }
     ],
     "criticalLimitations": "Не генерировать иск без надлежащего ответчика, подсудности и срока.",
@@ -4946,7 +4946,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       }
     ],
     "criticalLimitations": "Нерассмотрение обращения не означает автоматически удовлетворение требования.",
@@ -4983,7 +4983,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       }
     ],
     "criticalLimitations": "Не всякий отказ прокуратуры оспаривается одним способом.",
@@ -5020,7 +5020,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       }
     ],
     "criticalLimitations": "Форма и сроки зависят от рассматриваемого дела.",
@@ -5057,7 +5057,7 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
         "id": "53",
         "title": "ФЗ № 53-ФЗ",
         "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
-        "type": "GOVERNMENT_REPRINT"
+        "type": "GOVERNMENT_REPRINT_STALE_NOT_CURRENT"
       }
     ],
     "criticalLimitations": "Не подменять жалобу по КАС РФ жалобой по УПК или ГПК.",
