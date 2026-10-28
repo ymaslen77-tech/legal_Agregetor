@@ -6,8 +6,8 @@ import { getMilitaryProvisionCheck, getMilitaryProvisionCoverage, MILITARY_PROVI
 
 const coverage=getMilitaryProvisionCoverage();
 assert.equal(coverage.cases,143);
-assert.equal(coverage.provisionsCrosschecked,37);
-assert.equal(coverage.categoriesTouched,10);
+assert.equal(coverage.provisionsCrosschecked,43);
+assert.equal(coverage.categoriesTouched,11);
 assert.equal(coverage.officialTextVerified,0,"Do not claim to have read blocked official portal original");
 assert.equal(coverage.legallyApproved,0);
 const unique=new Set<string>();
@@ -70,6 +70,15 @@ for(const [topic,index] of nextBatch) {
  assert(entry.provisions.every(p=>p.textUrl.startsWith("https://")),"Invalid published text URL");
  assert(entry.caution.length>40,"Missing limitation "+topic+"/"+index);
 }
+for(const index of [0,1,2,3,4,5]){
+ const leave=getMilitaryProvisionCheck("otpusk-voennosluzhashchego",index);
+ assert(leave,"Missing leave legal case "+index);
+ assert(leave.provisions.some(p=>p.article.startsWith("статья 11")));
+ assert(leave.provisions.every(p=>p.act.includes("76-ФЗ")));
+ assert.equal(leave.officialTextVerified,false);
+}
+assert(getMilitaryProvisionCheck("otpusk-voennosluzhashchego",1)!.provisions[0].applicability.includes("30, 35, 40 либо 45"));
+assert(getMilitaryProvisionCheck("otpusk-voennosluzhashchego",2)!.provisions[0].applicability.includes("до 10 суток"));
 const mHealth=getMilitaryProvisionCheck("mobilizaciya",4)!;
 assert(mHealth.provisions.some(p=>p.applicability.includes("шести месяцев")));
 assert(!mHealth.provisions.some(p=>p.applicability.includes("до одного года")));
