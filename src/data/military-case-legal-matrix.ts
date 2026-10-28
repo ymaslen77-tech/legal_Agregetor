@@ -1480,17 +1480,30 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 0,
     "situationTitle": "Каков общий порядок рассмотрения рапортов военнослужащих?",
     "situationKind": "information",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Разграничить виды рапортов и внутренний порядок подачи.",
+    "evidenceToConfirm": "Приказы, локальный порядок рассмотрения.",
+    "competentRecipientToVerify": "Командование, канцелярия либо уполномоченное должностное лицо; при споре компетенцию проверить отдельно.",
+    "plannedResultToVerify": "Информация без генератора.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не применять единый срок ко всем служебным рапортам.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "raporty-i-obrashcheniya",
@@ -1498,17 +1511,30 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 1,
     "situationTitle": "Как подать рапорт командиру воинской части?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Определить требование и компетенцию командования.",
+    "evidenceToConfirm": "Статус заявителя, факты и необходимые приложения.",
+    "competentRecipientToVerify": "Командование, канцелярия либо уполномоченное должностное лицо; при споре компетенцию проверить отдельно.",
+    "plannedResultToVerify": "Рапорт с конкретным требованием.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не создавать пустое требование 'прошу рассмотреть вопрос'.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "raporty-i-obrashcheniya",
@@ -1516,17 +1542,30 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 2,
     "situationTitle": "Что делать, если командир не принимает рапорт?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Подтвердить факт непринятия служебного обращения.",
+    "evidenceToConfirm": "Копия рапорта и сведения об отказе.",
+    "competentRecipientToVerify": "Командование, канцелярия либо уполномоченное должностное лицо; при споре компетенцию проверить отдельно.",
+    "plannedResultToVerify": "Жалоба на отказ в принятии рапорта.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не считать отсутствие номера автоматическим отказом.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "raporty-i-obrashcheniya",
@@ -1534,17 +1573,30 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 3,
     "situationTitle": "Как добиться регистрации поданного рапорта?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Выяснить способ подтверждения регистрации документа.",
+    "evidenceToConfirm": "Копия рапорта, почтовые или канцелярские отметки.",
+    "competentRecipientToVerify": "Командование, канцелярия либо уполномоченное должностное лицо; при споре компетенцию проверить отдельно.",
+    "plannedResultToVerify": "Заявление о регистрации поданного рапорта.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не подменять установленную ведомственную процедуру.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "raporty-i-obrashcheniya",
@@ -1552,17 +1604,30 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 4,
     "situationTitle": "Что делать, если командование не отвечает на рапорт?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Установить срок рассмотрения для данного вида обращения.",
+    "evidenceToConfirm": "Дата подачи, доказательство регистрации, переписка.",
+    "competentRecipientToVerify": "Командование, канцелярия либо уполномоченное должностное лицо; при споре компетенцию проверить отдельно.",
+    "plannedResultToVerify": "Жалоба на бездействие командования.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Общий срок гражданских обращений может не применяться.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "raporty-i-obrashcheniya",
@@ -1570,17 +1635,30 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 5,
     "situationTitle": "Как получить письменное решение по поданному обращению?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Проверить право получить письменное решение по поданному рапорту.",
+    "evidenceToConfirm": "Реквизиты рапорта, входящий номер, данные об ответе.",
+    "competentRecipientToVerify": "Командование, канцелярия либо уполномоченное должностное лицо; при споре компетенцию проверить отдельно.",
+    "plannedResultToVerify": "Заявление о выдаче письменного решения.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Доступ к отдельным материалам может ограничиваться законом.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "raporty-i-obrashcheniya",
@@ -1588,17 +1666,30 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 6,
     "situationTitle": "Как обжаловать отказ командования?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Выяснить точный отказ и его правовую природу.",
+    "evidenceToConfirm": "Оригинал отказа, рапорт, подтверждающие документы.",
+    "competentRecipientToVerify": "Командование, канцелярия либо уполномоченное должностное лицо; при споре компетенцию проверить отдельно.",
+    "plannedResultToVerify": "Жалоба или административный иск.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не выбирать суд до квалификации спора.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "uvolnenie-s-voennoy-sluzhby",
@@ -1606,17 +1697,42 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 0,
     "situationTitle": "Какие основания увольнения применимы к различным видам военной службы?",
     "situationKind": "information",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Разграничить основания увольнения по виду и периоду службы.",
+    "evidenceToConfirm": "Контракт, служебный статус и применимый режим.",
+    "competentRecipientToVerify": "Командование и кадровый орган; при обжаловании — вышестоящий орган или надлежащий суд.",
+    "plannedResultToVerify": "Информация без генератора.",
+    "sourceCandidates": [
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "647",
+        "title": "Указ № 647",
+        "url": "https://publication.pravo.gov.ru/Document/View/0001202209210001",
+        "type": "OFFICIAL_RECORD_CANDIDATE"
+      }
+    ],
+    "criticalLimitations": "Истечение контракта не гарантирует увольнения.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "uvolnenie-s-voennoy-sluzhby",
@@ -1624,17 +1740,42 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 1,
     "situationTitle": "Как уволиться с военной службы по состоянию здоровья?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Проверить медицинское основание и требования заключения ВВК.",
+    "evidenceToConfirm": "Заключение ВВК, медицинские документы и контракт.",
+    "competentRecipientToVerify": "Командование и кадровый орган; при обжаловании — вышестоящий орган или надлежащий суд.",
+    "plannedResultToVerify": "Рапорт об увольнении по здоровью.",
+    "sourceCandidates": [
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "647",
+        "title": "Указ № 647",
+        "url": "https://publication.pravo.gov.ru/Document/View/0001202209210001",
+        "type": "OFFICIAL_RECORD_CANDIDATE"
+      }
+    ],
+    "criticalLimitations": "Диагноз не равен подтверждённому основанию увольнения.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "uvolnenie-s-voennoy-sluzhby",
@@ -1642,17 +1783,42 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 2,
     "situationTitle": "Как подать рапорт об увольнении по семейным обстоятельствам?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Установить законное семейное основание для данной категории военнослужащего.",
+    "evidenceToConfirm": "Документы о семье, нуждаемости в уходе, статус службы.",
+    "competentRecipientToVerify": "Командование и кадровый орган; при обжаловании — вышестоящий орган или надлежащий суд.",
+    "plannedResultToVerify": "Рапорт об увольнении по семейным обстоятельствам.",
+    "sourceCandidates": [
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "647",
+        "title": "Указ № 647",
+        "url": "https://publication.pravo.gov.ru/Document/View/0001202209210001",
+        "type": "OFFICIAL_RECORD_CANDIDATE"
+      }
+    ],
+    "criticalLimitations": "Семейная ситуация не всегда создаёт право на увольнение.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "uvolnenie-s-voennoy-sluzhby",
@@ -1660,17 +1826,42 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 3,
     "situationTitle": "Можно ли уволиться после окончания срока контракта?",
     "situationKind": "mixed",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Сверить специальные правила службы на дату окончания контракта.",
+    "evidenceToConfirm": "Контракт, календарный срок, служебные приказы.",
+    "competentRecipientToVerify": "Командование и кадровый орган; при обжаловании — вышестоящий орган или надлежащий суд.",
+    "plannedResultToVerify": "Рапорт по законному основанию или информационный ответ.",
+    "sourceCandidates": [
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "647",
+        "title": "Указ № 647",
+        "url": "https://publication.pravo.gov.ru/Document/View/0001202209210001",
+        "type": "OFFICIAL_RECORD_CANDIDATE"
+      }
+    ],
+    "criticalLimitations": "Не гарантировать прекращение службы по одной календарной дате.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "uvolnenie-s-voennoy-sluzhby",
@@ -1678,17 +1869,42 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 4,
     "situationTitle": "Как добиться увольнения при достижении предельного возраста?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Определить применимый возраст по воинскому званию и статусу.",
+    "evidenceToConfirm": "Паспорт, воинское звание, контракт, кадровые документы.",
+    "competentRecipientToVerify": "Командование и кадровый орган; при обжаловании — вышестоящий орган или надлежащий суд.",
+    "plannedResultToVerify": "Рапорт об увольнении по возрасту.",
+    "sourceCandidates": [
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "647",
+        "title": "Указ № 647",
+        "url": "https://publication.pravo.gov.ru/Document/View/0001202209210001",
+        "type": "OFFICIAL_RECORD_CANDIDATE"
+      }
+    ],
+    "criticalLimitations": "Специальные режимы могут изменять обычные возрастные пределы.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "uvolnenie-s-voennoy-sluzhby",
@@ -1696,17 +1912,42 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 5,
     "situationTitle": "Как оспорить отказ в увольнении?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Проверить мотивы отказа и допустимый порядок оспаривания.",
+    "evidenceToConfirm": "Рапорт, письменный отказ, доказательства оснований.",
+    "competentRecipientToVerify": "Командование и кадровый орган; при обжаловании — вышестоящий орган или надлежащий суд.",
+    "plannedResultToVerify": "Жалоба на отказ или административный иск.",
+    "sourceCandidates": [
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "647",
+        "title": "Указ № 647",
+        "url": "https://publication.pravo.gov.ru/Document/View/0001202209210001",
+        "type": "OFFICIAL_RECORD_CANDIDATE"
+      }
+    ],
+    "criticalLimitations": "Без надлежащего ответчика и подсудности иск не формировать.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "uvolnenie-s-voennoy-sluzhby",
@@ -1714,17 +1955,42 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 6,
     "situationTitle": "Что делать, если командование не рассматривает рапорт об увольнении?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Определить обязанность рассмотрения и факт бездействия.",
+    "evidenceToConfirm": "Поданный рапорт, входящий номер и даты.",
+    "competentRecipientToVerify": "Командование и кадровый орган; при обжаловании — вышестоящий орган или надлежащий суд.",
+    "plannedResultToVerify": "Жалоба на нерассмотрение рапорта об увольнении.",
+    "sourceCandidates": [
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "647",
+        "title": "Указ № 647",
+        "url": "https://publication.pravo.gov.ru/Document/View/0001202209210001",
+        "type": "OFFICIAL_RECORD_CANDIDATE"
+      }
+    ],
+    "criticalLimitations": "Бездействие не доказывает само право на увольнение.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "uvolnenie-s-voennoy-sluzhby",
@@ -1732,17 +1998,42 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 7,
     "situationTitle": "Как оспорить незаконный приказ об увольнении?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Установить законность приказа и процессуальную форму защиты.",
+    "evidenceToConfirm": "Приказ об увольнении, дата вручения, статус службы.",
+    "competentRecipientToVerify": "Командование и кадровый орган; при обжаловании — вышестоящий орган или надлежащий суд.",
+    "plannedResultToVerify": "Административный иск об оспаривании приказа при допустимости.",
+    "sourceCandidates": [
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "647",
+        "title": "Указ № 647",
+        "url": "https://publication.pravo.gov.ru/Document/View/0001202209210001",
+        "type": "OFFICIAL_RECORD_CANDIDATE"
+      }
+    ],
+    "criticalLimitations": "Сроки обращения проверять по виду спора.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "uvolnenie-s-voennoy-sluzhby",
@@ -1750,17 +2041,42 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 8,
     "situationTitle": "Как получить документы и окончательный расчёт при увольнении?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Разделить требование о документах и расчёте при увольнении.",
+    "evidenceToConfirm": "Приказ, расчётные сведения, документы о выслуге.",
+    "competentRecipientToVerify": "Командование и кадровый орган; при обжаловании — вышестоящий орган или надлежащий суд.",
+    "plannedResultToVerify": "Заявление о выдаче документов и расчёте.",
+    "sourceCandidates": [
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "647",
+        "title": "Указ № 647",
+        "url": "https://publication.pravo.gov.ru/Document/View/0001202209210001",
+        "type": "OFFICIAL_RECORD_CANDIDATE"
+      }
+    ],
+    "criticalLimitations": "Не выдумывать размер не начисленных выплат.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "perevod-v-druguyu-chast",
@@ -1768,17 +2084,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 0,
     "situationTitle": "В каких случаях допускается перевод военнослужащего?",
     "situationKind": "information",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Проверить основания добровольного и служебного перевода.",
+    "evidenceToConfirm": "Должность, категория службы и служебные приказы.",
+    "competentRecipientToVerify": "Кадровый орган, командование либо вышестоящий орган по предмету требования.",
+    "plannedResultToVerify": "Информация без генератора.",
+    "sourceCandidates": [
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Перевод по просьбе не является безусловным правом.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "perevod-v-druguyu-chast",
@@ -1786,17 +2121,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 1,
     "situationTitle": "Как подать рапорт о переводе в другую воинскую часть?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Выяснить компетенцию кадрового органа и основания перевода.",
+    "evidenceToConfirm": "Служебные обстоятельства, сведения о месте службы.",
+    "competentRecipientToVerify": "Кадровый орган, командование либо вышестоящий орган по предмету требования.",
+    "plannedResultToVerify": "Рапорт о переводе в другую часть.",
+    "sourceCandidates": [
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Желаемая часть может не принять военнослужащего.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "perevod-v-druguyu-chast",
@@ -1804,17 +2158,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 2,
     "situationTitle": "Как оформить перевод по состоянию здоровья?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Проверить заключение ВВК и необходимость медицинского перевода.",
+    "evidenceToConfirm": "Заключение ВВК и документы о доступной должности.",
+    "competentRecipientToVerify": "Кадровый орган, командование либо вышестоящий орган по предмету требования.",
+    "plannedResultToVerify": "Рапорт о переводе по состоянию здоровья.",
+    "sourceCandidates": [
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не подменять заключение врача заявлением.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "perevod-v-druguyu-chast",
@@ -1822,17 +2195,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 3,
     "situationTitle": "Как добиться перевода по семейным обстоятельствам?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Проверить предусмотренность перевода по конкретным семейным обстоятельствам.",
+    "evidenceToConfirm": "Свидетельства о родстве и документы о необходимости переезда.",
+    "competentRecipientToVerify": "Кадровый орган, командование либо вышестоящий орган по предмету требования.",
+    "plannedResultToVerify": "Рапорт о переводе по семейному основанию.",
+    "sourceCandidates": [
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Наличие родственников не гарантирует перевод.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "perevod-v-druguyu-chast",
@@ -1840,17 +2232,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 4,
     "situationTitle": "Что делать, если военнослужащего перевели без законных оснований?",
     "situationKind": "mixed",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Выяснить законность кадрового приказа и необходимость согласия.",
+    "evidenceToConfirm": "Приказ о переводе, звание, должность, служебные ограничения.",
+    "competentRecipientToVerify": "Кадровый орган, командование либо вышестоящий орган по предмету требования.",
+    "plannedResultToVerify": "Жалоба на неправомерный перевод.",
+    "sourceCandidates": [
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Отсутствие согласия не всегда делает перевод незаконным.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "perevod-v-druguyu-chast",
@@ -1858,17 +2269,36 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 5,
     "situationTitle": "Как обжаловать отказ в переводе?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Установить форму отказа и порядок кадрового оспаривания.",
+    "evidenceToConfirm": "Рапорт о переводе и полученный ответ.",
+    "competentRecipientToVerify": "Кадровый орган, командование либо вышестоящий орган по предмету требования.",
+    "plannedResultToVerify": "Жалоба на отказ в переводе.",
+    "sourceCandidates": [
+      {
+        "id": "53",
+        "title": "ФЗ № 53-ФЗ",
+        "url": "https://rosguard.gov.ru/document/article/federalnyj-zakon-ot-28-marta-1998-g--53fz",
+        "type": "GOVERNMENT_REPRINT"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не обещать согласование перевода по факту жалобы.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "otpusk-voennosluzhashchego",
@@ -1876,17 +2306,30 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 0,
     "situationTitle": "Какие виды отпусков предусмотрены для военнослужащих?",
     "situationKind": "information",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Разграничить основные и дополнительные виды отпуска.",
+    "evidenceToConfirm": "Выслуга, вид службы и график отпусков.",
+    "competentRecipientToVerify": "Командование и орган учёта отпусков; для жалобы — вышестоящее должностное лицо.",
+    "plannedResultToVerify": "Информация без генератора.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Продолжительность зависит от применимых условий.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "otpusk-voennosluzhashchego",
@@ -1894,17 +2337,30 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 1,
     "situationTitle": "Как получить основной отпуск военнослужащему?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Проверить период, график и остаток основного отпуска.",
+    "evidenceToConfirm": "График, приказы об отпусках, неиспользованные дни.",
+    "competentRecipientToVerify": "Командование и орган учёта отпусков; для жалобы — вышестоящее должностное лицо.",
+    "plannedResultToVerify": "Рапорт о предоставлении основного отпуска.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Даты не всегда определяются единоличным желанием военнослужащего.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "otpusk-voennosluzhashchego",
@@ -1912,17 +2368,30 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 2,
     "situationTitle": "Как получить отпуск по семейным обстоятельствам?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Проверить основание семейного отпуска и подтверждение события.",
+    "evidenceToConfirm": "Семейные документы и предполагаемые даты.",
+    "competentRecipientToVerify": "Командование и орган учёта отпусков; для жалобы — вышестоящее должностное лицо.",
+    "plannedResultToVerify": "Рапорт о предоставлении семейного отпуска.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Семейный отпуск отличается от основного.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "otpusk-voennosluzhashchego",
@@ -1930,17 +2399,30 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 3,
     "situationTitle": "Что делать, если командование отказывает в предоставлении отпуска?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Определить законность конкретного отказа в отпуске.",
+    "evidenceToConfirm": "Рапорт, график, письменный отказ.",
+    "competentRecipientToVerify": "Командование и орган учёта отпусков; для жалобы — вышестоящее должностное лицо.",
+    "plannedResultToVerify": "Жалоба на отказ в отпуске.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не любой отказ в выбранных датах незаконен.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "otpusk-voennosluzhashchego",
@@ -1948,17 +2430,30 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 4,
     "situationTitle": "Как добиться предоставления неиспользованного отпуска?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Выявить остаток и условия переноса неиспользованного отпуска.",
+    "evidenceToConfirm": "График, приказы, данные учёта дней.",
+    "competentRecipientToVerify": "Командование и орган учёта отпусков; для жалобы — вышестоящее должностное лицо.",
+    "plannedResultToVerify": "Рапорт о предоставлении остатка отпуска.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не считать отпуск только по календарному подсчёту пользователя.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "otpusk-voennosluzhashchego",
@@ -1966,17 +2461,30 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 5,
     "situationTitle": "Как обжаловать незаконный отзыв из отпуска?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Проверить основание и процедуру отзыва военнослужащего.",
+    "evidenceToConfirm": "Приказ об отзыве, сведения об отпуске, уведомление.",
+    "competentRecipientToVerify": "Командование и орган учёта отпусков; для жалобы — вышестоящее должностное лицо.",
+    "plannedResultToVerify": "Жалоба на отзыв из отпуска при наличии нарушения.",
+    "sourceCandidates": [
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "1237",
+        "title": "Указ № 1237",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Закон может допускать отдельные случаи отзыва.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "denezhnoe-dovolstvie",
@@ -1984,17 +2492,30 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 0,
     "situationTitle": "Из каких выплат состоит денежное довольствие военнослужащего?",
     "situationKind": "information",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Отделить довольствие от иных единовременных и специальных выплат.",
+    "evidenceToConfirm": "Служебный статус, приказы, расчётные сведения.",
+    "competentRecipientToVerify": "Финансовый орган и командование; судебную компетенцию проверить отдельно.",
+    "plannedResultToVerify": "Информация без генератора.",
+    "sourceCandidates": [
+      {
+        "id": "306",
+        "title": "ФЗ № 306-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Правила выплат за участие в СВО могут быть отдельными.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "denezhnoe-dovolstvie",
@@ -2002,17 +2523,30 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 1,
     "situationTitle": "Что делать, если военнослужащему не выплачивают денежное довольствие?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Установить сумму и период невыплаты именно довольствия.",
+    "evidenceToConfirm": "Банковские выписки, расчётные листы, приказы.",
+    "competentRecipientToVerify": "Финансовый орган и командование; судебную компетенцию проверить отдельно.",
+    "plannedResultToVerify": "Требование о проверке и выплате задолженности.",
+    "sourceCandidates": [
+      {
+        "id": "306",
+        "title": "ФЗ № 306-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не заявлять без расчётов произвольный размер долга.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "denezhnoe-dovolstvie",
@@ -2020,17 +2554,30 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 2,
     "situationTitle": "Как взыскать задолженность по денежному довольствию?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Определить взыскиваемое требование и надлежащую процедуру суда.",
+    "evidenceToConfirm": "Расчёты, ответ финансовой службы, документы службы.",
+    "competentRecipientToVerify": "Финансовый орган и командование; судебную компетенцию проверить отдельно.",
+    "plannedResultToVerify": "Заявление в суд по установленной процедуре.",
+    "sourceCandidates": [
+      {
+        "id": "306",
+        "title": "ФЗ № 306-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не путать публично-правовой и иной денежный спор.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "denezhnoe-dovolstvie",
@@ -2038,17 +2585,30 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 3,
     "situationTitle": "Как оспорить неправильный расчёт выплат?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Проверить расчётные основания и характер ошибки.",
+    "evidenceToConfirm": "Расчётные листы, дата начисления, платежи.",
+    "competentRecipientToVerify": "Финансовый орган и командование; судебную компетенцию проверить отдельно.",
+    "plannedResultToVerify": "Заявление о перерасчёте довольствия.",
+    "sourceCandidates": [
+      {
+        "id": "306",
+        "title": "ФЗ № 306-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не придумывать процент или основание надбавки.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "denezhnoe-dovolstvie",
@@ -2056,17 +2616,30 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 4,
     "situationTitle": "Что делать при незаконных удержаниях из денежного довольствия?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Определить юридический источник и размер каждого удержания.",
+    "evidenceToConfirm": "Приказ об удержании, платёжные документы.",
+    "competentRecipientToVerify": "Финансовый орган и командование; судебную компетенцию проверить отдельно.",
+    "plannedResultToVerify": "Заявление о проверке и возврате незаконного удержания.",
+    "sourceCandidates": [
+      {
+        "id": "306",
+        "title": "ФЗ № 306-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Не любое удержание неправомерно.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "denezhnoe-dovolstvie",
@@ -2074,17 +2647,30 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 5,
     "situationTitle": "Как добиться выплаты положенных надбавок?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Подтвердить вид надбавки и выполнение условий её назначения.",
+    "evidenceToConfirm": "Приказ, должностные обязанности, периоды выполнения.",
+    "competentRecipientToVerify": "Финансовый орган и командование; судебную компетенцию проверить отдельно.",
+    "plannedResultToVerify": "Заявление о начислении конкретной надбавки.",
+    "sourceCandidates": [
+      {
+        "id": "306",
+        "title": "ФЗ № 306-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Одного наименования должности недостаточно.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "denezhnoe-dovolstvie",
@@ -2092,17 +2678,30 @@ export const MILITARY_LEGAL_CASE_CARDS:readonly MilitaryLegalCaseCard[] = [
     "situationIndex": 6,
     "situationTitle": "Как получить расчётные документы о начислениях и удержаниях?",
     "situationKind": "document",
-    "status": "AWAITING_INDIVIDUAL_REVIEW",
-    "legalQuestion": null,
-    "evidenceToConfirm": null,
-    "competentRecipientToVerify": null,
-    "plannedResultToVerify": null,
-    "sourceCandidates": [],
-    "criticalLimitations": null,
+    "status": "EDITORIAL_CASE_DRAFT",
+    "legalQuestion": "Проверить доступность расчётных сведений за указанный срок.",
+    "evidenceToConfirm": "Данные службы, период и прежние обращения.",
+    "competentRecipientToVerify": "Финансовый орган и командование; судебную компетенцию проверить отдельно.",
+    "plannedResultToVerify": "Заявление о выдаче расчётных документов.",
+    "sourceCandidates": [
+      {
+        "id": "306",
+        "title": "ФЗ № 306-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      },
+      {
+        "id": "76",
+        "title": "ФЗ № 76-ФЗ",
+        "url": "https://pravo.gov.ru/",
+        "type": "OFFICIAL_PORTAL_SEARCH_REQUIRED"
+      }
+    ],
+    "criticalLimitations": "Может требоваться подтверждение права доступа.",
     "legalReviewConfirmed": false,
     "officialPublicationChecked": false,
     "reviewedAt": null,
-    "note": "Не создавать документ до индивидуальной проработки."
+    "note": "Редакционный план по конкретной ситуации, без подтверждения юридической применимости."
   },
   {
     "topicSlug": "vyplaty-za-uchastie-v-svo",
