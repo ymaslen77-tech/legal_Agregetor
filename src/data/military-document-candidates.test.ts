@@ -10,6 +10,10 @@ for(const topic of MILITARY_TOPICS)for(const situation of topic.situations){
  const content=buildMilitaryDraft(doc,{applicant:"Тестовый заявитель, статус",recipient:"Командиру части",facts:"Сведения об обстоятельствах, даты и номера документов.",request:"Прошу предоставить мотивированный ответ",attachments:"Копии обращений"});
  assert(content.includes("ЧЕРНОВИК — НЕ ГОТОВ К ПОДАЧЕ"));
  assert(content.includes(doc.subject));
+ assert(doc.factsPrompt.length>30);
+ assert(doc.requestText.length>40);
+ assert(content.includes(doc.requestText));
+ assert(!content.includes("Прошу предоставить мотивированный ответ"),"Generator must use a case-specific request, not a generic input");
  assert(content.includes("Приложения:"));
 }
 assert.equal(enabled,18);
