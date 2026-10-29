@@ -11,6 +11,11 @@ on:
       - "src/data/military-preview-access.ts"
       - "src/app/voennoe-pravo/**"
       - "tests/e2e/military-draft-preview.spec.ts"
+      - "tests/e2e/military-draft-all.spec.ts"
+      - "src/components/documents/SaveLegalDocumentButton.tsx"
+      - "src/components/account/SavedLegalDocumentsCabinet.tsx"
+      - "src/lib/saved-document-validation.ts"
+      - "src/lib/military-saved-document.test.ts"
       - "tests/e2e/military-catalog.spec.ts"
       - "playwright.config.ts"
   workflow_dispatch:
@@ -42,6 +47,41 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: military-draft-browser-qa
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+          retention-days: 3
+
+  browser-all:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    env:
+      CI: "true"
+      ENABLE_MILITARY_DRAFT_PREVIEW: "true"
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run prisma:generate
+      - run: npx playwright install --with-deps chromium
+      - name: Browser-verify every one of 121 individual prototypes, shard ${{ matrix.shard }}/4
+        run: npm run test:e2e:military-all -- --shard=${{ matrix.shard }}/4
+      - name: Upload failing shard screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: military-draft-full-shard-${{ matrix.shard }}
           path: |
             test-results/
             playwright-report/
