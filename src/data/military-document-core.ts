@@ -167,3 +167,36 @@ export function addMilitaryDraftVersion(
 ):DocumentVersionEntry<Readonly<Record<string,string>>>[]{
   return addDocumentVersion(history,{documentResult:next.documentResult,payload:next.formData});
 }
+
+/** User changes to a draft produce a new in-memory version, never legal approval. */
+export function reviseMilitaryDraftPrototype(
+  previous:MilitaryDraftCoreOutput,
+  editedText:string,
+  options:Readonly<{versionId?:string;createdAt?:string}>={}
+):MilitaryDraftCoreOutput {
+  const old=documentResultSchema.parse(previous.documentResult);
+  const plan=getMilitaryDraftPlan(old.routeSlug,old.scenarioKey);
+  if(old.categorySlug!=="voennoe-pravo" || old.resultKind!=="DRAFT" ||
+     old.legalRegistryReviewedAt!==null || old.usedRuleIds.length!==0 ||
+     old.filingReady!==false || old.requiresLegalReview!==true ||
+     old.generatorVersion!==MILITARY_DOCUMENT_CORE_VERSION ||
+     !plan?.candidateImplemented || plan.documentSlug!==old.documentSlug ||
+     !["DETERMINISTIC","USER_EDITED"].includes(old.source)) {
+    throw new Error("Нельзя редактировать неподтверждённый или чужой результат.");
+  }
+  const body=editedText.replace(/\r\n?/g,"\n").trim();
+  if(body.length<40 || body.length>38000) throw new Error("Проверьте длину редактируемого черновика.");
+  const text=body.replace(/^ЧЕРНОВИК[^\n]*\n(?:ТРЕБУЕТСЯ ЮРИДИЧЕСКАЯ ПРОВЕРКА[^\n]*\n)?/i,"").trim();
+  const next=documentResultSchema.parse({
+    ...old,
+    versionId:options.versionId??crypto.randomUUID(),
+    createdAt:options.createdAt??new Date().toISOString(),
+    source:"USER_EDITED",
+    documentText:"ЧЕРНОВИК — НЕ ГОТОВ К ПОДАЧЕ\nТРЕБУЕТСЯ ЮРИДИЧЕСКАЯ ПРОВЕРКА\n\n"+text,
+    legalRegistryReviewedAt:null,
+    usedRuleIds:[],
+    filingReady:false,
+    requiresLegalReview:true
+  });
+  return {documentResult:next,formData:{...previous.formData}};
+}
