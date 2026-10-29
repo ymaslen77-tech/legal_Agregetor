@@ -1,6 +1,11 @@
 import type { MilitaryDocumentCandidate } from "@/data/military-document-candidates";
 import type { LegalRouteInput } from "@/data/legal-route-standard";
-/** Twenty explicitly curated INTERNAL compositions. Neither legal approval nor public release. */
+import { MILITARY_BATCH_B1_COMPOSITIONS } from "@/data/military-document-compositions-b1";
+import { MILITARY_BATCH_B2_COMPOSITIONS } from "@/data/military-document-compositions-b2";
+import { MILITARY_BATCH_C1_COMPOSITIONS } from "@/data/military-document-compositions-c1";
+import { MILITARY_BATCH_C2_COMPOSITIONS } from "@/data/military-document-compositions-c2";
+import { MILITARY_BATCH_D_COMPOSITIONS } from "@/data/military-document-compositions-d";
+/** 103 explicitly curated INTERNAL compositions. Neither legal approval nor public release. */
 export type MilitaryDraftComposition = Readonly<{
  topicSlug:string; situationIndex:number;candidate:MilitaryDocumentCandidate;
  additionalFields:readonly LegalRouteInput[];
@@ -27,6 +32,11 @@ export const MILITARY_ADDITIONAL_COMPOSITIONS:readonly MilitaryDraftComposition[
   {"topicSlug":"veterany-pensii-i-lgoty","situationIndex":4,"candidate":{"kind":"APPLICATION","subject":"Проверка расчёта военной пенсии","title":"Как обжаловать неправильный расчёт военной пенсии?","requestText":"Прошу проверить расчёт назначенной военной пенсии за конкретный период, предоставить доступную расшифровку и при подтверждении ошибки произвести перерасчёт.","factsPrompt":"Период и конкретная предполагаемая ошибка"},"additionalFields":[{"key":"pensionDiscrepancy","label":"Период и конкретная предполагаемая ошибка","required":true,"type":"textarea"}],"legalReviewConfirmed":false,"officialTextVerified":false},
   {"topicSlug":"veterany-pensii-i-lgoty","situationIndex":1,"candidate":{"kind":"APPLICATION","subject":"Удостоверение ветерана боевых действий","title":"Как получить удостоверение ветерана боевых действий?","requestText":"Прошу проверить наличие оснований для оформления удостоверения ветерана боевых действий по представленным документам об участии, разъяснить недостающие подтверждения и сообщить решение.","factsPrompt":"Период участия и подтверждающие документы"},"additionalFields":[{"key":"participationEvidence","label":"Период участия и подтверждающие документы","required":true,"type":"textarea"}],"legalReviewConfirmed":false,"officialTextVerified":false},
   {"topicSlug":"veterany-pensii-i-lgoty","situationIndex":5,"candidate":{"kind":"APPLICATION","subject":"Конкретная мера социальной поддержки","title":"Как получить меры социальной поддержки после увольнения?","requestText":"Прошу проверить применимость выбранной меры социальной поддержки к указанному статусу и региону, определить необходимые подтверждения и при наличии оснований рассмотреть предоставление меры.","factsPrompt":"Наименование меры, регион и основание"},"additionalFields":[{"key":"benefitName","label":"Наименование меры, регион и основание","required":true,"type":"textarea"}],"legalReviewConfirmed":false,"officialTextVerified":false},
+  ...MILITARY_BATCH_B1_COMPOSITIONS,
+  ...MILITARY_BATCH_B2_COMPOSITIONS,
+  ...MILITARY_BATCH_C1_COMPOSITIONS,
+  ...MILITARY_BATCH_C2_COMPOSITIONS,
+  ...MILITARY_BATCH_D_COMPOSITIONS,
 ];
 export function getMilitaryAdditionalComposition(topicSlug:string,situationIndex:number):MilitaryDraftComposition|null {
  return MILITARY_ADDITIONAL_COMPOSITIONS.find(x=>x.topicSlug===topicSlug&&x.situationIndex===situationIndex)??null;
