@@ -18,7 +18,7 @@ export type MilitarySourceEvidence = Readonly<{
   checkedAt: string;
   stance: "SUPPORTS" | "CONTRADICTS";
   /** Official text was actually opened, not merely linked. */
-  opened: true;
+  opened: boolean;
 }>;
 export type MilitarySourceClaim = Readonly<{
   topicSlug: string;
