@@ -7,6 +7,7 @@ import { getMilitaryGuide } from "@/data/military-guidance";
 import { getMilitarySituationContent } from "@/lib/military-situation-content";
 import { getMilitaryProvisionCheck } from "@/data/military-provision-checks";
 import { getMilitaryLegalCaseCard } from "@/data/military-case-legal-matrix";
+import { getMilitarySourceClaim, getMilitarySourceStatus } from "@/data/military-source-verification";
 import { getMilitaryDocumentCandidate } from "@/data/military-document-candidates";
 import { MilitaryDraftForm } from "@/components/documents/MilitaryDraftForm";
 import { MilitaryDraftWorkbench } from "@/components/documents/MilitaryDraftWorkbench";
@@ -32,6 +33,8 @@ export default async function MilitarySituationPage({params}:Props){
  const content=getMilitarySituationContent(topic,situation);
  const researchedProvisions=getMilitaryProvisionCheck(topic.slug,topic.situations.findIndex(item=>item.slug===situation.slug));
  const individualCase=getMilitaryLegalCaseCard(topic.slug,situation.title);
+ const sourceReview=getMilitarySourceStatus(topic.slug,topic.situations.findIndex(item=>item.slug===situation.slug));
+ const sourceClaim=getMilitarySourceClaim(topic.slug,topic.situations.findIndex(item=>item.slug===situation.slug));
  const candidate=getMilitaryDocumentCandidate(topic,situation);
  const draftPlan=getMilitaryDraftPlan(topic.slug,situation.slug);
  const localPreview=isMilitaryDraftPreviewEnabled(process.env);
@@ -49,6 +52,18 @@ export default async function MilitarySituationPage({params}:Props){
      <header className="mt-5 border-b border-line pb-6">
        <p className="text-sm font-semibold uppercase text-trust">{topic.title}</p>
        <h1 className="mt-3 text-3xl font-semibold text-ink">{situation.title}</h1>
+       <p className="mt-4 text-sm text-zinc-600" data-testid="military-source-verification-status">
+         {sourceReview.verified
+           ? "Источники по проверяемому утверждению сверены: "+sourceReview.acceptedEvidence+" независимых подтверждения. Ручное согласование не требуется."
+           : "Источники по конкретному правовому утверждению ещё сверяются. Этот текст не считается автоматически подтверждённым."}
+       </p>
+       {sourceReview.officialPriorityApplied?<p className="mt-2 text-sm text-amber-800">При расхождении приоритет отдан действующему официальному тексту; иные толкования требуют внимания.</p>:null}
+       {sourceClaim&&sourceReview.verified?<div className="mt-3 text-sm text-zinc-700" aria-label="Проверенные источники">
+         <p className="font-semibold">Подтверждённый тезис: {sourceClaim.claim}</p>
+         <ul className="mt-2 list-disc pl-5">{sourceClaim.sources.filter(x=>x.stance==="SUPPORTS").map(x=>
+           <li key={x.url}><a className="underline text-trust" href={x.url} target="_blank" rel="noopener noreferrer">{x.title}</a>, редакция {x.editionAsOf}</li>
+         )}</ul>
+       </div>:null}
      </header>
      <section className="mt-7" aria-labelledby="military-short-answer">
        <h2 className="text-xl font-semibold text-ink" id="military-short-answer">Краткий правовой ответ</h2>
@@ -62,7 +77,7 @@ export default async function MilitarySituationPage({params}:Props){
      </section>
      {individualCase?<section className="mt-7 rounded-lg border border-line bg-zinc-50 p-5" aria-labelledby="military-case-specific-checks">
        <h2 id="military-case-specific-checks" className="text-xl font-semibold text-ink">Что проверить именно по этому вопросу</h2>
-       <p className="mt-2 text-sm leading-6 text-zinc-600">Индивидуальный план проверки, а не окончательное правовое заключение. Основания, редакции и правовой способ защиты ещё требуют подтверждения.</p>
+       <p className="mt-2 text-sm leading-6 text-zinc-600">Индивидуальный план проверки. При наличии двух сверенных независимых источников тезис автоматически получает подтверждение; без такой сверки остаётся предварительным.</p>
        {individualCase.legalQuestion?<p className="mt-3 leading-7 text-zinc-800"><strong>Правовой вопрос:</strong> {individualCase.legalQuestion}</p>:null}
        {individualCase.evidenceToConfirm?<p className="mt-3 leading-7 text-zinc-800"><strong>Какие сведения подготовить:</strong> {individualCase.evidenceToConfirm}</p>:null}
        {individualCase.competentRecipientToVerify?<p className="mt-3 leading-7 text-zinc-800"><strong>Компетентный орган для проверки:</strong> {individualCase.competentRecipientToVerify}</p>:null}
@@ -132,7 +147,7 @@ export default async function MilitarySituationPage({params}:Props){
      <section className="mt-7 rounded-lg border-l-4 border-amber-500 bg-amber-50 p-4" aria-label="Важные ограничения">
        <h2 className="font-semibold text-amber-950">Что важно учесть</h2>
        <p className="mt-2 text-sm leading-6 text-amber-950">{content.limitation}</p>
-       <p className="mt-2 text-sm leading-6 text-amber-950">Материал проходит индивидуальную юридическую проверку; окончательные выводы по праву на выплату, увольнение и судебную защиту из одного названия ситуации не следуют.</p>
+       <p className="mt-2 text-sm leading-6 text-amber-950">Правовые утверждения подтверждаются по двум независимым источникам с приоритетом официального текста. Неподтверждённые сведения требуют уточнения; окончательные выводы о выплатах, увольнении и судебной защите зависят от обстоятельств дела.</p>
      </section>
      <p className="mt-7"><Link href="/questions/" className="text-sm font-semibold text-trust underline">Посмотреть опубликованные вопросы и ответы</Link></p>
    </article>
