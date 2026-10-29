@@ -8,6 +8,9 @@ import { getMilitarySituationContent } from "@/lib/military-situation-content";
 import { getMilitaryProvisionCheck } from "@/data/military-provision-checks";
 import { getMilitaryDocumentCandidate } from "@/data/military-document-candidates";
 import { MilitaryDraftForm } from "@/components/documents/MilitaryDraftForm";
+import { MilitaryDraftWorkbench } from "@/components/documents/MilitaryDraftWorkbench";
+import { getMilitaryDraftPlan } from "@/data/military-document-core";
+import { isMilitaryDraftPreviewEnabled } from "@/data/military-preview-access";
 import { getMilitaryRelatedSituations, getMilitaryRelatedTopics, getMilitaryRelatedDocuments } from "@/data/military-related-links";
 
 type Props={params:Promise<{slug:string;situation:string}>};
@@ -28,9 +31,11 @@ export default async function MilitarySituationPage({params}:Props){
  const content=getMilitarySituationContent(topic,situation);
  const researchedProvisions=getMilitaryProvisionCheck(topic.slug,topic.situations.findIndex(item=>item.slug===situation.slug));
  const candidate=getMilitaryDocumentCandidate(topic,situation);
+ const draftPlan=getMilitaryDraftPlan(topic.slug,situation.slug);
+ const localPreview=isMilitaryDraftPreviewEnabled(process.env);
  const relatedQuestions=getMilitaryRelatedSituations(topic,situation);
  const relatedTopics=getMilitaryRelatedTopics(topic);
- const relatedDocuments=getMilitaryRelatedDocuments(topic,situation);
+ const relatedDocuments=getMilitaryRelatedDocuments(topic,situation,localPreview);
  return <>
    <Breadcrumbs items={[
      {name:"Главная",path:"/"},{name:"Военное право",path:"/voennoe-pravo/"},
@@ -60,7 +65,7 @@ export default async function MilitarySituationPage({params}:Props){
        </ul>
        <p className="mt-3 text-sm text-zinc-600"><strong>Куда обращаться:</strong> {content.recipient}</p>
      </section>:null}
-     {candidate?<MilitaryDraftForm key={situation.slug} candidate={candidate} slug={situation.slug}/>:situation.kind!=="information"?<p className="mt-7 rounded-md border border-line bg-zinc-50 p-4 text-sm leading-6 text-zinc-700">Для этого вопроса автоматический генератор ещё не подтверждён. Если требуется обращение, предварительно определите его правовую форму и компетентный орган. Универсальный документ здесь не подставляется.</p>:null}
+     {localPreview&&draftPlan?<MilitaryDraftWorkbench key={situation.slug} plan={draftPlan}/>:candidate?<MilitaryDraftForm key={situation.slug} candidate={candidate} slug={situation.slug}/>:situation.kind!=="information"?<p className="mt-7 rounded-md border border-line bg-zinc-50 p-4 text-sm leading-6 text-zinc-700">Для этого вопроса автоматический генератор ещё не подтверждён. Если требуется обращение, предварительно определите его правовую форму и компетентный орган. Универсальный документ здесь не подставляется.</p>:null}
      <section className="mt-9 border-t border-line pt-7" aria-labelledby="military-related-questions">
        <h2 id="military-related-questions" className="text-xl font-semibold text-ink">Связанные вопросы и следующие действия</h2>
        <p className="mt-2 text-sm text-zinc-600">Смежные ситуации, подтверждающие документы и процедуры обжалования. Переход на другую страницу не означает, что её правовые условия автоматически применимы к вашему делу.</p>
@@ -75,7 +80,7 @@ export default async function MilitarySituationPage({params}:Props){
      </section>
      {relatedDocuments.length>0?<section className="mt-8" aria-labelledby="military-related-documents">
        <h2 id="military-related-documents" className="text-xl font-semibold text-ink">Документы по смежным ситуациям</h2>
-       <p className="mt-2 text-sm text-zinc-600">Ссылки ведут только на реально существующие генераторы проектов PDF/DOCX. Такие проекты требуют проверки перед подачей.</p>
+       <p className="mt-2 text-sm text-zinc-600">Ссылки ведут только к доступным на текущей странице черновым генераторам. Проекты требуют индивидуальной правовой проверки перед использованием.</p>
        <ul className="mt-4 grid gap-2">
          {relatedDocuments.map(link=><li key={link.href}>
            <Link href={link.href} className="inline-flex font-semibold text-trust underline underline-offset-2">{link.title}</Link>
