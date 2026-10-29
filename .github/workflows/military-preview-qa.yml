@@ -16,6 +16,7 @@ on:
       - "src/components/account/SavedLegalDocumentsCabinet.tsx"
       - "src/lib/saved-document-validation.ts"
       - "src/lib/military-saved-document.test.ts"
+      - "tests/e2e/military-account-persistence.spec.ts"
       - "tests/e2e/military-catalog.spec.ts"
       - "playwright.config.ts"
   workflow_dispatch:
@@ -82,6 +83,58 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: military-draft-full-shard-${{ matrix.shard }}
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+          retention-days: 3
+
+  archive-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: military_qa
+          POSTGRES_USER: military_qa
+          POSTGRES_PASSWORD: synthetic_ci_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U military_qa -d military_qa"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      CI: "true"
+      ENABLE_MILITARY_DRAFT_PREVIEW: "true"
+      DATABASE_URL: "postgresql://military_qa:synthetic_ci_password@127.0.0.1:5432/military_qa"
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Generate disposable test-only archive keys
+        run: |
+          echo "JWT_SECRET=$(node -e 'process.stdout.write(require("node:crypto").randomBytes(32).toString("base64"))')" >> "$GITHUB_ENV"
+          echo "DOCUMENT_STORAGE_KEY=$(node -e 'process.stdout.write(require("node:crypto").randomBytes(32).toString("base64"))')" >> "$GITHUB_ENV"
+      - run: npm run prisma:generate
+      - name: Apply full schema migrations to disposable CI Postgres
+        run: npx prisma migrate deploy
+      - run: npx playwright install --with-deps chromium
+      - name: Test real authenticated encrypted persistence and owner isolation
+        run: npm run test:e2e:military-archive
+      - name: Upload failure evidence without credentials
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: military-archive-integration-failure
           path: |
             test-results/
             playwright-report/
