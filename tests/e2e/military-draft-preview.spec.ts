@@ -45,3 +45,45 @@ test("informational situation never opens preview form",async({page})=>{
  await page.goto("/voennoe-pravo/"+topic.slug+"/"+info.slug+"/");
  await expect(page.getByTestId("military-draft-workbench")).toHaveCount(0);
 });
+
+test("encrypted cabinet saving is opt-in, version-specific and never a legal approval",async({page})=>{
+ const topic=MILITARY_TOPICS.find(x=>x.slug==="raporty-i-obrashcheniya")!;
+ const situation=topic.situations[3];
+ const plan=getMilitaryDraftPlan(topic.slug,situation.slug)!;
+ const captured: Array<{documentResult:Record<string,unknown>}>=[];
+ await page.route("**/api/account/documents/**",async route=>{
+   if(route.request().method()!=="POST"){await route.continue();return;}
+   const body=route.request().postDataJSON() as {documentResult:Record<string,unknown>};
+   captured.push(body);
+   await route.fulfill({status:201,contentType:"application/json",
+     headers:{"Cache-Control":"no-store"},body:JSON.stringify({saved:true,versionId:body.documentResult.versionId})});
+ });
+ await page.goto("/voennoe-pravo/"+topic.slug+"/"+situation.slug+"/");
+ const workbench=page.getByTestId("military-draft-workbench");
+ for(const field of plan.requiredInputs.filter(f=>f.required)){
+   await workbench.locator('[data-field-key="'+field.key+'"]').fill("Синтетические документы и даты: "+field.label+" 29.10.2026.");
+ }
+ await workbench.getByRole("button",{name:"Сформировать черновик"}).click();
+ await expect(workbench.getByLabel("Созданный черновик")).toBeVisible();
+ expect(captured).toHaveLength(0);
+ await workbench.getByRole("button",{name:"Сохранить в мои документы"}).click();
+ await expect(workbench.getByRole("button",{name:"Версия сохранена"})).toBeVisible();
+ expect(captured).toHaveLength(1);
+ expect(captured[0].documentResult.categorySlug).toBe("voennoe-pravo");
+ expect(captured[0].documentResult.filingReady).toBe(false);
+ expect(captured[0].documentResult.requiresLegalReview).toBe(true);
+ expect(captured[0].documentResult.usedRuleIds).toEqual([]);
+ expect(captured[0].documentResult.legalRegistryReviewedAt).toBe(null);
+ await workbench.getByTestId("military-draft-editor").fill(
+   "Новая индивидуальная редакция черновика со сведениями по обращению и подтверждающими материалами. Проверена только структура."
+ );
+ await expect(workbench.getByRole("button",{name:"Сохранить в мои документы"})).toBeDisabled();
+ await workbench.getByRole("button",{name:"Сохранить новую версию"}).click();
+ await expect(workbench.getByRole("button",{name:"Сохранить в мои документы"})).toBeEnabled();
+ await workbench.getByRole("button",{name:"Сохранить в мои документы"}).click();
+ await expect(workbench.getByRole("button",{name:"Версия сохранена"})).toBeVisible();
+ expect(captured).toHaveLength(2);
+ expect(captured[0].documentResult.versionId).not.toBe(captured[1].documentResult.versionId);
+ expect(captured[1].documentResult.source).toBe("USER_EDITED");
+ expect(captured[1].documentResult.legalRegistryReviewedAt).toBe(null);
+});
