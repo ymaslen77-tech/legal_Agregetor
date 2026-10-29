@@ -7,7 +7,8 @@ import {
   getMilitaryDraftPlan,
   listMilitaryDraftPlans,
   createMilitaryDraftPrototype,
-  addMilitaryDraftVersion
+  addMilitaryDraftVersion,
+  reviseMilitaryDraftPrototype
 } from "@/data/military-document-core";
 import { MAX_OPEN_TAB_DOCUMENT_VERSIONS } from "@/lib/document-version-history";
 import { DOCUMENT_RESULT_CONTRACT_VERSION, documentResultSchema } from "@/lib/document-result-contract";
@@ -98,4 +99,18 @@ assert.equal(new Set(history.map(x=>x.documentResult.versionId)).size,history.le
 const reopened=addMilitaryDraftVersion(history,{documentResult:history[2].documentResult,formData:history[2].payload});
 assert.equal(reopened.length,MAX_OPEN_TAB_DOCUMENT_VERSIONS);
 assert.equal(reopened[0].documentResult.versionId,history[2].documentResult.versionId);
+const modified=reviseMilitaryDraftPrototype(createMilitaryDraftPrototype(valid),
+  "Исправленное заявление с индивидуально уточнёнными обстоятельствами и просьбой предоставить выписку из протокола.",{
+    versionId:"550e8400-e29b-41d4-a716-446655440099",
+    createdAt:"2026-10-29T12:00:00.000Z"
+  });
+assert.equal(modified.documentResult.source,"USER_EDITED");
+assert.equal(modified.documentResult.filingReady,false);
+assert.equal(modified.documentResult.legalRegistryReviewedAt,null);
+assert.deepEqual(modified.documentResult.usedRuleIds,[]);
+assert(modified.documentResult.documentText.startsWith("ЧЕРНОВИК — НЕ ГОТОВ К ПОДАЧЕ"));
+assert(modified.documentResult.documentText.includes("Исправленное заявление"));
+assert.throws(()=>reviseMilitaryDraftPrototype(createMilitaryDraftPrototype(valid),"коротко"));
+assert.throws(()=>reviseMilitaryDraftPrototype(createMilitaryDraftPrototype(valid),
+  "Текст изменения достаточно длинный для проекта заявления с фактическими обстоятельствами.",{versionId:"invalid"}));
 console.log(JSON.stringify({stage4DraftCore:true,mapped:all.length,draftPrototypes:prototypes,missingCompositions:missing,conditionalAlternatives:38,filingReady:0,legalApproved:0}));
