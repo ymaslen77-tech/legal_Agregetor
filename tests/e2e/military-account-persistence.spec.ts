@@ -46,6 +46,10 @@ test("real encrypted cabinet saves, isolates, retrieves and deletes a military d
    expect(row).toBeTruthy();
    const versionId=row!.versionId;
    await page.goto("/account/documents/");
+   const analyticsDialog=page.getByRole("dialog",{name:"Настройки аналитики"});
+   await expect(analyticsDialog).toBeVisible();
+   await analyticsDialog.getByRole("button",{name:"Отклонить"}).click();
+   await expect(analyticsDialog).toHaveCount(0);
    await expect(page.getByRole("heading",{name:plan.title})).toBeVisible();
    await expect(page.getByRole("option",{name:"Военное право (черновики)"})).toHaveCount(1);
    const mine=await page.request.get("/api/account/documents/"+versionId+"/");
