@@ -6,6 +6,7 @@ import { getMilitaryTopic, getMilitarySituation, MILITARY_TOPICS } from "@/data/
 import { getMilitaryGuide } from "@/data/military-guidance";
 import { getMilitarySituationContent } from "@/lib/military-situation-content";
 import { getMilitaryProvisionCheck } from "@/data/military-provision-checks";
+import { getMilitaryLegalCaseCard } from "@/data/military-case-legal-matrix";
 import { getMilitaryDocumentCandidate } from "@/data/military-document-candidates";
 import { MilitaryDraftForm } from "@/components/documents/MilitaryDraftForm";
 import { MilitaryDraftWorkbench } from "@/components/documents/MilitaryDraftWorkbench";
@@ -30,6 +31,7 @@ export default async function MilitarySituationPage({params}:Props){
  const guide=getMilitaryGuide(topic.slug);
  const content=getMilitarySituationContent(topic,situation);
  const researchedProvisions=getMilitaryProvisionCheck(topic.slug,topic.situations.findIndex(item=>item.slug===situation.slug));
+ const individualCase=getMilitaryLegalCaseCard(topic.slug,situation.title);
  const candidate=getMilitaryDocumentCandidate(topic,situation);
  const draftPlan=getMilitaryDraftPlan(topic.slug,situation.slug);
  const localPreview=isMilitaryDraftPreviewEnabled(process.env);
@@ -58,6 +60,15 @@ export default async function MilitarySituationPage({params}:Props){
          {content.steps.map((step,index)=><li key={index} className="pl-1 leading-7">{step}</li>)}
        </ol>
      </section>
+     {individualCase?<section className="mt-7 rounded-lg border border-line bg-zinc-50 p-5" aria-labelledby="military-case-specific-checks">
+       <h2 id="military-case-specific-checks" className="text-xl font-semibold text-ink">Что проверить именно по этому вопросу</h2>
+       <p className="mt-2 text-sm leading-6 text-zinc-600">Индивидуальный план проверки, а не окончательное правовое заключение. Основания, редакции и правовой способ защиты ещё требуют подтверждения.</p>
+       {individualCase.legalQuestion?<p className="mt-3 leading-7 text-zinc-800"><strong>Правовой вопрос:</strong> {individualCase.legalQuestion}</p>:null}
+       {individualCase.evidenceToConfirm?<p className="mt-3 leading-7 text-zinc-800"><strong>Какие сведения подготовить:</strong> {individualCase.evidenceToConfirm}</p>:null}
+       {individualCase.competentRecipientToVerify?<p className="mt-3 leading-7 text-zinc-800"><strong>Компетентный орган для проверки:</strong> {individualCase.competentRecipientToVerify}</p>:null}
+       {individualCase.plannedResultToVerify?<p className="mt-3 leading-7 text-zinc-800"><strong>Предполагаемый результат:</strong> {individualCase.plannedResultToVerify}</p>:null}
+       {individualCase.criticalLimitations?<p className="mt-3 text-sm leading-6 text-amber-900"><strong>Ограничение:</strong> {individualCase.criticalLimitations}</p>:null}
+     </section>:null}
      {situation.kind!=="information"?<section className="mt-7" aria-labelledby="military-evidence">
        <h2 className="text-xl font-semibold text-ink" id="military-evidence">Что подтверждает обстоятельства</h2>
        <ul className="mt-3 grid list-disc gap-2 pl-6 text-zinc-700">
