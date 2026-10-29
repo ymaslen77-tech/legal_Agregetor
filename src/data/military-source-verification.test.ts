@@ -11,7 +11,7 @@ const example=({
   publisher:string;kind:"OFFICIAL"|"REPUTABLE";url:string;
   stance?:"SUPPORTS"|"CONTRADICTS";excerpt?:string;
 }):MilitarySourceEvidence=>({
-  publisher,kind,url,stance,checkedExcerpt:excerpt,provision:"статья 51, пункт 1",
+  publisher,title:"Контрольная сверка текста по статье 51",kind,url,stance,checkedExcerpt:excerpt,provision:"статья 51, пункт 1",
   editionAsOf:"2026-10-29",checkedAt:"2026-10-29",opened:true
 });
 const official=example({publisher:"Государственная система правовой информации",kind:"OFFICIAL",url:"https://publication.pravo.gov.ru/document/0001202209210001"});
