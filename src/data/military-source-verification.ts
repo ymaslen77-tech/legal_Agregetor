@@ -126,7 +126,29 @@ export function evaluateMilitarySourceClaim(claim:MilitarySourceClaim):MilitaryV
  * Legacy candidate URLs in military-case-legal-matrix.ts do not count.
  * No auto-filled fake attestations are permitted.
  */
-export const MILITARY_SOURCE_CLAIMS:readonly MilitarySourceClaim[]=[];
+export const MILITARY_SOURCE_CLAIMS:readonly MilitarySourceClaim[]=[
+  {
+    topicSlug:"prizyv",situationIndex:0,
+    claim:"С 1 января 2026 года призыв граждан, не пребывающих в запасе, осуществляется ежегодно с 1 января по 31 декабря на основании указа Президента РФ.",
+    claimType:"LEGAL_NORM",checkedAt:"2026-10-29",
+    sources:[
+      {
+        publisher:"КонсультантПлюс",title:"Федеральный закон от 04.11.2025 № 412-ФЗ, статья 1, пункт 4",
+        url:"https://www.consultant.ru/document/cons_doc_LAW_518062/3d0cac60971a511280cbba229d9b6329c07731f7/",
+        kind:"REPUTABLE",checkedExcerpt:"Призыв на военную службу граждан, не пребывающих в запасе, осуществляется ежегодно с 1 января по 31 декабря",
+        provision:"Федеральный закон № 412-ФЗ, статья 1 пункт 4; ФЗ № 53-ФЗ, статья 22 пункт 3",
+        editionAsOf:"2026-01-01",checkedAt:"2026-10-29",stance:"SUPPORTS",opened:true
+      },
+      {
+        publisher:"ГАРАНТ",title:"Федеральный закон от 04.11.2025 № 412-ФЗ, статья 1, пункт 4",
+        url:"https://www.garant.ru/products/ipo/prime/doc/412886361/",
+        kind:"REPUTABLE",checkedExcerpt:"Призыв на военную службу граждан, не пребывающих в запасе, осуществляется ежегодно с 1 января по 31 декабря",
+        provision:"Федеральный закон № 412-ФЗ, статья 1 пункт 4; ФЗ № 53-ФЗ, статья 22 пункт 3",
+        editionAsOf:"2026-01-01",checkedAt:"2026-10-29",stance:"SUPPORTS",opened:true
+      }
+    ]
+  }
+];
 
 export function getMilitarySourceClaim(topicSlug:string,situationIndex:number) {
   return MILITARY_SOURCE_CLAIMS.find(x=>x.topicSlug===topicSlug&&x.situationIndex===situationIndex)??null;
