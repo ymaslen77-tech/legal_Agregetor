@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { MILITARY_TOPICS } from "@/data/military-catalog";
 import { MILITARY_DOCUMENT_TARGETS } from "@/data/military-document-target-matrix";
 import { getMilitaryDocumentCandidate } from "@/data/military-document-candidates";
+import { MILITARY_ADDITIONAL_COMPOSITIONS, getMilitaryAdditionalComposition } from "@/data/military-document-compositions";
 import {
   MILITARY_DOCUMENT_CORE_VERSION,
   getMilitaryDraftPlan,
@@ -22,8 +23,8 @@ assert(all.every(x=>x.verifiedLegalRules.length===0));
 assert(all.every(x=>x.selectedSituationIsImplicit));
 assert(all.every(x=>x.requiredInputs.filter(i=>i.required).length>=3));
 assert(all.every(x=>x.requiredInputs.map(f=>f.key).every((key,i,keys)=>keys.indexOf(key)===i)));
-assert.equal(all.filter(x=>x.candidateImplemented).length,18);
-assert.equal(all.filter(x=>!x.candidateImplemented).length,103);
+assert.equal(all.filter(x=>x.candidateImplemented).length,38);
+assert.equal(all.filter(x=>!x.candidateImplemented).length,83);
 assert.equal(all.filter(x=>x.conditionalAlternativeKind!==null).length,38);
 assert(all.every(x=>x.relatedSituationUrls.every(url=>url.startsWith("/voennoe-pravo/"))));
 let prototypes=0,missing=0;
@@ -35,7 +36,7 @@ for(const topic of MILITARY_TOPICS)for(const situation of topic.situations){
     continue;
   }
   assert(plan);
-  assert.equal(plan.candidateImplemented,Boolean(getMilitaryDocumentCandidate(topic,situation)));
+  assert.equal(plan.candidateImplemented,Boolean(getMilitaryDocumentCandidate(topic,situation)||getMilitaryAdditionalComposition(topic.slug,topic.situations.indexOf(situation))));
   const input={
     categorySlug:topic.slug,situationSlug:situation.slug,
     values:{
@@ -44,7 +45,8 @@ for(const topic of MILITARY_TOPICS)for(const situation of topic.situations){
       facts:"Обстоятельства с датами, номером документа и конкретным предметом обращения.",
       caseReference:"Приказ № 7, дата 15.10.2026",
       evidence:"Подтверждающие документы имеются",
-      attachments:"Копия обращения, копия решения"
+      attachments:"Копия обращения, копия решения",
+      ...Object.fromEntries((getMilitaryAdditionalComposition(topic.slug,topic.situations.indexOf(situation))?.additionalFields??[]).map(f=>[f.key,"Тестовые сведения для поля "+f.label+" от 29 октября 2026 года"]))
     },
     versionId:"550e8400-e29b-41d4-a716-446655440000",
     createdAt:"2026-10-29T10:00:00.000Z"
@@ -75,8 +77,38 @@ for(const topic of MILITARY_TOPICS)for(const situation of topic.situations){
   assert(documentResult.documentText.includes("Подтверждающие документы имеются"));
   assert.equal(formData.caseReference,"Приказ № 7, дата 15.10.2026");
 }
-assert.equal(prototypes,18);
-assert.equal(missing,103);
+assert.equal(prototypes,38);
+assert.equal(missing,83);
+// Twenty new hand-curated internal templates cannot conflict with legacy eighteen.
+assert.equal(MILITARY_ADDITIONAL_COMPOSITIONS.length,20);
+assert.equal(new Set(MILITARY_ADDITIONAL_COMPOSITIONS.map(c=>c.topicSlug+":"+c.situationIndex)).size,20);
+assert(MILITARY_ADDITIONAL_COMPOSITIONS.every(c=>!c.legalReviewConfirmed&&!c.officialTextVerified));
+for(const comp of MILITARY_ADDITIONAL_COMPOSITIONS){
+ const topic=MILITARY_TOPICS.find(t=>t.slug===comp.topicSlug)!;
+ const situation=topic.situations[comp.situationIndex];
+ assert(situation && situation.kind!=="information");
+ assert(!getMilitaryDocumentCandidate(topic,situation),"New prototype conflicts with old one");
+ assert.equal(comp.candidate.title,situation.title);
+ assert(comp.candidate.requestText.length>90);
+ assert(comp.additionalFields.length>0);
+ const plan=getMilitaryDraftPlan(topic.slug,situation.slug)!;
+ assert(plan.candidateImplemented);
+ assert(comp.additionalFields.every(f=>f.required&&plan.requiredInputs.some(p=>p.key===f.key)));
+ assert(comp.additionalFields.every(f=>!["facts","recipient","applicant"].includes(f.key)));
+ const sharedValues={
+   applicant:"Тестовый заявитель",
+   recipient:"Уполномоченному должностному лицу",
+   facts:"Обстоятельства для индивидуального обращения с указанием времени и события."
+ };
+ assert.throws(()=>createMilitaryDraftPrototype({categorySlug:topic.slug,situationSlug:situation.slug,values:sharedValues}),/обязательное поле/);
+ const individualValues=Object.fromEntries(comp.additionalFields.map(f=>[f.key,"Сведения по вопросу: "+f.label+" — по подтверждённым документам"]));
+ const drafted=createMilitaryDraftPrototype({categorySlug:topic.slug,situationSlug:situation.slug,values:{...sharedValues,...individualValues}});
+ assert(drafted.documentResult.documentText.includes(comp.candidate.requestText));
+ assert(drafted.documentResult.documentText.includes(comp.additionalFields[0].label));
+ assert.equal(drafted.documentResult.legalRegistryReviewedAt,null);
+ assert.deepEqual(drafted.documentResult.usedRuleIds,[]);
+ assert.equal(drafted.documentResult.filingReady,false);
+}
 const special=MILITARY_DOCUMENT_TARGETS.find(x=>x.categorySlug==="prizyv" && x.situationIndex===4)!;
 assert(special);
 const valid={
