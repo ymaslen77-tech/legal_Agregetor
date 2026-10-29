@@ -36,7 +36,7 @@ assert.throws(()=>validateMilitaryDraftExport({...sample,legalRegistryReviewedAt
 assert.throws(()=>validateMilitaryDraftExport({...sample,usedRuleIds:["user-forged"]}));
 assert.throws(()=>validateMilitaryDraftExport({...sample,documentText:"Подать без проверки"}));
 assert.throws(()=>validateMilitaryDraftExport({...sample,requiresLegalReview:false}));
-assert.throws(()=>validateMilitaryDraftExport({...sample,filingReady:true}));
+assert.throws(()=>validateMilitaryDraftExport({...sample,filingReady:true} as unknown as Parameters<typeof validateMilitaryDraftExport>[0]));
 // Real DOCX binary is created from the shared family-compatible document renderer.
 // No network, saved files, account data or public endpoints involved.
 (async()=>{
