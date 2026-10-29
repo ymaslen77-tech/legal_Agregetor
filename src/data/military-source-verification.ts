@@ -30,7 +30,7 @@ export type MilitarySourceClaim = Readonly<{
 }>;
 export type MilitarySourceVerdict =
   "VERIFIED_OFFICIAL" | "VERIFIED_REPUTABLE" | "NEEDS_SOURCES" |
-  "NEEDS_OFFICIAL" | "OFFICIAL_CONFLICT" | "SOURCE_CONFLICT";
+  "OFFICIAL_CONFLICT" | "SOURCE_CONFLICT";
 export type MilitaryVerificationResult = Readonly<{
   verdict: MilitarySourceVerdict;
   verified: boolean;
@@ -103,9 +103,9 @@ export function evaluateMilitarySourceClaim(claim:MilitarySourceClaim):MilitaryV
   if(verifiedSources.length<2){
     return {...common,verdict:"NEEDS_SOURCES",verified:false,officialPriorityApplied:false,remarks:["Нужны два независимых фактически сверенных подтверждения."]};
   }
-  if(claim.claimType!=="PRACTICAL_GUIDANCE" && !officialSupports.length){
-    return {...common,verdict:"NEEDS_OFFICIAL",verified:false,officialPriorityApplied:false,remarks:["Для нормы или процедуры обязательно подтверждение действующей официальной редакции."]};
-  }
+  // A verified agreement between two independent reputable publishers is
+  // sufficient, even when the official portal cannot be opened. A recorded
+  // official source always takes precedence if the texts disagree.
   if(reputableOpposes.length && !officialSupports.length){
     return {...common,verdict:"SOURCE_CONFLICT",verified:false,officialPriorityApplied:false,remarks:["У независимых источников остались противоречия."]};
   }
@@ -115,7 +115,7 @@ export function evaluateMilitarySourceClaim(claim:MilitarySourceClaim):MilitaryV
     verdict:officialSupports.length?"VERIFIED_OFFICIAL":"VERIFIED_REPUTABLE",
     verified:true,
     officialPriorityApplied:priority,
-    remarks:priority?["Расхождение с неофициальной перепечаткой; приоритет отдан подтверждённому действующему официальному тексту."]:["Два независимых подтверждения проверены; отдельная подпись юриста не нужна."]
+    remarks:priority?["Расхождение с неофициальной перепечаткой; приоритет отдан подтверждённому действующему официальному тексту."]:officialSupports.length?["Подтверждено двумя независимыми источниками, включая официальный; ручная подпись не требуется."]:["Два независимых авторитетных источника подтвердили тезис; официальная редакция отдельно не открывалась, при её расхождении приоритет за ней."]
   };
 }
 
