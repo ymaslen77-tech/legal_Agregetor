@@ -48,7 +48,7 @@ function extraInputs(kind: MilitaryLegalDocumentKind): readonly LegalRouteInput[
 }
 function safe(value: unknown, max: number): string {
   if(typeof value!=="string") return "";
-  return value.replace(/\\r\\n?/g,"\\n").trim().slice(0,max);
+  return value.replace(/\r\n?/g,"\n").trim().slice(0,max);
 }
 function requestedValue(values: Readonly<Record<string,unknown>>, key: string): string {
   return safe(values[key],key==="facts" ? 2500 : key==="attachments" ? 1500 : 700);
@@ -132,7 +132,7 @@ export function createMilitaryDraftPrototype(input:MilitaryDraftInput):MilitaryD
     cleanValues.facts,
     cleanValues.caseReference ? "Реквизиты: "+cleanValues.caseReference : "",
     cleanValues.evidence ? "Подтверждающие материалы: "+cleanValues.evidence : ""
-  ].filter(Boolean).join("\\n");
+  ].filter(Boolean).join("\n");
   const documentText=buildMilitaryDraft(candidate,{
     applicant:cleanValues.applicant,
     recipient:cleanValues.recipient,
