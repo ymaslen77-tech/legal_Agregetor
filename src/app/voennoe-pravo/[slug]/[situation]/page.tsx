@@ -12,7 +12,7 @@ import { getMilitaryDocumentCandidate } from "@/data/military-document-candidate
 import { MilitaryDraftForm } from "@/components/documents/MilitaryDraftForm";
 import { MilitaryDraftWorkbench } from "@/components/documents/MilitaryDraftWorkbench";
 import { getMilitaryDraftPlan } from "@/data/military-document-core";
-import { isMilitaryDraftPreviewEnabled } from "@/data/military-preview-access";
+import { isMilitaryDraftWorkbenchEnabled } from "@/data/military-preview-access";
 import { getMilitaryRelatedSituations, getMilitaryRelatedTopics, getMilitaryRelatedDocuments } from "@/data/military-related-links";
 
 type Props={params:Promise<{slug:string;situation:string}>};
@@ -37,10 +37,10 @@ export default async function MilitarySituationPage({params}:Props){
  const sourceClaim=getMilitarySourceClaim(topic.slug,topic.situations.findIndex(item=>item.slug===situation.slug));
  const candidate=getMilitaryDocumentCandidate(topic,situation);
  const draftPlan=getMilitaryDraftPlan(topic.slug,situation.slug);
- const localPreview=isMilitaryDraftPreviewEnabled(process.env);
+ const draftWorkbenchEnabled=isMilitaryDraftWorkbenchEnabled(process.env);
  const relatedQuestions=getMilitaryRelatedSituations(topic,situation);
  const relatedTopics=getMilitaryRelatedTopics(topic);
- const relatedDocuments=getMilitaryRelatedDocuments(topic,situation,localPreview);
+ const relatedDocuments=getMilitaryRelatedDocuments(topic,situation,draftWorkbenchEnabled);
  return <>
    <Breadcrumbs items={[
      {name:"Главная",path:"/"},{name:"Военное право",path:"/voennoe-pravo/"},
@@ -91,7 +91,7 @@ export default async function MilitarySituationPage({params}:Props){
        </ul>
        <p className="mt-3 text-sm text-zinc-600"><strong>Куда обращаться:</strong> {content.recipient}</p>
      </section>:null}
-     {localPreview&&draftPlan?<MilitaryDraftWorkbench key={situation.slug} plan={draftPlan}/>:candidate?<MilitaryDraftForm key={situation.slug} candidate={candidate} slug={situation.slug}/>:situation.kind!=="information"?<p className="mt-7 rounded-md border border-line bg-zinc-50 p-4 text-sm leading-6 text-zinc-700">Для этого вопроса автоматический генератор ещё не подтверждён. Если требуется обращение, предварительно определите его правовую форму и компетентный орган. Универсальный документ здесь не подставляется.</p>:null}
+     {draftWorkbenchEnabled&&draftPlan?<MilitaryDraftWorkbench key={situation.slug} plan={draftPlan}/>:candidate?<MilitaryDraftForm key={situation.slug} candidate={candidate} slug={situation.slug}/>:situation.kind!=="information"?<p className="mt-7 rounded-md border border-line bg-zinc-50 p-4 text-sm leading-6 text-zinc-700">Для этого вопроса автоматический генератор ещё не подтверждён. Если требуется обращение, предварительно определите его правовую форму и компетентный орган. Универсальный документ здесь не подставляется.</p>:null}
      <section className="mt-9 border-t border-line pt-7" aria-labelledby="military-related-questions">
        <h2 id="military-related-questions" className="text-xl font-semibold text-ink">Связанные вопросы и следующие действия</h2>
        <p className="mt-2 text-sm text-zinc-600">Смежные ситуации, подтверждающие документы и процедуры обжалования. Переход на другую страницу не означает, что её правовые условия автоматически применимы к вашему делу.</p>

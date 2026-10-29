@@ -5,7 +5,7 @@ import { getMilitaryDraftPlan } from "@/data/military-document-core";
 
 /**
  * Stage 4: reuse existing family-style DOCX and military PDF renderers.
- * This is an internal preview export adapter, NOT a public route or release gate.
+ * This is a draft-only export adapter; it never changes the legal status.
  */
 export function validateMilitaryDraftExport(input:DocumentResultV1):DocumentResultV1 {
   const result=documentResultSchema.parse(input);

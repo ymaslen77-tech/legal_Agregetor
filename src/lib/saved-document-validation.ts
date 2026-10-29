@@ -2,20 +2,19 @@ import { documentResultSchema, type DocumentResultV1 } from "@/lib/document-resu
 import { getLegalRouteV1 } from "@/data/legal-route-standard";
 import { getNavigatorDocument } from "@/data/documents";
 import { getMilitaryDraftPlan, MILITARY_DOCUMENT_CORE_VERSION } from "@/data/military-document-core";
-import { isMilitaryDraftPreviewEnabled } from "@/data/military-preview-access";
+import { isMilitaryDraftWorkbenchEnabled, type MilitaryDraftEnvironment } from "@/data/military-preview-access";
 
 /** A client-side draft is always unverified. Do not accept arbitrary route links. */
 export function validateSavedDocument(
   input: unknown,
-  environment:Readonly<{NODE_ENV?:string;ENABLE_MILITARY_DRAFT_PREVIEW?:string}>=process.env
+  environment:MilitaryDraftEnvironment=process.env
 ): DocumentResultV1 | null {
   const parsed = documentResultSchema.safeParse(input);
   if (!parsed.success) return null;
   const result = parsed.data;
-  // An unpublished military draft is saved only from the opt-in local QA environment.
-  // This is separate from, and must never relax, the legal publication gate.
+  // Server and form must agree on opt-in. The legal status never becomes verified.
   if (result.categorySlug === "voennoe-pravo") {
-    if(!isMilitaryDraftPreviewEnabled(environment)) return null;
+    if(!isMilitaryDraftWorkbenchEnabled(environment)) return null;
     const plan=getMilitaryDraftPlan(result.routeSlug,result.scenarioKey);
     if(!plan || !plan.candidateImplemented || result.documentSlug!==plan.documentSlug ||
        result.documentTitle!==plan.title || result.generatorVersion!==MILITARY_DOCUMENT_CORE_VERSION ||

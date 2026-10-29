@@ -5,16 +5,19 @@ import { MILITARY_LEGAL_CASE_CARDS } from "@/data/military-case-legal-matrix";
 import { MILITARY_PROVISION_CHECKS } from "@/data/military-provision-checks";
 import { MILITARY_DOCUMENT_TARGETS } from "@/data/military-document-target-matrix";
 import { getMilitarySourceStatus, MILITARY_SOURCE_CLAIMS } from "@/data/military-source-verification";
+import { isMilitaryPublicDraftEnabled, type MilitaryDraftEnvironment } from "@/data/military-preview-access";
 
 /**
  * Production readiness is calculated from explicit per-situation evidence,
  * never assumed from a successful TypeScript build or document render.
  * A draft PDF is NOT a legally approved filing document.
  */
-export function getMilitaryReleaseReadiness() {
+export function getMilitaryReleaseReadiness(environment:MilitaryDraftEnvironment=process.env) {
+  const publicDraftsEnabled=isMilitaryPublicDraftEnabled(environment);
   const categories = MILITARY_TOPICS.map((topic) => {
     const expectedDocuments = topic.situations.filter((item) => item.kind !== "information");
-    const documented = expectedDocuments.filter((item) => getMilitaryDocumentCandidate(topic, item) !== null);
+    const documented = expectedDocuments.filter((item) => getMilitaryDocumentCandidate(topic,item)!==null ||
+      (publicDraftsEnabled && getMilitaryAdditionalComposition(topic.slug,topic.situations.findIndex(s=>s.slug===item.slug))!==null));
     const internalPrototypes = expectedDocuments.filter((item)=>{
       const index=topic.situations.findIndex(s=>s.slug===item.slug);
       return getMilitaryDocumentCandidate(topic,item)!==null ||
@@ -80,8 +83,8 @@ export function getMilitaryReleaseReadiness() {
     legalGate, // Legacy diagnostic counters only; no longer release prerequisites.
     sourceAcceptance,
     catalogDeployable,
-    /** Full publication is a technical generator-completeness decision, not a
-     * manual 143-case sign-off. Unverified individual claims stay unverified. */
+    publicDraftsEnabled,
+    /** Technical generator coverage only; separate VPS and legal checks still apply. */
     productionReady: catalogDeployable && total.missingDraftGenerators===0
   } as const;
 }

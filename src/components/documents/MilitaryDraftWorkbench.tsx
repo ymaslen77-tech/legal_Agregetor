@@ -16,7 +16,7 @@ import {
 } from "@/lib/military-document-export";
 
 /**
- * Private QA workbench, rendered ONLY behind the server-side preview flag.
+ * Unverified workbench rendered only behind an explicit server-side flag.
  * Never post user facts to an API and never persist them in localStorage/URLs.
  */
 export function MilitaryDraftWorkbench({plan}:Readonly<{plan:MilitaryDraftPlan}>) {
@@ -93,11 +93,11 @@ export function MilitaryDraftWorkbench({plan}:Readonly<{plan:MilitaryDraftPlan}>
   const labelStyle="block text-sm font-semibold text-ink";
   const inputStyle="mt-2 block w-full rounded-md border border-line px-3 py-2 text-base font-normal text-ink focus:border-trust focus:outline-none focus:ring-2 focus:ring-trust/25";
   return <section id="military-document-preparation" className="mt-8 rounded-lg border border-line bg-white p-5 sm:p-6" aria-labelledby="military-preview-heading" data-testid="military-draft-workbench">
-    <p className="text-sm font-semibold uppercase text-trust">Проверочный конструктор документов</p>
+    <p className="text-sm font-semibold uppercase text-trust">Конструктор черновиков документов</p>
     <h2 id="military-preview-heading" className="mt-2 text-xl font-semibold text-ink">{plan.title}</h2>
     <p role="status" className="mt-3 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm leading-6 text-amber-950">
-      <strong>Черновик, не готовый к подаче.</strong> Нормы и процессуальные требования не утверждены юридической проверкой.
-      Инструмент доступен только в локальной тестовой сборке. До нажатия «Сохранить в мои документы» сведения остаются в памяти вкладки; при сохранении зашифрованная версия будет передана в существующий архив учётной записи.
+      <strong>Черновик, не готовый к подаче.</strong> Проверка отдельного правового тезиса не подтверждает готовности персонального документа. Проверьте применимость нормы, срок и компетенцию адресата.
+      До нажатия «Сохранить в мои документы» сведения остаются в памяти вкладки; только по вашему действию зашифрованная версия будет передана в архив учётной записи.
     </p>
     <p className="mt-3 text-sm leading-6 text-zinc-700"><strong>Предмет обращения:</strong> {plan.documentRequest}</p>
     <p className="mt-2 text-sm leading-6 text-zinc-600"><strong>Условия для проверки:</strong> {plan.competentRecipientRule}</p>
