@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import type { DocumentResultV1 } from "@/lib/document-result-contract";
+import { reviseMilitaryDraftPrototype } from "@/data/military-document-core";
+import { SaveLegalDocumentButton } from "@/components/documents/SaveLegalDocumentButton";
 
 type Summary = {
   versionId: string; documentTitle: string; categorySlug: string;
@@ -11,7 +13,7 @@ type Summary = {
 };
 type State = "loading" | "ready" | "error";
 
-export function SavedLegalDocumentsCabinet() {
+export function SavedLegalDocumentsCabinet({ allowMilitaryEditing = false }:Readonly<{allowMilitaryEditing?:boolean}>) {
   const [documents, setDocuments] = useState<Summary[]>([]);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("");
@@ -19,6 +21,8 @@ export function SavedLegalDocumentsCabinet() {
   const [message, setMessage] = useState("");
   const [selected, setSelected] = useState<DocumentResultV1 | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [militaryEditText,setMilitaryEditText]=useState("");
+  const [militaryRevision,setMilitaryRevision]=useState<DocumentResultV1|null>(null);
 
   const reload = useCallback(async () => {
     try {
@@ -42,6 +46,8 @@ export function SavedLegalDocumentsCabinet() {
       const data = await response.json() as { documentResult?: DocumentResultV1; message?: string };
       if (!response.ok || !data.documentResult) throw new Error(data.message || "Версия не найдена.");
       setSelected(data.documentResult);
+      setMilitaryEditText(data.documentResult.documentText);
+      setMilitaryRevision(null);
     } catch (error) { setMessage(error instanceof Error ? error.message : "Версию открыть не удалось."); }
     finally { setBusyId(null); }
   }
@@ -56,6 +62,22 @@ export function SavedLegalDocumentsCabinet() {
       await reload();
     } catch (error) { setMessage(error instanceof Error ? error.message : "Удаление не выполнено."); }
     finally { setBusyId(null); }
+  }
+
+  function createRevisedMilitaryVersion(){
+    if(!allowMilitaryEditing || !selected || selected.categorySlug!=="voennoe-pravo")return;
+    try {
+      const output=reviseMilitaryDraftPrototype({
+        documentResult:selected,
+        formData:{}
+      },militaryEditText);
+      setSelected(output.documentResult);
+      setMilitaryEditText(output.documentResult.documentText);
+      setMilitaryRevision(output.documentResult);
+      setMessage("");
+    } catch(error) {
+      setMessage(error instanceof Error?error.message:"Не удалось подготовить новую версию.");
+    }
   }
 
   async function exportPdf() {
@@ -145,6 +167,25 @@ export function SavedLegalDocumentsCabinet() {
       <pre className="mt-4 max-h-[70vh] overflow-auto whitespace-pre-wrap break-words rounded-md border border-line bg-zinc-50 p-4 font-sans text-sm leading-6">{selected.documentText}</pre>
       <button type="button" onClick={() => void exportPdf()} className="mt-4 min-h-11 rounded-md bg-trust px-4 py-2 text-sm font-semibold text-white">Скачать архивную копию PDF</button>
       {selected.categorySlug==="voennoe-pravo" ? <button type="button" onClick={() => void exportMilitaryDocx()} className="ml-3 mt-4 min-h-11 rounded-md border border-trust px-4 py-2 text-sm font-semibold text-trust">Скачать архивную копию DOCX</button> : null}
+      {allowMilitaryEditing && selected.categorySlug==="voennoe-pravo" ? <div className="mt-6 rounded-md border border-amber-300 bg-amber-50 p-4" data-testid="military-archive-editor">
+        <h3 className="font-semibold">Редактирование сохранённого черновика (только тестовый режим)</h3>
+        <p className="mt-2 text-sm">Исходная версия остаётся неизменной. При исправлении создаётся новый номер версии; для шифрованного сохранения в архив нажмите отдельную кнопку.</p>
+        <label className="mt-3 block text-sm font-semibold">Текст новой редакции
+          <textarea className="mt-2 w-full rounded-md border border-line bg-white p-3 font-normal" rows={12} maxLength={38000}
+            value={militaryEditText} onChange={e=>setMilitaryEditText(e.target.value)} data-testid="military-archive-editor-text"/>
+        </label>
+        <button type="button" onClick={createRevisedMilitaryVersion}
+          disabled={militaryEditText===selected.documentText}
+          className="mt-3 min-h-11 rounded-md border border-trust px-4 py-2 font-semibold text-trust disabled:opacity-60">
+          Создать новую редакцию
+        </button>
+        {militaryRevision ? <SaveLegalDocumentButton
+          key={militaryRevision.versionId}
+          result={militaryRevision}
+          disabled={militaryEditText!==militaryRevision.documentText}
+        /> : null}
+      </div> : null}
+
     </section> : null}
     {message && state !== "error" ? <p role="alert" className="mt-4 text-sm text-red-800">{message}</p> : null}
   </section>;
