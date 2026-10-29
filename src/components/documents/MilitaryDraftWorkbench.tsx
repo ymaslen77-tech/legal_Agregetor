@@ -8,6 +8,7 @@ import {
   addMilitaryDraftVersion
 } from "@/data/military-document-core";
 import type { DocumentVersionEntry } from "@/lib/document-version-history";
+import { SaveLegalDocumentButton } from "@/components/documents/SaveLegalDocumentButton";
 import {
   createMilitaryDraftPdfBlob,
   createMilitaryDraftDocxBlob,
@@ -96,7 +97,7 @@ export function MilitaryDraftWorkbench({plan}:Readonly<{plan:MilitaryDraftPlan}>
     <h2 id="military-preview-heading" className="mt-2 text-xl font-semibold text-ink">{plan.title}</h2>
     <p role="status" className="mt-3 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm leading-6 text-amber-950">
       <strong>Черновик, не готовый к подаче.</strong> Нормы и процессуальные требования не утверждены юридической проверкой.
-      Этот инструмент доступен только в тестовой сборке; данные остаются в памяти текущей вкладки.
+      Инструмент доступен только в локальной тестовой сборке. До нажатия «Сохранить в мои документы» сведения остаются в памяти вкладки; при сохранении зашифрованная версия будет передана в существующий архив учётной записи.
     </p>
     <p className="mt-3 text-sm leading-6 text-zinc-700"><strong>Предмет обращения:</strong> {plan.documentRequest}</p>
     <p className="mt-2 text-sm leading-6 text-zinc-600"><strong>Условия для проверки:</strong> {plan.competentRecipientRule}</p>
@@ -129,6 +130,11 @@ export function MilitaryDraftWorkbench({plan}:Readonly<{plan:MilitaryDraftPlan}>
         <button type="button" className="min-h-11 rounded-md border border-trust px-4 py-2 font-semibold text-trust disabled:opacity-60" onClick={()=>download("pdf")} disabled={busy}>Скачать PDF-черновик</button>
         <button type="button" className="min-h-11 rounded-md border border-trust px-4 py-2 font-semibold text-trust disabled:opacity-60" onClick={()=>download("docx")} disabled={busy}>Скачать DOCX-черновик</button>
       </div>
+      <SaveLegalDocumentButton
+        key={prepared.documentResult.versionId}
+        result={prepared.documentResult}
+        disabled={editedText!==prepared.documentResult.documentText}
+      />
       {editedText!==prepared.documentResult.documentText?<p className="mt-2 text-xs text-amber-900">В тексте есть несохранённые изменения. Для экспорта исправленного текста сначала сохраните новую версию.</p>:null}
       <p className="mt-3 text-xs text-zinc-600">Редакция и выгруженные файлы всегда помечаются как не готовые к подаче. До юридической проверки нельзя использовать текст как окончательный документ.</p>
       {versions.length>1?<div className="mt-4 border-t border-line pt-4">
