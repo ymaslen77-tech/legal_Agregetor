@@ -1,5 +1,6 @@
 import { MILITARY_TOPICS } from "@/data/military-catalog";
 import { getMilitaryDocumentCandidate, buildMilitaryDraft } from "@/data/military-document-candidates";
+import { getMilitaryAdditionalComposition } from "@/data/military-document-compositions";
 import { MILITARY_DOCUMENT_TARGETS, getMilitaryDocumentTarget } from "@/data/military-document-target-matrix";
 import { MILITARY_LEGAL_CASE_CARDS } from "@/data/military-case-legal-matrix";
 import { getMilitaryRelatedSituations, militarySituationHref } from "@/data/military-related-links";
@@ -13,7 +14,7 @@ import { addDocumentVersion, type DocumentVersionEntry } from "@/lib/document-ve
  * DOCUMENT_RESULT_V1 envelope. NOT a public generator registration.
  *
  * 121 target specifications, 18 legacy deterministic draft prototypes,
- * 103 missing individual document compositions. No approved legal rules.
+ * 83 missing individual document compositions (20 new unpublished prototypes). No approved legal rules.
  */
 export const MILITARY_DOCUMENT_CORE_VERSION = "military-core-v1" as const;
 export type MilitaryDraftPlan = Omit<MilitaryDocumentSpecification, "canonicalDocumentUrl"> & Readonly<{
@@ -71,13 +72,15 @@ export function getMilitaryDraftPlan(categorySlug:string,situationSlug:string): 
   const card = MILITARY_LEGAL_CASE_CARDS.find(x=>x.topicSlug===categorySlug&&x.situationIndex===target.situationIndex);
   if(!card || card.legalReviewConfirmed) throw new Error("Unexpected military legal review state");
   const candidate = getMilitaryDocumentCandidate(pair.topic,pair.situation);
+  const added = getMilitaryAdditionalComposition(categorySlug,target.situationIndex);
+  if(candidate && added) throw new Error("Ambiguous document composition");
   return {
     categorySlug, situationSlug, kind: target.primaryKind,
     documentSlug: target.documentSlug, title: target.documentTitle,
     selectedSituationIsImplicit:true,
-    requiredInputs: [...fields,...extraInputs(target.primaryKind)],
+    requiredInputs: [...fields,...extraInputs(target.primaryKind),...(added?.additionalFields??[])],
     /** No invented demand for 103 documents without a verified individual composition. */
-    documentRequest: candidate?.requestText ?? "",
+    documentRequest: candidate?.requestText ?? added?.candidate.requestText ?? "",
     competentRecipientRule: target.recipientToVerify,
     verifiedLegalRules: [],
     expectedAttachments: [],
@@ -86,7 +89,7 @@ export function getMilitaryDraftPlan(categorySlug:string,situationSlug:string): 
     filingReady:false, requiresLegalReview:true,
     canonicalDocumentUrl:null,
     relatedSituationUrls:getMilitaryRelatedSituations(pair.topic,pair.situation).map(x=>x.href),
-    candidateImplemented:Boolean(candidate),
+    candidateImplemented:Boolean(candidate||added),
     evidencePrompt: target.caseSpecificEvidenceToConfirm,
     conditionalAlternativeKind:target.conditionalAlternativeKind,
     generationEnabled:false
@@ -112,7 +115,7 @@ export type MilitaryDraftCoreOutput = Readonly<{
   formData:Readonly<Record<string,string>>;
 }>;
 /**
- * Internal prototype renderer. It fails closed for the 103 unimplemented
+ * Internal prototype renderer. It fails closed for the 83 unimplemented
  * compositions, for informational pages, and for alternate judicial paths.
  * No user-supplied legal norm is ever treated as a verified rule.
  */
@@ -120,7 +123,10 @@ export function createMilitaryDraftPrototype(input:MilitaryDraftInput):MilitaryD
   const plan=getMilitaryDraftPlan(input.categorySlug,input.situationSlug);
   const pair=findTopicAndSituation(input.categorySlug,input.situationSlug);
   if(!plan || !pair) throw new Error("No document outcome for this military situation");
-  const candidate = getMilitaryDocumentCandidate(pair.topic,pair.situation);
+  const existing = getMilitaryDocumentCandidate(pair.topic,pair.situation);
+  const added = getMilitaryAdditionalComposition(input.categorySlug,pair.topic.situations.findIndex(s=>s.slug===input.situationSlug));
+  if(existing && added) throw new Error("Ambiguous document composition");
+  const candidate = existing ?? added?.candidate;
   if(!candidate || !plan.candidateImplemented) throw new Error("This military document does not yet have an individual approved composition prototype");
   const cleanValues:Record<string,string>={};
   for(const field of plan.requiredInputs) {
@@ -131,7 +137,8 @@ export function createMilitaryDraftPrototype(input:MilitaryDraftInput):MilitaryD
   const facts = [
     cleanValues.facts,
     cleanValues.caseReference ? "Реквизиты: "+cleanValues.caseReference : "",
-    cleanValues.evidence ? "Подтверждающие материалы: "+cleanValues.evidence : ""
+    cleanValues.evidence ? "Подтверждающие материалы: "+cleanValues.evidence : "",
+    ...(added?.additionalFields.map(f=>f.label+": "+cleanValues[f.key])??[])
   ].filter(Boolean).join("\n");
   const documentText=buildMilitaryDraft(candidate,{
     applicant:cleanValues.applicant,
