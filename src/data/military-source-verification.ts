@@ -1,3 +1,6 @@
+import { MILITARY_PROVISION_CHECKS } from "@/data/military-provision-checks";
+import { MILITARY_LEGAL_CASE_CARDS } from "@/data/military-case-legal-matrix";
+
 /**
  * Source-based editorial acceptance, not attorney sign-off.
  * An immutable, individually checked claim + 2 independent publishers is the
@@ -134,4 +137,29 @@ export function getMilitarySourceStatus(topicSlug:string,situationIndex:number):
     verdict:"NEEDS_SOURCES",verified:false,acceptedEvidence:0,officialPriorityApplied:false,sourceCount:0,
     remarks:["Предварительная правовая карта есть, но два сверенных источника по конкретному утверждению ещё не зафиксированы."]
   };
+}
+
+/** Work queue automatically derived from 143 existing per-situation maps.
+ * It suggests URLs for research, but never counts them as a source that was read.
+ */
+export function getMilitarySourceReviewQueue(){
+  return MILITARY_PROVISION_CHECKS.map(item=>{
+    const card=MILITARY_LEGAL_CASE_CARDS.find(x=>x.topicSlug===item.topicSlug&&x.situationIndex===item.situationIndex);
+    const candidateUrls=[
+      ...item.provisions.flatMap(x=>[x.officialPublicationUrl??"",x.textUrl]),
+      ...(card?.sourceCandidates.filter(x=>!x.type.includes("STALE")).map(x=>x.url)??[])
+    ].filter(url=>url.startsWith("https://") &&
+      !["https://pravo.gov.ru/","https://www.pravo.gov.ru/"].includes(url));
+    const status=getMilitarySourceStatus(item.topicSlug,item.situationIndex);
+    return {
+      topicSlug:item.topicSlug,
+      situationIndex:item.situationIndex,
+      suggestedClaim:card?.legalQuestion??item.provisions[0]?.applicability??"",
+      relatedProvisions:item.provisions.map(x=>({act:x.act,article:x.article})),
+      candidateUrls:[...new Set(candidateUrls)],
+      previouslyCrosscheckedUnofficially:item.sourceStatus==="CURRENT_THIRD_PARTY_TEXT_CROSSCHECKED_OFFICIAL_RECORD_NOT_OPENED",
+      verificationStatus:status.verdict,
+      automaticallyVerified:status.verified
+    };
+  });
 }
