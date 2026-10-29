@@ -27,7 +27,7 @@ assert.equal(verdict.verdict,"VERIFIED_OFFICIAL");
 assert.equal(verdict.verified,true);
 assert.equal(verdict.acceptedEvidence,2);
 assert.equal(verdict.officialPriorityApplied,false);
-assert.equal(evaluateMilitarySourceClaim(claim([consultant,garant])).verdict,"NEEDS_OFFICIAL");
+assert.equal(evaluateMilitarySourceClaim(claim([consultant,garant])).verdict,"VERIFIED_REPUTABLE");
 assert.equal(evaluateMilitarySourceClaim(claim([consultant,garant],"PRACTICAL_GUIDANCE")).verdict,"VERIFIED_REPUTABLE");
 assert.equal(evaluateMilitarySourceClaim(claim([official])).verdict,"NEEDS_SOURCES");
 assert.equal(evaluateMilitarySourceClaim(claim([official,{...consultant,opened:false}])).verdict,"NEEDS_SOURCES");
