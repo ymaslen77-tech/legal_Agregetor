@@ -5,7 +5,8 @@ import {
   validateMilitaryDraftExport,
   militaryDraftExportText,
   militaryDraftExportFileName,
-  createMilitaryDraftDocxBlob
+  createMilitaryDraftDocxBlob,
+  createMilitaryDraftPdfBlob
 } from "@/lib/military-document-export";
 
 const topic=MILITARY_TOPICS.find(x=>x.slug==="prizyv")!;
@@ -44,5 +45,9 @@ assert.throws(()=>validateMilitaryDraftExport({...sample,filingReady:true}));
  assert(blob.size>500);
  assert.equal(bytes[0],0x50);
  assert.equal(bytes[1],0x4b);
- console.log(JSON.stringify({stage4DocxExport:true,bytes:blob.size,legalApproval:false,filingReady:false}));
+ const pdf=await createMilitaryDraftPdfBlob(sample);
+ const pdfBytes=new Uint8Array(await pdf.arrayBuffer());
+ assert(pdf.size>1000);
+ assert.equal(new TextDecoder().decode(pdfBytes.slice(0,5)),"%PDF-");
+ console.log(JSON.stringify({stage4DocxExport:true,stage4PdfExport:true,docxBytes:blob.size,pdfBytes:pdf.size,legalApproval:false,filingReady:false}));
 })().catch(error=>{console.error(error);process.exitCode=1;});
