@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { MILITARY_TOPICS } from "@/data/military-catalog";
 import { getMilitaryDocumentCandidate } from "@/data/military-document-candidates";
+import { getMilitaryAdditionalComposition } from "@/data/military-document-compositions";
 import {
   getMilitaryRelatedTopics,
   getMilitaryRelatedSituations,
@@ -13,15 +14,18 @@ import {
 assert.equal(MILITARY_TOPICS.length,20);
 const canonicalPages = new Set<string>();
 const generatorAnchors = new Set<string>();
+const previewAnchors = new Set<string>();
 for (const topic of MILITARY_TOPICS) {
   canonicalPages.add(militaryTopicHref(topic));
   for(const situation of topic.situations) {
     const href=militarySituationHref(topic,situation);
     canonicalPages.add(href);
     if(getMilitaryDocumentCandidate(topic,situation)) generatorAnchors.add(href+"#military-document-preparation");
+    if(getMilitaryDocumentCandidate(topic,situation)||getMilitaryAdditionalComposition(topic.slug,topic.situations.indexOf(situation))) previewAnchors.add(href+"#military-document-preparation");
   }
 }
 assert.equal(generatorAnchors.size,18);
+assert.equal(previewAnchors.size,121);
 assert.equal(canonicalPages.size,163);
 const topicBySlug = new Map(MILITARY_TOPICS.map(topic => [topic.slug,topic]));
 assert.deepEqual(Object.keys(MILITARY_RELATED_GRAPH.topicSlugs).sort(),MILITARY_TOPICS.map(x=>x.slug).sort());
@@ -55,6 +59,10 @@ for(const topic of MILITARY_TOPICS) {
       if(link.topicSlug!==topic.slug)crossCategoryLinks++;
     }
     const docs=getMilitaryRelatedDocuments(topic,situation);
+    const previewDocs=getMilitaryRelatedDocuments(topic,situation,true);
+    assert.equal(new Set(previewDocs.map(x=>x.href)).size,previewDocs.length);
+    if(situation.kind!=="information") assert(previewDocs.some(link=>link.href===here+"#military-document-preparation"),"Missing local preview generator link: "+here);
+    for(const link of previewDocs) assert(previewAnchors.has(link.href),"Invalid preview target: "+link.href);
     assert(docs.length<=4);
     assert.equal(new Set(docs.map(x=>x.href)).size,docs.length);
     for(const link of docs){
@@ -84,5 +92,6 @@ console.log(JSON.stringify({
   crossCategoryLinks,
   documentLinks:totalDocumentLinks,
   validGeneratorAnchors:generatorAnchors.size,
+  gatedPreviewAnchors:previewAnchors.size,
   invalidLinks:0
 }));
