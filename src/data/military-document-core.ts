@@ -70,7 +70,7 @@ export function getMilitaryDraftPlan(categorySlug:string,situationSlug:string): 
   const target = getMilitaryDocumentTarget(categorySlug,situationSlug);
   if(!pair || !target) return null;
   const card = MILITARY_LEGAL_CASE_CARDS.find(x=>x.topicSlug===categorySlug&&x.situationIndex===target.situationIndex);
-  if(!card || card.legalReviewConfirmed) throw new Error("Unexpected military legal review state");
+  if(!card) throw new Error("Missing military case card");
   const candidate = getMilitaryDocumentCandidate(pair.topic,pair.situation);
   const added = getMilitaryAdditionalComposition(categorySlug,target.situationIndex);
   if(candidate && added) throw new Error("Ambiguous document composition");
