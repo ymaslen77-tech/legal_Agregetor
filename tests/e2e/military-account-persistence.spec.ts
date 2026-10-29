@@ -54,13 +54,41 @@ test("real encrypted cabinet saves, isolates, retrieves and deletes a military d
    expect(mineBody.documentResult.documentText).toContain("ЧЕРНОВИК — НЕ ГОТОВ К ПОДАЧЕ");
    expect(mineBody.documentResult.filingReady).toBe(false);
    expect(mineBody.documentResult.legalRegistryReviewedAt).toBe(null);
+   // Reopen archived text and save an independent USER_EDITED revision.
+   await page.getByRole("button",{name:"Открыть версию"}).click();
+   const editor=page.getByTestId("military-archive-editor");
+   await expect(editor).toBeVisible();
+   await editor.getByTestId("military-archive-editor-text").fill(
+     "Новая версия синтетического документа с изменённым описанием обстоятельств и подтверждениями. Исходный черновик сохранён отдельно."
+   );
+   await editor.getByRole("button",{name:"Создать новую редакцию"}).click();
+   await expect(editor.getByRole("button",{name:"Сохранить в мои документы"})).toBeVisible();
+   await editor.getByRole("button",{name:"Сохранить в мои документы"}).click();
+   await expect(editor.getByRole("button",{name:"Версия сохранена"})).toBeVisible();
+   const updated=await page.request.get("/api/account/documents/");
+   const updatedBody=await updated.json() as {documents:{versionId:string;categorySlug:string}[]};
+   const revision=updatedBody.documents.find(x=>x.categorySlug==="voennoe-pravo"&&x.versionId!==versionId);
+   expect(revision).toBeTruthy();
+   const revisionId=revision!.versionId;
+   const revisionResponse=await page.request.get("/api/account/documents/"+revisionId+"/");
+   expect(revisionResponse.status()).toBe(200);
+   const revisionBody=await revisionResponse.json() as {documentResult:{source:string;legalRegistryReviewedAt:null;documentText:string}};
+   expect(revisionBody.documentResult.source).toBe("USER_EDITED");
+   expect(revisionBody.documentResult.legalRegistryReviewedAt).toBe(null);
+   expect(revisionBody.documentResult.documentText).toContain("Новая версия синтетического документа");
+   const oldResponse=await page.request.get("/api/account/documents/"+versionId+"/");
+   expect((await oldResponse.json()).documentResult.documentText).toBe(mineBody.documentResult.documentText);
    await asUser(userB);
+   expect((await page.request.get("/api/account/documents/"+revisionId+"/")).status()).toBe(404);
    expect((await page.request.get("/api/account/documents/"+versionId+"/")).status()).toBe(404);
    expect((await page.request.get("/api/account/documents/")).status()).toBe(200);
    await asUser(userA);
    const deleted=await page.request.delete("/api/account/documents/"+versionId+"/",{headers:{Origin:base}});
    expect(deleted.status()).toBe(200);
    expect((await page.request.get("/api/account/documents/"+versionId+"/")).status()).toBe(404);
+   const deleteRevision=await page.request.delete("/api/account/documents/"+revisionId+"/",{headers:{Origin:base}});
+   expect(deleteRevision.status()).toBe(200);
+   expect((await page.request.get("/api/account/documents/"+revisionId+"/")).status()).toBe(404);
  } finally {
    // Synthetic CI users are deleted; the archived version also cascades if needed.
    await prisma.user.deleteMany({where:{id:{in:[userA.id,userB.id]}}});
