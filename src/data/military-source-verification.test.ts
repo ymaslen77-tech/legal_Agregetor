@@ -47,12 +47,13 @@ assert.equal(verdict.verified,true);
 const secondOfficial=example({publisher:"Минюст",kind:"OFFICIAL",url:"https://minjust.gov.ru/ru/appeals/faq/670/",stance:"CONTRADICTS"});
 assert.equal(evaluateMilitarySourceClaim(claim([official,consultant,secondOfficial])).verdict,"OFFICIAL_CONFLICT");
 // Current draft source URLs are candidates only: nothing is silently approved.
-assert.equal(MILITARY_SOURCE_CLAIMS.length,0);
+assert.equal(MILITARY_SOURCE_CLAIMS.length,1);
 for(const topic of MILITARY_TOPICS){
   for(const i of topic.situations.keys()){
     const status=getMilitarySourceStatus(topic.slug,i);
-    assert.equal(status.verified,false);
-    assert.equal(status.verdict,"NEEDS_SOURCES");
+    const firstVerified=topic.slug==="prizyv" && i===0;
+    assert.equal(status.verified,firstVerified);
+    assert.equal(status.verdict,firstVerified?"VERIFIED_REPUTABLE":"NEEDS_SOURCES");
   }
 }
 const queue=getMilitarySourceReviewQueue();
@@ -60,5 +61,5 @@ assert.equal(queue.length,143);
 assert.equal(new Set(queue.map(x=>x.topicSlug+":"+x.situationIndex)).size,143);
 assert.equal(queue.filter(x=>x.previouslyCrosscheckedUnofficially).length,64);
 assert(queue.every(x=>x.candidateUrls.length>0));
-assert(queue.every(x=>x.automaticallyVerified===false));
+assert.equal(queue.filter(x=>x.automaticallyVerified).length,1);
 console.log(JSON.stringify({automaticTwoSourceDecision:true,officialPrecedence:true,noMassApproval:true,cases:143}));
