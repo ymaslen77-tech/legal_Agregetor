@@ -53,7 +53,10 @@ const publisherHosts: Readonly<Record<string,"OFFICIAL"|"REPUTABLE">> = {
   "vsrf.ru":"OFFICIAL",
   "ksrf.ru":"OFFICIAL",
   "consultant.ru":"REPUTABLE",
+  "storage.consultant.ru":"REPUTABLE",
   "garant.ru":"REPUTABLE",
+  "base.garant.ru":"REPUTABLE",
+  "constitution.garant.ru":"REPUTABLE",
   "rg.ru":"REPUTABLE"
 };
 function hostFromUrl(url:string):string|null {
@@ -82,7 +85,9 @@ export function evaluateMilitarySourceClaim(claim:MilitarySourceClaim):MilitaryV
   const unique=new Map<string,MilitarySourceEvidence>();
   for(const s of considered){
     const host=hostFromUrl(s.url)!;
-    const key=host==="publication.pravo.gov.ru"?"pravo.gov.ru":host;
+    const key=host==="publication.pravo.gov.ru"?"pravo.gov.ru":
+      (host==="base.garant.ru"||host==="constitution.garant.ru")?"garant.ru":
+      host==="storage.consultant.ru"?"consultant.ru":host;
     // Opposite conclusions by the same publisher require resolution, not cherry-picking.
     const previous=unique.get(key);
     if(previous && previous.stance!==s.stance){
