@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { MILITARY_TOPICS } from "@/data/military-catalog";
-import { createMilitaryDraftPrototype, reviseMilitaryDraftPrototype } from "@/data/military-document-core";
+import { createMilitaryDraftPrototype, reviseMilitaryDraftPrototype, getMilitaryDraftPlan } from "@/data/military-document-core";
 import {
   validateMilitaryDraftExport,
   militaryDraftExportText,
@@ -43,6 +43,27 @@ assert.throws(()=>validateMilitaryDraftExport({...sample,usedRuleIds:["user-forg
 assert.throws(()=>validateMilitaryDraftExport({...sample,documentText:"Подать без проверки"}));
 assert.throws(()=>validateMilitaryDraftExport({...sample,requiresLegalReview:false}));
 assert.throws(()=>validateMilitaryDraftExport({...sample,filingReady:true} as unknown as Parameters<typeof validateMilitaryDraftExport>[0]));
+// Judicial prototypes must preserve strict pending-review flags and all
+// mandatory court/defendant particulars in the actual exported document.
+const courtTopic=MILITARY_TOPICS.find(x=>x.slug==="sudebnaya-zashchita")!;
+const courtSituation=courtTopic.situations[1];
+const courtPlan=getMilitaryDraftPlan(courtTopic.slug,courtSituation.slug)!;
+const courtValues=Object.fromEntries(courtPlan.requiredInputs.map(f=>[
+  f.key,"Проверенное тестовое значение: "+f.label+" — сведения из материалов дела"
+])) as Record<string,string>;
+const courtResult=createMilitaryDraftPrototype({
+  categorySlug:courtTopic.slug,situationSlug:courtSituation.slug,
+  values:courtValues,
+  versionId:"550e8400-e29b-41d4-a716-446655440055",
+  createdAt:"2026-10-29T14:00:00.000Z"
+}).documentResult;
+assert.equal(validateMilitaryDraftExport(courtResult).filingReady,false);
+assert(courtResult.documentText.includes("ПРЕДВАРИТЕЛЬНАЯ ПОДГОТОВКА"));
+assert(courtResult.documentText.includes("Компетентный суд"));
+assert(courtResult.documentText.includes("Ответчик"));
+assert.equal(courtResult.legalRegistryReviewedAt,null);
+const courtExport=militaryDraftExportText(courtResult);
+assert(courtExport.startsWith("ПРОЕКТ — НЕ ГОТОВ К ПОДАЧЕ"));
 // Real DOCX binary is created from the shared family-compatible document renderer.
 // No network, saved files, account data or public endpoints involved.
 (async()=>{
@@ -51,9 +72,18 @@ assert.throws(()=>validateMilitaryDraftExport({...sample,filingReady:true} as un
  assert(blob.size>500);
  assert.equal(bytes[0],0x50);
  assert.equal(bytes[1],0x4b);
+ const docxCourt=await createMilitaryDraftDocxBlob(courtResult);
+ assert(docxCourt.size>500);
+ const courtDocxBytes=new Uint8Array(await docxCourt.arrayBuffer());
+ assert.equal(courtDocxBytes[0],0x50);
+ assert.equal(courtDocxBytes[1],0x4b);
  const pdf=await createMilitaryDraftPdfBlob(sample);
  const pdfBytes=new Uint8Array(await pdf.arrayBuffer());
  assert(pdf.size>1000);
  assert.equal(new TextDecoder().decode(pdfBytes.slice(0,5)),"%PDF-");
+ const pdfCourt=await createMilitaryDraftPdfBlob(courtResult);
+ const pdfCourtBytes=new Uint8Array(await pdfCourt.arrayBuffer());
+ assert(pdfCourt.size>1000);
+ assert.equal(new TextDecoder().decode(pdfCourtBytes.slice(0,5)),"%PDF-");
  console.log(JSON.stringify({stage4DocxExport:true,stage4PdfExport:true,docxBytes:blob.size,pdfBytes:pdf.size,legalApproval:false,filingReady:false}));
 })().catch(error=>{console.error(error);process.exitCode=1;});
