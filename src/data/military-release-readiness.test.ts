@@ -13,6 +13,12 @@ assert.equal(readiness.total.internalDraftPrototypes, 121);
 assert.equal(readiness.total.missingInternalDraftPrototypes, 0);
 assert(readiness.categories.every(x=>x.internalDraftPrototypes===x.documentRequired));
 assert.equal(readiness.total.legallyReviewed, 0);
+assert.equal(readiness.legalGate.plannedCases,143);
+assert.equal(readiness.legalGate.plannedProvisions,143);
+assert.equal(readiness.legalGate.plannedDocuments,121);
+assert.equal(readiness.legalGate.individualCasesApproved,0);
+assert.equal(readiness.legalGate.provisionTextsOfficiallyVerified,0);
+assert.equal(readiness.legalGate.documentTargetsApproved,0);
 assert.equal(readiness.productionReady, false);
 
 const requestedTexts = new Set<string>();
