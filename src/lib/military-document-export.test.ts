@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { MILITARY_TOPICS } from "@/data/military-catalog";
-import { createMilitaryDraftPrototype } from "@/data/military-document-core";
+import { createMilitaryDraftPrototype, reviseMilitaryDraftPrototype } from "@/data/military-document-core";
 import {
   validateMilitaryDraftExport,
   militaryDraftExportText,
@@ -31,7 +31,13 @@ assert.equal(militaryDraftExportFileName(sample,"pdf").endsWith(".pdf"),true);
 assert.equal(militaryDraftExportFileName(sample,"docx").endsWith(".docx"),true);
 assert.throws(()=>validateMilitaryDraftExport({...sample,categorySlug:"semya-i-deti"}));
 assert.throws(()=>validateMilitaryDraftExport({...sample,documentSlug:"not-registered"}));
-assert.throws(()=>validateMilitaryDraftExport({...sample,source:"USER_EDITED"}));
+const edited=reviseMilitaryDraftPrototype({documentResult:sample,formData:{}},
+  "Уточнённый проект обращения. Прошу проверить сведения по делу и предоставить выписку из протокола заседания призывной комиссии.",{
+    versionId:"550e8400-e29b-41d4-a716-446655440020",
+    createdAt:"2026-10-29T12:00:00.000Z"
+  });
+assert.equal(validateMilitaryDraftExport(edited.documentResult).source,"USER_EDITED");
+assert(militaryDraftExportText(edited.documentResult).includes("Уточнённый проект обращения"));
 assert.throws(()=>validateMilitaryDraftExport({...sample,legalRegistryReviewedAt:"2026-10-29"}));
 assert.throws(()=>validateMilitaryDraftExport({...sample,usedRuleIds:["user-forged"]}));
 assert.throws(()=>validateMilitaryDraftExport({...sample,documentText:"Подать без проверки"}));
