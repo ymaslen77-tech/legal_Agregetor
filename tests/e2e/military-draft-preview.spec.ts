@@ -77,7 +77,7 @@ test("encrypted cabinet saving is opt-in, version-specific and never a legal app
  await workbench.getByTestId("military-draft-editor").fill(
    "Новая индивидуальная редакция черновика со сведениями по обращению и подтверждающими материалами. Проверена только структура."
  );
- await expect(workbench.getByRole("button",{name:"Сохранить в мои документы"})).toBeDisabled();
+ await expect(workbench.getByRole("button",{name:"Версия сохранена"})).toBeDisabled();
  await workbench.getByRole("button",{name:"Сохранить новую версию"}).click();
  await expect(workbench.getByRole("button",{name:"Сохранить в мои документы"})).toBeEnabled();
  await workbench.getByRole("button",{name:"Сохранить в мои документы"}).click();
