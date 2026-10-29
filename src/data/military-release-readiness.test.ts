@@ -28,7 +28,16 @@ assert.equal(readiness.legalGate.plannedDocuments,121);
 assert.equal(readiness.legalGate.individualCasesApproved,0);
 assert.equal(readiness.legalGate.provisionTextsOfficiallyVerified,0);
 assert.equal(readiness.legalGate.documentTargetsApproved,0);
-assert.equal(readiness.productionReady, false);
+assert.equal(readiness.publicDraftsEnabled,false);
+assert.equal(readiness.productionReady,false);
+const optedIn=getMilitaryReleaseReadiness({NODE_ENV:"production",ENABLE_MILITARY_PUBLIC_DRAFTS:"true"});
+assert.equal(optedIn.publicDraftsEnabled,true);
+assert.equal(optedIn.total.draftGenerators,121);
+assert.equal(optedIn.total.missingDraftGenerators,0);
+assert.equal(optedIn.total.sourceVerified,1);
+assert.equal(optedIn.sourceAcceptance.manualSignOffRequired,false);
+assert.equal(optedIn.productionReady,true,"Technical coverage, not live VPS QA");
+assert.equal(getMilitaryReleaseReadiness({NODE_ENV:"production"}).productionReady,false);
 
 const requestedTexts = new Set<string>();
 for (const topic of MILITARY_TOPICS) {

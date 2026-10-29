@@ -18,6 +18,9 @@ on:
       - "src/app/voennoe-pravo/**"
       - "tests/e2e/military-draft-preview.spec.ts"
       - "tests/e2e/military-draft-all.spec.ts"
+      - "tests/e2e/military-production-draft.spec.ts"
+      - "src/app/account/documents/page.tsx"
+      - "src/data/military-preview-access.test.ts"
       - "src/components/documents/SaveLegalDocumentButton.tsx"
       - "src/components/account/SavedLegalDocumentsCabinet.tsx"
       - "src/lib/saved-document-validation.ts"
@@ -145,6 +148,40 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: military-archive-integration-failure
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+          retention-days: 3
+
+  production-draft-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CI: "true"
+      ENABLE_MILITARY_PUBLIC_DRAFTS: "true"
+      ENABLE_MILITARY_DRAFT_PREVIEW: "false"
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run prisma:generate
+      - name: Build an opted-in production app with synthetic environment
+        run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Verify production draft forms in 20 categories and exports
+        run: npx playwright test tests/e2e/military-production-draft.spec.ts --workers=1
+      - name: Preserve failing test evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: military-production-draft-smoke
           path: |
             test-results/
             playwright-report/
