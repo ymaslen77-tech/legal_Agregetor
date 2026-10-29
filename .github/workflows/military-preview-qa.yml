@@ -122,8 +122,12 @@ jobs:
       - run: npm ci
       - name: Generate disposable test-only archive keys
         run: |
-          echo "JWT_SECRET=$(node -e 'process.stdout.write(require("node:crypto").randomBytes(32).toString("base64"))')" >> "$GITHUB_ENV"
-          echo "DOCUMENT_STORAGE_KEY=$(node -e 'process.stdout.write(require("node:crypto").randomBytes(32).toString("base64"))')" >> "$GITHUB_ENV"
+          JWT_SECRET=$(node -e 'process.stdout.write(require("node:crypto").randomBytes(32).toString("base64"))')
+          DOCUMENT_STORAGE_KEY=$(node -e 'process.stdout.write(require("node:crypto").randomBytes(32).toString("base64"))')
+          echo "::add-mask::$JWT_SECRET"
+          echo "::add-mask::$DOCUMENT_STORAGE_KEY"
+          echo "JWT_SECRET=$JWT_SECRET" >> "$GITHUB_ENV"
+          echo "DOCUMENT_STORAGE_KEY=$DOCUMENT_STORAGE_KEY" >> "$GITHUB_ENV"
       - run: npm run prisma:generate
       - name: Apply full schema migrations to disposable CI Postgres
         run: npx prisma migrate deploy
