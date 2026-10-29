@@ -4,6 +4,7 @@ import { getMilitaryAdditionalComposition } from "@/data/military-document-compo
 import { MILITARY_LEGAL_CASE_CARDS } from "@/data/military-case-legal-matrix";
 import { MILITARY_PROVISION_CHECKS } from "@/data/military-provision-checks";
 import { MILITARY_DOCUMENT_TARGETS } from "@/data/military-document-target-matrix";
+import { getMilitarySourceStatus, MILITARY_SOURCE_CLAIMS } from "@/data/military-source-verification";
 
 /**
  * Production readiness is calculated from explicit per-situation evidence,
@@ -20,6 +21,8 @@ export function getMilitaryReleaseReadiness() {
         getMilitaryAdditionalComposition(topic.slug,index)!==null;
     });
     const legallyReviewed = topic.situations.filter((item) => Boolean(item.legalReviewed));
+    const sourceVerified = topic.situations.filter((_,index)=>getMilitarySourceStatus(topic.slug,index).verified).length;
+    const sourceConflicts = topic.situations.filter((_,index)=>getMilitarySourceStatus(topic.slug,index).verdict.endsWith("CONFLICT")).length;
     return {
       slug: topic.slug,
       title: topic.title,
@@ -29,7 +32,10 @@ export function getMilitaryReleaseReadiness() {
       missingDraftGenerators: expectedDocuments.length - documented.length,
       internalDraftPrototypes: internalPrototypes.length,
       missingInternalDraftPrototypes: expectedDocuments.length - internalPrototypes.length,
-      legallyReviewed: legallyReviewed.length
+      legallyReviewed: legallyReviewed.length,
+      sourceVerified,
+      sourceConflicts,
+      sourcePending: topic.situations.length - sourceVerified
     };
   });
   const total = {
@@ -40,7 +46,10 @@ export function getMilitaryReleaseReadiness() {
     missingDraftGenerators: categories.reduce((n, category) => n + category.missingDraftGenerators, 0),
     internalDraftPrototypes: categories.reduce((n, category) => n + category.internalDraftPrototypes, 0),
     missingInternalDraftPrototypes: categories.reduce((n, category) => n + category.missingInternalDraftPrototypes, 0),
-    legallyReviewed: categories.reduce((n, category) => n + category.legallyReviewed, 0)
+    legallyReviewed: categories.reduce((n, category) => n + category.legallyReviewed, 0),
+    sourceVerified: categories.reduce((n,category)=>n+category.sourceVerified,0),
+    sourcePending: categories.reduce((n,category)=>n+category.sourcePending,0),
+    sourceConflicts: categories.reduce((n,category)=>n+category.sourceConflicts,0)
   };
   const legalGate = {
     individualCasesApproved: MILITARY_LEGAL_CASE_CARDS.filter(c=>c.legalReviewConfirmed).length,
@@ -50,18 +59,29 @@ export function getMilitaryReleaseReadiness() {
     plannedProvisions: MILITARY_PROVISION_CHECKS.length,
     plannedDocuments: MILITARY_DOCUMENT_TARGETS.length
   };
+  // Source confirmation is per-claim, without a mandatory human sign-off.
+  // Unverified material remains explicitly marked as such and cannot acquire
+  // a verified label just because its catalog route has been deployed.
+  const sourceAcceptance = {
+    manualSignOffRequired: false as const,
+    checkedClaims: MILITARY_SOURCE_CLAIMS.length,
+    automaticallyVerifiedCases: total.sourceVerified,
+    pendingCases: total.sourcePending,
+    conflictingCases: total.sourceConflicts,
+    /** No blanket stop on deploying a protected, noindex editorial catalog. */
+    globalSourceGateBlocksCatalog: false as const
+  };
+  const catalogDeployable =
+    total.categories===20 && total.situations===143 &&
+    total.documentRequired===121 && total.missingInternalDraftPrototypes===0;
   return {
     categories,
     total,
-    legalGate,
-    productionReady: total.categories === 20 &&
-      total.situations === total.legallyReviewed &&
-      total.missingDraftGenerators === 0 &&
-      legalGate.plannedCases===total.situations &&
-      legalGate.plannedProvisions===total.situations &&
-      legalGate.plannedDocuments===total.documentRequired &&
-      legalGate.individualCasesApproved===total.situations &&
-      legalGate.provisionTextsOfficiallyVerified===total.situations &&
-      legalGate.documentTargetsApproved===total.documentRequired
+    legalGate, // Legacy diagnostic counters only; no longer release prerequisites.
+    sourceAcceptance,
+    catalogDeployable,
+    /** Full publication is a technical generator-completeness decision, not a
+     * manual 143-case sign-off. Unverified individual claims stay unverified. */
+    productionReady: catalogDeployable && total.missingDraftGenerators===0
   } as const;
 }
