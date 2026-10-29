@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { AccountPageHeader } from "@/components/account/AccountShell";
 import { SavedLegalDocumentsCabinet } from "@/components/account/SavedLegalDocumentsCabinet";
+import { isMilitaryDraftPreviewEnabled } from "@/data/military-preview-access";
 
 export const metadata: Metadata = {
   title: "Мои документы",
@@ -17,7 +18,7 @@ export default function AccountDocumentsPage() {
         title="Мои документы"
         description="Зашифрованный архив сформированных версий: открыть, скачать копию, удалить."
       />
-      <SavedLegalDocumentsCabinet />
+      <SavedLegalDocumentsCabinet allowMilitaryEditing={isMilitaryDraftPreviewEnabled(process.env)} />
     </div>
   );
 }
