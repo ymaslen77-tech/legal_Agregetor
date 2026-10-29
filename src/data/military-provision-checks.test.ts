@@ -6,7 +6,7 @@ import { getMilitaryProvisionCheck, getMilitaryProvisionCoverage, MILITARY_PROVI
 
 const coverage=getMilitaryProvisionCoverage();
 assert.equal(coverage.cases,143);
-assert.equal(coverage.provisionsCrosschecked,53);
+assert.equal(coverage.provisionsCrosschecked,64);
 assert.equal(coverage.categoriesTouched,11);
 assert.equal(coverage.officialTextVerified,0,"Do not claim to have read blocked official portal original");
 assert.equal(coverage.legallyApproved,0);
@@ -115,7 +115,35 @@ assert(svoRegion.caution.includes("конкретный субъект РФ"));
 assert(!svoRegion.provisions.some(p=>p.applicability.includes("автоматически полагается")));
 const svoUnpaid=getMilitaryProvisionCheck("vyplaty-za-uchastie-v-svo",6)!;
 assert(svoUnpaid.provisions.some(p=>p.article.includes("4 и 5")));
-assert(svoUnpaid.caution.includes("нельзя применять сроки"));
+assert(svoUnpaid.caution.toLowerCase().includes("нельзя применять сроки"));
+// Family-death / missing-person cases and injury-care cases require distinct legal pathways.
+for(const i of [0,1,2,3,4,5,6,7]){
+ const checked=getMilitaryProvisionCheck("gibel-i-vyplaty-seme",i);
+ assert(checked,"Missing family benefit / missing-person legal check: "+i);
+ assert.equal(checked.legalReviewConfirmed,false);
+ assert.equal(checked.officialTextVerified,false);
+}
+for(const i of [0,1,2,3,4,5,6,7]){
+ const checked=getMilitaryProvisionCheck("ranenie-travma-gospital",i);
+ assert(checked,"Missing wound / care legal check: "+i);
+ assert.equal(checked.legalReviewConfirmed,false);
+ assert.equal(checked.officialTextVerified,false);
+}
+const vanished=getMilitaryProvisionCheck("gibel-i-vyplaty-seme",4)!;
+assert(vanished.provisions.some(p=>p.act.includes("30.11.1994")&&p.article.includes("24")));
+assert(vanished.provisions.some(p=>p.act.includes("30.11.1994")&&p.article.includes("23")));
+assert(vanished.caution.includes("безвестно отсутствующего"));
+const distinctInsurance=getMilitaryProvisionCheck("gibel-i-vyplaty-seme",6)!;
+assert(distinctInsurance.provisions.some(p=>p.act.includes("28.03.1998")&&p.article.includes("2")));
+const childEntitlement=getMilitaryProvisionCheck("gibel-i-vyplaty-seme",7)!;
+assert(childEntitlement.provisions.some(p=>p.applicability.includes("486-ФЗ")));
+const care=getMilitaryProvisionCheck("ranenie-travma-gospital",0)!;
+assert(care.provisions[0].act.includes("76-ФЗ"));
+assert(care.provisions[0].article.startsWith("статья 16"));
+for(const i of [1,2,3,6,7]){
+ const checked=getMilitaryProvisionCheck("ranenie-travma-gospital",i)!;
+ assert(checked.provisions.some(p=>p.act.includes("76-ФЗ")&&p.article.startsWith("статья 16")));
+}
 const mHealth=getMilitaryProvisionCheck("mobilizaciya",4)!;
 assert(mHealth.provisions.some(p=>p.applicability.includes("шести месяцев")));
 assert(!mHealth.provisions.some(p=>p.applicability.includes("до одного года")));
