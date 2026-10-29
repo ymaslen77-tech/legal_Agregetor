@@ -4,6 +4,7 @@ import {
   type MilitarySituation
 } from "@/data/military-catalog";
 import { getMilitaryDocumentCandidate } from "@/data/military-document-candidates";
+import { getMilitaryAdditionalComposition } from "@/data/military-document-compositions";
 
 /**
  * Editorial relationships only: no guessed legal rights, automatic statutes,
@@ -182,7 +183,7 @@ export function getMilitaryRelatedSituations(
  * It points at its real on-page anchor, never an imaginary /documents/ slug.
  */
 export function getMilitaryRelatedDocuments(
-  topic: MilitaryTopic, situation: MilitarySituation
+  topic: MilitaryTopic, situation: MilitarySituation, includeUnreviewedDrafts=false
 ): MilitaryRelatedLink[] {
   const links: MilitaryRelatedLink[] = [];
   const seen = new Set<string>();
@@ -198,11 +199,12 @@ export function getMilitaryRelatedDocuments(
   ];
   for (const ref of refs) {
     const candidate = getMilitaryDocumentCandidate(ref.topic,ref.situation);
-    if (!candidate) continue;
+    const added = includeUnreviewedDrafts ? getMilitaryAdditionalComposition(ref.topic.slug,ref.topic.situations.findIndex(s=>s.slug===ref.situation.slug)) : null;
+    if (!candidate && !added) continue;
     const href = militarySituationHref(ref.topic,ref.situation) + "#military-document-preparation";
     if (seen.has(href)) continue;
     seen.add(href);
-    links.push({href,title:candidate.subject,detail:ref.situation.title,
+    links.push({href,title:(candidate??added!.candidate).subject,detail:ref.situation.title,
       topicSlug:ref.topic.slug,situationSlug:ref.situation.slug,kind:"document"});
   }
   return links.slice(0,4);
