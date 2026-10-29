@@ -6,8 +6,10 @@ import { getMilitaryProvisionCheck, getMilitaryProvisionCoverage, MILITARY_PROVI
 
 const coverage=getMilitaryProvisionCoverage();
 assert.equal(coverage.cases,143);
+assert.equal(coverage.provisionsMapped,143);
 assert.equal(coverage.provisionsCrosschecked,64);
-assert.equal(coverage.categoriesTouched,11);
+assert.equal(coverage.officialReviewPending,79);
+assert.equal(coverage.categoriesTouched,20);
 assert.equal(coverage.officialTextVerified,0,"Do not claim to have read blocked official portal original");
 assert.equal(coverage.legallyApproved,0);
 const unique=new Set<string>();
@@ -22,7 +24,7 @@ for(const item of MILITARY_PROVISION_CHECKS){
  assert.equal(item.legalReviewConfirmed,false);
  assert.equal(item.officialTextVerified,false);
  assert(["2026-10-28","2026-10-29"].includes(item.checkedAt));
- assert.equal(item.sourceStatus,"CURRENT_THIRD_PARTY_TEXT_CROSSCHECKED_OFFICIAL_RECORD_NOT_OPENED");
+ assert(["CURRENT_THIRD_PARTY_TEXT_CROSSCHECKED_OFFICIAL_RECORD_NOT_OPENED","EDITORIAL_PROVISION_MAPPING_OFFICIAL_REVIEW_PENDING"].includes(item.sourceStatus));
  assert(item.provisions.length>0);
  for(const provision of item.provisions){
    assert(provision.article.startsWith("статья")||provision.article.startsWith("статьи")||provision.article.startsWith("пункт"));
@@ -35,6 +37,26 @@ for(const item of MILITARY_PROVISION_CHECKS){
  assert.equal(card.officialPublicationChecked,false);
  assert.equal(getMilitaryProvisionCheck(item.topicSlug,item.situationIndex),item);
 }
+// Stage 2 editorial-completeness gate: one independent map for each catalog situation.
+const mappedKeys = new Set(MILITARY_PROVISION_CHECKS.map(x=>x.topicSlug+":"+x.situationIndex));
+const catalogKeys = MILITARY_TOPICS.flatMap(topic=>topic.situations.map((_,i)=>topic.slug+":"+i));
+assert.equal(catalogKeys.length,143);
+assert.equal(mappedKeys.size,catalogKeys.length);
+assert(catalogKeys.every(key=>mappedKeys.has(key)),"Every legal situation must have its own mapping");
+const provisional = MILITARY_PROVISION_CHECKS.filter(x=>x.sourceStatus==="EDITORIAL_PROVISION_MAPPING_OFFICIAL_REVIEW_PENDING");
+assert.equal(provisional.length,79);
+assert(provisional.every(x=>x.provisions.length>0&&x.caution.length>80));
+assert(provisional.every(x=>x.provisions.every(p=>p.applicability.includes("Доказательства:")&&p.applicability.includes("Адресат требует подтверждения:"))));
+assert(provisional.every(x=>x.officialTextVerified===false&&x.legalReviewConfirmed===false));
+const priorResearch = MILITARY_PROVISION_CHECKS.filter(x=>x.sourceStatus==="CURRENT_THIRD_PARTY_TEXT_CROSSCHECKED_OFFICIAL_RECORD_NOT_OPENED");
+assert.equal(priorResearch.length,64);
+for (const slug of ["disciplinarnye-vzyskaniya","samovolnoe-ostavlenie-chasti","voennaya-ipoteka-i-zhile","voinskiy-uchet-i-dokumenty","alternativnaya-grazhdanskaya-sluzhba","veterany-pensii-i-lgoty","sudebnaya-zashchita"]) {
+ const topic=MILITARY_TOPICS.find(x=>x.slug===slug)!;
+ assert(topic.situations.every((_,i)=>getMilitaryProvisionCheck(slug,i)!==null),"Unmapped legal category: "+slug);
+}
+assert(getMilitaryProvisionCheck("samovolnoe-ostavlenie-chasti",0)!.provisions.some(p=>p.act.includes("УК РФ")&&p.article.includes("337")));
+assert(getMilitaryProvisionCheck("alternativnaya-grazhdanskaya-sluzhba",1)!.provisions.some(p=>p.article.includes("11")));
+assert(getMilitaryProvisionCheck("sudebnaya-zashchita",0)!.provisions.some(p=>p.act.includes("1-ФКЗ")));
 const requiredCases:readonly [string,number,string][]=[
  ["otsrochka-ot-sluzhby",1,"статья 24"],
  ["otsrochka-ot-sluzhby",2,"статья 24"],
