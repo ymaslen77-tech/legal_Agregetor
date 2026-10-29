@@ -6,7 +6,7 @@ import { getMilitaryProvisionCheck, getMilitaryProvisionCoverage, MILITARY_PROVI
 
 const coverage=getMilitaryProvisionCoverage();
 assert.equal(coverage.cases,143);
-assert.equal(coverage.provisionsCrosschecked,48);
+assert.equal(coverage.provisionsCrosschecked,53);
 assert.equal(coverage.categoriesTouched,11);
 assert.equal(coverage.officialTextVerified,0,"Do not claim to have read blocked official portal original");
 assert.equal(coverage.legallyApproved,0);
@@ -21,7 +21,7 @@ for(const item of MILITARY_PROVISION_CHECKS){
  unique.add(key);
  assert.equal(item.legalReviewConfirmed,false);
  assert.equal(item.officialTextVerified,false);
- assert.equal(item.checkedAt,"2026-10-28");
+ assert(["2026-10-28","2026-10-29"].includes(item.checkedAt));
  assert.equal(item.sourceStatus,"CURRENT_THIRD_PARTY_TEXT_CROSSCHECKED_OFFICIAL_RECORD_NOT_OPENED");
  assert(item.provisions.length>0);
  for(const provision of item.provisions){
@@ -96,6 +96,26 @@ const moneyPremium=getMilitaryProvisionCheck("denezhnoe-dovolstvie",5)!;
 assert(moneyPremium.caution.includes("фиксированный процент"));
 const moneyEvidence=getMilitaryProvisionCheck("denezhnoe-dovolstvie",6)!;
 assert(moneyEvidence.caution.includes("выдуманный срок"));
+// Individual SVO payment coverage: federal one-off, monthly, refusal, region and enforcement.
+for(const index of [0,1,2,3,4,5,6]){
+ const caseCheck=getMilitaryProvisionCheck("vyplaty-za-uchastie-v-svo",index);
+ assert(caseCheck,"Missing SVO payment research #"+index);
+ assert.equal(caseCheck.legalReviewConfirmed,false);
+ assert.equal(caseCheck.officialTextVerified,false);
+}
+const svoContract=getMilitaryProvisionCheck("vyplaty-za-uchastie-v-svo",1)!;
+assert(svoContract.provisions.some(p=>p.act.includes("644")&&p.article.includes("пункты 1")));
+assert(svoContract.provisions.some(p=>p.act.includes("787")));
+assert(svoContract.caution.includes("Не суммировать"));
+const svoMonthly=getMilitaryProvisionCheck("vyplaty-za-uchastie-v-svo",2)!;
+assert(svoMonthly.caution.includes("точной программы"));
+const svoRegion=getMilitaryProvisionCheck("vyplaty-za-uchastie-v-svo",5)!;
+assert(svoRegion.provisions.some(p=>p.article==="пункт 3"));
+assert(svoRegion.caution.includes("конкретный субъект РФ"));
+assert(!svoRegion.provisions.some(p=>p.applicability.includes("автоматически полагается")));
+const svoUnpaid=getMilitaryProvisionCheck("vyplaty-za-uchastie-v-svo",6)!;
+assert(svoUnpaid.provisions.some(p=>p.article.includes("4 и 5")));
+assert(svoUnpaid.caution.includes("нельзя применять сроки"));
 const mHealth=getMilitaryProvisionCheck("mobilizaciya",4)!;
 assert(mHealth.provisions.some(p=>p.applicability.includes("шести месяцев")));
 assert(!mHealth.provisions.some(p=>p.applicability.includes("до одного года")));
