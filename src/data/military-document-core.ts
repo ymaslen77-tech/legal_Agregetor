@@ -14,7 +14,7 @@ import { addDocumentVersion, type DocumentVersionEntry } from "@/lib/document-ve
  * DOCUMENT_RESULT_V1 envelope. NOT a public generator registration.
  *
  * 121 target specifications, 18 legacy deterministic draft prototypes,
- * 83 missing individual document compositions (20 new unpublished prototypes). No approved legal rules.
+ * 103 additional unpublished compositions. No legally approved rules.
  */
 export const MILITARY_DOCUMENT_CORE_VERSION = "military-core-v1" as const;
 export type MilitaryDraftPlan = Omit<MilitaryDocumentSpecification, "canonicalDocumentUrl"> & Readonly<{
@@ -79,7 +79,7 @@ export function getMilitaryDraftPlan(categorySlug:string,situationSlug:string): 
     documentSlug: target.documentSlug, title: target.documentTitle,
     selectedSituationIsImplicit:true,
     requiredInputs: [...fields,...extraInputs(target.primaryKind),...(added?.additionalFields??[])],
-    /** No invented demand for 103 documents without a verified individual composition. */
+    /** Only explicit per-situation compositions, never invented generic legal demands. */
     documentRequest: candidate?.requestText ?? added?.candidate.requestText ?? "",
     competentRecipientRule: target.recipientToVerify,
     verifiedLegalRules: [],
@@ -115,8 +115,8 @@ export type MilitaryDraftCoreOutput = Readonly<{
   formData:Readonly<Record<string,string>>;
 }>;
 /**
- * Internal prototype renderer. It fails closed for the 83 unimplemented
- * compositions, for informational pages, and for alternate judicial paths.
+ * Internal prototype renderer. It fails closed for unknown, informational,
+ * or alternate judicial outcomes. This is NOT a legal filing generator.
  * No user-supplied legal norm is ever treated as a verified rule.
  */
 export function createMilitaryDraftPrototype(input:MilitaryDraftInput):MilitaryDraftCoreOutput {
