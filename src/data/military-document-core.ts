@@ -138,6 +138,7 @@ export function createMilitaryDraftPrototype(input:MilitaryDraftInput):MilitaryD
     cleanValues.facts,
     cleanValues.caseReference ? "Реквизиты: "+cleanValues.caseReference : "",
     cleanValues.evidence ? "Подтверждающие материалы: "+cleanValues.evidence : "",
+    ...extraInputs(plan.kind).map(f=>f.label+": "+cleanValues[f.key]),
     ...(added?.additionalFields.map(f=>f.label+": "+cleanValues[f.key])??[])
   ].filter(Boolean).join("\n");
   const documentText=buildMilitaryDraft(candidate,{
