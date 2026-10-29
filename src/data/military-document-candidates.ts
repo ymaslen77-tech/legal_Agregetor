@@ -1,6 +1,6 @@
 import type { MilitarySituation, MilitaryTopic } from "@/data/military-catalog";
 import { getMilitaryGuide } from "@/data/military-guidance";
-export type MilitaryDocumentType = "REQUEST_COPY"|"VVK_REVIEW"|"REPORT"|"COMPLAINT"|"PAYMENT_REQUEST";
+export type MilitaryDocumentType = "REQUEST_COPY"|"VVK_REVIEW"|"REPORT"|"COMPLAINT"|"PAYMENT_REQUEST"|"APPLICATION";
 export type MilitaryDocumentCandidate = Readonly<{kind:MilitaryDocumentType;subject:string;title:string;requestText:string;factsPrompt:string;sourceRefs?:readonly {name:string;url:string}[]}>;
 const candidates:Readonly<Record<string,MilitaryDocumentCandidate>>={
   "kontraktnaya-sluzhba|Как получить копию заключённого контракта?":{kind:"REQUEST_COPY",subject:"Копия контракта о прохождении военной службы",title:"Как получить копию заключённого контракта?",requestText:"Прошу выдать мне заверенную копию заключённого со мной контракта о прохождении военной службы с имеющимися дополнительными соглашениями.",factsPrompt:"Укажите дату заключения контракта, подразделение и имеющиеся реквизиты договора."},
