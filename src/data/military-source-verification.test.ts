@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import {
-  evaluateMilitarySourceClaim, getMilitarySourceStatus, MILITARY_SOURCE_CLAIMS,
+  evaluateMilitarySourceClaim, getMilitarySourceStatus, getMilitarySourceReviewQueue, MILITARY_SOURCE_CLAIMS,
   type MilitarySourceClaim, type MilitarySourceEvidence
 } from "@/data/military-source-verification";
 import { MILITARY_TOPICS } from "@/data/military-catalog";
@@ -55,4 +55,10 @@ for(const topic of MILITARY_TOPICS){
     assert.equal(status.verdict,"NEEDS_SOURCES");
   }
 }
+const queue=getMilitarySourceReviewQueue();
+assert.equal(queue.length,143);
+assert.equal(new Set(queue.map(x=>x.topicSlug+":"+x.situationIndex)).size,143);
+assert.equal(queue.filter(x=>x.previouslyCrosscheckedUnofficially).length,64);
+assert(queue.every(x=>x.candidateUrls.length>0));
+assert(queue.every(x=>x.automaticallyVerified===false));
 console.log(JSON.stringify({automaticTwoSourceDecision:true,officialPrecedence:true,noMassApproval:true,cases:143}));
