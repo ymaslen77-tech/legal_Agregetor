@@ -37,6 +37,8 @@ assert.equal(evaluateMilitarySourceClaim(claim([official,{...consultant,url:"htt
 assert.equal(evaluateMilitarySourceClaim(claim([official,{...consultant,kind:"OFFICIAL"}])).verdict,"NEEDS_SOURCES");
 assert.equal(evaluateMilitarySourceClaim(claim([official,{...consultant,url:official.url}])).verdict,"NEEDS_SOURCES");
 assert.equal(evaluateMilitarySourceClaim(claim([official,{...official,url:"https://www.pravo.gov.ru"}])).verdict,"NEEDS_SOURCES");
+assert.equal(evaluateMilitarySourceClaim(claim([consultant,{...consultant,url:"https://storage.consultant.ru/site20/202512/30/pres_301225-998.pdf"}])).verdict,"NEEDS_SOURCES");
+assert.equal(evaluateMilitarySourceClaim(claim([garant,{...garant,url:"https://base.garant.ru/412986361/"}])).verdict,"NEEDS_SOURCES");
 assert.equal(evaluateMilitarySourceClaim(claim([consultant,garant,{...official,stance:"CONTRADICTS"}])).verdict,"OFFICIAL_CONFLICT");
 assert.equal(evaluateMilitarySourceClaim(claim([consultant,garant,{...official,stance:"CONTRADICTS"}])).verified,false);
 assert.equal(evaluateMilitarySourceClaim(claim([consultant,{...consultant,stance:"CONTRADICTS"},official])).verdict,"SOURCE_CONFLICT");
