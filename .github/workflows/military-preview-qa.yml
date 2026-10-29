@@ -1,0 +1,49 @@
+name: Military unreviewed draft browser QA
+on:
+  push:
+    branches:
+      - feature/military-rebuild-from-zero-20261027
+    paths:
+      - ".github/workflows/military-preview-qa.yml"
+      - "src/components/documents/MilitaryDraftWorkbench.tsx"
+      - "src/data/military-document-core.ts"
+      - "src/data/military-document-compositions*.ts"
+      - "src/data/military-preview-access.ts"
+      - "src/app/voennoe-pravo/**"
+      - "tests/e2e/military-draft-preview.spec.ts"
+      - "tests/e2e/military-catalog.spec.ts"
+      - "playwright.config.ts"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser-drafts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CI: "true"
+      ENABLE_MILITARY_DRAFT_PREVIEW: "true"
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run prisma:generate
+      - run: npx playwright install --with-deps chromium
+      - name: Verify guarded document previews in a local-only dev server
+        run: npm run test:e2e:military-preview
+      - name: Upload failure screenshots and reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: military-draft-browser-qa
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+          retention-days: 3
