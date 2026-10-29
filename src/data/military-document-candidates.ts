@@ -1,6 +1,6 @@
 import type { MilitarySituation, MilitaryTopic } from "@/data/military-catalog";
 import { getMilitaryGuide } from "@/data/military-guidance";
-export type MilitaryDocumentType = "REQUEST_COPY"|"VVK_REVIEW"|"REPORT"|"COMPLAINT"|"PAYMENT_REQUEST"|"APPLICATION";
+export type MilitaryDocumentType = "REQUEST_COPY"|"VVK_REVIEW"|"REPORT"|"COMPLAINT"|"PAYMENT_REQUEST"|"APPLICATION"|"ADMINISTRATIVE_CLAIM"|"PROCEDURAL_MOTION"|"PROCEDURAL_COMPLAINT"|"PROCEDURAL_APPEAL";
 export type MilitaryDocumentCandidate = Readonly<{kind:MilitaryDocumentType;subject:string;title:string;requestText:string;factsPrompt:string;sourceRefs?:readonly {name:string;url:string}[]}>;
 const candidates:Readonly<Record<string,MilitaryDocumentCandidate>>={
   "kontraktnaya-sluzhba|Как получить копию заключённого контракта?":{kind:"REQUEST_COPY",subject:"Копия контракта о прохождении военной службы",title:"Как получить копию заключённого контракта?",requestText:"Прошу выдать мне заверенную копию заключённого со мной контракта о прохождении военной службы с имеющимися дополнительными соглашениями.",factsPrompt:"Укажите дату заключения контракта, подразделение и имеющиеся реквизиты договора."},
@@ -38,11 +38,13 @@ function clean(value:string,max=3000){return value.trim().slice(0,max);}
 export function buildMilitaryDraft(candidate:MilitaryDocumentCandidate,input:MilitaryDraftInput):string{
  const applicant=clean(input.applicant,500),recipient=clean(input.recipient,500),facts=clean(input.facts),attachments=clean(input.attachments??"",1500);
  if(applicant.length<5||recipient.length<5||facts.length<15)throw new Error("Не заполнены необходимые реквизиты и факты обращения.");
- const heading=candidate.kind==="REPORT"?"РАПОРТ":candidate.kind==="COMPLAINT"?"ЖАЛОБА":"ЗАЯВЛЕНИЕ";
+ const heading=candidate.kind==="REPORT"?"РАПОРТ":candidate.kind==="COMPLAINT"?"ЖАЛОБА":candidate.kind==="ADMINISTRATIVE_CLAIM"?"АДМИНИСТРАТИВНЫЙ ИСК — НЕПРОВЕРЕННЫЙ ПРОЕКТ":candidate.kind==="PROCEDURAL_MOTION"?"ПРОЦЕССУАЛЬНОЕ ХОДАТАЙСТВО — ПРОЕКТ":candidate.kind==="PROCEDURAL_COMPLAINT"?"ПРОЦЕССУАЛЬНАЯ ЖАЛОБА — ПРОЕКТ":candidate.kind==="PROCEDURAL_APPEAL"?"АПЕЛЛЯЦИОННАЯ ЖАЛОБА — ПРОЕКТ":"ЗАЯВЛЕНИЕ";
  const intro=candidate.kind==="REQUEST_COPY"?"Прошу предоставить документ или сведения по следующему вопросу:"
  :candidate.kind==="VVK_REVIEW"?"Прошу рассмотреть обращение о проверке заключения военно-врачебной комиссии:"
  :candidate.kind==="PAYMENT_REQUEST"?"Прошу провести проверку начисления и выплаты денежного довольствия:"
  :candidate.kind==="COMPLAINT"?"Прошу проверить обстоятельства нарушения и принять решение в пределах компетенции:"
+ :candidate.kind==="ADMINISTRATIVE_CLAIM"?"ПРЕДВАРИТЕЛЬНАЯ ПОДГОТОВКА: судебный порядок, подсудность, сроки и приложения НЕ ПРОВЕРЕНЫ:"
+ :["PROCEDURAL_MOTION","PROCEDURAL_COMPLAINT","PROCEDURAL_APPEAL"].includes(candidate.kind)?"ПРЕДВАРИТЕЛЬНАЯ ПОДГОТОВКА: проверить процессуальный кодекс, статус и стадию дела:"
  :"Прошу рассмотреть следующий вопрос в установленном порядке:";
  const date=new Intl.DateTimeFormat("ru-RU").format(new Date());
  return [
