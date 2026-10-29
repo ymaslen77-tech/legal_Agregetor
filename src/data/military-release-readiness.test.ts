@@ -9,6 +9,9 @@ assert.equal(readiness.total.situations, 143);
 assert.equal(readiness.total.documentRequired, 121);
 assert.equal(readiness.total.draftGenerators, 18);
 assert.equal(readiness.total.missingDraftGenerators, 103);
+assert.equal(readiness.total.internalDraftPrototypes, 121);
+assert.equal(readiness.total.missingInternalDraftPrototypes, 0);
+assert(readiness.categories.every(x=>x.internalDraftPrototypes===x.documentRequired));
 assert.equal(readiness.total.legallyReviewed, 0);
 assert.equal(readiness.productionReady, false);
 
