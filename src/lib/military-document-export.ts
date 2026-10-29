@@ -15,7 +15,7 @@ export function validateMilitaryDraftExport(input:DocumentResultV1):DocumentResu
      result.requiresLegalReview!==true ||
      result.legalRegistryReviewedAt!==null ||
      result.usedRuleIds.length!==0 ||
-     result.source!=="DETERMINISTIC" ||
+     !["DETERMINISTIC","USER_EDITED"].includes(result.source) ||
      !result.documentText.startsWith("ЧЕРНОВИК — НЕ ГОТОВ К ПОДАЧЕ")) {
     throw new Error("Экспорт неподтверждённого военного документа запрещён.");
   }
