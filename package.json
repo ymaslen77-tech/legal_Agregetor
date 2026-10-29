@@ -45,7 +45,7 @@
     "audit:routes-43": "tsx scripts/audit-legal-routes-43.ts",
     "test:qna-route-planning": "tsx src/lib/legal-qna-route-planning.test.ts",
     "test:seo-core": "tsx src/lib/sitemap.test.ts && tsx src/lib/jsonld.test.ts",
-    "test:military": "tsx src/data/military-catalog.test.ts && tsx src/data/military-guidance.test.ts && tsx src/data/military-document-candidates.test.ts && tsx src/data/military-release-readiness.test.ts && tsx src/data/military-related-links.test.ts && tsx src/data/military-family-parity-contract.test.ts && tsx src/data/military-case-legal-matrix.test.ts && tsx src/data/military-provision-checks.test.ts && tsx src/data/military-document-target-matrix.test.ts && tsx src/data/military-document-core.test.ts",
+    "test:military": "tsx src/data/military-catalog.test.ts && tsx src/data/military-guidance.test.ts && tsx src/data/military-document-candidates.test.ts && tsx src/data/military-release-readiness.test.ts && tsx src/data/military-related-links.test.ts && tsx src/data/military-family-parity-contract.test.ts && tsx src/data/military-case-legal-matrix.test.ts && tsx src/data/military-provision-checks.test.ts && tsx src/data/military-document-target-matrix.test.ts && tsx src/data/military-document-core.test.ts && tsx src/lib/military-document-export.test.ts",
     "test:e2e:military-public": "playwright test tests/e2e/military-catalog.spec.ts"
   },
   "dependencies": {
