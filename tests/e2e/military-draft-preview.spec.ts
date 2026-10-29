@@ -2,7 +2,7 @@ import {expect,test} from "@playwright/test";
 import {MILITARY_TOPICS} from "../../src/data/military-catalog";
 import {getMilitaryDraftPlan} from "../../src/data/military-document-core";
 
-test.skip(process.env.CI==="true" || process.env.ENABLE_MILITARY_DRAFT_PREVIEW!=="true",
+test.skip(process.env.ENABLE_MILITARY_DRAFT_PREVIEW!=="true",
   "Unreviewed drafts may be exercised only with ENABLE_MILITARY_DRAFT_PREVIEW=true in a local dev server.");
 
 const examples = [
