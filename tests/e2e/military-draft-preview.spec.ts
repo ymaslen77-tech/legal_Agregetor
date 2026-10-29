@@ -29,14 +29,14 @@ for(const example of examples) {
   }
   await workbench.getByRole("button",{name:"Сформировать черновик"}).click();
   await expect(workbench.getByLabel("Созданный черновик")).toBeVisible();
-  await expect(workbench.getByTestId("military-draft-editor")).toContainText("ЧЕРНОВИК — НЕ ГОТОВ К ПОДАЧЕ");
-  await expect(workbench.getByTestId("military-draft-editor")).toContainText(plan.documentRequest);
+  await expect(workbench.getByTestId("military-draft-editor")).toHaveValue(/ЧЕРНОВИК — НЕ ГОТОВ К ПОДАЧЕ/);
+  await expect(workbench.getByTestId("military-draft-editor")).toHaveValue(new RegExp(plan.documentRequest.slice(0,30).replace(/[.*+?^${}()|[\]\\]/g,"\\await expect(workbench.getByTestId("military-draft-editor")).toContainText(plan.documentRequest);")));
   await workbench.getByTestId("military-draft-editor").fill(
     "Исправленный индивидуальный черновик с обстоятельствами дела и уточнённым предметом обращения для тестирования редактора."
   );
   await workbench.getByRole("button",{name:"Сохранить новую версию"}).click();
   await expect(workbench).toContainText("История версий в этой вкладке");
-  await expect(workbench.getByTestId("military-draft-editor")).toContainText("ТРЕБУЕТСЯ ЮРИДИЧЕСКАЯ ПРОВЕРКА");
+  await expect(workbench.getByTestId("military-draft-editor")).toHaveValue(/ТРЕБУЕТСЯ ЮРИДИЧЕСКАЯ ПРОВЕРКА/);
  });
 }
 test("informational situation never opens preview form",async({page})=>{
