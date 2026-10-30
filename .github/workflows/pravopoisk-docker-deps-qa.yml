@@ -1,0 +1,31 @@
+name: Pravopoisk Docker dependency stage QA
+on:
+  push:
+    branches:
+      - fix/pravopoisk-docker-npm-cache-20261030
+    paths:
+      - Dockerfile
+      - package.json
+      - package-lock.json
+      - .github/workflows/pravopoisk-docker-deps-qa.yml
+  pull_request:
+    branches:
+      - infra/coolify-russian-vps
+    paths:
+      - Dockerfile
+      - package.json
+      - package-lock.json
+      - .github/workflows/pravopoisk-docker-deps-qa.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  docker-deps:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify locked dependencies and BuildKit cache-mount syntax
+        run: docker build --progress=plain --target deps --file Dockerfile .

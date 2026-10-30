@@ -1,7 +1,12 @@
 FROM node:22-alpine AS deps
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
+# Keep dependency manifests in a separate layer so application-only changes
+# do not force another installation of the whole dependency graph.
+COPY package.json package-lock.json ./
+# Preserve downloaded npm tarballs across rebuilds (also when Docker layers
+# are rebuilt); npm ci always installs the exact committed lock-file versions.
+RUN --mount=type=cache,id=pravopoisk-npm,target=/root/.npm,sharing=locked \
+    npm ci --prefer-offline --no-audit --no-fund
 
 FROM node:22-alpine AS builder
 WORKDIR /app
