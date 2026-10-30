@@ -1,0 +1,189 @@
+name: Military unreviewed draft browser QA
+on:
+  push:
+    branches:
+      - feature/military-rebuild-from-zero-20261027
+    paths:
+      - ".github/workflows/military-preview-qa.yml"
+      - "src/components/documents/MilitaryDraftWorkbench.tsx"
+      - "src/data/military-document-core.ts"
+      - "src/data/military-document-compositions*.ts"
+      - "src/data/military-preview-access.ts"
+      - "src/data/military-source-verification.ts"
+      - "src/data/military-source-verification.test.ts"
+      - "src/data/military-release-readiness.ts"
+      - "src/data/military-release-readiness.test.ts"
+      - "src/data/military-case-legal-matrix.ts"
+      - "src/data/military-provision-checks.ts"
+      - "src/app/voennoe-pravo/**"
+      - "tests/e2e/military-draft-preview.spec.ts"
+      - "tests/e2e/military-draft-all.spec.ts"
+      - "tests/e2e/military-production-draft.spec.ts"
+      - "src/app/account/documents/page.tsx"
+      - "src/data/military-preview-access.test.ts"
+      - "src/components/documents/SaveLegalDocumentButton.tsx"
+      - "src/components/account/SavedLegalDocumentsCabinet.tsx"
+      - "src/lib/saved-document-validation.ts"
+      - "src/lib/military-saved-document.test.ts"
+      - "tests/e2e/military-account-persistence.spec.ts"
+      - "tests/e2e/military-catalog.spec.ts"
+      - "playwright.config.ts"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser-drafts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CI: "true"
+      ENABLE_MILITARY_DRAFT_PREVIEW: "true"
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run prisma:generate
+      - run: npx playwright install --with-deps chromium
+      - name: Verify guarded document previews in a local-only dev server
+        run: npm run test:e2e:military-preview
+      - name: Upload failure screenshots and reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: military-draft-browser-qa
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+          retention-days: 3
+
+  browser-all:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    env:
+      CI: "true"
+      ENABLE_MILITARY_DRAFT_PREVIEW: "true"
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run prisma:generate
+      - run: npx playwright install --with-deps chromium
+      - name: Browser-verify every one of 121 individual prototypes, shard ${{ matrix.shard }}/4
+        run: npm run test:e2e:military-all -- --shard=${{ matrix.shard }}/4
+      - name: Upload failing shard screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: military-draft-full-shard-${{ matrix.shard }}
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+          retention-days: 3
+
+  archive-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: military_qa
+          POSTGRES_USER: military_qa
+          POSTGRES_PASSWORD: synthetic_ci_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U military_qa -d military_qa"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      CI: "true"
+      ENABLE_MILITARY_DRAFT_PREVIEW: "true"
+      DATABASE_URL: "postgresql://military_qa:synthetic_ci_password@127.0.0.1:5432/military_qa"
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Generate disposable test-only archive keys
+        run: |
+          JWT_SECRET=$(node -e 'process.stdout.write(require("node:crypto").randomBytes(32).toString("base64"))')
+          DOCUMENT_STORAGE_KEY=$(node -e 'process.stdout.write(require("node:crypto").randomBytes(32).toString("base64"))')
+          echo "::add-mask::$JWT_SECRET"
+          echo "::add-mask::$DOCUMENT_STORAGE_KEY"
+          echo "JWT_SECRET=$JWT_SECRET" >> "$GITHUB_ENV"
+          echo "DOCUMENT_STORAGE_KEY=$DOCUMENT_STORAGE_KEY" >> "$GITHUB_ENV"
+      - run: npm run prisma:generate
+      - name: Apply full schema migrations to disposable CI Postgres
+        run: npx prisma migrate deploy
+      - run: npx playwright install --with-deps chromium
+      - name: Test real authenticated encrypted persistence and owner isolation
+        run: npm run test:e2e:military-archive
+      - name: Upload failure evidence without credentials
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: military-archive-integration-failure
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+          retention-days: 3
+
+  production-draft-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CI: "true"
+      ENABLE_MILITARY_PUBLIC_DRAFTS: "true"
+      ENABLE_MILITARY_DRAFT_PREVIEW: "false"
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run prisma:generate
+      - name: Build an opted-in production app with synthetic environment
+        run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Verify production draft forms in 20 categories and exports
+        run: npx playwright test tests/e2e/military-production-draft.spec.ts --workers=1
+      - name: Preserve failing test evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: military-production-draft-smoke
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+          retention-days: 3

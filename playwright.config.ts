@@ -18,7 +18,7 @@ export default defineConfig({
     screenshot: "only-on-failure"
   },
   webServer: process.env.PLAYWRIGHT_BASE_URL ? undefined : {
-    command: process.env.CI ? `npm run start -- -p ${port}` : `npm run dev -- -p ${port}`,
+    command: process.env.CI && process.env.ENABLE_MILITARY_DRAFT_PREVIEW !== "true" ? `npm run start -- -p ${port}` : `npm run dev -- -p ${port}`,
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000
