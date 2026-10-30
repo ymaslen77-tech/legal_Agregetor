@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - feature/military-rebuild-from-zero-20261027
+      - fix/military-coolify-buildtime-20261030
     paths:
       - ".github/workflows/military-preview-qa.yml"
       - "src/components/documents/MilitaryDraftWorkbench.tsx"

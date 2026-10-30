@@ -6,6 +6,10 @@ RUN npm install
 FROM node:22-alpine AS builder
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
+# Coolify exposes build-time environment variables as Docker build args.
+# Default off so an unconfigured production build preserves the old 18 forms.
+ARG ENABLE_MILITARY_PUBLIC_DRAFTS=false
+ENV ENABLE_MILITARY_PUBLIC_DRAFTS=${ENABLE_MILITARY_PUBLIC_DRAFTS}
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npx prisma generate
