@@ -49,6 +49,23 @@ jobs:
             org.opencontainers.image.description=Military-law catalog and 121 draft generators (not legally filing-ready)
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      - name: Publish isolated Prisma migration tool for staging database
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          target: builder
+          platforms: linux/amd64
+          push: true
+          tags: ghcr.io/ymaslen77-tech/pravopoisk-military:rc-58887bee-migrator
+          build-args: |
+            ENABLE_MILITARY_PUBLIC_DRAFTS=true
+          labels: |
+            org.opencontainers.image.source=https://github.com/ymaslen77-tech/legal_Agregetor
+            org.opencontainers.image.revision=58887bee9d1bc18ba2e0482105e03bc04ad214b6
+            org.opencontainers.image.description=Staging-only Prisma migrate deploy utility; not a production web image
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
       - name: Note how to deploy safely
         run: |
           echo "Published candidate: ghcr.io/ymaslen77-tech/pravopoisk-military:rc-58887bee"
