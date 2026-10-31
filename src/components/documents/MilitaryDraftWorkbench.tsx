@@ -9,6 +9,7 @@ import {
 } from "@/data/military-document-core";
 import type { DocumentVersionEntry } from "@/lib/document-version-history";
 import { SaveLegalDocumentButton } from "@/components/documents/SaveLegalDocumentButton";
+import { MilitaryDraftLawyerReview } from "@/components/documents/MilitaryDraftLawyerReview";
 import {
   createMilitaryDraftPdfBlob,
   createMilitaryDraftDocxBlob,
@@ -134,6 +135,11 @@ export function MilitaryDraftWorkbench({plan}:Readonly<{plan:MilitaryDraftPlan}>
         key={prepared.documentResult.versionId}
         result={prepared.documentResult}
         disabled={editedText!==prepared.documentResult.documentText}
+      />
+      <MilitaryDraftLawyerReview
+        key={"review-"+prepared.documentResult.versionId}
+        result={prepared.documentResult}
+        disabled={busy || editedText!==prepared.documentResult.documentText}
       />
       {editedText!==prepared.documentResult.documentText?<p className="mt-2 text-xs text-amber-900">В тексте есть несохранённые изменения. Для экспорта исправленного текста сначала сохраните новую версию.</p>:null}
       <p className="mt-3 text-xs text-zinc-600">Редакция и выгруженные файлы всегда помечаются как не готовые к подаче. До юридической проверки нельзя использовать текст как окончательный документ.</p>

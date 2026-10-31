@@ -1,0 +1,76 @@
+name: Military 121 legal-evidence and lawyer review QA
+on:
+  pull_request:
+    branches:
+      - infra/coolify-russian-vps
+    paths:
+      - "src/components/documents/MilitaryDraftWorkbench.tsx"
+      - "src/components/documents/MilitaryDraftLawyerReview.tsx"
+      - "scripts/audit-military-document-legal.ts"
+      - "tests/e2e/military-lawyer-review.spec.ts"
+      - "package.json"
+      - ".github/workflows/military-legal-review-qa.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run prisma:generate
+      - name: Generate 121-case document rendering and legal evidence gap report
+        run: npm run audit:military-legal
+      - name: Typecheck the new review workflow
+        run: npm run typecheck
+      - name: Run existing military safety and generator checks
+        run: npm run test:military
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: military-121-legal-qa-report
+          path: reports/military-legal-qa/
+          if-no-files-found: warn
+          retention-days: 21
+
+  browser-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CI: "true"
+      ENABLE_MILITARY_PUBLIC_DRAFTS: "true"
+      ENABLE_MILITARY_DRAFT_PREVIEW: "false"
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run prisma:generate
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Verify explicit PDF review consent and request creation
+        run: npx playwright test tests/e2e/military-lawyer-review.spec.ts --workers=1
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: military-lawyer-review-qa-failure
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+          retention-days: 7
