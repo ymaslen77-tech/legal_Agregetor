@@ -1,0 +1,44 @@
+name: Pravopoisk full military documents catalog Docker image
+on:
+  push:
+    branches:
+      - release/documents-military-121-20261102
+    paths:
+      - ".github/workflows/military-documents-catalog-image.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - name: Checkout catalog release sources
+        uses: actions/checkout@v4
+        with:
+          ref: 34de8a4e5f1c2237204ff1976cd05d4ee31d4889
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build prebuilt application image with 121 published military draft routes
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ghcr.io/ymaslen77-tech/pravopoisk-military:rc-documents-121-34de8a4e
+          build-args: |
+            ENABLE_MILITARY_PUBLIC_DRAFTS=true
+          labels: |
+            org.opencontainers.image.source=https://github.com/ymaslen77-tech/legal_Agregetor
+            org.opencontainers.image.revision=34de8a4e5f1c2237204ff1976cd05d4ee31d4889
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
