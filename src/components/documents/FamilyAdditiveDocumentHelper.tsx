@@ -185,6 +185,7 @@ export function FamilyAdditiveDocumentHelper({ routeSlug, scenarioKey }: { route
           </div>)}
         </div>
       </section> : null}
+      {reviewMessage ? <p className="mt-4 text-sm text-zinc-700" role="status">{reviewMessage}</p> : null}
       {notice ? <p className="mt-4 text-sm text-zinc-700" role="status">{notice}</p> : null}
     </section>
   );
