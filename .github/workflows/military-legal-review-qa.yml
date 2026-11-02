@@ -6,6 +6,8 @@ on:
     paths:
       - "src/components/documents/MilitaryDraftWorkbench.tsx"
       - "src/components/documents/DocumentReviewButton.tsx"
+      - "src/components/documents/LegalDraftGenerator.tsx"
+      - "src/lib/document-review-pdf.ts"
       - "src/components/documents/FamilyAdditiveDocumentHelper.tsx"
       - "scripts/audit-military-document-legal.ts"
       - "tests/e2e/military-lawyer-review.spec.ts"
