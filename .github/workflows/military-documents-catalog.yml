@@ -1,0 +1,64 @@
+name: Military 121 documents in unified catalog
+on:
+  pull_request:
+    branches:
+      - infra/coolify-russian-vps
+    paths:
+      - "src/app/documents/page.tsx"
+      - "src/components/documents/DocumentsCatalog.tsx"
+      - "src/data/military-documents-catalog.ts"
+      - "src/data/military-documents-catalog.test.ts"
+      - "tests/e2e/documents-military-121.spec.ts"
+      - ".github/workflows/military-documents-catalog.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  catalog:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run prisma:generate
+      - name: Assert exact 121 generator links to their matching military situations
+        run: npx tsx src/data/military-documents-catalog.test.ts
+      - name: Type-check catalog and all linked routes
+        run: npm run typecheck
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CI: "true"
+      ENABLE_MILITARY_PUBLIC_DRAFTS: "true"
+      ENABLE_MILITARY_DRAFT_PREVIEW: "false"
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run prisma:generate
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Verify search, topic selection, 121 cards, and click-through to draft generator
+        run: npx playwright test tests/e2e/documents-military-121.spec.ts --workers=1
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: military-documents-catalog-e2e-failure
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+          retention-days: 7
