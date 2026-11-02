@@ -5,9 +5,13 @@ on:
       - infra/coolify-russian-vps
     paths:
       - "src/components/documents/MilitaryDraftWorkbench.tsx"
-      - "src/components/documents/MilitaryDraftLawyerReview.tsx"
+      - "src/components/documents/DocumentReviewButton.tsx"
+      - "src/components/documents/LegalDraftGenerator.tsx"
+      - "src/lib/document-review-pdf.ts"
+      - "src/components/documents/FamilyAdditiveDocumentHelper.tsx"
       - "scripts/audit-military-document-legal.ts"
       - "tests/e2e/military-lawyer-review.spec.ts"
+      - "tests/e2e/shared-document-review.spec.ts"
       - "package.json"
       - ".github/workflows/military-legal-review-qa.yml"
   workflow_dispatch:
@@ -64,7 +68,7 @@ jobs:
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - name: Verify explicit PDF review consent and request creation
-        run: npx playwright test tests/e2e/military-lawyer-review.spec.ts --workers=1
+        run: npx playwright test tests/e2e/military-lawyer-review.spec.ts tests/e2e/shared-document-review.spec.ts --workers=1
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

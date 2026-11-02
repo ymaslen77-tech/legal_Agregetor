@@ -9,7 +9,7 @@ import {
 } from "@/data/military-document-core";
 import type { DocumentVersionEntry } from "@/lib/document-version-history";
 import { SaveLegalDocumentButton } from "@/components/documents/SaveLegalDocumentButton";
-import { MilitaryDraftLawyerReview } from "@/components/documents/MilitaryDraftLawyerReview";
+import { DocumentReviewButton } from "@/components/documents/DocumentReviewButton";
 import {
   createMilitaryDraftPdfBlob,
   createMilitaryDraftDocxBlob,
@@ -136,9 +136,12 @@ export function MilitaryDraftWorkbench({plan}:Readonly<{plan:MilitaryDraftPlan}>
         result={prepared.documentResult}
         disabled={editedText!==prepared.documentResult.documentText}
       />
-      <MilitaryDraftLawyerReview
+      <DocumentReviewButton
         key={"review-"+prepared.documentResult.versionId}
         result={prepared.documentResult}
+        createPdf={() => createMilitaryDraftPdfBlob(prepared.documentResult)}
+        pdfFileName={militaryDraftExportFileName(prepared.documentResult, "pdf")}
+        buttonLabel="Отправить документ на проверку юристу"
         disabled={busy || editedText!==prepared.documentResult.documentText}
       />
       {editedText!==prepared.documentResult.documentText?<p className="mt-2 text-xs text-amber-900">В тексте есть несохранённые изменения. Для экспорта исправленного текста сначала сохраните новую версию.</p>:null}

@@ -28,10 +28,10 @@ test("draft is only sent after explicit personal-data and transfer consents", as
   }
   await workbench.getByRole("button",{name:"Сформировать черновик"}).click();
   expect(calls).toHaveLength(0);
-  await workbench.getByTestId("military-send-to-lawyer").click();
-  await expect(workbench.getByTestId("military-review-form")).toBeVisible();
+  await workbench.getByTestId("document-review-button").click();
+  await expect(workbench.getByTestId("document-review-form")).toBeVisible();
   expect(calls).toHaveLength(0);
-  const review=workbench.getByTestId("military-review-form");
+  const review=workbench.getByTestId("document-review-form");
   await review.getByLabel("Как к вам обращаться").fill("Тестовый заявитель");
   await review.getByLabel("Телефон для ответа").fill("+79990000000");
   await review.getByLabel(/Согласен на обработку/).check();

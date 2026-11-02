@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
-import type { DocumentResultV1 } from "@/lib/document-result-contract";
-import { createMilitaryDraftPdfBlob, militaryDraftExportFileName } from "@/lib/military-document-export";
+import { documentResultReviewMetadata, type DocumentResultV1 } from "@/lib/document-result-contract";
+import { DOCUMENT_REVIEW_RETENTION_DAYS } from "@/data/document-review-policy";
 
 type ReviewReply = {
   ok?: boolean;
@@ -13,9 +13,18 @@ type ReviewReply = {
   message?: string;
 };
 
-export function MilitaryDraftLawyerReview({ result, disabled = false }: {
+export type DocumentReviewReceipt = Readonly<{ leadId: string; withdrawalToken: string; versionId: string }>;
+/** Shared existing DOCUMENT_REVIEW lead API and PDF transfer flow for every legal route. */
+export function DocumentReviewButton({ result, createPdf, pdfFileName, disabled = false,
+  buttonLabel = "Отправить на проверку юристу", onAccepted, onWithdrawn
+}: {
   result: DocumentResultV1;
+  createPdf: () => Promise<Blob>;
+  pdfFileName: string;
   disabled?: boolean;
+  buttonLabel?: string;
+  onAccepted?: (receipt: DocumentReviewReceipt) => void;
+  onWithdrawn?: (leadId: string) => void;
 }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
@@ -29,7 +38,8 @@ export function MilitaryDraftLawyerReview({ result, disabled = false }: {
   const [accepted, setAccepted] = useState<ReviewReply | null>(null);
   const [withdrawn, setWithdrawn] = useState(false);
 
-  const sourcePage = `/voennoe-pravo/${result.routeSlug}/${result.scenarioKey}/`;
+  // Use the actual current route rather than assuming one specific legal section.
+  const sourcePage = typeof window === "undefined" ? "/" : window.location.pathname;
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -43,10 +53,10 @@ export function MilitaryDraftLawyerReview({ result, disabled = false }: {
     try {
       // PDF is generated locally and is only sent when this form is submitted.
       // Never send raw facts to URL parameters, analytics, or unencrypted browser storage.
-      const pdf = await createMilitaryDraftPdfBlob(result);
+      const pdf = await createPdf();
       if (pdf.size > 5 * 1024 * 1024) throw new Error("PDF больше допустимых 5 МБ.");
       const body = new FormData();
-      body.append("attachment", pdf, militaryDraftExportFileName(result, "pdf"));
+      body.append("attachment", pdf, pdfFileName);
       body.append("name", name.trim());
       body.append("phone", phone.trim());
       body.append("email", email.trim());
@@ -54,18 +64,15 @@ export function MilitaryDraftLawyerReview({ result, disabled = false }: {
       body.append("sourceType", "DOCUMENT_REVIEW");
       body.append("consent", "true");
       body.append("contactTransferConsent", "true");
-      body.append("message", ("Прошу поручить профильному юристу проверку проекта: " + result.documentTitle +
-        ". Проверить актуальность норм, адресата, сроки, требования и судебные разъяснения. " +
+      body.append("message", ("Прошу проверить документ: " + result.documentTitle +
+        ". Проверить нормы права, редакцию законодательства, подсудность (где применимо), сроки, требования и судебные разъяснения. " +
         details.trim()).slice(0, 3500));
-      body.append("documentsNote", "Проект военного документа; не готов к подаче.");
+      body.append("documentsNote", "Документ для индивидуальной юридической проверки; статус готовности определяется специалистом.");
       body.append("structuredPayload", JSON.stringify({
-        categorySlug: "voennoe-pravo",
-        routeSlug: result.routeSlug,
-        situationSlug: result.scenarioKey,
-        documentSlug: result.documentSlug,
-        versionId: result.versionId,
-        requiresLegalReview: true,
-        filingReady: false
+        ...documentResultReviewMetadata(result),
+        requiresLegalReview: result.requiresLegalReview,
+        filingReady: result.filingReady,
+        reviewStatus: "AWAITING_LAWYER_ASSIGNMENT"
       }));
       const response = await fetch("/api/leads/", {
         method: "POST", credentials: "same-origin", cache: "no-store", body
@@ -75,6 +82,7 @@ export function MilitaryDraftLawyerReview({ result, disabled = false }: {
         throw new Error(payload?.message || "Не удалось передать PDF на проверку.");
       }
       setAccepted(payload);
+      onAccepted?.({leadId:payload.id,withdrawalToken:payload.withdrawalToken,versionId:result.versionId});
       setOpen(false);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Не удалось отправить документ.");
@@ -97,6 +105,7 @@ export function MilitaryDraftLawyerReview({ result, disabled = false }: {
       });
       if (!response.ok) throw new Error("Не удалось отозвать согласие. Обратитесь к администратору.");
       setWithdrawn(true);
+      onWithdrawn?.(accepted.id);
       setAccepted(null);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Ошибка отзыва согласия.");
@@ -115,7 +124,7 @@ export function MilitaryDraftLawyerReview({ result, disabled = false }: {
     {accepted && !withdrawn ? <div role="status" className="mt-3 rounded-md border border-line p-4">
       <p className="font-semibold">Заявка принята платформой и ожидает назначения юриста.</p>
       <p className="mt-1 text-sm">Номер: {accepted.id}. Передача конкретному юристу ещё не подтверждена.</p>
-      <p className="mt-2 text-sm">PDF хранится в закрытом хранилище до 30 дней; согласие можно отозвать.</p>
+      <p className="mt-2 text-sm">PDF хранится в закрытом хранилище до {DOCUMENT_REVIEW_RETENTION_DAYS} дней; согласие можно отозвать.</p>
       <button type="button" disabled={busy} onClick={() => void withdraw()}
         className="mt-3 rounded-md border border-line px-4 py-2 text-sm font-semibold disabled:opacity-60">
         {busy ? "Обрабатываем…" : "Отозвать согласие и удалить PDF"}
@@ -124,12 +133,12 @@ export function MilitaryDraftLawyerReview({ result, disabled = false }: {
     {!accepted ? <>
       <button type="button" disabled={disabled || busy} onClick={() => setOpen(value => !value)}
         className="mt-4 min-h-11 rounded-md bg-trust px-5 py-3 font-semibold text-white hover:bg-ink disabled:opacity-50"
-        data-testid="military-send-to-lawyer">
-        Отправить документ на проверку юристу
+        data-testid="document-review-button">
+        {buttonLabel}
       </button>
       {disabled ? <p className="mt-2 text-sm">Сначала сохраните новую редакцию черновика, чтобы отправить именно её.</p> : null}
       {withdrawn ? <p role="status" className="mt-2 text-sm">Согласие отозвано, переданный PDF удалён.</p> : null}
-      {open && !disabled ? <form onSubmit={(event) => void submit(event)} className="mt-4 grid gap-3 rounded-lg border border-line p-4" data-testid="military-review-form">
+      {open && !disabled ? <form onSubmit={(event) => void submit(event)} className="mt-4 grid gap-3 rounded-lg border border-line p-4" data-testid="document-review-form">
         <label className="text-sm font-semibold">Как к вам обращаться
           <input required minLength={2} maxLength={150} value={name} onChange={e => setName(e.target.value)}
             className="mt-1 block min-h-11 w-full rounded-md border border-line px-3" autoComplete="name" />
@@ -149,14 +158,14 @@ export function MilitaryDraftLawyerReview({ result, disabled = false }: {
         <label className="flex items-start gap-2 text-sm">
           <input required type="checkbox" checked={personalDataConsent} onChange={e => setPersonalDataConsent(e.target.checked)} className="mt-1" />
           <span>Согласен на обработку предоставленных персональных данных для регистрации заявки.
-            Ознакомился с <Link href="/legal/privacy/" className="underline">политикой конфиденциальности</Link>.</span>
+            Ознакомился с <Link href="/legal/personal-data-consent/" className="underline">политикой конфиденциальности</Link>.</span>
         </label>
         <label className="flex items-start gap-2 text-sm">
           <input required type="checkbox" checked={transferConsent} onChange={e => setTransferConsent(e.target.checked)} className="mt-1" />
           <span>Отдельно согласен на передачу контактных данных и приложенного PDF назначенному юристу для проверки документа.</span>
         </label>
         <p className="text-xs leading-5 text-zinc-600">
-          Не включайте в черновик сведения, составляющие государственную тайну, или иные данные с ограниченным законом распространением.
+          Не включайте в документ сведения, составляющие государственную тайну, или другие сведения с ограниченным законом распространением.
           Платформа примет заявку и направит её на назначение специалисту; проверка не мгновенная.
         </p>
         <button type="submit" disabled={busy} className="min-h-11 rounded-md bg-trust px-5 py-3 font-semibold text-white disabled:opacity-60">

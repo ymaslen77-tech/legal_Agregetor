@@ -3,6 +3,8 @@
 import { useState } from "react";
 import type { LegalDraftRequest, LegalDraftResponse } from "@/lib/legal-draft-contract";
 import { DocumentResultSummary } from "@/components/documents/DocumentResultSummary";
+import { DocumentReviewButton } from "@/components/documents/DocumentReviewButton";
+import { createDocumentReviewPdfBlob } from "@/lib/document-review-pdf";
 import { documentResultSchema, type DocumentResultV1 } from "@/lib/document-result-contract";
 
 export function LegalDraftGenerator({ input, onGenerated }: { input: LegalDraftRequest; onGenerated: (draft: string, origin: "AI_DRAFT" | "USER_EDITED") => void }) {
@@ -39,7 +41,17 @@ export function LegalDraftGenerator({ input, onGenerated }: { input: LegalDraftR
       <p className="font-semibold text-amber-950">Юридический черновик</p>
       <p className="mt-2 text-sm leading-6 text-amber-950">Для подготовки связного текста выбранные сведения передаются на защищённый сервер ПравоПоиск. Не добавляйте сведения, которые не нужны для этого документа.</p>
       {status !== "ready" ? <button type="button" onClick={generate} disabled={status === "loading"} className="mt-4 inline-flex min-h-11 items-center rounded-md bg-trust px-5 py-3 text-sm font-semibold text-white disabled:opacity-60">{status === "loading" ? "Формируем черновик" : "Сформировать текст документа"}</button> : null}
-      {version ? <div className="mt-4"><DocumentResultSummary result={version}><p className="mt-2 text-xs">Редактирование текста вручную создаёт новую неподтверждённую редакцию и сбрасывает идентификатор исходной версии.</p></DocumentResultSummary></div> : null}
+      {version ? <div className="mt-4">
+        <DocumentResultSummary result={version}>
+          <p className="mt-2 text-xs">Редактирование текста вручную создаёт новую неподтверждённую редакцию и сбрасывает идентификатор исходной версии.</p>
+        </DocumentResultSummary>
+        <DocumentReviewButton
+          key={version.versionId}
+          result={version}
+          createPdf={() => createDocumentReviewPdfBlob(version)}
+          pdfFileName={"proekt-" + version.versionId.slice(0,8) + ".pdf"}
+        />
+      </div> : null}
       {draft ? <textarea aria-label="Текст юридического черновика" value={draft} onChange={(event) => { setVersion(null); setDraft(event.target.value); onGenerated(event.target.value, "USER_EDITED"); }} className="mt-4 min-h-[28rem] w-full border border-line bg-white p-4 font-mono text-sm leading-6 text-ink outline-none focus:border-trust focus:ring-2 focus:ring-trust/20" /> : null}
       {message ? <p role="alert" className="mt-3 text-sm text-red-800">{message}</p> : null}
     </section>
