@@ -5,13 +5,22 @@ import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/jsonld";
 import { absoluteUrl, buildMetadata } from "@/lib/seo";
 import { navigatorDocuments } from "@/data/documents";
+import { militaryDocumentsCatalog } from "@/data/military-documents-catalog";
 
 export const metadata: Metadata = buildMetadata({
   title: "Юридические документы по жизненным ситуациям",
-  description: "Подготовьте заявления, иски, соглашения и другие юридические документы с проверенными правовыми основаниями.",
+  description: "Найдите заявления, иски, жалобы, рапорты и другие документы: семейное, трудовое и военное право. Военные проекты требуют отдельной юридической проверки.",
   path: "/documents/",
   isIndexable: true
 });
+
+const allCatalogDocuments = [
+  ...navigatorDocuments.map(({ slug, title, category, documentType, shortDescription, keywords, userQueries, relatedProblems }) => ({
+    slug, href: `/documents/${slug}/`, title, category, documentType, shortDescription,
+    keywords, userQueries, relatedProblems: relatedProblems.map(({ title }) => ({ title }))
+  })),
+  ...militaryDocumentsCatalog
+];
 
 export default function DocumentsPage() {
   const breadcrumbs = [
@@ -33,7 +42,7 @@ export default function DocumentsPage() {
         </section>
 
         <section className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
-          <DocumentsCatalog documents={navigatorDocuments.map(({ slug, title, category, documentType, shortDescription, keywords, userQueries, relatedProblems }) => ({ slug, title, category, documentType, shortDescription, keywords, userQueries, relatedProblems: relatedProblems.map(({ title }) => ({ title })) }))} />
+          <DocumentsCatalog documents={allCatalogDocuments} />
         </section>
       </main>
     </>
@@ -44,12 +53,12 @@ function documentsJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    numberOfItems: navigatorDocuments.length,
-    itemListElement: navigatorDocuments.map((document, index) => ({
+    numberOfItems: allCatalogDocuments.length,
+    itemListElement: allCatalogDocuments.map((document, index) => ({
       "@type": "ListItem",
       position: index + 1,
       name: document.title,
-      url: absoluteUrl(`/documents/${document.slug}/`)
+      url: absoluteUrl(document.href)
     }))
   };
 }
