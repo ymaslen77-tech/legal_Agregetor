@@ -30,23 +30,29 @@ jobs:
             [ "$status" = 200 ] || { echo "::error::Coolify read-only check HTTP $status"; exit 1; }
           }
           request "$base/applications/$uuid"
-          jq -e --arg u "$uuid" '.uuid==$u and .git_repository=="ymaslen77-tech/legal_Agregetor" and
-            .git_branch=="infra/coolify-russian-vps" and ((.fqdn//"")|contains("pravopoisk.ru"))' "$tmp" >/dev/null || exit 1
-          jq -r '"LIVE_APP uuid=" + .uuid + " status=" + (.status//"unknown") +
-            " branch=" + (.git_branch//"unknown") +
-            " auto_deploy=" + ((.settings.is_auto_deploy_enabled//"absent") | tostring)' "$tmp"
-          request "$base/applications"
-          jq -r '[.[] | select(.git_repository=="ymaslen77-tech/legal_Agregetor")] |
-            .[] | "PRAVOPOISK_APP uuid="+.uuid+" name="+(.name//"unknown")+
-            " branch="+(.git_branch//"unknown")+
-            " status="+(.status//"unknown")' "$tmp"
-          request "$base/deployments/applications/$uuid?take=5"
-          jq -r '((if type=="array" then . elif (.data?|type)=="array" then .data else [] end) |
-            .[:5] | .[] | "DEPLOYMENT status="+(.status//"unknown")+
-            " commit="+(.commit//"unknown")+
-            " created="+(.created_at//"unknown"))' "$tmp"
-          for path in / /voennoe-pravo/ /sitemap.xml /robots.txt; do
-            http="$(curl -sS -L --connect-timeout 8 --max-time 30 \
+          jq -e --arg u "$uuid" '.uuid==$u and ((.fqdn//"")|contains("pravopoisk.ru"))' "$tmp" >/dev/null ||
+            { echo "::error::Unexpected Coolify application or domain"; exit 1; }
+          jq -r '"LIVE_APP uuid=" + (.uuid//"unknown") + " status=" + (.status//"unknown") +
+            " build_pack=" + (.build_pack//"unknown") +
+            " git_repository=" + (.git_repository//"unknown") +
+            " git_branch=" + (.git_branch//"unknown") +
+            " image=" + (.docker_registry_image_name//.docker_image//"unknown") +
+            " tag=" + (.docker_registry_image_tag//"unknown") +
+            " auto_deploy=" + ((.settings.is_auto_deploy_enabled//"unknown") | tostring)' "$tmp"
+          code="$(curl --silent --show-error --connect-timeout 10 --max-time 30 -o "$tmp" -w '%{http_code}' \
+            -H "Authorization: Bearer $COOLIFY_READ_TOKEN" "$base/deployments/applications/$uuid?take=10")"
+          if [ "$code" = 200 ]; then
+            jq -r '((if type=="array" then . elif (.data?|type)=="array" then .data else [] end) |
+              .[:10] | .[] |
+              "DEPLOYMENT status="+(.status//"unknown")+
+              " commit="+(.commit//"unknown")+
+              " created="+(.created_at//"unknown")+
+              " finished="+(.finished_at//"unknown"))' "$tmp"
+          else
+            echo "DEPLOYMENT_HISTORY_UNAVAILABLE HTTP=$code"
+          fi
+          for path in / /voennoe-pravo/ /voennoe-pravo/prizyv/ /documents/ /sitemap.xml /robots.txt; do
+            http="$(curl -sS -L -H 'Cache-Control: no-cache' --connect-timeout 10 --max-time 30 \
               -o /dev/null -w '%{http_code}' "https://pravopoisk.ru$path" || true)"
             echo "PUBLIC_HTTP path=$path status=$http"
           done
