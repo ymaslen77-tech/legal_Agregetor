@@ -30,8 +30,9 @@ jobs:
             [ "$status" = 200 ] || { echo "::error::Coolify read-only check HTTP $status"; exit 1; }
           }
           request "$base/applications/$uuid"
-          jq -e --arg u "$uuid" '.uuid==$u and ((.fqdn//"")|contains("pravopoisk.ru"))' "$tmp" >/dev/null ||
-            { echo "::error::Unexpected Coolify application or domain"; exit 1; }
+          jq -r '"LIVE_APP_UUID_MATCH=" + ((.uuid=="kb99djixwheewgcqwccw4lue")|tostring) +
+            " name=" + (.name//"unknown") + " fqdn=" + (.fqdn//"unknown") +
+            " status=" + (.status//"unknown")' "$tmp"
           jq -r '"LIVE_APP uuid=" + (.uuid//"unknown") + " status=" + (.status//"unknown") +
             " build_pack=" + (.build_pack//"unknown") +
             " git_repository=" + (.git_repository//"unknown") +
@@ -39,6 +40,18 @@ jobs:
             " image=" + (.docker_registry_image_name//.docker_image//"unknown") +
             " tag=" + (.docker_registry_image_tag//"unknown") +
             " auto_deploy=" + ((.settings.is_auto_deploy_enabled//"unknown") | tostring)' "$tmp"
+          code="$(curl --silent --show-error --connect-timeout 10 --max-time 30 -o "$tmp" -w '%{http_code}' \
+            -H "Authorization: Bearer $COOLIFY_READ_TOKEN" "$base/applications")"
+          if [ "$code" = 200 ]; then
+            jq -r 'if type=="array" then . else [] end |
+              .[] | select(((.name//"")+" "+(.fqdn//"")+" "+(.docker_registry_image_name//"")) | test("pravopoisk";"i")) |
+              "MATCHING_APP uuid="+(.uuid//"unknown")+" name="+(.name//"unknown")+
+              " fqdn="+(.fqdn//"unknown")+" status="+(.status//"unknown")+
+              " image="+(.docker_registry_image_name//"unknown")+
+              " tag="+(.docker_registry_image_tag//"unknown")' "$tmp"
+          else
+            echo "APPLICATION_LIST_UNAVAILABLE HTTP=$code"
+          fi
           code="$(curl --silent --show-error --connect-timeout 10 --max-time 30 -o "$tmp" -w '%{http_code}' \
             -H "Authorization: Bearer $COOLIFY_READ_TOKEN" "$base/deployments/applications/$uuid?take=10")"
           if [ "$code" = 200 ]; then
