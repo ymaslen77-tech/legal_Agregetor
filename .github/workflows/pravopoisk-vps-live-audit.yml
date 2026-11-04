@@ -10,7 +10,7 @@ permissions:
 jobs:
   inspect:
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: 13
     env:
       COOLIFY_READ_TOKEN: ${{ secrets.PRAVOPOISK_COOLIFY_READ_TOKEN }}
     steps:
@@ -52,6 +52,28 @@ jobs:
           else
             echo "APPLICATION_LIST_UNAVAILABLE HTTP=$code"
           fi
+          active='czlmmordcnwmli1ynvodtzrr'
+          request "$base/applications/$active"
+          jq -e --arg u "$active" '.uuid==$u and ((.fqdn//"")|contains("pravopoisk.ru")) and
+            .docker_registry_image_name=="ghcr.io/ymaslen77-tech/pravopoisk-military" and
+            .docker_registry_image_tag=="production"' "$tmp" >/dev/null ||
+            { echo "::error::Active image-backed site is not linked to the approved domain/tag"; exit 1; }
+          jq -r '"ACTIVE_APP uuid="+(.uuid//"unknown")+" name="+(.name//"unknown")+
+            " status="+(.status//"unknown")+" domain="+(.fqdn//"unknown")+
+            " image="+(.docker_registry_image_name//"unknown")+
+            " tag="+(.docker_registry_image_tag//"unknown")+
+            " created="+(.created_at//"unknown")+
+            " updated="+(.updated_at//"unknown")' "$tmp"
+          code="$(curl --silent --show-error --connect-timeout 10 --max-time 30 -o "$tmp" -w '%{http_code}' \
+            -H "Authorization: Bearer $COOLIFY_READ_TOKEN" "$base/deployments/applications/$active?take=10")"
+          if [ "$code" = 200 ]; then
+            jq -r '((if type=="array" then . elif (.data?|type)=="array" then .data else [] end) |
+              .[:10] | .[] | "ACTIVE_DEPLOYMENT status="+(.status//"unknown")+
+              " commit="+(.commit//"unknown")+" created="+(.created_at//"unknown")+
+              " finished="+(.finished_at//"unknown"))' "$tmp"
+          else
+            echo "ACTIVE_DEPLOYMENT_HISTORY_UNAVAILABLE HTTP=$code"
+          fi
           code="$(curl --silent --show-error --connect-timeout 10 --max-time 30 -o "$tmp" -w '%{http_code}' \
             -H "Authorization: Bearer $COOLIFY_READ_TOKEN" "$base/deployments/applications/$uuid?take=10")"
           if [ "$code" = 200 ]; then
@@ -70,3 +92,44 @@ jobs:
             echo "PUBLIC_HTTP path=$path status=$http"
           done
           echo 'READ_ONLY_LIVE_AUDIT_COMPLETE; no deploy, database or configuration writes'
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Verify published documents catalog and military draft in a real browser (read-only)
+        shell: bash
+        run: |
+          node <<'NODE'
+          const {chromium}=require('@playwright/test');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            const page=await browser.newPage();
+            try{
+              for(const route of ['/','/voennoe-pravo/','/documents/']){
+                const response=await page.goto('https://pravopoisk.ru'+route,{waitUntil:'domcontentloaded',timeout:35000});
+                if(!response||response.status()!==200)throw Error('PUBLIC_BROWSER_HTTP '+route+' '+(response?.status()??'none'));
+                console.log('LIVE_BROWSER_HTTP_200 '+route);
+              }
+              await page.getByRole('heading',{name:/Военное право — 121 генератор/}).waitFor({timeout:15000});
+              console.log('MILITARY_CATALOG_121_HEADING=PASS');
+              await page.getByRole('button',{name:'Показать все 121 документов'}).click();
+              const cards=page.locator('article');
+              const count=await cards.count();
+              console.log('MILITARY_CATALOG_CARD_COUNT='+count);
+              if(count!==121)throw Error('Expected 121 catalog cards, found '+count);
+              const link=page.getByRole('link',{name:'Открыть документ'}).first();
+              await link.click();
+              await page.getByTestId('military-draft-workbench').waitFor({timeout:15000});
+              console.log('MILITARY_DRAFT_WORKBENCH=PASS path='+new URL(page.url()).pathname);
+              const robots=await page.locator('meta[name="robots"]').getAttribute('content');
+              if(!robots||!robots.includes('noindex'))throw Error('Published military draft is indexable');
+              console.log('MILITARY_DRAFT_NOINDEX=PASS');
+              console.log('LIVE_BROWSER_READ_ONLY_AUDIT=PASS');
+            }finally{await browser.close();}
+          })().catch(error=>{console.error('LIVE_BROWSER_AUDIT_ERROR '+error.message);process.exitCode=1;});
+          NODE
