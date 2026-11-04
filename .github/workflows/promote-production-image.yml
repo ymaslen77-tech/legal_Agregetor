@@ -1,0 +1,74 @@
+name: Publish approved release to fixed production image tag
+run-name: Promote image to production channel
+
+on:
+  push:
+    branches:
+      - infra/coolify-russian-vps
+    paths:
+      - "ops/production-image-tag.txt"
+      - ".github/workflows/promote-production-image.yml"
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Previously built and verified immutable GHCR release tag (empty = ops file)"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: ghcr-pravopoisk-production-tag
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Choose approved immutable release image
+        id: release
+        shell: bash
+        env:
+          REQUESTED_TAG: ${{ inputs.release_tag }}
+        run: |
+          set -euo pipefail
+          TAG="${REQUESTED_TAG:-}"
+          if [ -z "$TAG" ]; then
+            TAG="$(sed -e '/^[[:space:]]*#/d' -e '/^[[:space:]]*$/d' ops/production-image-tag.txt | head -n 1 | tr -d '[:space:]')"
+          fi
+          if [[ ! "$TAG" =~ ^rc-[a-z0-9][a-z0-9._-]{4,80}$ ]]; then
+            echo "::error::Invalid immutable release tag"
+            exit 1
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Promoting verified release $TAG; not deploying to VPS."
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Validate source exists in GHCR
+        env:
+          SOURCE_TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          set -euo pipefail
+          docker buildx imagetools inspect "ghcr.io/ymaslen77-tech/pravopoisk-military:$SOURCE_TAG"
+      - name: Point persistent production tag at already built release
+        env:
+          SOURCE_TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          set -euo pipefail
+          docker buildx imagetools create \
+            --tag ghcr.io/ymaslen77-tech/pravopoisk-military:production \
+            "ghcr.io/ymaslen77-tech/pravopoisk-military:$SOURCE_TAG"
+          docker buildx imagetools inspect ghcr.io/ymaslen77-tech/pravopoisk-military:production
+          echo "Permanent Coolify tag: production" >> "$GITHUB_STEP_SUMMARY"
+          echo "Source release: $SOURCE_TAG" >> "$GITHUB_STEP_SUMMARY"
+          echo "No Coolify deployment was triggered. Rollout remains manual." >> "$GITHUB_STEP_SUMMARY"

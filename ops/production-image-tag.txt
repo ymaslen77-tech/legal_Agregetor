@@ -1,0 +1,5 @@
+# Immutable, tested release published successfully in GHCR.
+# Change only after its image build and catalog/unit/browser tests have passed.
+# The production app in Coolify uses the permanent mutable tag "production";
+# this file selects which immutable release is promoted into that channel.
+rc-documents-121-34de8a4e
