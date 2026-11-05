@@ -11,7 +11,11 @@ const withUrl=(body:string,url:string,status=200):Response=>{
   Object.defineProperty(response,"url",{value:url});
   return response;
 };
-const mock=async (input:RequestInfo|URL):Promise<Response>=>withUrl(html,String(input));
+const mock=async (input:RequestInfo|URL):Promise<Response>=>{
+  const url=String(input);
+  const evidence=sources.find(source=>source.url===url);
+  return withUrl("<main>"+(evidence?.checkedExcerpt??"")+"</main>",url);
+};
 const match=await inspectMilitaryEvidence(sources[0],mock as typeof fetch);
 assert.equal(match.status,"MATCH");
 const missing=async (input:RequestInfo|URL):Promise<Response>=>withUrl("<p>Нет выдержки</p>",String(input));
