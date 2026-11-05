@@ -49,9 +49,9 @@ export async function inspectMilitaryEvidence(e: MilitarySourceEvidence, get: Fe
   if (!host) return {...base,status:"UNAVAILABLE",detail:"Источник вне утверждённого HTTPS-списка"};
   if (e.url.toLowerCase().split("?")[0].endsWith(".pdf")) return {...base,status:"UNSUPPORTED_FORMAT",detail:"Для PDF нужна отдельная проверка текста"};
   try {
-    const response = await get(e.url,{redirect:"follow",signal:AbortSignal.timeout(15000),
+    const response = await get(e.url,{redirect:"manual",signal:AbortSignal.timeout(15000),
       headers:{"Accept":"text/html,text/plain;q=0.9","User-Agent":"PravopoiskLegalSourceAudit/1.0"}});
-    const redirectedHost=safeHost(response.url);
+    const redirectedHost=safeHost(response.url || e.url);
     if (!response.ok || !redirectedHost || publisherKey(redirectedHost)!==publisherKey(host))
       return {...base,status:"UNAVAILABLE",detail:"HTTP "+response.status+" или непроверенный адрес перенаправления"};
     const type=response.headers.get("content-type")??"";
