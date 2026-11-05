@@ -5,22 +5,17 @@ import { MILITARY_SOURCE_CLAIMS } from "../../src/data/military-source-verificat
 const sources=MILITARY_SOURCE_CLAIMS[0].sources;
 assert.equal(normalizeExcerpt("Призыв   — &nbsp; ежегодно"),"призыв - ежегодно");
 const html="<html><script>Неверные сведения</script><main>"+sources[0].checkedExcerpt+"</main></html>";
-const fakeFetch=async (input:RequestInfo|URL):Promise<Response>=>new Response(html,{
-  headers:{"content-type":"text/html"}
-});
-const mock=async (input:RequestInfo|URL):Promise<Response>=>{
-  const url=String(input);
-  return Object.assign(new Response(html,{headers:{"content-type":"text/html"}}),{url});
+const withUrl=(body:string,url:string,status=200):Response=>{
+  const response=new Response(body,{status,headers:{"content-type":"text/html"}});
+  Object.defineProperty(response,"url",{value:url});
+  return response;
 };
+const mock=async (input:RequestInfo|URL):Promise<Response>=>withUrl(html,String(input));
 const match=await inspectMilitaryEvidence(sources[0],mock as typeof fetch);
 assert.equal(match.status,"MATCH");
-const missing=async (input:RequestInfo|URL):Promise<Response>=>Object.assign(
-  new Response("<p>Нет выдержки</p>",{headers:{"content-type":"text/html"}}),{url:String(input)}
-);
+const missing=async (input:RequestInfo|URL):Promise<Response>=>withUrl("<p>Нет выдержки</p>",String(input));
 assert.equal((await inspectMilitaryEvidence(sources[0],missing as typeof fetch)).status,"TEXT_MISMATCH");
-const blocked=async(input:RequestInfo|URL):Promise<Response>=>Object.assign(
-  new Response("Forbidden",{status:403,headers:{"content-type":"text/plain"}}),{url:String(input)}
-);
+const blocked=async(input:RequestInfo|URL):Promise<Response>=>withUrl("Forbidden",String(input),403);
 assert.equal((await inspectMilitaryEvidence(sources[0],blocked as typeof fetch)).status,"UNAVAILABLE");
 assert.equal((await inspectMilitaryEvidence({...sources[0],url:"http://consultant.ru/fake"},mock as typeof fetch)).status,"UNAVAILABLE");
 const report=await buildMilitaryLiveAudit(mock as typeof fetch);
