@@ -1,0 +1,42 @@
+name: Military public VPS read-only smoke
+
+on:
+  pull_request:
+    branches:
+      - infra/coolify-russian-vps
+    paths:
+      - ".github/workflows/military-public-vps-smoke.yml"
+      - "src/app/voennoe-pravo/**"
+      - "src/components/documents/Military**"
+      - "src/data/military-**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  public-vps:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Check live public routes without publishing or changing server configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://pravopoisk.ru"
+          for path in / /voennoe-pravo/ /documents/ /sitemap.xml /robots.txt; do
+            temp="$(mktemp)"
+            http="$(curl --silent --show-error --location --connect-timeout 12 --max-time 35 --output "$temp" --write-out '%{http_code}' "$base$path")"
+            bytes="$(wc -c < "$temp")"
+            rm -f "$temp"
+            echo "LIVE_HTTP $path status=$http bytes=$bytes"
+            [ "$http" = "200" ] && [ "$bytes" -gt 100 ] || {
+              echo "::error::Public VPS smoke failure at $path (HTTP $http, $bytes bytes)"
+              exit 1
+            }
+          done
+          echo "PASS: the current public site responds. This does not verify deployment of this PR."
+      - name: Clarify deployment scope
+        run: |
+          echo "Checked live public endpoints only; no SSH, database access, Coolify mutation or deploy."
+          echo "Production revision and legal approval must be validated separately."
