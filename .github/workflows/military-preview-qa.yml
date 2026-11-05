@@ -1,5 +1,15 @@
 name: Military unreviewed draft browser QA
 on:
+  pull_request:
+    branches:
+      - infra/coolify-russian-vps
+    paths:
+      - ".github/workflows/military-preview-qa.yml"
+      - "src/data/military-**"
+      - "src/lib/military-**"
+      - "src/components/documents/Military**"
+      - "src/app/voennoe-pravo/**"
+      - "tests/e2e/military-**"
   push:
     branches:
       - feature/military-rebuild-from-zero-20261027
