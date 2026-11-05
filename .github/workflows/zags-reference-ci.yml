@@ -43,6 +43,10 @@ jobs:
       SITE_URL: http://localhost:3000
       LEAD_ATTACHMENT_STORAGE_ROOT: /tmp/private-lead-attachments
       LOCAL_HTTP_E2E: "true"
+      # CI-only: the browser suite explicitly checks all military draft generators.
+      # Production deployment does not inherit this workflow environment.
+      ENABLE_MILITARY_PUBLIC_DRAFTS: "true"
+      ENABLE_MILITARY_DRAFT_PREVIEW: "false"
 
     steps:
       - uses: actions/checkout@v4
