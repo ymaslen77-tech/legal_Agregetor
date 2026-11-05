@@ -1,0 +1,42 @@
+name: Scheduled military source evidence audit (VPS branch)
+on:
+  schedule:
+    - cron: "17 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: scheduled-military-source-audit
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Read-only checkout of current VPS source branch
+        uses: actions/checkout@v4
+        with:
+          ref: infra/coolify-russian-vps
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Test source classification, independence, and official precedence
+        run: npx tsx src/data/military-source-verification.test.ts && npx tsx scripts/lib/audit-military-sources.test.ts
+      - name: Recheck exact recorded source excerpts without granting unearned approval
+        run: npx tsx scripts/audit-military-sources.ts
+      - name: Check candidate source reachability for all 143 situations
+        run: npx tsx scripts/audit-military-source-candidates.ts
+      - name: Preserve evidence and full queue for inspection
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: weekly-military-legal-sources
+          path: reports/military-source-audit/
+          retention-days: 30
+          if-no-files-found: warn
