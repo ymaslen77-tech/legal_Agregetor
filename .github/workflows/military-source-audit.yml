@@ -12,6 +12,7 @@ on:
       - "src/data/military-case-legal-matrix.ts"
       - "src/data/military-provision-checks.ts"
       - "scripts/audit-military-sources.ts"
+      - "scripts/audit-military-source-candidates.ts"
       - "scripts/lib/audit-military-sources.ts"
       - "scripts/lib/audit-military-sources.test.ts"
       - ".github/workflows/military-source-audit.yml"
@@ -36,6 +37,8 @@ jobs:
         run: npx tsx scripts/lib/audit-military-sources.test.ts
       - name: Recheck recorded claims; report missing and conflicting sources without inventing approval
         run: npx tsx scripts/audit-military-sources.ts
+      - name: Check reachability of all distinct candidate URLs without legal auto-approval
+        run: npx tsx scripts/audit-military-source-candidates.ts
       - name: Upload source evidence status and full 143-situation work queue
         if: always()
         uses: actions/upload-artifact@v4
