@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { buildMilitaryLiveAudit, inspectMilitaryEvidence, normalizeExcerpt } from "./audit-military-sources";
 import { MILITARY_SOURCE_CLAIMS } from "../../src/data/military-source-verification";
 
+async function main(){
 const sources=MILITARY_SOURCE_CLAIMS[0].sources;
 assert.equal(normalizeExcerpt("Призыв   — &nbsp; ежегодно"),"призыв - ежегодно");
 const html="<html><script>Неверные сведения</script><main>"+sources[0].checkedExcerpt+"</main></html>";
@@ -28,3 +29,6 @@ const degraded=await buildMilitaryLiveAudit(missing as typeof fetch);
 assert.equal(degraded.liveTwoSourceMatches,0);
 assert.equal(degraded.pendingCases,142);
 console.log("Military live source audit: 143 queued, confirmed excerpts, mismatch, 403, and degraded sources PASS");
+
+}
+main().catch(error=>{console.error(error);process.exitCode=1;});
