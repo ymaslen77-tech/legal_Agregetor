@@ -1,0 +1,85 @@
+name: Military public VPS read-only smoke
+
+on:
+  pull_request:
+    branches:
+      - infra/coolify-russian-vps
+    paths:
+      - ".github/workflows/military-public-vps-smoke.yml"
+      - "src/app/voennoe-pravo/**"
+      - "src/components/documents/Military**"
+      - "src/data/military-**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  public-vps:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Check live public routes without publishing or changing server configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://pravopoisk.ru"
+          for path in / /voennoe-pravo/ /documents/ /sitemap.xml /robots.txt; do
+            temp="$(mktemp)"
+            http="$(curl --silent --show-error --location --connect-timeout 12 --max-time 35 --output "$temp" --write-out '%{http_code}' "$base$path")"
+            bytes="$(wc -c < "$temp")"
+            rm -f "$temp"
+            echo "LIVE_HTTP $path status=$http bytes=$bytes"
+            [ "$http" = "200" ] && [ "$bytes" -gt 100 ] || {
+              echo "::error::Public VPS smoke failure at $path (HTTP $http, $bytes bytes)"
+              exit 1
+            }
+          done
+          echo "PASS: the current public site responds. This does not verify deployment of this PR."
+      - name: Set up read-only browser test dependencies
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Browser-check live 121-card catalog and protected draft without saving data
+        run: |
+          node <<'NODE'
+          const {chromium}=require('@playwright/test');
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            const page=await browser.newPage();
+            const assets=[];
+            page.on('response',r=>{
+              const url=r.url();
+              if(url.startsWith('https://pravopoisk.ru/_next/static/') && r.status()>=400)
+                assets.push(url+' HTTP '+r.status());
+            });
+            try{
+              const home=await page.goto('https://pravopoisk.ru/voennoe-pravo/',{waitUntil:'domcontentloaded',timeout:45000});
+              if(home?.status()!==200)throw Error('Military main page '+home?.status());
+              await page.getByRole('heading',{name:'Военное право',exact:true}).first().waitFor();
+              const catalog=await page.goto('https://pravopoisk.ru/documents/',{waitUntil:'domcontentloaded',timeout:45000});
+              if(catalog?.status()!==200)throw Error('Documents catalog '+catalog?.status());
+              await page.getByRole('button',{name:/Показать все 121 документов/}).click();
+              const cards=page.locator('article');
+              const count=await cards.count();
+              if(count!==121)throw Error('Expected 121 military document cards, got '+count);
+              await page.getByRole('link',{name:'Открыть документ'}).first().click();
+              await page.getByTestId('military-draft-workbench').waitFor({timeout:20000});
+              const robots=await page.locator('meta[name="robots"]').getAttribute('content');
+              if(!robots||!robots.includes('noindex'))throw Error('Military draft missing noindex');
+              if(assets.length)throw Error('Broken Next static assets: '+assets.join('; '));
+              console.log('PUBLIC_BROWSER_VPS_PASS: 121 cards, draft workbench, noindex, static assets');
+              console.log('READ_ONLY: no form input, no archive writes, no deployment');
+            } finally {await browser.close();}
+          })().catch(e=>{console.error(e);process.exitCode=1;});
+          NODE
+      - name: Clarify deployment scope
+        run: |
+          echo "Checked live public endpoints only; no SSH, database access, Coolify mutation or deploy."
+          echo "Production revision and legal approval must be validated separately."

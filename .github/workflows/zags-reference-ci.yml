@@ -65,7 +65,11 @@ jobs:
       - run: npm test
       - name: Verify all 50 labor questionnaires against the API form contract
         run: npm run test:labor
-      - run: npm run build
+      - name: Build with the opt-in military draft test route enabled
+        env:
+          ENABLE_MILITARY_PUBLIC_DRAFTS: "true"
+          ENABLE_MILITARY_DRAFT_PREVIEW: "false"
+        run: npm run build
       - name: Run AI Navigator quality check
         run: |
           npm run start -- -p 3000 > /tmp/reference-routes-next.log 2>&1 &
@@ -89,6 +93,8 @@ jobs:
       - name: Run all family and labor route acceptance
         env:
           E2E_SUBMIT_REVIEW: "true"
+          ENABLE_MILITARY_PUBLIC_DRAFTS: "true"
+          ENABLE_MILITARY_DRAFT_PREVIEW: "false"
         run: npx playwright test --workers=2
       - name: Confirm withdrawn review PDF was deleted
         run: test -z "$(find "$LEAD_ATTACHMENT_STORAGE_ROOT" -type f -name '*.pdf' -print -quit 2>/dev/null)"

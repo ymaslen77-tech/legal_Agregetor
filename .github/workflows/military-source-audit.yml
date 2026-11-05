@@ -1,0 +1,49 @@
+name: Military legal sources live evidence audit
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 4 * * 1"
+  pull_request:
+    branches:
+      - infra/coolify-russian-vps
+    paths:
+      - "src/data/military-source-verification.ts"
+      - "src/data/military-case-legal-matrix.ts"
+      - "src/data/military-provision-checks.ts"
+      - "scripts/audit-military-sources.ts"
+      - "scripts/audit-military-source-candidates.ts"
+      - "scripts/lib/audit-military-sources.ts"
+      - "scripts/lib/audit-military-sources.test.ts"
+      - ".github/workflows/military-source-audit.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  source-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Test validation without network or access to live accounts
+        run: npx tsx scripts/lib/audit-military-sources.test.ts
+      - name: Recheck recorded claims; report missing and conflicting sources without inventing approval
+        run: npx tsx scripts/audit-military-sources.ts
+      - name: Check reachability of all distinct candidate URLs without legal auto-approval
+        run: npx tsx scripts/audit-military-source-candidates.ts
+      - name: Upload source evidence status and full 143-situation work queue
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: military-source-audit
+          path: reports/military-source-audit/
+          if-no-files-found: warn
+          retention-days: 30
