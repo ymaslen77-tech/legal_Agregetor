@@ -44,7 +44,8 @@ import {
   canIndexLawyerListingPage,
   canIndexLawyerProfilePage,
   canIndexQuestionPage,
-  isIndexableQuestionAnswer
+  isIndexableQuestionAnswer,
+  isNonIndexableSampleLawyerSlug
 } from "./seo";
 
 type LawyerFilters = {
@@ -162,12 +163,11 @@ function isDatabaseTimeoutError(error: unknown) {
   return error instanceof Error && error.message === "Database query timeout";
 }
 
-const sampleLawyerSlugPrefixes = ["demo-lawyer", "sample-lawyer"];
-const sampleLawyerUserIdPrefixes = ["demo-lawyer-", "sample-lawyer-"];
+const sampleLawyerUserIdPrefixes = ["demo-lawyer-", "sample-lawyer-", "dev-city-lawyer-", "test-lawyer-", "fake-lawyer-", "mock-lawyer-", "fixture-lawyer-"];
 
 function isProductionHiddenSampleLawyer(lawyer: Pick<Lawyer, "slug"> & { userId?: string | null }) {
   return (
-    sampleLawyerSlugPrefixes.some((prefix) => lawyer.slug.startsWith(prefix)) ||
+    isNonIndexableSampleLawyerSlug(lawyer.slug) ||
     sampleLawyerUserIdPrefixes.some((prefix) => lawyer.userId?.startsWith(prefix))
   );
 }
@@ -1068,6 +1068,7 @@ export async function getSitemapEntries(
       "/",
       "/document-check/",
       "/problems/",
+      "/voennoe-pravo/",
       "/documents/",
       "/tools/",
       ...(includeQuestionsRoot ? ["/questions/"] : []),
