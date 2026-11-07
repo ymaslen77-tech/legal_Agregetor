@@ -53,7 +53,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if grep -Eq 'prisma\\.lawyer\\.(update|updateMany|upsert|create)\\(' scripts/make-lawyers-real.ts; then
+          if grep -Eq 'prisma\.lawyer\.(update|updateMany|upsert|create)\(' scripts/make-lawyers-real.ts; then
             echo "::error::Synthetic lawyer publication mutation was reintroduced"
             exit 1
           fi
