@@ -1,6 +1,18 @@
 name: Public SEO index safety and fake-risk audit
 
 on:
+  push:
+    branches:
+      - infra/coolify-russian-vps
+    paths:
+      - "src/app/voennoe-pravo/page.tsx"
+      - "src/lib/repositories.ts"
+      - "src/lib/seo.ts"
+      - "src/lib/question-indexability.ts"
+      - "src/app/sitemap-**"
+      - "tests/e2e/public-indexation-safe.spec.ts"
+      - "scripts/audit-live-public-indexing.ts"
+      - ".github/workflows/public-seo-index-safety.yml"
   pull_request:
     branches:
       - infra/coolify-russian-vps
@@ -61,3 +73,34 @@ jobs:
           path: artifacts/public-seo-indexing/
           retention-days: 14
           if-no-files-found: warn
+
+  browser-index-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CI: "true"
+      NEXT_TELEMETRY_DISABLED: "1"
+      ENABLE_MILITARY_PUBLIC_DRAFTS: "false"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run prisma:generate
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Assert indexable hub, sitemap, canonical and noindex for unsafe military pages
+        run: npx playwright test tests/e2e/public-indexation-safe.spec.ts --workers=1
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: public-seo-indexation-browser-failure
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+          retention-days: 7
