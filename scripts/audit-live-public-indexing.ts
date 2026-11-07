@@ -43,15 +43,15 @@ async function main(){
   const [robots,index,...maps]=await Promise.all(["/robots.txt","/sitemap.xml",...mapPaths].map(request));
   const sitePages=maps[0];
   const mapAudit=maps.map((item)=>{
-    const locs=[...item.text.matchAll(/<loc>([^<]+)<\\/loc>/gi)].map(match=>match[1]);
-    const riskPaths=locs.filter(url=>/\\/(?:account|admin|api|test|debug|dev|login|logout|register)\\//i.test(url));
+    const locs=[...item.text.matchAll(/<loc>([^<]+)<\/loc>/gi)].map(match=>match[1]);
+    const riskPaths=locs.filter(url=>/\/(?:account|admin|api|test|debug|dev|login|logout|register)\//i.test(url));
     const fakePaths=locs.filter(url=>/(?:demo-lawyer|sample-lawyer|dev-city-lawyer|test-lawyer|fake-lawyer|fixture-lawyer|mock-lawyer)/i.test(url));
     const nonCanonical=locs.filter(url=>!url.startsWith(site+"/")||/[?#]/.test(url));
     return {path:item.path,http:item.http,parsedUrls:locs.length,privateOrTechnical:riskPaths.slice(0,10),
       fakeProfiles:fakePaths.slice(0,10),nonCanonicalUrls:nonCanonical.slice(0,10),
       warning:item.text.length>=2_500_000?"Response truncated at 2.5M characters; totals not exhaustive":null};
   });
-  const sampledUrls=[...new Set(maps.flatMap(item=>[...item.text.matchAll(/<loc>([^<]+)<\\/loc>/gi)]
+  const sampledUrls=[...new Set(maps.flatMap(item=>[...item.text.matchAll(/<loc>([^<]+)<\/loc>/gi)]
     .map(match=>match[1]).slice(0,2)).filter(url=>url.startsWith(site+"/")))];
   const sampled=await Promise.all(sampledUrls.map(async url=>{
     const result=await request(url.slice(site.length));
@@ -64,7 +64,9 @@ async function main(){
     rootCrawlAllowed:robots.http===200 && !/^Disallow:\s*\/\s*$/mi.test(robotsText),
     sitemapIndexAvailable:index.http===200 && index.text.includes("sitemap-pages.xml"),
     militaryHubInPublishedSitemap:sitemap.includes(site+"/voennoe-pravo/"),
-    fakePathsInPublishedSitemap:/\/(?:demo-lawyer|sample-lawyer|dev-city-lawyer|test-lawyer|fake-lawyer|fixture-lawyer)/i.test(sitemap),
+    fakePathsInPublishedSitemap:mapAudit.some(item=>item.fakeProfiles.length>0),
+    mappedTechnicalUrls:mapAudit.reduce((total,item)=>total+item.privateOrTechnical.length,0),
+    sitemapNoindexConflictsInSample:sampled.filter(item=>item.sitemapIndexConflict).length,
     militaryUnverifiedUrlsInPublishedSitemap:sitemap.includes(site+`/voennoe-pravo/${topic.slug}/`)
   };
   const out={checkedAt:new Date().toISOString(),site,
