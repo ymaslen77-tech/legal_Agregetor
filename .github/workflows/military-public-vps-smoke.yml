@@ -76,9 +76,19 @@ jobs:
               // Public deployment may intentionally disable unapproved draft workbenches.
               // The route must still exist, remain noindex, and not claim filing readiness.
               const workbenches=await page.getByTestId('military-draft-workbench').count();
-              const robots=await page.locator('meta[name="robots"]').getAttribute('content');
+              // Next.js may stream route-specific metadata after the first head tags.
+              // A root index tag alone does not prove a route is indexable.
+              if(!page.url().includes('/voennoe-pravo/'))throw Error('Unexpected non-military destination '+page.url());
+              await page.waitForFunction(()=>
+                [...document.querySelectorAll('meta[name="robots"]')]
+                  .some(node=>(node.getAttribute('content')||'').includes('noindex')),
+                {timeout:15000}
+              ).catch(async () => {
+                const values=await page.locator('meta[name="robots"]').evaluateAll(nodes=>
+                  nodes.map(node=>node.getAttribute('content')));
+                throw Error('Military draft missing noindex at '+page.url()+' metadata='+JSON.stringify(values));
+              });
               if(workbenches>1)throw Error('Duplicate military workbench widgets');
-              if(!robots||!robots.includes('noindex'))throw Error('Military draft missing noindex');
               if(assets.length)throw Error('Broken Next static assets: '+assets.join('; '));
               console.log('PUBLIC_BROWSER_VPS_PASS: 121 cards, protected draft route, noindex, static assets; workbenches='+workbenches);
               console.log('READ_ONLY: no form input, no archive writes, no deployment');
