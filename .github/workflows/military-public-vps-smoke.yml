@@ -72,7 +72,12 @@ jobs:
               const cards=page.locator('article');
               const count=await cards.count();
               if(count!==121)throw Error('Expected 121 military document cards, got '+count);
-              await page.getByRole('link',{name:'Открыть документ'}).first().click();
+              const link=page.getByRole('link',{name:'Открыть документ'}).first();
+              const href=await link.getAttribute('href');
+              if(!href||!href.startsWith('/voennoe-pravo/'))throw Error('Military catalog link is missing or invalid: '+href);
+              // Explicit navigation avoids a race with Next.js client-side route transition.
+              const documentRoute=await page.goto('https://pravopoisk.ru'+href,{waitUntil:'domcontentloaded',timeout:45000});
+              if(documentRoute?.status()!==200)throw Error('Military draft route status '+documentRoute?.status());
               // Public deployment may intentionally disable unapproved draft workbenches.
               // The route must still exist, remain noindex, and not claim filing readiness.
               const workbenches=await page.getByTestId('military-draft-workbench').count();
