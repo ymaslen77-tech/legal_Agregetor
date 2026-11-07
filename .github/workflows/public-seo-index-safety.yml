@@ -9,6 +9,7 @@ on:
       - "src/lib/repositories.ts"
       - "src/lib/seo.ts"
       - "src/lib/question-indexability.ts"
+      - "scripts/make-lawyers-real.ts"
       - "src/app/sitemap-**"
       - "tests/e2e/public-indexation-safe.spec.ts"
       - "scripts/audit-live-public-indexing.ts"
@@ -21,6 +22,7 @@ on:
       - "src/lib/repositories.ts"
       - "src/lib/seo.ts"
       - "src/lib/question-indexability.ts"
+      - "scripts/make-lawyers-real.ts"
       - "src/lib/qna-publication-rules.test.ts"
       - "src/app/sitemap-**"
       - "tests/e2e/public-indexation-safe.spec.ts"
@@ -47,6 +49,16 @@ jobs:
       - run: npm run prisma:generate
       - name: Block fake Q&A and synthetic lawyer indexing
         run: npx tsx src/lib/qna-publication-rules.test.ts
+      - name: Forbid reactivation of synthetic-lawyer bulk publishing
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -Eq 'prisma\\.lawyer\\.(update|updateMany|upsert|create)\\(' scripts/make-lawyers-real.ts; then
+            echo "::error::Synthetic lawyer publication mutation was reintroduced"
+            exit 1
+          fi
+          grep -q 'process.argv.includes("--apply")' scripts/make-lawyers-real.ts
+          echo "Synthetic lawyer tool is read-only"
       - name: Audit canonical sitemap and noindex safeguards
         run: npm run test:seo-core
       - name: Type-check the public indexing changes
