@@ -34,10 +34,13 @@ export async function markQuestionIndexability(questionId: string) {
     hasApprovedLawyerAnswer &&
     new Set(question.answers.map((answer) => answer.text.trim().toLowerCase())).size === question.answers.length;
   const hasSimilarQuestions = similarQuestions.length > 0;
+  // The 0.42 discovery threshold also finds related but distinct questions.
+  // Only near-exact copies should be excluded as duplicates.
+  const hasNearDuplicate = similarQuestions.some((item) => item.similarity >= 0.85);
   const canIndex = passesQuestionAntiFakeIndexGate({
     noPersonalContact: questionHasNoContacts,
     distinctAnswers: hasUniqueAnswer,
-    hasSimilarPublishedQuestion: hasSimilarQuestions
+    hasSimilarPublishedQuestion: hasNearDuplicate
   }) && canIndexQuestionPage({
     ...question,
     hasOpenReports: question.reports.length > 0,
