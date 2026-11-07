@@ -45,7 +45,8 @@ import {
   canIndexLawyerProfilePage,
   canIndexQuestionPage,
   isIndexableQuestionAnswer,
-  isNonIndexableSampleLawyerSlug
+  isNonIndexableSampleLawyerSlug,
+  NON_INDEXABLE_LAWYER_SLUG_PREFIXES
 } from "./seo";
 
 type LawyerFilters = {
@@ -359,7 +360,7 @@ export async function getLawyers(filters: LawyerFilters = {}) {
           // Exclude dev/sample lawyers at the query level. They are verified seed
           // profiles that rank first, so post-pagination filtering would let them
           // crowd real lawyers out of `take` and return an empty public list.
-          NOT: sampleLawyerSlugPrefixes.map((prefix) => ({ slug: { startsWith: prefix } })),
+          NOT: NON_INDEXABLE_LAWYER_SLUG_PREFIXES.map((prefix) => ({ slug: { startsWith: prefix } })),
           status: filters.status === "ADVOCATE" ? "ADVOCATE" : filters.status === "LAWYER" ? "LAWYER" : undefined,
           cities: filters.citySlug
             ? {
