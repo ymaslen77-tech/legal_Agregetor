@@ -66,6 +66,9 @@ jobs:
               const catalog=await page.goto('https://pravopoisk.ru/documents/',{waitUntil:'domcontentloaded',timeout:45000});
               if(catalog?.status()!==200)throw Error('Documents catalog '+catalog?.status());
               await page.getByRole('button',{name:/Показать все 121 документов/}).click();
+              // Hydration and state filtering are asynchronous on the live site.
+              // Wait for React to apply the filter before counting cards.
+              await page.getByText('Найдено документов: 121 из',{exact:false}).waitFor({timeout:20000});
               const cards=page.locator('article');
               const count=await cards.count();
               if(count!==121)throw Error('Expected 121 military document cards, got '+count);
