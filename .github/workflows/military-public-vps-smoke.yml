@@ -82,7 +82,7 @@ jobs:
               await page.waitForFunction(()=>
                 [...document.querySelectorAll('meta[name="robots"]')]
                   .some(node=>(node.getAttribute('content')||'').includes('noindex')),
-                {timeout:15000}
+                undefined,{timeout:15000}
               ).catch(async () => {
                 const values=await page.locator('meta[name="robots"]').evaluateAll(nodes=>
                   nodes.map(node=>node.getAttribute('content')));
