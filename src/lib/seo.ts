@@ -363,7 +363,7 @@ export function canIndexLawyerListingPage(input: {
 
 // Seeded dev/sample lawyers stay publicly visible but must never be indexed
 // (placeholder profiles populated for dev city pages).
-const NON_INDEXABLE_LAWYER_SLUG_PREFIXES = ["demo-lawyer", "sample-lawyer", "dev-city-lawyer", "test-lawyer", "fake-lawyer", "mock-lawyer", "fixture-lawyer"];
+export const NON_INDEXABLE_LAWYER_SLUG_PREFIXES = ["demo-lawyer", "sample-lawyer", "dev-city-lawyer", "test-lawyer", "fake-lawyer", "mock-lawyer", "fixture-lawyer"];
 
 export function isNonIndexableSampleLawyerSlug(slug?: string | null) {
   return Boolean(slug && NON_INDEXABLE_LAWYER_SLUG_PREFIXES.some((prefix) => slug.startsWith(prefix)));
