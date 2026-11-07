@@ -1,14 +1,15 @@
-// Reassign every answer currently attributed to a fake (dev/sample) lawyer to a
-// REAL lawyer, matched to the question's category where possible. Lawyer DATA and
-// LawyerCity relations are NOT touched — only Answer.lawyerId changes.
-//
-// Dry-run by default; pass --apply to commit.
+// Read-only inspection only. Synthetic legal answers must never be falsely
+// attributed to real lawyers: previous --apply functionality is retired.
 
 import { PrismaClient } from "@prisma/client";
 import { getHarantSpecializationAliases, normalizeHarantCategoryName } from "../src/lib/harant-question-categories";
 
 const prisma = new PrismaClient();
-const APPLY = process.argv.includes("--apply");
+if (process.argv.includes("--apply")) {
+  console.error("REFUSED: cannot attribute synthetic answers to real lawyers.");
+  process.exit(2);
+}
+const APPLY = false;
 const FAKE_PREFIXES = ["dev-city-lawyer", "demo-lawyer", "sample-lawyer"];
 const isFake = (slug: string) => FAKE_PREFIXES.some((p) => slug.startsWith(p));
 
@@ -62,15 +63,9 @@ function hashString(value: string) {
       updates.push({ id: a.id, lawyerId: pickReal(cat, idx).id });
     }
 
-    if (APPLY) {
-      for (let i = 0; i < updates.length; i += 100) {
-        await Promise.all(updates.slice(i, i + 100).map((u) => prisma.answer.update({ where: { id: u.id }, data: { lawyerId: u.lawyerId } })));
-      }
-    }
+    // READ ONLY: no answer writes or changes to attributed authorship.
     reassigned += updates.length;
     if (processed % 10000 < BATCH) console.log(`  processed ${processed}, reassigned ${reassigned}`);
-    // NOTE: in --apply the where-set shrinks as we update, so always page from skip=0.
-    if (APPLY) skip = -BATCH; // restart paging from 0 next loop since updated rows leave the set
   }
 
   console.log(`${APPLY ? "REASSIGNED" : "WOULD REASSIGN"}: ${reassigned} answers from fake -> real lawyers`);

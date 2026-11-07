@@ -1,11 +1,13 @@
-// Make every lawyer "real": rename dev/sample slugs to name-based unique slugs
-// and set all lawyers active + APPROVED. Relations (LawyerCity, answers) untouched.
-// Dry-run by default; pass --apply to commit.
+// READ-ONLY SEO SAFETY AUDIT: inspect synthetic lawyer slugs; never approve or rename
+// synthetic profiles as genuine lawyers. Historical --apply mode is disabled.
 
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
-const APPLY = process.argv.includes("--apply");
+if (process.argv.includes("--apply")) {
+  console.error("REFUSED: synthetic lawyer profiles cannot be renamed or bulk-approved.");
+  process.exit(2);
+}
 const FAKE_PREFIXES = ["dev-city-lawyer", "demo-lawyer", "sample-lawyer"];
 const isFake = (slug: string) => FAKE_PREFIXES.some((p) => slug.startsWith(p));
 
@@ -40,20 +42,6 @@ function slugify(value: string) {
   console.log("Sample renames:");
   renames.slice(0, 8).forEach((r) => console.log(`  ${r.oldSlug}  ->  ${r.newSlug}`));
 
-  if (!APPLY) {
-    console.log("\n(DRY RUN — nothing written. Re-run with --apply)");
-    await prisma.$disconnect();
-    return;
-  }
-
-  // 1) rename fake slugs
-  for (let i = 0; i < renames.length; i += 50) {
-    await Promise.all(renames.slice(i, i + 50).map((r) => prisma.lawyer.update({ where: { id: r.id }, data: { slug: r.newSlug } })));
-  }
-  // 2) make ALL lawyers active + approved
-  const res = await prisma.lawyer.updateMany({ data: { active: true, blocked: false, profileStatus: "APPROVED" } });
-
-  const fakeLeft = (await prisma.lawyer.findMany({ select: { slug: true } })).filter((l) => isFake(l.slug)).length;
-  console.log(`\nRenamed: ${renames.length}; set active+approved: ${res.count}; fake slugs left: ${fakeLeft}`);
+  console.log("\nREAD ONLY: no database changes. Never promote synthetic profiles to APPROVED.");
   await prisma.$disconnect();
 })().catch((e) => { console.error(e); process.exit(1); });
