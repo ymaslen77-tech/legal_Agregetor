@@ -5,7 +5,7 @@ import {
   getPublicAnswerWhere,
   getPublicQuestionWhere
 } from "./qna-publication-rules";
-import { canIndexQuestionPage, isIndexableQuestionAnswer, isNonIndexableSampleLawyerSlug, passesQuestionAntiFakeIndexGate } from "./seo";
+import { canIndexQuestionPage, isIndexableQuestionAnswer, isNonIndexableSampleLawyerSlug, isSyntheticLawyerUserId, passesQuestionAntiFakeIndexGate } from "./seo";
 
 // --- getPublicAnswerWhere encodes the critical safety gates ---
 const answerWhere = getPublicAnswerWhere();
@@ -98,5 +98,9 @@ for(const slug of ["demo-lawyer-1","sample-lawyer-2","dev-city-lawyer-3","test-l
   assert.equal(isNonIndexableSampleLawyerSlug(slug),true,"Sample lawyer must never be indexed: "+slug);
 }
 assert.equal(isNonIndexableSampleLawyerSlug("ivan-ivanov-advokat"),false);
+for(const id of ["user-lawyer-1","user-dev-city-lawyer-moskva-1","demo-lawyer-5","sample-lawyer-8"]) {
+  assert.equal(isSyntheticLawyerUserId(id),true,"Seeded lawyer user IDs must remain blocked after slug renaming: "+id);
+}
+assert.equal(isSyntheticLawyerUserId("verified-real-account-123"),false);
 
 console.log("qna-publication-rules.test.ts passed");
