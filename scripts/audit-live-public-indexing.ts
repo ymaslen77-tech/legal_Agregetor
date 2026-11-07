@@ -38,7 +38,26 @@ async function request(path:string){
 }
 async function main(){
   const results=await Promise.all(pages.map(async p=>({...p,...await request(p.path)})));
-  const [robots,index,sitePages]=await Promise.all(["/robots.txt","/sitemap.xml","/sitemap-pages.xml"].map(request));
+  const mapPaths=["/sitemap-pages.xml","/sitemap-problems.xml","/sitemap-documents.xml",
+    "/sitemap-tools.xml","/sitemap-lawyers.xml","/sitemap-questions.xml"];
+  const [robots,index,...maps]=await Promise.all(["/robots.txt","/sitemap.xml",...mapPaths].map(request));
+  const sitePages=maps[0];
+  const mapAudit=maps.map((item)=>{
+    const locs=[...item.text.matchAll(/<loc>([^<]+)<\\/loc>/gi)].map(match=>match[1]);
+    const riskPaths=locs.filter(url=>/\\/(?:account|admin|api|test|debug|dev|login|logout|register)\\//i.test(url));
+    const fakePaths=locs.filter(url=>/(?:demo-lawyer|sample-lawyer|dev-city-lawyer|test-lawyer|fake-lawyer|fixture-lawyer|mock-lawyer)/i.test(url));
+    const nonCanonical=locs.filter(url=>!url.startsWith(site+"/")||/[?#]/.test(url));
+    return {path:item.path,http:item.http,parsedUrls:locs.length,privateOrTechnical:riskPaths.slice(0,10),
+      fakeProfiles:fakePaths.slice(0,10),nonCanonicalUrls:nonCanonical.slice(0,10),
+      warning:item.text.length>=2_500_000?"Response truncated at 2.5M characters; totals not exhaustive":null};
+  });
+  const sampledUrls=[...new Set(maps.flatMap(item=>[...item.text.matchAll(/<loc>([^<]+)<\\/loc>/gi)]
+    .map(match=>match[1]).slice(0,2)).filter(url=>url.startsWith(site+"/")))];
+  const sampled=await Promise.all(sampledUrls.map(async url=>{
+    const result=await request(url.slice(site.length));
+    return {path:result.path,http:result.http,noindex:result.noindex,canonical:result.canonical,
+      sitemapIndexConflict:result.http===200&&result.noindex===true};
+  }));
   const robotsText=robots.text;
   const sitemap=sitePages.text;
   const diagnostics={
@@ -50,7 +69,8 @@ async function main(){
   };
   const out={checkedAt:new Date().toISOString(),site,
     note:"Live read-only observation. INDEX_AFTER_DEPLOY may remain noindex until Coolify rebuild/release. A sitemap and indexable metadata do not guarantee search inclusion.",
-    results:results.map(({text,...rest})=>rest),urls:[robots,index,sitePages].map(({text,...rest})=>rest),diagnostics};
+    results:results.map(({text,...rest})=>rest),urls:[robots,index,...maps].map(({text,...rest})=>rest),
+    sitemapAudit:mapAudit,sampledSitemapUrls:sampled,diagnostics};
   const dir="artifacts/public-seo-indexing";
   mkdirSync(dir,{recursive:true});
   writeFileSync(dir+"/live-report.json",JSON.stringify(out,null,2)+"\n");
