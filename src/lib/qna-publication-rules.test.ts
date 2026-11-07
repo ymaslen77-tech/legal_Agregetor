@@ -5,7 +5,7 @@ import {
   getPublicAnswerWhere,
   getPublicQuestionWhere
 } from "./qna-publication-rules";
-import { canIndexQuestionPage, isIndexableQuestionAnswer } from "./seo";
+import { canIndexQuestionPage, isIndexableQuestionAnswer, isNonIndexableSampleLawyerSlug, isSyntheticLawyerUserId, passesQuestionAntiFakeIndexGate } from "./seo";
 
 // --- getPublicAnswerWhere encodes the critical safety gates ---
 const answerWhere = getPublicAnswerWhere();
@@ -83,5 +83,24 @@ assert.equal(
   false,
   "An answer with fear/pressure is not publicly indexable."
 );
+
+assert.equal(canIndexQuestionPage({...buildQuestion(),userName:"Свяжитесь: user@example.com"}),false,
+  "Contact information in the displayed Q&A author name must block indexing.");
+assert.equal(passesQuestionAntiFakeIndexGate({noPersonalContact:true,distinctAnswers:true,hasSimilarPublishedQuestion:false}),true);
+for(const failure of [
+  {noPersonalContact:false,distinctAnswers:true,hasSimilarPublishedQuestion:false},
+  {noPersonalContact:true,distinctAnswers:false,hasSimilarPublishedQuestion:false},
+  {noPersonalContact:true,distinctAnswers:true,hasSimilarPublishedQuestion:true}
+]) {
+  assert.equal(passesQuestionAntiFakeIndexGate(failure),false,"Fake, repetitive or unsafe Q&A must never be marked indexable.");
+}
+for(const slug of ["demo-lawyer-1","sample-lawyer-2","dev-city-lawyer-3","test-lawyer-4","fake-lawyer-5","mock-lawyer-6","fixture-lawyer-7"]) {
+  assert.equal(isNonIndexableSampleLawyerSlug(slug),true,"Sample lawyer must never be indexed: "+slug);
+}
+assert.equal(isNonIndexableSampleLawyerSlug("ivan-ivanov-advokat"),false);
+for(const id of ["user-lawyer-1","user-dev-city-lawyer-moskva-1","demo-lawyer-5","sample-lawyer-8"]) {
+  assert.equal(isSyntheticLawyerUserId(id),true,"Seeded lawyer user IDs must remain blocked after slug renaming: "+id);
+}
+assert.equal(isSyntheticLawyerUserId("verified-real-account-123"),false);
 
 console.log("qna-publication-rules.test.ts passed");

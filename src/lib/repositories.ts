@@ -44,7 +44,11 @@ import {
   canIndexLawyerListingPage,
   canIndexLawyerProfilePage,
   canIndexQuestionPage,
-  isIndexableQuestionAnswer
+  isIndexableQuestionAnswer,
+  isNonIndexableSampleLawyerSlug,
+  NON_INDEXABLE_LAWYER_SLUG_PREFIXES,
+  NON_INDEXABLE_LAWYER_USER_ID_PREFIXES,
+  isSyntheticLawyerUserId
 } from "./seo";
 
 type LawyerFilters = {
@@ -162,13 +166,11 @@ function isDatabaseTimeoutError(error: unknown) {
   return error instanceof Error && error.message === "Database query timeout";
 }
 
-const sampleLawyerSlugPrefixes = ["demo-lawyer", "sample-lawyer"];
-const sampleLawyerUserIdPrefixes = ["demo-lawyer-", "sample-lawyer-"];
 
 function isProductionHiddenSampleLawyer(lawyer: Pick<Lawyer, "slug"> & { userId?: string | null }) {
   return (
-    sampleLawyerSlugPrefixes.some((prefix) => lawyer.slug.startsWith(prefix)) ||
-    sampleLawyerUserIdPrefixes.some((prefix) => lawyer.userId?.startsWith(prefix))
+    isNonIndexableSampleLawyerSlug(lawyer.slug) ||
+    isSyntheticLawyerUserId(lawyer.userId)
   );
 }
 
@@ -359,7 +361,10 @@ export async function getLawyers(filters: LawyerFilters = {}) {
           // Exclude dev/sample lawyers at the query level. They are verified seed
           // profiles that rank first, so post-pagination filtering would let them
           // crowd real lawyers out of `take` and return an empty public list.
-          NOT: sampleLawyerSlugPrefixes.map((prefix) => ({ slug: { startsWith: prefix } })),
+          NOT: [
+            ...NON_INDEXABLE_LAWYER_SLUG_PREFIXES.map((prefix) => ({ slug: { startsWith: prefix } })),
+            ...NON_INDEXABLE_LAWYER_USER_ID_PREFIXES.map((prefix) => ({ userId: { startsWith: prefix } }))
+          ],
           status: filters.status === "ADVOCATE" ? "ADVOCATE" : filters.status === "LAWYER" ? "LAWYER" : undefined,
           cities: filters.citySlug
             ? {
@@ -1068,6 +1073,7 @@ export async function getSitemapEntries(
       "/",
       "/document-check/",
       "/problems/",
+      "/voennoe-pravo/",
       "/documents/",
       "/tools/",
       ...(includeQuestionsRoot ? ["/questions/"] : []),
