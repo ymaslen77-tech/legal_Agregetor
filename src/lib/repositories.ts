@@ -164,7 +164,7 @@ function isDatabaseTimeoutError(error: unknown) {
   return error instanceof Error && error.message === "Database query timeout";
 }
 
-const sampleLawyerUserIdPrefixes = ["demo-lawyer-", "sample-lawyer-", "dev-city-lawyer-", "test-lawyer-", "fake-lawyer-", "mock-lawyer-", "fixture-lawyer-"];
+const sampleLawyerUserIdPrefixes = ["user-lawyer-", "user-dev-city-lawyer-", "demo-lawyer-", "sample-lawyer-", "dev-city-lawyer-", "test-lawyer-", "fake-lawyer-", "mock-lawyer-", "fixture-lawyer-"];
 
 function isProductionHiddenSampleLawyer(lawyer: Pick<Lawyer, "slug"> & { userId?: string | null }) {
   return (
@@ -360,7 +360,10 @@ export async function getLawyers(filters: LawyerFilters = {}) {
           // Exclude dev/sample lawyers at the query level. They are verified seed
           // profiles that rank first, so post-pagination filtering would let them
           // crowd real lawyers out of `take` and return an empty public list.
-          NOT: NON_INDEXABLE_LAWYER_SLUG_PREFIXES.map((prefix) => ({ slug: { startsWith: prefix } })),
+          NOT: [
+            ...NON_INDEXABLE_LAWYER_SLUG_PREFIXES.map((prefix) => ({ slug: { startsWith: prefix } })),
+            ...sampleLawyerUserIdPrefixes.map((prefix) => ({ userId: { startsWith: prefix } }))
+          ],
           status: filters.status === "ADVOCATE" ? "ADVOCATE" : filters.status === "LAWYER" ? "LAWYER" : undefined,
           cities: filters.citySlug
             ? {
