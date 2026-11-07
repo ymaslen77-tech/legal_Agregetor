@@ -10,6 +10,7 @@ on:
       - "src/lib/seo.ts"
       - "src/lib/question-indexability.ts"
       - "scripts/make-lawyers-real.ts"
+      - "scripts/reassign-fake-lawyer-answers.ts"
       - "src/app/sitemap-**"
       - "tests/e2e/public-indexation-safe.spec.ts"
       - "scripts/audit-live-public-indexing.ts"
@@ -23,6 +24,7 @@ on:
       - "src/lib/seo.ts"
       - "src/lib/question-indexability.ts"
       - "scripts/make-lawyers-real.ts"
+      - "scripts/reassign-fake-lawyer-answers.ts"
       - "src/lib/qna-publication-rules.test.ts"
       - "src/app/sitemap-**"
       - "tests/e2e/public-indexation-safe.spec.ts"
@@ -58,7 +60,11 @@ jobs:
             exit 1
           fi
           grep -q 'process.argv.includes("--apply")' scripts/make-lawyers-real.ts
-          echo "Synthetic lawyer tool is read-only"
+          if grep -Eq 'prisma\\.answer\\.(update|updateMany|upsert|create)\\(' scripts/reassign-fake-lawyer-answers.ts; then
+            echo "::error::Synthetic answer attribution mutation was reintroduced"
+            exit 1
+          fi
+          echo "Synthetic lawyer and answer tools are read-only"
       - name: Audit canonical sitemap and noindex safeguards
         run: npm run test:seo-core
       - name: Type-check the public indexing changes
