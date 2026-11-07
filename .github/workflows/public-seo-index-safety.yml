@@ -1,0 +1,63 @@
+name: Public SEO index safety and fake-risk audit
+
+on:
+  pull_request:
+    branches:
+      - infra/coolify-russian-vps
+    paths:
+      - "src/app/voennoe-pravo/page.tsx"
+      - "src/lib/repositories.ts"
+      - "src/lib/seo.ts"
+      - "src/lib/question-indexability.ts"
+      - "src/lib/qna-publication-rules.test.ts"
+      - "src/app/sitemap-**"
+      - "tests/e2e/public-indexation-safe.spec.ts"
+      - "scripts/audit-live-public-indexing.ts"
+      - ".github/workflows/public-seo-index-safety.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run prisma:generate
+      - name: Block fake Q&A and synthetic lawyer indexing
+        run: npx tsx src/lib/qna-publication-rules.test.ts
+      - name: Audit canonical sitemap and noindex safeguards
+        run: npm run test:seo-core
+      - name: Type-check the public indexing changes
+        run: npm run typecheck
+
+  live-observation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Read only currently deployed HTML, canonical, robots and sitemap
+        run: npx tsx scripts/audit-live-public-indexing.ts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: public-seo-indexing-readonly
+          path: artifacts/public-seo-indexing/
+          retention-days: 14
+          if-no-files-found: warn
