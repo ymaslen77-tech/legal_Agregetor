@@ -46,7 +46,9 @@ import {
   canIndexQuestionPage,
   isIndexableQuestionAnswer,
   isNonIndexableSampleLawyerSlug,
-  NON_INDEXABLE_LAWYER_SLUG_PREFIXES
+  NON_INDEXABLE_LAWYER_SLUG_PREFIXES,
+  NON_INDEXABLE_LAWYER_USER_ID_PREFIXES,
+  isSyntheticLawyerUserId
 } from "./seo";
 
 type LawyerFilters = {
@@ -164,12 +166,11 @@ function isDatabaseTimeoutError(error: unknown) {
   return error instanceof Error && error.message === "Database query timeout";
 }
 
-const sampleLawyerUserIdPrefixes = ["user-lawyer-", "user-dev-city-lawyer-", "demo-lawyer-", "sample-lawyer-", "dev-city-lawyer-", "test-lawyer-", "fake-lawyer-", "mock-lawyer-", "fixture-lawyer-"];
 
 function isProductionHiddenSampleLawyer(lawyer: Pick<Lawyer, "slug"> & { userId?: string | null }) {
   return (
     isNonIndexableSampleLawyerSlug(lawyer.slug) ||
-    sampleLawyerUserIdPrefixes.some((prefix) => lawyer.userId?.startsWith(prefix))
+    isSyntheticLawyerUserId(lawyer.userId)
   );
 }
 
@@ -362,7 +363,7 @@ export async function getLawyers(filters: LawyerFilters = {}) {
           // crowd real lawyers out of `take` and return an empty public list.
           NOT: [
             ...NON_INDEXABLE_LAWYER_SLUG_PREFIXES.map((prefix) => ({ slug: { startsWith: prefix } })),
-            ...sampleLawyerUserIdPrefixes.map((prefix) => ({ userId: { startsWith: prefix } }))
+            ...NON_INDEXABLE_LAWYER_USER_ID_PREFIXES.map((prefix) => ({ userId: { startsWith: prefix } }))
           ],
           status: filters.status === "ADVOCATE" ? "ADVOCATE" : filters.status === "LAWYER" ? "LAWYER" : undefined,
           cities: filters.citySlug
