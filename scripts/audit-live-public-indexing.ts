@@ -14,10 +14,11 @@ function attr(tag:string, key:string):string {
   const match=tag.match(new RegExp(`(?:^|\\s)${key}\\s*=\\s*["']([^"']*)["']`,"i"));
   return match?.[1]??"";
 }
-function getHeadTag(html:string, tag:string, key:string, value:string):string {
-  const head=html.split(/<\/head>/i)[0]??html.slice(0,90000);
-  return [...head.matchAll(new RegExp(`<${tag}\\b[^>]*>`,"gi"))]
-    .map(hit=>hit[0]).find(found=>attr(found,key).toLowerCase()===value)??"";
+function getTags(html:string, tag:string, key:string, value:string):string[] {
+  // Next.js may stream page-level metadata after </head> in regular browser HTML.
+  // Inspect the entire response, not just the first metadata block.
+  return [...html.matchAll(new RegExp(`<${tag}\\b[^>]*>`,"gi"))]
+    .map(hit=>hit[0]).filter(found=>attr(found,key).toLowerCase()===value);
 }
 async function request(path:string){
   try {
@@ -27,12 +28,14 @@ async function request(path:string){
       headers:{"Accept":"text/html,application/xml,text/plain;q=0.8","User-Agent":"PravopoiskSeoReadOnlyAudit/1.0"}
     });
     const text=(await response.text()).slice(0,2_500_000);
-    const meta=getHeadTag(text,"meta","name","robots");
-    const canonical=getHeadTag(text,"link","rel","canonical");
-    const robots=attr(meta,"content");
+    const metaTags=getTags(text,"meta","name","robots");
+    const canonicalTags=getTags(text,"link","rel","canonical");
+    const robots=metaTags.map(tag=>attr(tag,"content")).filter(Boolean).join(" | ");
+    const canonical=canonicalTags.map(tag=>attr(tag,"href")).filter(Boolean).at(-1)??"";
     const header=response.headers.get("x-robots-tag")??"";
     const combined=robots+" "+header;
-    return {path,http:response.status,bytes:text.length,robots,header,canonical:attr(canonical,"href"),
+    return {path,http:response.status,bytes:text.length,robots,header,canonical,
+      metaTagsFound:metaTags.length,canonicalTagsFound:canonicalTags.length,
       noindex:/\bnoindex\b/i.test(combined),text};
   }catch(error){return {path,http:0,bytes:0,robots:"",header:"",canonical:"",noindex:null,text:"",error:String(error)}}
 }
