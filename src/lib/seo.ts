@@ -365,16 +365,26 @@ export function canIndexLawyerListingPage(input: {
 // (placeholder profiles populated for dev city pages).
 export const NON_INDEXABLE_LAWYER_SLUG_PREFIXES = ["demo-lawyer", "sample-lawyer", "dev-city-lawyer", "test-lawyer", "fake-lawyer", "mock-lawyer", "fixture-lawyer"];
 
+/** Synthetic seed users retain these IDs even after developer scripts rename public slugs. */
+export const NON_INDEXABLE_LAWYER_USER_ID_PREFIXES = [
+  "user-lawyer-", "user-dev-city-lawyer-", "demo-lawyer-", "sample-lawyer-",
+  "dev-city-lawyer-", "test-lawyer-", "fake-lawyer-", "mock-lawyer-", "fixture-lawyer-"
+] as const;
+export function isSyntheticLawyerUserId(userId?: string | null) {
+  return Boolean(userId && NON_INDEXABLE_LAWYER_USER_ID_PREFIXES.some(prefix => userId.startsWith(prefix)));
+}
+
 export function isNonIndexableSampleLawyerSlug(slug?: string | null) {
   return Boolean(slug && NON_INDEXABLE_LAWYER_SLUG_PREFIXES.some((prefix) => slug.startsWith(prefix)));
 }
 
 export function canIndexLawyerProfilePage(
-  lawyer?: Pick<Lawyer, "active" | "blocked" | "profileStatus" | "isVerified" | "cities" | "services" | "description" | "slug"> | null
+  lawyer?: Pick<Lawyer, "active" | "blocked" | "profileStatus" | "isVerified" | "cities" | "services" | "description" | "slug"> & {userId?: string | null} | null
 ) {
   return Boolean(
     lawyer &&
       !isNonIndexableSampleLawyerSlug(lawyer.slug) &&
+      !isSyntheticLawyerUserId(lawyer.userId) &&
       lawyer.active !== false &&
       !lawyer.blocked &&
       lawyer.profileStatus === "APPROVED" &&
