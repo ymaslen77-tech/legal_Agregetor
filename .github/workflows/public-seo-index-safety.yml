@@ -60,7 +60,7 @@ jobs:
             exit 1
           fi
           grep -q 'process.argv.includes("--apply")' scripts/make-lawyers-real.ts
-          if grep -Eq 'prisma\\.answer\\.(update|updateMany|upsert|create)\\(' scripts/reassign-fake-lawyer-answers.ts; then
+          if grep -Eq 'prisma\.answer\.(update|updateMany|upsert|create)\(' scripts/reassign-fake-lawyer-answers.ts; then
             echo "::error::Synthetic answer attribution mutation was reintroduced"
             exit 1
           fi
