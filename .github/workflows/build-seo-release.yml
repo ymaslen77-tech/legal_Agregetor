@@ -1,0 +1,98 @@
+name: Build audited immutable SEO release image
+
+on:
+  push:
+    branches:
+      - infra/coolify-russian-vps
+    paths:
+      - ".github/workflows/build-seo-release.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: pravopoisk-immutable-seo-image
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Qualify safe indexing and anti-fake rules
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run prisma:generate
+      - run: npm run typecheck
+      - run: npm run lint
+      - name: Check canonical sitemap and noindex gates
+        run: npm run test:seo-core
+      - name: Check military publication constraints
+        run: npm run test:military
+      - name: Check Q&A and synthetic lawyer eligibility
+        run: npx tsx src/lib/qna-publication-rules.test.ts
+      - name: Reject unsafe scripts that can convert synthetic profiles to real identities
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -Eq 'prisma\.lawyer\.(update|updateMany|upsert|create)\(' scripts/make-lawyers-real.ts; then
+            echo "::error::Synthetic profile promotion detected"
+            exit 1
+          fi
+          if grep -Eq 'prisma\.answer\.(update|updateMany|upsert|create)\(' scripts/reassign-fake-lawyer-answers.ts; then
+            echo "::error::Synthetic answer reassignment detected"
+            exit 1
+          fi
+
+  image:
+    name: Build and publish immutable image only
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Set immutable release name
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "tag=rc-seo-${GITHUB_SHA:0:12}" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build verified production configuration
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ghcr.io/ymaslen77-tech/pravopoisk-military:${{ steps.version.outputs.tag }}
+          build-args: |
+            ENABLE_MILITARY_PUBLIC_DRAFTS=false
+          provenance: false
+      - name: Inspect published immutable release (not mutable production tag)
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          set -euo pipefail
+          docker buildx imagetools inspect "ghcr.io/ymaslen77-tech/pravopoisk-military:$RELEASE_TAG"
+          {
+            echo "Immutable release image: ghcr.io/ymaslen77-tech/pravopoisk-military:$RELEASE_TAG"
+            echo "Source commit: $GITHUB_SHA"
+            echo "No Docker production channel promotion, Coolify deploy, database write or secret change was performed."
+            echo "After release checks, update ops/production-image-tag.txt to this tag for controlled promotion."
+          } >> "$GITHUB_STEP_SUMMARY"
