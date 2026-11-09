@@ -91,8 +91,8 @@ jobs:
           set -euo pipefail
           docker buildx imagetools inspect "ghcr.io/ymaslen77-tech/pravopoisk-military:$RELEASE_TAG"
           {
-            echo "Immutable release image: `ghcr.io/ymaslen77-tech/pravopoisk-military:$RELEASE_TAG`"
-            echo "Source commit: `$GITHUB_SHA`"
+            echo "Immutable release image: ghcr.io/ymaslen77-tech/pravopoisk-military:$RELEASE_TAG"
+            echo "Source commit: $GITHUB_SHA"
             echo "No Docker production channel promotion, Coolify deploy, database write or secret change was performed."
             echo "After release checks, update ops/production-image-tag.txt to this tag for controlled promotion."
           } >> "$GITHUB_STEP_SUMMARY"
