@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { CREDIT_DEBT_CHECKED_CONTEXT,getCreditDebtCheckedContext } from "./credit-debt-verified-context";
 import { getCreditDebtSkeletonSituation } from "@/lib/credit-debt-full-route";
-assert.equal(CREDIT_DEBT_CHECKED_CONTEXT.length,4);
+assert.equal(CREDIT_DEBT_CHECKED_CONTEXT.length,10);
 for(const item of CREDIT_DEBT_CHECKED_CONTEXT){
   assert.equal(item.status,"CONTEXT_ONLY_VERIFIED_NOT_SCENARIO_READY");
   assert.equal(item.asOf,"2026-11-10");
@@ -22,4 +22,4 @@ assert.equal(getCreditDebtCheckedContext("bankruptcy","bankruptcy-court").length
   "MFC range does not automatically qualify judicial bankruptcy");
 assert.equal(getCreditDebtCheckedContext("mortgage","mortgage-holidays").length,0,
   "Consumer-credit holiday threshold must not be misapplied to mortgage");
-console.log("Credit/debt independent source context PASS: 4 contextual principles, no release approval.");
+console.log("Credit/debt independent source context PASS: 10 contextual principles, no release approval.");
