@@ -61,6 +61,8 @@ jobs:
       - name: Verify migration history
         run: npx prisma migrate status
       - run: npm run typecheck
+      - name: Check draft credit-debt taxonomy and publication locks
+        run: npx tsx src/data/credit-debt-route-plan.test.ts
       - run: npm run lint
       - run: npm test
       - name: Verify all 50 labor questionnaires against the API form contract
