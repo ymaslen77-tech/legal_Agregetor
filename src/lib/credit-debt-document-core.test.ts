@@ -55,7 +55,21 @@ for(const group of CREDIT_DEBT_GROUPS){
     assert.deepEqual(doc.placeholders,[]);
     assert.ok(isCreditDebtDraftResult(doc),key);
     assert.ok(doc.documentText.length>200,key);
+    if(plan.target.targetResult==="CLAIM_DRAFT"){
+      assert.ok(plan.inputs.some(f=>f.key==="counterparty"&&f.required),key);
+      assert.ok(plan.inputs.some(f=>f.key==="disputedAmount"&&f.required),key);
+      assert.ok(plan.inputs.some(f=>f.key==="proceduralDate"&&f.required),key);
+      assert.ok(doc.documentText.includes("ВНИМАНИЕ: до подачи иска"),key);
+      assert.ok(doc.documentText.includes("ПРОЕКТ ИСКОВОГО ЗАЯВЛЕНИЯ"),key);
+    }
+    if(plan.target.targetResult==="OBJECTION_DRAFT"){
+      assert.ok(plan.inputs.some(f=>f.key==="counterparty"&&f.required),key);
+      assert.ok(plan.inputs.some(f=>f.key==="proceduralDate"&&f.required),key);
+      assert.ok(doc.documentText.includes("ВНИМАНИЕ: до подачи возражений"),key);
+    }
     if(plan.resultKind==="DRAFT"){
+      assert.ok(doc.documentText.includes("Излагаю обстоятельства для проверки"),key);
+      assert.ok(doc.documentText.includes("Фактические обстоятельства:"),key);
       draftCount++;
       assert.ok(doc.documentText.startsWith("ПРОЕКТ ОБРАЩЕНИЯ — НЕ ГОТОВ К ПОДАЧЕ"));
       assert.ok(doc.documentText.includes("ПРОШУ:"));
