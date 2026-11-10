@@ -6,6 +6,7 @@ import {
   type CreditDebtSituation
 } from "@/data/credit-debt-route-plan";
 import { getCreditDebtLegalSourceCandidates } from "@/data/credit-debt-legal-review";
+import { getCreditDebtDocumentTarget } from "@/data/credit-debt-document-targets";
 
 /**
  * Stage 1 of the credit/debt program: 35 non-public, deterministic intake paths.
@@ -169,11 +170,18 @@ export function evaluateCreditDebtStageOne(
   const status:CreditDebtIntakeAssessment["status"]=
     priority?"URGENT_SAFETY_FIRST":spec.targetResult==="CROSS_LINK"?"SPECIALIST_ROUTE":
       incomplete?"NEEDS_DETAILS":"CHECKLIST_ONLY";
+  const specificTarget=getCreditDebtDocumentTarget(spec.groupId,spec.situationId);
+  const specificFacts=getCreditDebtStageOneGroups().find(g=>g.id===spec.groupId)
+    ?.situations.find(item=>item.id===spec.situationId)?.caseFacts;
   const checklist=priority?[
     "При непосредственной угрозе жизни или здоровью обратитесь в экстренные службы; не откладывайте защиту ради заполнения формы.",
     "Не передавайте коды доступа, пароли и реквизиты третьим лицам; сохраняйте доказательства безопасным способом.",
     "Сообщите о подозрении на мошенничество или угрозах в компетентные органы и уведомите финансовую организацию при наличии спорного займа."
-  ]:checks(spec.groupId);
+  ]:[
+    ...checks(spec.groupId),
+    specificTarget?"Предмет для отдельной проверки: "+specificTarget.objective:"",
+    specificFacts?"Сведения именно по вашей ситуации: "+specificFacts:""
+  ].filter(Boolean);
   return {
     stage:"INTAKE_PREPARATION_ONLY",status,missing,invalid,complete:!incomplete&&!priority,
     checklist,
