@@ -51,7 +51,6 @@ function resultKind(target:CreditDebtDocumentTarget):DocumentResultV1["resultKin
 function safe(value:unknown,max:number):string{
   return typeof value==="string" ? value.replace(/\r\n?/g,"\n").trim().slice(0,max) : "";
 }
-const escapeRegExp=(text:string)=>text.replace(/[.*+?^${()}|[\]\\]/g,"\\$&");
 /** Normalized input is only kept in memory until the user explicitly saves. */
 export function getCreditDebtDocumentPlan(groupId:string,situationId:string):CreditDebtDocumentPlan|null{
   const target=getCreditDebtDocumentTarget(groupId,situationId);
@@ -198,12 +197,13 @@ export function reviseCreditDebtDraft(
   const old=previous.documentResult;
   const text=safe(editedText,35000);
   if(text.length<110||text.length>35000)throw new Error("Некорректная длина отредактированного текста.");
-  const warning="ПРОЕКТ — НЕ ГОТОВ К ПОДАЧЕ\nТРЕБУЕТСЯ ЮРИДИЧЕСКАЯ ПРОВЕРКА\n\n";
-  const rest=text.replace(/^(?:ПРОЕКТ[^\n]*\n|ТРЕБУЕТСЯ ЮРИДИЧЕСКАЯ ПРОВЕРКА\n|\s)+/g,"").trim();
+  const warning=old.documentText.split("\n")[0];
+  const withoutWarning=text.startsWith(warning)?text.slice(warning.length).trim():text;
+  const rest=withoutWarning.replace(/^ТРЕБУЕТСЯ ЮРИДИЧЕСКАЯ ПРОВЕРКА\s*/,"").trim();
   const result=documentResultSchema.parse({
     ...old,versionId:options.versionId??crypto.randomUUID(),
     createdAt:options.createdAt??new Date().toISOString(),source:"USER_EDITED",
-    documentText:warning+rest,
+    documentText:warning+"\n"+(old.resultKind==="DRAFT"?"ТРЕБУЕТСЯ ЮРИДИЧЕСКАЯ ПРОВЕРКА\n":"")+"\n"+rest,
     usedRuleIds:[],legalRegistryReviewedAt:null,filingReady:false,requiresLegalReview:true
   });
   return {documentResult:result,formData:{...previous.formData}};
