@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { creditDebtDraftMetadata } from "@/lib/credit-debt-metadata";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
@@ -15,11 +16,7 @@ export async function generateMetadata({params}:Props):Promise<Metadata>{
   const spec=getCreditDebtSkeletonSpec(group,situation);
   const seo=getCreditDebtSeoEntry(group,situation);
   if(!isCreditDebtPreviewEnabled(process.env)||!spec||!seo)notFound();
-  return {
-    title:seo.title,
-    description:seo.description,
-    robots:{index:false,follow:false,noarchive:true}
-  };
+  return creditDebtDraftMetadata({title:seo.title,description:seo.description,path:seo.canonicalPath});
 }
 export default async function CreditDebtSituationPage({params}:Props){
   if(!isCreditDebtPreviewEnabled(process.env))notFound();
