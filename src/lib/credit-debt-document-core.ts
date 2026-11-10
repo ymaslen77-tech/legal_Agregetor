@@ -10,7 +10,7 @@ import { addDocumentVersion,type DocumentVersionEntry } from "@/lib/document-ver
  * call the latter "claims", "complaints", "court applications", or official forms.
  * Until per-claim validation is complete all versions remain non-filing drafts.
  */
-export const CREDIT_DEBT_GENERATOR_VERSION="credit-debt-1" as const;
+export const CREDIT_DEBT_GENERATOR_VERSION="credit-debt-2" as const;
 export type CreditDebtDocumentPlan=Readonly<{
   target:CreditDebtDocumentTarget;
   documentSlug:string;
@@ -18,7 +18,7 @@ export type CreditDebtDocumentPlan=Readonly<{
   resultKind:DocumentResultV1["resultKind"];
   requiresAddress:boolean;
   inputs:ReadonlyArray<{
-    key:"applicant"|"recipient"|"contract"|"facts"|"specificFacts"|"evidence"|"attachments";
+    key:"applicant"|"recipient"|"contract"|"facts"|"specificFacts"|"evidence"|"attachments"|"counterparty"|"disputedAmount"|"proceduralDate"|"priorRequests";
     label:string;
     required:boolean;
     rows:number;
@@ -60,12 +60,18 @@ export function getCreditDebtDocumentPlan(groupId:string,situationId:string):Cre
   const originalSituation=CREDIT_DEBT_GROUPS.find(g=>g.id===groupId)?.situations.find(x=>x.id===situationId);
   if(!originalSituation)throw new Error("Missing situation-specific factual prompt.");
   const noCollection=urgent.has(target.targetResult)||target.targetResult==="CROSS_LINK";
+  const courtDraft=target.targetResult==="CLAIM_DRAFT"||target.targetResult==="OBJECTION_DRAFT";
+  const claim=target.targetResult==="CLAIM_DRAFT";
   const inputs:CreditDebtDocumentPlan["inputs"]=noCollection?[]:[
     {key:"applicant",label:"Заявитель (при необходимости: ФИО и способ связи)",required:isDraft,rows:2},
-    {key:"recipient",label:"Проверенный адресат",required:isDraft,rows:2},
+    {key:"recipient",label:claim?"Суд, подсудность которого предстоит подтвердить":"Проверенный адресат",required:isDraft,rows:2},
+    ...(courtDraft?[{key:"counterparty" as const,label:"Противная сторона / взыскатель (как в документах)",required:true,rows:2},
+      {key:"proceduralDate" as const,label:"Судебный акт и дата его фактического получения",required:true,rows:2}]:[]),
+    ...(claim?[{key:"disputedAmount" as const,label:"Цена требования и проверенный расчёт (если применимо)",required:true,rows:2}]:[]),
     {key:"contract",label:"Договор, судебное дело или номер обращения (если известны)",required:false,rows:2},
     {key:"facts",label:"Обстоятельства, даты и факты конкретной ситуации",required:true,rows:5},
     {key:"specificFacts",label:"Дополнительные сведения по этой ситуации: "+originalSituation.caseFacts,required:isDraft,rows:3},
+    ...(isDraft?[{key:"priorRequests" as const,label:"Предыдущие обращения, ответы и подтверждения направления (если имеются)",required:false,rows:3}]:[]),
     {key:"evidence",label:"Документы, которыми подтверждаются обстоятельства",required:false,rows:3},
     {key:"attachments",label:"Приложения к обращению (если предусмотрены и фактически имеются)",required:false,rows:3}
   ];
@@ -103,30 +109,35 @@ function formatPlan(plan:CreditDebtDocumentPlan,formData:Readonly<Record<string,
   const assessment=evaluateCreditDebtSkeleton(spec,intake);
   const checks=assessment.checklist.map((v,i)=>`${i+1}. ${v}`);
   if(draft){
-    return [
-      introduction,
-      "ТРЕБУЕТСЯ ЮРИДИЧЕСКАЯ ПРОВЕРКА",
-      "",
-      "Кому: "+formData.recipient,
-      "От: "+formData.applicant,
-      "",
-      t.targetResult==="OBJECTION_DRAFT"?"ПРОЕКТ ПИСЬМЕННЫХ ВОЗРАЖЕНИЙ":
+    const heading=t.targetResult==="OBJECTION_DRAFT"?"ПРОЕКТ ПИСЬМЕННЫХ ВОЗРАЖЕНИЙ":
       t.targetResult==="CLAIM_DRAFT"?"ПРОЕКТ ИСКОВОГО ЗАЯВЛЕНИЯ":
-      t.targetResult==="COMPLAINT_DRAFT"?"ПРОЕКТ ЖАЛОБЫ":"ПРОЕКТ ЗАЯВЛЕНИЯ",
-      "По вопросу: "+t.title,
-      "",
-      "Обстоятельства:",
-      ...fields, "",
-      "ПРОШУ:",
-      t.objective,
-      "",
+      t.targetResult==="COMPLAINT_DRAFT"?"ПРОЕКТ ЖАЛОБЫ":"ПРОЕКТ ЗАЯВЛЕНИЯ";
+    const introductory="Я, "+formData.applicant+", обращаюсь по вопросу «"+t.title+"». "+
+      "Излагаю обстоятельства для проверки компетентным адресатом.";
+    const factual=[
+      formData.contract?"Обязательство или судебное производство: "+formData.contract+".":"",
+      formData.counterparty?"Другая сторона: "+formData.counterparty+".":"",
+      formData.proceduralDate?"Сведения о судебном акте и вручении: "+formData.proceduralDate+".":"",
+      formData.disputedAmount?"Заявленная цена требования или расчёт: "+formData.disputedAmount+".":"",
+      "Фактические обстоятельства: "+formData.facts,
+      formData.specificFacts?"Сведения, относящиеся именно к выбранному случаю: "+formData.specificFacts:"",
+      formData.priorRequests?"Ранее направленные обращения и ответы: "+formData.priorRequests:"",
+      formData.evidence?"Подтверждение изложенного: "+formData.evidence:""
+    ].filter(Boolean).join("\n\n");
+    const litigationWarning=t.targetResult==="CLAIM_DRAFT"?
+      "ВНИМАНИЕ: до подачи иска отдельно подтвердить подсудность, цену иска, расчет, госпошлину, досудебный порядок, полномочия сторон и обязательные приложения.":t.targetResult==="OBJECTION_DRAFT"?
+      "ВНИМАНИЕ: до подачи возражений установить дату вручения судебного приказа, применимый срок и порядок направления в конкретный суд.":"";
+    return [
+      introduction,"ТРЕБУЕТСЯ ЮРИДИЧЕСКАЯ ПРОВЕРКА","",
+      "Кому: "+formData.recipient,"От: "+formData.applicant,
+      formData.counterparty?"Другая сторона: "+formData.counterparty:"",
+      "",heading,"По вопросу: "+t.title,"",introductory,"",factual,"",
+      "ПРОШУ:",t.objective,"",
       "Приложения: "+(formData.attachments||"уточняются; прилагаются только фактически имеющиеся документы"),
-      "",
-      "Дата: __________________",
-      "Подпись: ______________",
-      "",
+      "","Дата: __________________","Подпись: ______________","",
+      litigationWarning,
       "Перед подачей требуется индивидуальная проверка применимых норм, компетенции адресата, процессуальной формы, сроков, пошлины и обязательных приложений."
-    ].join("\n");
+    ].filter(x=>x!==undefined).join("\n");
   }
   if(plan.resultKind==="URGENT_INSTRUCTION"){
     return [introduction,"","Ситуация: "+t.title,"",t.objective,"",
