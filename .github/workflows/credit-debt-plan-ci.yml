@@ -18,6 +18,10 @@ on:
       - "src/lib/credit-debt-route-path-guard.test.ts"
       - "src/data/credit-debt-legal-review.ts"
       - "src/data/credit-debt-legal-review.test.ts"
+      - "src/data/credit-debt-verified-context.ts"
+      - "src/data/credit-debt-verified-context.test.ts"
+      - "src/components/account/SavedLegalDocumentsCabinet.tsx"
+      - "src/app/account/documents/page.tsx"
       - "src/data/credit-debt-seo.ts"
       - "src/data/credit-debt-seo.test.ts"
       - "src/data/credit-debt-document-targets.ts"
@@ -68,10 +72,16 @@ jobs:
         run: npx tsx src/data/credit-debt-legal-review.test.ts
       - name: Verify 60 unique SEO targets stay noindex until approval
         run: npx tsx src/data/credit-debt-seo.test.ts
+      - name: Confirm four independent legal principles remain contextual only
+        run: npx tsx src/data/credit-debt-verified-context.test.ts
       - name: TypeScript check against current site
         run: npm run typecheck
       - name: Lint only the planning files
-        run: npx eslint src/data/credit-debt-route-plan.ts src/data/credit-debt-route-plan.test.ts src/lib/credit-debt-stage-one.ts src/lib/credit-debt-stage-one.test.ts src/lib/credit-debt-qna-matcher.ts src/lib/credit-debt-qna-matcher.test.ts src/lib/credit-debt-full-route.ts src/lib/credit-debt-full-route.test.ts src/lib/credit-debt-preview-access.ts src/lib/credit-debt-route-path-guard.ts src/lib/credit-debt-route-path-guard.test.ts src/data/credit-debt-legal-review.ts src/data/credit-debt-legal-review.test.ts src/data/credit-debt-seo.ts src/data/credit-debt-seo.test.ts src/data/credit-debt-document-targets.ts src/lib/credit-debt-document-core.ts src/lib/credit-debt-document-core.test.ts src/lib/credit-debt-document-export.ts src/lib/saved-document-validation.ts src/components/credit-debt/CreditDebtPreview.tsx src/components/credit-debt/CreditDebtScenarioFlow.tsx src/components/credit-debt/CreditDebtJourney.tsx src/app/dev/credit-debt/page.tsx tests/credit-debt/preview.spec.ts playwright.credit-debt.config.ts src/app/kredity-dolgi/page.tsx 'src/app/kredity-dolgi/[group]/page.tsx' 'src/app/kredity-dolgi/[group]/[situation]/page.tsx'
+        run: npx eslint src/data/credit-debt-route-plan.ts src/data/credit-debt-route-plan.test.ts src/lib/credit-debt-stage-one.ts src/lib/credit-debt-stage-one.test.ts src/lib/credit-debt-qna-matcher.ts src/lib/credit-debt-qna-matcher.test.ts src/lib/credit-debt-full-route.ts src/lib/credit-debt-full-route.test.ts src/lib/credit-debt-preview-access.ts src/lib/credit-debt-route-path-guard.ts src/lib/credit-debt-route-path-guard.test.ts src/data/credit-debt-legal-review.ts src/data/credit-debt-legal-review.test.ts src/data/credit-debt-verified-context.ts src/data/credit-debt-verified-context.test.ts src/data/credit-debt-seo.ts src/data/credit-debt-seo.test.ts src/data/credit-debt-document-targets.ts src/lib/credit-debt-document-core.ts src/lib/credit-debt-document-core.test.ts src/lib/credit-debt-document-export.ts src/lib/saved-document-validation.ts src/components/credit-debt/CreditDebtPreview.tsx src/components/credit-debt/CreditDebtScenarioFlow.tsx src/components/credit-debt/CreditDebtJourney.tsx src/components/account/SavedLegalDocumentsCabinet.tsx src/app/account/documents/page.tsx src/app/dev/credit-debt/page.tsx tests/credit-debt/preview.spec.ts playwright.credit-debt.config.ts src/app/kredity-dolgi/page.tsx 'src/app/kredity-dolgi/[group]/page.tsx' 'src/app/kredity-dolgi/[group]/[situation]/page.tsx'
+      - name: Install PDF/OOXML audit tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils unzip
       - name: Install Chromium for local preview test
         run: npx playwright install --with-deps chromium
       - name: Browser-test isolated development preview only
