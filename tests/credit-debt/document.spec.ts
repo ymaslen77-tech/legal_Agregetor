@@ -1,5 +1,6 @@
 import {test,expect} from "@playwright/test";
 import {readFileSync} from "node:fs";
+import {execFileSync} from "node:child_process";
 
 async function fillQuestions(page:import("@playwright/test").Page){
   const section=page.getByTestId("credit-debt-scenario-flow");
@@ -62,6 +63,9 @@ test("credit draft: original navigator actions, editable revisions, PDF/DOCX and
   const raw=readFileSync(await pdf.path());
   expect(raw.subarray(0,5).toString()).toBe("%PDF-");
   expect(raw.length).toBeGreaterThan(1500);
+  const pdfText=execFileSync("pdftotext",[await pdf.path(),"-"],{encoding:"utf8"});
+  expect(pdfText).toContain("Досрочное погашение");
+  expect(pdfText).toContain("НЕ ГОТОВ К ПОДАЧЕ");
   await actions.getByText(/Дополнительные форматы/).click();
   const docxEvent=page.waitForEvent("download");
   await actions.getByRole("button",{name:"Скачать DOCX-черновик"}).click();
@@ -70,6 +74,9 @@ test("credit draft: original navigator actions, editable revisions, PDF/DOCX and
   const docxBytes=readFileSync(await docx.path());
   expect(docxBytes.subarray(0,2).toString()).toBe("PK");
   expect(docxBytes.length).toBeGreaterThan(1500);
+  const wordXml=execFileSync("unzip",["-p",await docx.path(),"word/document.xml"],{encoding:"utf8"});
+  expect(wordXml).toContain("Досрочное погашение");
+  expect(wordXml).toContain("НЕ ГОТОВ К ПОДАЧЕ");
   await actions.getByRole("button",{name:"Отправить на проверку юристу"}).click();
   await expect(actions.getByTestId("document-review-form")).toBeVisible();
   await expect(actions.getByRole("checkbox")).toHaveCount(2);
