@@ -1,7 +1,8 @@
 import {
-  CREDIT_DEBT_GROUPS,CREDIT_DEBT_PUBLICATION_GATE,CREDIT_DEBT_SOURCE_CANDIDATES,
+  CREDIT_DEBT_GROUPS,CREDIT_DEBT_PUBLICATION_GATE,
   type CreditDebtGroup, type CreditDebtSituation
 } from "@/data/credit-debt-route-plan";
+import { getCreditDebtLegalSourceCandidates } from "@/data/credit-debt-legal-review";
 import {
   evaluateCreditDebtStageOne, getCreditDebtIntakeSpec,
   type CreditDebtInputField, type CreditDebtIntakeSpec,
@@ -69,7 +70,7 @@ export function getCreditDebtSkeletonSpec(groupId:string,situationId:string):Cre
     groupId,groupTitle:group.title,situationId,situationTitle:situation.title,
     risk:situation.risk,targetResult:situation.targetResult,fields,
     linkedArea:situation.crossLinkArea,
-    sourceCandidates:group.sourceKeys.map(key=>CREDIT_DEBT_SOURCE_CANDIDATES[key]).map(x=>({label:x.title,url:x.url})),
+    sourceCandidates:getCreditDebtLegalSourceCandidates(groupId).map(x=>({label:x.title,url:x.url})),
     publicationEnabled:CREDIT_DEBT_PUBLICATION_GATE.publicUrlsEnabled,
     documentGenerationAllowed:CREDIT_DEBT_PUBLICATION_GATE.documentGenerationAllowed
   };
