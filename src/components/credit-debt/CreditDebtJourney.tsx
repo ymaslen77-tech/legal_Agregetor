@@ -12,6 +12,7 @@ import {
 } from "@/lib/credit-debt-document-core";
 import { createCreditDebtPdfBlob,createCreditDebtDocxBlob,creditDebtFileName } from "@/lib/credit-debt-document-export";
 import type { DocumentVersionEntry } from "@/lib/document-version-history";
+import { getCreditDebtCheckedContext } from "@/data/credit-debt-verified-context";
 
 type Related=Readonly<{href:string;title:string}>;
 const fieldClass="mt-2 block w-full rounded-md border border-line bg-white px-3 py-2 text-base font-normal leading-6 text-ink focus:border-trust focus:outline-none focus:ring-2 focus:ring-trust/25";
@@ -23,6 +24,7 @@ export function CreditDebtJourney({spec,related,backHref}:Readonly<{
   backHref:string;
 }>){
   const plan=getCreditDebtDocumentPlan(spec.groupId,spec.situationId);
+  const checkedContext=getCreditDebtCheckedContext(spec.groupId,spec.situationId);
   const [intake,setIntake]=useState<CreditDebtRouteSnapshot|null>(null);
   const [values,setValues]=useState<Record<string,string>>({});
   const [generated,setGenerated]=useState<CreditDebtDocumentOutput|null>(null);
@@ -158,6 +160,24 @@ export function CreditDebtJourney({spec,related,backHref}:Readonly<{
           <a className="underline" href={ref.url} target="_blank" rel="noopener noreferrer">{ref.label}</a>
         </li>)}
       </ul>
+      {checkedContext.length>0?<div className="mt-6 rounded-lg border border-line bg-zinc-50 p-5" data-testid="credit-debt-checked-context">
+        <h3 className="text-lg font-semibold text-ink">Сверенные общие правовые положения</h3>
+        <p className="mt-2 text-sm text-zinc-700">
+          Каждое положение сопоставлено по двум независимым источникам.
+          Это не подтверждение права конкретного заявителя и не юридическая приёмка документа.
+        </p>
+        {checkedContext.map(item=><div key={item.id} className="mt-4 border-t border-line pt-4">
+          <p className="font-semibold text-ink">{item.proposition}</p>
+          <p className="mt-2 text-sm leading-6 text-zinc-700"><strong>Ограничения:</strong> {item.limitations}</p>
+          <ul className="mt-3 list-disc space-y-1 pl-6 text-sm">
+            {item.sources.map(source=><li key={source.publisher+source.url}>
+              <a className="text-trust underline" href={source.url} target="_blank" rel="noopener noreferrer">
+                {source.publisher}: {source.supports}
+              </a>
+            </li>)}
+          </ul>
+        </div>)}
+      </div>:null}
     </section>
     <section className="mt-9 border-t border-line pt-7" aria-labelledby="credit-related-heading">
       <h2 id="credit-related-heading" className="text-2xl font-semibold text-ink">Связанные вопросы и следующие действия</h2>
