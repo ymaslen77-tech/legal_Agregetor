@@ -175,6 +175,9 @@ export function CreditDebtJourney({spec,related,backHref}:Readonly<{
         {checkedContext.map(item=><div key={item.id} className="mt-4 border-t border-line pt-4">
           <p className="font-semibold text-ink">{item.proposition}</p>
           <p className="mt-2 text-sm leading-6 text-zinc-700"><strong>Ограничения:</strong> {item.limitations}</p>
+          {item.officialTextPriorityNote?<p className="mt-3 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm leading-6 text-amber-950" role="note">
+            <strong>Приоритет официального текста:</strong> {item.officialTextPriorityNote}
+          </p>:null}
           <ul className="mt-3 list-disc space-y-1 pl-6 text-sm">
             {item.sources.map(source=><li key={source.publisher+source.url}>
               <a className="text-trust underline" href={source.url} target="_blank" rel="noopener noreferrer">
