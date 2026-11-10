@@ -117,24 +117,11 @@ export function CreditDebtScenarioFlow({spec}:Readonly<{spec:CreditDebtSkeletonS
       {output.linkedArea?<p className="mt-5 rounded-md border border-line bg-zinc-50 p-4 text-sm text-zinc-700">
         Для этой ситуации предусмотрен переход к профильному маршруту «{output.linkedArea}». Автоматический переход без сверки обстоятельств не выполняется.
       </p>:null}
-      <div className="mt-8 border-t border-line pt-6" aria-labelledby="credit-end-actions">
-        <p className="text-sm font-semibold uppercase tracking-wide text-trust">Шаг 3 · Юридический документ и дальнейшие действия</p>
-        <h3 id="credit-end-actions" className="mt-2 text-lg font-semibold text-ink">Документ ещё проходит правовую подготовку</h3>
-        <p className="mt-2 text-sm leading-6 text-zinc-700">
-          Кнопки итогового маршрута будут включены после проверки применимых норм, формы документа,
-          сроков, адресата, PDF и согласия на отправку. Сейчас показан только безопасный предварительный результат.
-        </p>
-        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-          <button disabled aria-disabled="true" type="button"
-            className="min-h-11 rounded-md bg-zinc-200 px-5 py-3 text-sm font-semibold text-zinc-600">
-            Скачать PDF
-          </button>
-          <button disabled aria-disabled="true" type="button"
-            className="min-h-11 rounded-md border border-line bg-zinc-50 px-5 py-3 text-sm font-semibold text-zinc-600">
-            Отправить на проверку юристу
-          </button>
-        </div>
-      </div>
+      <p className="mt-8 border-t border-line pt-6 text-sm leading-6 text-zinc-700">
+        Итоговый юридический документ и передача юристу станут доступны только после проверки применимых норм,
+        адресата, сроков, состава приложений, PDF и согласия пользователя.
+        В тестовой версии формируется исключительно предварительный чек-лист.
+      </p>
     </section>:null}
   </div>;
 }
