@@ -71,6 +71,30 @@ export default async function CreditDebtSituationPage({params}:Props){
         </div>
         <p className="mt-8"><Link href={base} className="text-sm font-semibold text-trust underline">Вернуться к вопросам подраздела</Link></p>
       </section>
+      <section className="mt-9 border-t border-line pt-7" aria-labelledby="credit-specialists-heading">
+        <h2 id="credit-specialists-heading" className="text-2xl font-semibold text-ink">Профильные юристы</h2>
+        <p className="mt-3 text-sm leading-6 text-zinc-700">
+          В тестовом маршруте нет подключённого реестра проверенных специалистов. Фиктивные профили и рекомендации не отображаются.
+        </p>
+      </section>
+      <section className="mt-9 border-t border-line pt-7" aria-labelledby="credit-final-heading">
+        <p className="text-sm font-semibold uppercase tracking-wide text-trust">Итоговые действия</p>
+        <h2 id="credit-final-heading" className="mt-2 text-xl font-semibold text-ink">Подготовка документа</h2>
+        <p className="mt-3 text-sm leading-6 text-zinc-700">
+          Полный документ и его PDF ещё не сформированы. Финальные действия появятся после правовой и технической приёмки,
+          а отправка юристу — только после отдельного согласия и подключения проверенных специалистов.
+        </p>
+        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+          <button type="button" disabled aria-disabled="true"
+            className="min-h-11 rounded-md bg-zinc-200 px-5 py-3 text-sm font-semibold text-zinc-600">
+            Скачать PDF
+          </button>
+          <button type="button" disabled aria-disabled="true"
+            className="min-h-11 rounded-md border border-line bg-zinc-50 px-5 py-3 text-sm font-semibold text-zinc-600">
+            Отправить на проверку юристу
+          </button>
+        </div>
+      </section>
     </article>
   </>;
 }
