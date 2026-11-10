@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { creditDebtDraftMetadata } from "@/lib/credit-debt-metadata";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
@@ -10,10 +11,11 @@ import { isCreditDebtPreviewEnabled } from "@/lib/credit-debt-preview-access";
 export const dynamic="force-dynamic";
 export function generateMetadata():Metadata{
   if(!isCreditDebtPreviewEnabled(process.env))notFound();
-  return {
-    title:"Кредиты, долги, ипотека и банкротство — новый правовой маршрут",
-    robots:{index:false,follow:false,noarchive:true}
-  };
+  return creditDebtDraftMetadata({
+    title:"Кредиты, долги, ипотека и банкротство — юридические ситуации",
+    description:"Правовой навигатор: кредитные договоры, МФО, коллекторы, судебные споры, ипотека и банкротство. 10 тем, 60 ситуаций.",
+    path:"/kredity-dolgi/"
+  });
 }
 const path="/kredity-dolgi/";
 export default function CreditDebtTopicsPage(){
