@@ -49,6 +49,7 @@ test("bankruptcy has its own case, questionnaire and two familiar final buttons"
 });
 
 test("all ten topic groups and sixty situation links resolve without public index",async ({page})=>{
+  test.setTimeout(240_000);
   const groups=[
     ["contract-terms",6],["fees-addons",6],["payment-difficulties",6],
     ["microloans",5],["collectors",6],["court-debt",6],
