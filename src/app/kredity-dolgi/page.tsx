@@ -8,10 +8,13 @@ import { getCreditDebtSkeletonGroups } from "@/lib/credit-debt-full-route";
 import { isCreditDebtPreviewEnabled } from "@/lib/credit-debt-preview-access";
 
 export const dynamic="force-dynamic";
-export const metadata:Metadata={
-  title:"Кредиты, долги, ипотека и банкротство — новый правовой маршрут",
-  robots:{index:false,follow:false,noarchive:true}
-};
+export function generateMetadata():Metadata{
+  if(!isCreditDebtPreviewEnabled(process.env))notFound();
+  return {
+    title:"Кредиты, долги, ипотека и банкротство — новый правовой маршрут",
+    robots:{index:false,follow:false,noarchive:true}
+  };
+}
 const path="/kredity-dolgi/";
 export default function CreditDebtTopicsPage(){
   if(!isCreditDebtPreviewEnabled(process.env))notFound();
