@@ -123,7 +123,7 @@ function formatPlan(plan:CreditDebtDocumentPlan,formData:Readonly<Record<string,
     ].join("\n");
   }
   if(plan.resultKind==="URGENT_INSTRUCTION"){
-    return [introduction,"","Ситуация: "+t.title,"",
+    return [introduction,"","Ситуация: "+t.title,"",t.objective,"",
       "Непосредственная безопасность важнее подготовки документа.",
       ...checks,"","При наличии угроз жизни или здоровью обратитесь в экстренные службы.",
       "Не передавайте пароли, коды и персональные документы неизвестным лицам."].join("\n");
