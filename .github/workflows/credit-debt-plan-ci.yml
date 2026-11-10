@@ -7,6 +7,12 @@ on:
     paths:
       - "src/data/credit-debt-route-plan.ts"
       - "src/data/credit-debt-route-plan.test.ts"
+      - "src/lib/credit-debt-stage-one.ts"
+      - "src/lib/credit-debt-stage-one.test.ts"
+      - "src/components/credit-debt/**"
+      - "src/app/dev/credit-debt/**"
+      - "tests/credit-debt/**"
+      - "playwright.credit-debt.config.ts"
       - "docs/CREDIT_DEBT_ROUTE_DEVELOPMENT_PLAN_20261110.md"
       - ".github/workflows/credit-debt-plan-ci.yml"
   workflow_dispatch:
@@ -29,7 +35,41 @@ jobs:
       - run: npm ci
       - name: Validate 10 sections, 60 situations, source candidates, cross-links, and no public release
         run: npx tsx src/data/credit-debt-route-plan.test.ts
+      - name: Verify all 35 stage-one intake paths and guards
+        run: npx tsx src/lib/credit-debt-stage-one.test.ts
       - name: TypeScript check against current site
         run: npm run typecheck
       - name: Lint only the planning files
-        run: npx eslint src/data/credit-debt-route-plan.ts src/data/credit-debt-route-plan.test.ts
+        run: npx eslint src/data/credit-debt-route-plan.ts src/data/credit-debt-route-plan.test.ts src/lib/credit-debt-stage-one.ts src/lib/credit-debt-stage-one.test.ts src/components/credit-debt/CreditDebtPreview.tsx src/app/dev/credit-debt/page.tsx tests/credit-debt/preview.spec.ts playwright.credit-debt.config.ts
+      - name: Install Chromium for local preview test
+        run: npx playwright install --with-deps chromium
+      - name: Browser-test isolated development preview only
+        shell: bash
+        env:
+          ENABLE_CREDIT_DEBT_PREVIEW: "true"
+          NEXT_TELEMETRY_DISABLED: "1"
+        run: |
+          set -euo pipefail
+          npm run dev -- -p 3703 > /tmp/credit-debt-preview.log 2>&1 &
+          pid=$!
+          trap 'kill "$pid" 2>/dev/null || true' EXIT
+          ready=0
+          for i in $(seq 1 90); do
+            if curl --silent --fail http://127.0.0.1:3703/dev/credit-debt/ >/dev/null; then
+              ready=1
+              break
+            fi
+            sleep 2
+          done
+          if [ "$ready" -ne 1 ]; then cat /tmp/credit-debt-preview.log; exit 1; fi
+          npx playwright test --config=playwright.credit-debt.config.ts --workers=1
+      - name: Save preview browser failures
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: credit-debt-preview-failures
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+          retention-days: 7
