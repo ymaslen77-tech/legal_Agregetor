@@ -76,7 +76,158 @@ export const CREDIT_DEBT_CHECKED_CONTEXT:readonly CreditDebtCheckedContext[]=[
         url:"https://www.consultant.ru/document/cons_doc_LAW_155986/5bf96f6f9c3054d6934e4fa63a9dac27e0b56b53/",
         supports:"Статья 7 закона № 353-ФЗ: согласие на дополнительные услуги и запрет заранее проставленного согласия"}
     ]
-  }
+  },
+{
+  "id": "credit-early-repayment",
+  "appliesTo": [
+    "contract-terms/early-repayment",
+    "contract-terms/loan-contract-review"
+  ],
+  "proposition": "По потребительскому кредиту заёмщик в общем случае вправе досрочно погасить задолженность полностью или частично с соблюдением применимых правил уведомления кредитора и уплатой процентов за фактический срок пользования средствами.",
+  "limitations": "Для отдельных сроков и видов кредита предусмотрены особые правила, включая возврат в течение первых 14 или 30 дней. Не проверены дата договора, статус кредита, уведомление и фактический расчёт.",
+  "sources": [
+    {
+      "publisher": "Банк России",
+      "type": "OFFICIAL_EXPLANATION",
+      "url": "https://www.cbr.ru/faq/bank_s/kredity/",
+      "supports": "Право на досрочное погашение и уведомление"
+    },
+    {
+      "publisher": "КонсультантПлюс",
+      "type": "LEGAL_TEXT",
+      "url": "https://www.consultant.ru/document/cons_doc_LAW_155986/10dd842d4f87b9fe0ae3a8de9f32e91ae070817d/",
+      "supports": "Статья 11 закона №353-ФЗ: порядок, проценты и исключения"
+    }
+  ],
+  "status": "CONTEXT_ONLY_VERIFIED_NOT_SCENARIO_READY",
+  "asOf": "2026-11-10"
+},
+{
+  "id": "microloan-cap-2026",
+  "appliesTo": [
+    "microloans/microloan-rate",
+    "microloans/microloan-overpayment",
+    "microloans/microloan-extension"
+  ],
+  "proposition": "С 1 апреля 2026 года по новым потребительским кредитам и займам со сроком возврата не более года общий лимит начислений снижен со 130% до 100% от предоставленной суммы с учётом предусмотренных законом исключений.",
+  "limitations": "Обязательно учитывать дату заключения договора, срок, вид займа, специальные исключения и переходные положения. Старый FAQ Банка России с нормой 130% за 2023 год не является актуальным ориентиром для новых договоров после 01.04.2026.",
+  "sources": [
+    {
+      "publisher": "Банк России",
+      "type": "OFFICIAL_EXPLANATION",
+      "url": "https://www.cbr.ru/press/event/?id=28447",
+      "supports": "Введение 100-процентного предела с 1 апреля 2026 года для новых займов"
+    },
+    {
+      "publisher": "ГАРАНТ",
+      "type": "LEGAL_TEXT",
+      "url": "https://www.garant.ru/products/ipo/prime/doc/413276720/",
+      "supports": "Закон №545-ФЗ, изменение 130% на 100% и дата вступления"
+    }
+  ],
+  "status": "CONTEXT_ONLY_VERIFIED_NOT_SCENARIO_READY",
+  "asOf": "2026-11-10"
+},
+{
+  "id": "collector-third-party",
+  "appliesTo": [
+    "collectors/contact-third-parties",
+    "collectors/harassing-calls"
+  ],
+  "proposition": "Направленное на возврат просроченной задолженности взаимодействие взыскателя с третьими лицами допускается при предусмотренных законом согласиях должника и соответствующего третьего лица с учётом специальных исключений.",
+  "limitations": "Нужно подтвердить, кто взыскатель, кто третье лицо, форму и действительность согласий, возможность отзыва и возможные исключения. Положения о телефонных контактах с должником отдельно проверяются по статье 7 закона №230-ФЗ.",
+  "sources": [
+    {
+      "publisher": "КонсультантПлюс",
+      "type": "LEGAL_TEXT",
+      "url": "https://www.consultant.ru/document/cons_doc_LAW_200497/c83ecd44bd226534ed4267fd1a4bc9d4ed86c8e6/",
+      "supports": "Статья 4 закона №230-ФЗ: условия взаимодействия с третьими лицами"
+    },
+    {
+      "publisher": "ФССП (приказ №345 опубликован в ГАРАНТ)",
+      "type": "OFFICIAL_EXPLANATION",
+      "url": "https://www.garant.ru/products/ipo/prime/doc/414737779/",
+      "supports": "Контрольные вопросы ФССП по письменному согласию должника и третьего лица"
+    }
+  ],
+  "status": "CONTEXT_ONLY_VERIFIED_NOT_SCENARIO_READY",
+  "asOf": "2026-11-10"
+},
+{
+  "id": "court-order-objections",
+  "appliesTo": [
+    "court-debt/court-order-received",
+    "court-debt/court-order-objection"
+  ],
+  "proposition": "При поступлении в установленный законом срок возражений должника относительно исполнения судебного приказа судья отменяет судебный приказ; по пропущенному сроку требуется проверка предусмотренных законом оснований принятия поздних возражений.",
+  "limitations": "До подготовки возражений необходимо установить дату вручения, суд, номер приказа, доказательства получения и фактическую возможность подачи; своевременная отмена приказа не исключает будущий иск кредитора.",
+  "sources": [
+    {
+      "publisher": "КонсультантПлюс",
+      "type": "LEGAL_TEXT",
+      "url": "https://www.consultant.ru/document/cons_doc_LAW_39570/fd3336defa264ba3f3adb30a5f7d9b21017a6ca2/",
+      "supports": "Действующая статья 129 ГПК РФ и последствия своевременных возражений"
+    },
+    {
+      "publisher": "Восьмой кассационный суд общей юрисдикции",
+      "type": "OFFICIAL_EXPLANATION",
+      "url": "https://8kas.sudrf.ru/modules.php?case_id=34532429&case_uid=eee416ac-8c19-463c-802a-5f42e34cec2c&delo_id=2800001&name=sud_delo&name_op=case&new=2800001&srv_num=1",
+      "supports": "Применение статьи 129 ГПК РФ, сроки и основания рассмотрения поздних возражений"
+    }
+  ],
+  "status": "CONTEXT_ONLY_VERIFIED_NOT_SCENARIO_READY",
+  "asOf": "2026-11-10"
+},
+{
+  "id": "guarantor-default-solidarity",
+  "appliesTo": [
+    "guarantors/guarantor-liability",
+    "guarantors/guarantor-regress"
+  ],
+  "proposition": "При неисполнении обеспеченного поручительством обязательства поручитель и основной должник по общему правилу отвечают перед кредитором солидарно, если законом либо договором поручительства не предусмотрена субсидиарная ответственность.",
+  "limitations": "Нужно проверить договор поручительства, объём обеспечения, изменение основного обязательства, специальные условия и основания прекращения поручительства, прежде чем определять объём ответственности.",
+  "sources": [
+    {
+      "publisher": "КонсультантПлюс",
+      "type": "LEGAL_TEXT",
+      "url": "https://www.consultant.ru/document/cons_doc_LAW_5142/1f9a87c9b304e5f284f77512792e47d1a4c864b0/",
+      "supports": "Статья 363 ГК РФ: солидарная ответственность по общему правилу"
+    },
+    {
+      "publisher": "Верховный Суд РФ",
+      "type": "OFFICIAL_EXPLANATION",
+      "url": "https://vsrf.ru/documents/all/15122/",
+      "supports": "Обзор практики по кредитным обязательствам, поручительству и солидарной ответственности"
+    }
+  ],
+  "status": "CONTEXT_ONLY_VERIFIED_NOT_SCENARIO_READY",
+  "asOf": "2026-11-10"
+},
+{
+  "id": "mortgage-holiday-special",
+  "appliesTo": [
+    "mortgage/mortgage-holidays",
+    "mortgage/mortgage-holidays-rejection"
+  ],
+  "proposition": "Для кредитов граждан, обеспеченных ипотекой, предусмотрена отдельная законная процедура льготного периода по статье 6.1-1 закона №353-ФЗ, применимая при одновременном выполнении предусмотренных ею условий.",
+  "limitations": "С 1 сентября 2026 года изменены отдельные условия и основания, включая особые обстоятельства после рождения или усыновления второго и последующих детей. Нельзя механически применять старые FAQ или правила обычных потребительских каникул.",
+  "sources": [
+    {
+      "publisher": "Банк России",
+      "type": "OFFICIAL_EXPLANATION",
+      "url": "https://www.cbr.ru/faq/bank_s/ipotechnye_kanikuly/",
+      "supports": "Отдельная ипотечная процедура, порядок обращения и базовые условия"
+    },
+    {
+      "publisher": "КонсультантПлюс",
+      "type": "LEGAL_TEXT",
+      "url": "https://www.consultant.ru/document/cons_doc_LAW_155986/ff0c34905877a905b4477e42d7729c839dc2c152/",
+      "supports": "Статья 6.1-1 закона №353-ФЗ в редакции после сентября 2026 года"
+    }
+  ],
+  "status": "CONTEXT_ONLY_VERIFIED_NOT_SCENARIO_READY",
+  "asOf": "2026-11-10"
+}
 ];
 export function getCreditDebtCheckedContext(groupId:string,situationId:string):readonly CreditDebtCheckedContext[]{
   const key=groupId+"/"+situationId;
