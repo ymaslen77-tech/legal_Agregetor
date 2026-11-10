@@ -7,7 +7,7 @@ import {
 } from "@/lib/credit-debt-full-route";
 import type { CreditDebtInputField } from "@/lib/credit-debt-stage-one";
 
-type Snapshot={
+export type CreditDebtRouteSnapshot={
   number:number;
   values:Readonly<Record<string,string>>;
   assessment:CreditDebtSkeletonAssessment;
@@ -24,9 +24,12 @@ const status:Record<CreditDebtSkeletonAssessment["status"],string>={
  * as the established document routes. Buttons remain disabled until a
  * real, versioned legally reviewed PDF and referral exist.
  */
-export function CreditDebtScenarioFlow({spec}:Readonly<{spec:CreditDebtSkeletonSpec}>){
+export function CreditDebtScenarioFlow({spec,onSnapshot}:Readonly<{
+  spec:CreditDebtSkeletonSpec;
+  onSnapshot?:(snapshot:CreditDebtRouteSnapshot)=>void;
+}>){
   const [values,setValues]=useState<Record<string,string>>({});
-  const [snapshot,setSnapshot]=useState<Snapshot|null>(null);
+  const [snapshot,setSnapshot]=useState<CreditDebtRouteSnapshot|null>(null);
   const [revision,setRevision]=useState(0);
   const [editing,setEditing]=useState(true);
   const [error,setError]=useState<string|null>(null);
@@ -39,7 +42,9 @@ export function CreditDebtScenarioFlow({spec}:Readonly<{spec:CreditDebtSkeletonS
     const result=evaluateCreditDebtSkeleton(spec,values);
     const next=revision+1;
     setRevision(next);
-    setSnapshot({number:next,values:{...values},assessment:result});
+    const created:CreditDebtRouteSnapshot={number:next,values:{...values},assessment:result};
+    setSnapshot(created);
+    onSnapshot?.(created);
     setEditing(result.status==="NEEDS_DETAILS");
     setError(result.invalid.length?"Проверьте формат указанных сведений.":null);
   }
