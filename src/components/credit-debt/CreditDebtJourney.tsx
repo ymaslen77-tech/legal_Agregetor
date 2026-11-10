@@ -33,6 +33,10 @@ export function CreditDebtJourney({spec,related,backHref}:Readonly<{
   const [error,setError]=useState("");
   const [busy,setBusy]=useState(false);
   const [intakeVersion,setIntakeVersion]=useState<number|null>(null);
+  const intakeReady=!!intake&&(
+    intake.assessment.complete||
+    intake.assessment.status==="URGENT_SAFETY_FIRST"
+  );
 
   // Prefill only an empty fact field, never overwrite prior edits or versions.
   useEffect(()=>{
@@ -51,7 +55,7 @@ export function CreditDebtJourney({spec,related,backHref}:Readonly<{
   }
   function generate(event:FormEvent<HTMLFormElement>){
     event.preventDefault();
-    if(!intake)return;
+    if(!intake||!intakeReady)return;
     try{
       record(createCreditDebtDraftPrototype({
         groupId:spec.groupId,situationId:spec.situationId,
@@ -105,7 +109,9 @@ export function CreditDebtJourney({spec,related,backHref}:Readonly<{
         {plan.target.objective} Нормативные основания и правовые условия по этой ситуации ещё не утверждены.
         Файл остаётся черновиком и не считается готовым к подаче.
       </p>
-      {!intake?<p className="mt-4 text-sm text-zinc-600">Сначала ответьте на уточняющие вопросы на шаге 1.</p>:
+      {!intakeReady?<p className="mt-4 text-sm text-zinc-600">
+        {intake?"Для подготовки результата необходимо заполнить обязательные сведения анкеты или исправить ошибки.":"Сначала ответьте на уточняющие вопросы на шаге 1."}
+      </p>:
         <form onSubmit={generate} className="mt-5 grid gap-4" data-testid="credit-debt-draft-form">
           {plan.inputs.map(f=><label className="text-sm font-semibold text-ink" key={f.key}>
             <span>{f.label}{f.required?" *":""}</span>
