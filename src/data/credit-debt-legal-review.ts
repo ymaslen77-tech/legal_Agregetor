@@ -74,14 +74,20 @@ const SOURCES:Readonly<Record<string,readonly CreditDebtLegalSource[]>>={
   "microloans": [
     {
       "publisher": "Банк России",
-      "title": "Вопросы по микрофинансированию и ограничению переплат",
-      "url": "https://www.cbr.ru/faq/microfin/",
+      "title": "Новый лимит переплаты 100% для новых займов до одного года с 01.04.2026",
+      "url": "https://www.cbr.ru/press/event/?id=28447",
       "status": "CANDIDATE"
     },
     {
-      "publisher": "КонсультантПлюс",
-      "title": "Закон № 353-ФЗ: соответствующие нормы и редакции",
-      "url": "https://www.consultant.ru/document/cons_doc_LAW_155986/",
+      "publisher": "ГАРАНТ",
+      "title": "Федеральный закон от 29.12.2025 № 545-ФЗ, статья 3 и сроки вступления в силу",
+      "url": "https://www.garant.ru/products/ipo/prime/doc/413276720/",
+      "status": "CANDIDATE"
+    },
+    {
+      "publisher": "Банк России",
+      "title": "Решение от 28.08.2026 об отдельном ограничении ПСК по обеспеченным ипотекой займам",
+      "url": "https://www.cbr.ru/rbr/dir_decisions/rsd_2026-08-28_44_01/",
       "status": "CANDIDATE"
     }
   ],
