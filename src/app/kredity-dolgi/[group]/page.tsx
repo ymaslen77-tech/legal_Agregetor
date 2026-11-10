@@ -11,7 +11,8 @@ const root="/kredity-dolgi/";
 export async function generateMetadata({params}:Props):Promise<Metadata>{
   const {group}=await params;
   const selected=getCreditDebtSkeletonGroups().find(x=>x.id===group);
-  return {title:selected?selected.title+" — кредиты и долги":"Подраздел не найден",
+  if(!isCreditDebtPreviewEnabled(process.env)||!selected)notFound();
+  return {title:selected.title+" — кредиты и долги",
     robots:{index:false,follow:false,noarchive:true}};
 }
 export default async function CreditDebtGroupPage({params}:Props){
