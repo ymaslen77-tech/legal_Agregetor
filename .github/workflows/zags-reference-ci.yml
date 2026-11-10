@@ -65,6 +65,8 @@ jobs:
         run: npx tsx src/data/credit-debt-route-plan.test.ts
       - name: Verify complete 60-case credit/debt skeleton without publishing
         run: npx tsx src/lib/credit-debt-full-route.test.ts
+      - name: Ensure non-public and unknown credit/debt pages have a hard 404
+        run: npx tsx src/lib/credit-debt-route-path-guard.test.ts
       - run: npm run lint
       - run: npm test
       - name: Verify all 50 labor questionnaires against the API form contract
