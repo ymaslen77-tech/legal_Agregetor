@@ -12,7 +12,7 @@ export type CreditDebtCheckedContext=Readonly<{
   asOf:"2026-11-10";
   limitations:string;
   sources:readonly Readonly<{
-    publisher:string;type:"OFFICIAL_EXPLANATION"|"LEGAL_TEXT";
+    publisher:string;type:"OFFICIAL_EXPLANATION"|"AUTHORITY_ACT"|"LEGAL_TEXT";
     url:string;supports:string;
   }>[];
 }>;
@@ -145,7 +145,7 @@ export const CREDIT_DEBT_CHECKED_CONTEXT:readonly CreditDebtCheckedContext[]=[
     },
     {
       "publisher": "ФССП (приказ №345 опубликован в ГАРАНТ)",
-      "type": "OFFICIAL_EXPLANATION",
+      "type": "AUTHORITY_ACT",
       "url": "https://www.garant.ru/products/ipo/prime/doc/414737779/",
       "supports": "Контрольные вопросы ФССП по письменному согласию должника и третьего лица"
     }
