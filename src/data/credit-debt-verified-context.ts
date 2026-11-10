@@ -11,6 +11,8 @@ export type CreditDebtCheckedContext=Readonly<{
   status:"CONTEXT_ONLY_VERIFIED_NOT_SCENARIO_READY";
   asOf:"2026-11-10";
   limitations:string;
+  /** Divergent publisher summaries never override the effective statutory wording. */
+  officialTextPriorityNote?:string;
   sources:readonly Readonly<{
     publisher:string;type:"OFFICIAL_EXPLANATION"|"AUTHORITY_ACT"|"LEGAL_TEXT";
     url:string;supports:string;
@@ -39,6 +41,7 @@ export const CREDIT_DEBT_CHECKED_CONTEXT:readonly CreditDebtCheckedContext[]=[
     status:"CONTEXT_ONLY_VERIFIED_NOT_SCENARIO_READY",
     asOf:"2026-11-10",
     limitations:"Нельзя переносить правило на ипотечные каникулы, специальные военные режимы или любую просрочку без проверки всех ограничений и применимых дат.",
+    officialTextPriorityNote:"Действующая часть 2 статьи 6.1-2 закона №353-ФЗ использует условие «более чем на 30 процентов», а FAQ Банка России (25.09.2026) пишет «минимум на 30%». При расхождении применяется точный текст закона. Ровно 30% не означает автоматически выполненное условие; нужен расчёт и проверка других требований.",
     sources:[
       {publisher:"Банк России",type:"OFFICIAL_EXPLANATION",
         url:"https://www.cbr.ru/faq/w_fin_sector/kreditnye-kanikuly/",supports:"Основания и условия потребительских кредитных каникул, обновление 25.09.2026"},
