@@ -1,4 +1,5 @@
 import { CREDIT_DEBT_DOCUMENT_TARGETS, getCreditDebtDocumentTarget, type CreditDebtDocumentTarget } from "@/data/credit-debt-document-targets";
+import { CREDIT_DEBT_GROUPS } from "@/data/credit-debt-route-plan";
 import { getCreditDebtSkeletonSpec,evaluateCreditDebtSkeleton } from "@/lib/credit-debt-full-route";
 import { DOCUMENT_RESULT_CONTRACT_VERSION,documentResultSchema,type DocumentResultV1 } from "@/lib/document-result-contract";
 import { addDocumentVersion,type DocumentVersionEntry } from "@/lib/document-version-history";
@@ -17,7 +18,7 @@ export type CreditDebtDocumentPlan=Readonly<{
   resultKind:DocumentResultV1["resultKind"];
   requiresAddress:boolean;
   inputs:ReadonlyArray<{
-    key:"applicant"|"recipient"|"contract"|"facts"|"evidence"|"attachments";
+    key:"applicant"|"recipient"|"contract"|"facts"|"specificFacts"|"evidence"|"attachments";
     label:string;
     required:boolean;
     rows:number;
@@ -56,11 +57,15 @@ export function getCreditDebtDocumentPlan(groupId:string,situationId:string):Cre
   const target=getCreditDebtDocumentTarget(groupId,situationId);
   if(!target||!getCreditDebtSkeletonSpec(groupId,situationId))return null;
   const isDraft=drafted.has(target.targetResult);
-  const inputs:CreditDebtDocumentPlan["inputs"]=[
+  const originalSituation=CREDIT_DEBT_GROUPS.find(g=>g.id===groupId)?.situations.find(x=>x.id===situationId);
+  if(!originalSituation)throw new Error("Missing situation-specific factual prompt.");
+  const noCollection=urgent.has(target.targetResult)||target.targetResult==="CROSS_LINK";
+  const inputs:CreditDebtDocumentPlan["inputs"]=noCollection?[]:[
     {key:"applicant",label:"Заявитель (при необходимости: ФИО и способ связи)",required:isDraft,rows:2},
     {key:"recipient",label:"Проверенный адресат",required:isDraft,rows:2},
     {key:"contract",label:"Договор, судебное дело или номер обращения (если известны)",required:false,rows:2},
-    {key:"facts",label:"Обстоятельства, даты и факты конкретной ситуации",required:!urgent.has(target.targetResult),rows:5},
+    {key:"facts",label:"Обстоятельства, даты и факты конкретной ситуации",required:true,rows:5},
+    {key:"specificFacts",label:"Дополнительные сведения по этой ситуации: "+originalSituation.caseFacts,required:isDraft,rows:3},
     {key:"evidence",label:"Документы, которыми подтверждаются обстоятельства",required:false,rows:3},
     {key:"attachments",label:"Приложения к обращению (если предусмотрены и фактически имеются)",required:false,rows:3}
   ];
@@ -90,6 +95,7 @@ function formatPlan(plan:CreditDebtDocumentPlan,formData:Readonly<Record<string,
   const fields=[
     formData.contract?"Договор или производство: "+formData.contract:"",
     formData.facts?"Изложенные обстоятельства:\n"+formData.facts:"",
+    formData.specificFacts?"Дополнительные обстоятельства по выбранной ситуации:\n"+formData.specificFacts:"",
     formData.evidence?"Подтверждающие материалы:\n"+formData.evidence:""
   ].filter(Boolean);
   const spec=getCreditDebtSkeletonSpec(t.groupId,t.situationId);
