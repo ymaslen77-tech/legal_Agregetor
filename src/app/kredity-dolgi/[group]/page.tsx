@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { creditDebtDraftMetadata } from "@/lib/credit-debt-metadata";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
@@ -12,8 +13,11 @@ export async function generateMetadata({params}:Props):Promise<Metadata>{
   const {group}=await params;
   const selected=getCreditDebtSkeletonGroups().find(x=>x.id===group);
   if(!isCreditDebtPreviewEnabled(process.env)||!selected)notFound();
-  return {title:selected.title+" — кредиты и долги",
-    robots:{index:false,follow:false,noarchive:true}};
+  return creditDebtDraftMetadata({
+    title:selected.title+" — кредиты, долги и банкротство",
+    description:selected.description+". Выберите свою ситуацию для проверки обстоятельств и подготовки документов.",
+    path:"/kredity-dolgi/"+selected.id+"/"
+  });
 }
 export default async function CreditDebtGroupPage({params}:Props){
   if(!isCreditDebtPreviewEnabled(process.env))notFound();
