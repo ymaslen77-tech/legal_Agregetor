@@ -1,4 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
+import { readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { CREDIT_DEBT_GROUPS } from "../../src/data/credit-debt-route-plan";
 
 /**
@@ -45,7 +47,7 @@ async function fillDocument(page:Page){
 }
 
 test("60 distinct credit/debt and bankruptcy outcomes: end-to-end intake, generation and non-filing PDF actions", async ({page})=>{
-  test.setTimeout(800_000);
+  test.setTimeout(1_000_000);
   let completed=0,drafts=0,nonDrafts=0,urgent=0;
   for(const group of CREDIT_DEBT_GROUPS){
     for(const situation of group.situations){
@@ -62,6 +64,19 @@ test("60 distinct credit/debt and bankruptcy outcomes: end-to-end intake, genera
       const action=page.getByTestId("credit-debt-final-actions");
       await expect(action.getByRole("button",{name:"Скачать PDF"})).toBeEnabled();
       await expect(action.getByRole("button",{name:"Отправить на проверку юристу"})).toBeEnabled();
+      const downloaded=page.waitForEvent("download");
+      await action.getByRole("button",{name:"Скачать PDF"}).click();
+      const artifact=await downloaded;
+      const file=await artifact.path();
+      expect(file,path).toBeTruthy();
+      const bytes=readFileSync(file!);
+      expect(bytes.subarray(0,5).toString(),path).toBe("%PDF-");
+      expect(bytes.length,path).toBeGreaterThan(1200);
+      const extracted=execFileSync("pdftotext",[file!,"-"],{encoding:"utf8"})
+        .replace(/\\s+/g," ").trim();
+      expect(extracted,path).toContain(situation.title);
+      expect(extracted.length,path).toBeGreaterThan(100);
+
       await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content",/noindex/);
       if(["FRAUD_REFERRAL","SAFETY_ESCALATION"].includes(situation.targetResult)){
         urgent++;
