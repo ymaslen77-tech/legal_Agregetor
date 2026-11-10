@@ -12,7 +12,8 @@ const root="/kredity-dolgi/";
 export async function generateMetadata({params}:Props):Promise<Metadata>{
   const {group,situation}=await params;
   const spec=getCreditDebtSkeletonSpec(group,situation);
-  return {title:spec?spec.situationTitle+" — кредиты и долги":"Ситуация не найдена",
+  if(!isCreditDebtPreviewEnabled(process.env)||!spec)notFound();
+  return {title:spec.situationTitle+" — кредиты и долги",
     robots:{index:false,follow:false,noarchive:true}};
 }
 export default async function CreditDebtSituationPage({params}:Props){
