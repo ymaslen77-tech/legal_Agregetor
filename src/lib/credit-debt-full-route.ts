@@ -3,6 +3,7 @@ import {
   type CreditDebtGroup, type CreditDebtSituation
 } from "@/data/credit-debt-route-plan";
 import { getCreditDebtLegalSourceCandidates } from "@/data/credit-debt-legal-review";
+import { getCreditDebtDocumentTarget } from "@/data/credit-debt-document-targets";
 import {
   evaluateCreditDebtStageOne, getCreditDebtIntakeSpec,
   type CreditDebtInputField, type CreditDebtIntakeSpec,
@@ -107,6 +108,8 @@ export function evaluateCreditDebtSkeleton(
   const status:CreditDebtSkeletonAssessment["status"]=urgent?"URGENT_SAFETY_FIRST":
     spec.targetResult==="CROSS_LINK"?"SPECIALIST_ROUTE":
     complete?"CHECKLIST_ONLY":"NEEDS_DETAILS";
+  const specificTarget=getCreditDebtDocumentTarget(spec.groupId,spec.situationId);
+  const specificFacts=getCreditDebtSkeletonSituation(spec.groupId,spec.situationId)?.caseFacts;
   const checks:Record<string,string[]>={
     mortgage:[
       "Проверьте документы о залоге, право собственности, уведомления кредитора и историю платежей.",
@@ -136,7 +139,11 @@ export function evaluateCreditDebtSkeleton(
       "При непосредственной угрозе обратитесь за экстренной помощью; не откладывайте защиту ради заполнения анкеты.",
       "Не передавайте пароли, коды, копии документов и реквизиты подозрительным лицам.",
       "Сохраните доказательства безопасным способом и используйте официальные каналы кредитора и уполномоченных органов."
-    ]:checks[spec.groupId]??[],
+    ]:[
+      ...(checks[spec.groupId]??[]),
+      specificTarget?"Предмет для отдельной проверки: "+specificTarget.objective:"",
+      specificFacts?"Сведения именно по вашей ситуации: "+specificFacts:""
+    ].filter(Boolean),
     documentsToGather:urgent?["Доступные безопасные доказательства без передачи их в этот сервис"]:[
       "Договоры, уведомления и платёжные документы",
       "Судебные акты и документы по исполнительному производству, если они имеются",
