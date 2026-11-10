@@ -95,3 +95,23 @@ test("bankruptcy through MFC produces only checklist with safe PDF and no false 
   await expect(page.getByTestId("credit-debt-final-actions").getByRole("button",{name:"Скачать PDF"})).toBeEnabled();
   await expect(page.locator("meta[name='robots']")).toHaveAttribute("content",/noindex/);
 });
+
+test("an incomplete questionnaire cannot produce a legal draft",async ({page})=>{
+  await page.goto("/kredity-dolgi/contract-terms/early-repayment/");
+  await page.getByRole("button",{name:"Продолжить — проверить сведения"}).click();
+  await expect(page.getByRole("heading",{name:"Нужны уточнения"})).toBeVisible();
+  await expect(page.getByText(/необходимо заполнить обязательные сведения анкеты/)).toBeVisible();
+  await expect(page.getByTestId("credit-debt-draft-form")).toHaveCount(0);
+  await expect(page.getByTestId("credit-debt-final-actions").getByRole("button",{name:"Скачать PDF"})).toBeDisabled();
+});
+
+test("immediate collector threat shows urgent instructions before collecting financial data",async ({page})=>{
+  await page.goto("/kredity-dolgi/collectors/threats-and-pressure/");
+  await expect(page.getByTestId("credit-debt-scenario-flow").locator("textarea,input")).toHaveCount(0);
+  await page.getByRole("button",{name:"Показать первоочередные действия"}).click();
+  await expect(page.getByRole("heading",{name:"Приоритет безопасности"})).toBeVisible();
+  await expect(page.getByRole("button",{name:"Подготовить памятку безопасности"})).toBeVisible();
+  await page.getByRole("button",{name:"Подготовить памятку безопасности"}).click();
+  await expect(page.getByTestId("credit-debt-document-editor")).toHaveValue(/ПЕРВООЧЕРЕДНЫЕ ДЕЙСТВИЯ/);
+  await expect(page.getByTestId("credit-debt-document-editor")).not.toHaveValue(/ПРОШУ:/);
+});
