@@ -2,10 +2,10 @@ import {
   CREDIT_DEBT_COMMON_FACTS,
   CREDIT_DEBT_GROUPS,
   CREDIT_DEBT_PUBLICATION_GATE,
-  CREDIT_DEBT_SOURCE_CANDIDATES,
   type CreditDebtGroup,
   type CreditDebtSituation
 } from "@/data/credit-debt-route-plan";
+import { getCreditDebtLegalSourceCandidates } from "@/data/credit-debt-legal-review";
 
 /**
  * Stage 1 of the credit/debt program: 35 non-public, deterministic intake paths.
@@ -113,7 +113,7 @@ export function getCreditDebtIntakeSpec(groupId:string,situationId:string):Credi
     ? []
     : [...base,...groupFields[groupId],
       field("caseSpecific",`Уточните обстоятельства: ${situation.caseFacts}`)];
-  const sourceCandidates=group.sourceKeys.map(key=>CREDIT_DEBT_SOURCE_CANDIDATES[key])
+  const sourceCandidates=getCreditDebtLegalSourceCandidates(groupId)
     .map(candidate=>({label:candidate.title,url:candidate.url}));
   return {
     groupId,groupTitle:group.title,situationId,situationTitle:situation.title,
