@@ -1,0 +1,35 @@
+name: Credit and debt planning quality gate
+
+on:
+  pull_request:
+    branches:
+      - infra/coolify-russian-vps
+    paths:
+      - "src/data/credit-debt-route-plan.ts"
+      - "src/data/credit-debt-route-plan.test.ts"
+      - "docs/CREDIT_DEBT_ROUTE_DEVELOPMENT_PLAN_20261110.md"
+      - ".github/workflows/credit-debt-plan-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Validate 10 sections, 60 situations, source candidates, cross-links, and no public release
+        run: npx tsx src/data/credit-debt-route-plan.test.ts
+      - name: TypeScript check against current site
+        run: npm run typecheck
+      - name: Lint only the planning files
+        run: npx eslint src/data/credit-debt-route-plan.ts src/data/credit-debt-route-plan.test.ts
