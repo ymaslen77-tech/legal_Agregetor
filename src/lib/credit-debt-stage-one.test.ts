@@ -52,6 +52,7 @@ for(const group of groups){
         full[field.key]=field.kind==="choice"?(field.choices?.[0]??""):
           field.kind==="date"?"2026-11-10":"Сведения для тестирования без реальных персональных данных";
       }
+      if(group.id==="collectors")full.threatsNow="нет";
       const complete=evaluateCreditDebtStageOne(spec,full);
       assert.equal(complete.missing.length,0);
       assert.equal(complete.invalid.length,0);
