@@ -68,7 +68,7 @@ for(const group of CREDIT_DEBT_GROUPS){
 }
 assert.equal(checked,60);
 assert.equal(bankruptcy,8);
-assert.equal(linked,7);
+assert.equal(linked,8);
 assert.ok(emergency>=4);
 assert.equal(getCreditDebtSkeletonSituation("bad","bad"),null);
 assert.equal(getCreditDebtSkeletonSpec("bad","bad"),null);
