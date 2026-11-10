@@ -3,16 +3,22 @@ import { getLegalRouteV1 } from "@/data/legal-route-standard";
 import { getNavigatorDocument } from "@/data/documents";
 import { getMilitaryDraftPlan, MILITARY_DOCUMENT_CORE_VERSION } from "@/data/military-document-core";
 import { isMilitaryDraftWorkbenchEnabled, type MilitaryDraftEnvironment } from "@/data/military-preview-access";
+import { isCreditDebtPreviewEnabled } from "@/lib/credit-debt-preview-access";
+import { isCreditDebtDraftResult } from "@/lib/credit-debt-document-core";
 
 /** A client-side draft is always unverified. Do not accept arbitrary route links. */
 export function validateSavedDocument(
   input: unknown,
-  environment:MilitaryDraftEnvironment=process.env
+  environment:MilitaryDraftEnvironment & Readonly<{ ENABLE_CREDIT_DEBT_PREVIEW?:string }>=process.env
 ): DocumentResultV1 | null {
   const parsed = documentResultSchema.safeParse(input);
   if (!parsed.success) return null;
   const result = parsed.data;
   // Server and form must agree on opt-in. The legal status never becomes verified.
+  if(result.categorySlug==="kredity-dolgi"){
+    if(!isCreditDebtPreviewEnabled(environment))return null;
+    return isCreditDebtDraftResult(result)?result:null;
+  }
   if (result.categorySlug === "voennoe-pravo") {
     if(!isMilitaryDraftWorkbenchEnabled(environment)) return null;
     const plan=getMilitaryDraftPlan(result.routeSlug,result.scenarioKey);
