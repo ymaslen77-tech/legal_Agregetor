@@ -40,8 +40,8 @@ test("credit draft: original navigator actions, editable revisions, PDF/DOCX and
   await page.getByRole("button",{name:"Сформировать проект документа"}).click();
   const editor=page.getByTestId("credit-debt-document-editor");
   await expect(editor).toBeVisible();
-  await expect(editor).toContainText("ПРОЕКТ ОБРАЩЕНИЯ");
-  await expect(editor).toContainText("Досрочное погашение и перерасчёт процентов");
+  await expect(editor).toHaveValue(/ПРОЕКТ ОБРАЩЕНИЯ/);
+  await expect(editor).toHaveValue(/Досрочное погашение и перерасчёт процентов/);
   const actions=page.getByTestId("credit-debt-final-actions");
   await expect(actions.getByRole("button",{name:"Скачать PDF"})).toBeEnabled();
   await expect(actions.getByRole("button",{name:"Отправить на проверку юристу"})).toBeEnabled();
@@ -82,9 +82,9 @@ test("bankruptcy through MFC produces only checklist with safe PDF and no false 
   await fillDocument(page);
   await page.getByRole("button",{name:"Сформировать предварительный чек-лист"}).click();
   const editor=page.getByTestId("credit-debt-document-editor");
-  await expect(editor).toContainText("ПРЕДВАРИТЕЛЬНЫЙ ЧЕК-ЛИСТ");
-  await expect(editor).toContainText("МФЦ");
-  await expect(editor).not.toContainText("ИСКОВОЕ ЗАЯВЛЕНИЕ");
+  await expect(editor).toHaveValue(/ПРЕДВАРИТЕЛЬНЫЙ ЧЕК-ЛИСТ/);
+  await expect(editor).toHaveValue(/МФЦ/);
+  await expect(editor).not.toHaveValue(/ИСКОВОЕ ЗАЯВЛЕНИЕ/);
   await expect(page.getByTestId("credit-debt-final-actions").getByRole("button",{name:"Скачать PDF"})).toBeEnabled();
   await expect(page.locator("meta[name='robots']")).toHaveAttribute("content",/noindex/);
 });
