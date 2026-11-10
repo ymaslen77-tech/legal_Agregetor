@@ -5,6 +5,7 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { CreditDebtJourney } from "@/components/credit-debt/CreditDebtJourney";
 import { getCreditDebtSkeletonGroups,getCreditDebtSkeletonSpec } from "@/lib/credit-debt-full-route";
 import { isCreditDebtPreviewEnabled } from "@/lib/credit-debt-preview-access";
+import { getCreditDebtSeoEntry } from "@/data/credit-debt-seo";
 
 type Props={params:Promise<{group:string;situation:string}>};
 export const dynamic="force-dynamic";
@@ -12,10 +13,11 @@ const root="/kredity-dolgi/";
 export async function generateMetadata({params}:Props):Promise<Metadata>{
   const {group,situation}=await params;
   const spec=getCreditDebtSkeletonSpec(group,situation);
-  if(!isCreditDebtPreviewEnabled(process.env)||!spec)notFound();
+  const seo=getCreditDebtSeoEntry(group,situation);
+  if(!isCreditDebtPreviewEnabled(process.env)||!spec||!seo)notFound();
   return {
-    title:spec.situationTitle+" — кредиты, долги и банкротство",
-    description:"Предварительная правовая навигация: "+spec.situationTitle+". Анкета, состав доказательств и проект результата. Требуется юридическая сверка.",
+    title:seo.title,
+    description:seo.description,
     robots:{index:false,follow:false,noarchive:true}
   };
 }
