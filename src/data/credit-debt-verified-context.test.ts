@@ -18,6 +18,11 @@ for(const item of CREDIT_DEBT_CHECKED_CONTEXT){
     assert.ok(getCreditDebtCheckedContext(groupId,situationId).includes(item));
   }
 }
+const holidayContext=CREDIT_DEBT_CHECKED_CONTEXT.find(item=>item.id==="consumer-credit-holidays-income");
+assert.ok(holidayContext);
+assert.match(holidayContext.officialTextPriorityNote??"",/более чем на 30/);
+assert.match(holidayContext.officialTextPriorityNote??"",/FAQ Банка России/);
+assert.match(holidayContext.officialTextPriorityNote??"",/Ровно 30% не означает/);
 assert.equal(getCreditDebtCheckedContext("bankruptcy","bankruptcy-court").length,0,
   "MFC range does not automatically qualify judicial bankruptcy");
 assert.ok(getCreditDebtCheckedContext("mortgage","mortgage-holidays").some(x=>x.id==="mortgage-holiday-special"),
