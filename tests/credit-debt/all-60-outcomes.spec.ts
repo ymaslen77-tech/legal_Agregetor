@@ -59,7 +59,6 @@ test("60 distinct credit/debt and bankruptcy outcomes: end-to-end intake, genera
       await fillDocument(page);
       const text=await page.getByTestId("credit-debt-document-editor").inputValue();
       expect(text,path).toContain(situation.title);
-      expect(text,path).toContain("НЕ ГОТОВ К ПОДАЧЕ");
       const action=page.getByTestId("credit-debt-final-actions");
       await expect(action.getByRole("button",{name:"Скачать PDF"})).toBeEnabled();
       await expect(action.getByRole("button",{name:"Отправить на проверку юристу"})).toBeEnabled();
@@ -69,6 +68,7 @@ test("60 distinct credit/debt and bankruptcy outcomes: end-to-end intake, genera
         expect(text,path).not.toContain("ПРОШУ:");
       } else if(["REQUEST_DRAFT","COMPLAINT_DRAFT","OBJECTION_DRAFT","CLAIM_DRAFT"].includes(situation.targetResult)){
         drafts++;
+        expect(text,path).toContain("НЕ ГОТОВ К ПОДАЧЕ");
         expect(text,path).toContain("ПРОШУ:");
       } else {
         nonDrafts++;
