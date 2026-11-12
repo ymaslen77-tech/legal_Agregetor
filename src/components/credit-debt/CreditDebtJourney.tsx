@@ -1,5 +1,6 @@
-import { getCreditDebtAcceptanceItem } from "@/data/credit-debt-acceptance-matrix";
 "use client";
+
+import { getCreditDebtAcceptanceItem } from "@/data/credit-debt-acceptance-matrix";
 
 import Link from "next/link";
 import { useEffect,useState,type FormEvent } from "react";
