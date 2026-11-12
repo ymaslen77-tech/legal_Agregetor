@@ -48,6 +48,9 @@ for(const group of CREDIT_DEBT_GROUPS){
     assert.equal(doc.versionId,parsed.versionId);
     assert.ok(doc.documentText.includes(situation.title),key);
     assert.ok(doc.documentText.includes(target.objective),key);
+    assert.ok(doc.documentText.includes("Индивидуальная юридическая проверка:") ||
+      doc.documentText.includes("Юридическая проверка данной ситуации:") ||
+      doc.resultKind==="URGENT_INSTRUCTION",key);
     assert.equal(doc.filingReady,false);
     assert.equal(doc.requiresLegalReview,true);
     assert.equal(doc.legalRegistryReviewedAt,null);
@@ -118,6 +121,21 @@ for(const group of CREDIT_DEBT_GROUPS){
     }
   }
 }
+const intakeSnapshotPlan=getCreditDebtDocumentPlan("contract-terms","early-repayment");
+assert.ok(intakeSnapshotPlan);
+const factValues=Object.fromEntries(intakeSnapshotPlan.inputs.map(f=>[f.key,
+  f.required?"Синтетическое значение для отдельной проверки версии":"" ]));
+const beforeIntake=createCreditDebtDraftPrototype({
+  groupId:"contract-terms",situationId:"early-repayment",values:factValues,
+  intakeValues:{summary:"Первая синтетическая история платежа"}
+});
+const afterIntake=createCreditDebtDraftPrototype({
+  groupId:"contract-terms",situationId:"early-repayment",values:factValues,
+  intakeValues:{summary:"Исправленная синтетическая история платежа"}
+});
+assert.match(beforeIntake.documentResult.documentText,/Первая синтетическая история платежа/);
+assert.match(afterIntake.documentResult.documentText,/Исправленная синтетическая история платежа/);
+assert.ok(!afterIntake.documentResult.documentText.includes("Первая синтетическая история платежа"));
 assert.equal(ids.size,60);
 assert.equal(bankruptcy,8);
 assert.ok(draftCount>=20);
