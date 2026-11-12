@@ -177,10 +177,10 @@ export function CreditDebtJourney({spec,related,backHref}:Readonly<{
         </li>)}
       </ul>
       {checkedContext.length>0?<div className="mt-6 rounded-lg border border-line bg-zinc-50 p-5" data-testid="credit-debt-checked-context">
-        <h3 className="text-lg font-semibold text-ink">Сверенные общие правовые положения</h3>
+        <h3 className="text-lg font-semibold text-ink">Предварительно сопоставленные общие правовые положения</h3>
         <p className="mt-2 text-sm text-zinc-700">
           Каждое положение сопоставлено по двум независимым источникам.
-          Это не подтверждение права конкретного заявителя и не юридическая приёмка документа.
+          Это не завершённая проверка по трём источникам, не подтверждение права конкретного заявителя и не юридическая приёмка документа.
         </p>
         {checkedContext.map(item=><div key={item.id} className="mt-4 border-t border-line pt-4">
           <p className="font-semibold text-ink">{item.proposition}</p>
