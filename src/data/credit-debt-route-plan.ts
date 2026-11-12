@@ -137,8 +137,8 @@ export const CREDIT_DEBT_PUBLICATION_GATE = {
   publicUrlsEnabled: false,
   documentGenerationAllowed: false,
   filingReady: false,
-  claimVerification: "PENDING_TWO_INDEPENDENT_SOURCES_AND_OFFICIAL_VERSION",
-  rule: "One verified claim requires exact matching scope/effective date in two independent sources; if non-official sources disagree, official effective text has priority, and the claim must be corrected before approval.",
+  claimVerification: "PENDING_THREE_INDEPENDENT_SOURCES_AND_OFFICIAL_VERSION",
+  rule: "One verified claim requires exact matching scope/effective date in three independent sources; if non-official sources disagree, official effective text has priority, and the claim must be corrected before approval.",
   noFakeProfilesOrFixtureAnswers: true
 } as const;
 export const CREDIT_DEBT_GROUPS: readonly CreditDebtGroup[] = [
