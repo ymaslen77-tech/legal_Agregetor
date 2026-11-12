@@ -18,6 +18,13 @@ for(const item of CREDIT_DEBT_CHECKED_CONTEXT){
     assert.ok(getCreditDebtCheckedContext(groupId,situationId).includes(item));
   }
 }
+const courtOrderContext=CREDIT_DEBT_CHECKED_CONTEXT.find(item=>item.id==="court-order-objections");
+assert.ok(courtOrderContext);
+assert.equal(courtOrderContext.asOf,"2026-11-12");
+assert.equal(new Set(courtOrderContext.sources.map(x=>x.publisher)).size,3);
+assert.match(courtOrderContext.proposition,/десяти дней со дня получения/);
+assert.match(courtOrderContext.proposition,/не зависящим от должника причинам/);
+assert.match(courtOrderContext.limitations,/Нельзя автоматически обещать/);
 const holidayContext=CREDIT_DEBT_CHECKED_CONTEXT.find(item=>item.id==="consumer-credit-holidays-income");
 assert.ok(holidayContext);
 assert.match(holidayContext.officialTextPriorityNote??"",/более чем на 30/);
