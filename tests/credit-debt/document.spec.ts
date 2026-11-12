@@ -82,6 +82,28 @@ test("credit draft: original navigator actions, editable revisions, PDF/DOCX and
   await expect(actions.getByRole("checkbox")).toHaveCount(2);
 });
 
+test("a changed questionnaire invalidates existing PDF, saved draft and legal review until regenerated",async ({page})=>{
+  await page.goto("/kredity-dolgi/contract-terms/early-repayment/");
+  await fillQuestions(page);
+  await expect(page.getByTestId("credit-debt-draft-form")).toBeVisible();
+  await fillDocument(page); // Regression: onChange must not crash when React batches an update.
+  await expect(page.getByRole("heading",{name:"Не удалось загрузить страницу"})).toHaveCount(0);
+  await page.getByRole("button",{name:"Сформировать проект документа"}).click();
+  const actions=page.getByTestId("credit-debt-final-actions");
+  await expect(actions.getByRole("button",{name:"Скачать PDF"})).toBeEnabled();
+  await page.getByRole("button",{name:"Изменить ответы"}).click();
+  const summary=page.getByTestId("credit-debt-scenario-flow").locator('textarea[name="summary"]');
+  await summary.fill("Исправленные обстоятельства для второй версии синтетического тестового обращения.");
+  await page.getByRole("button",{name:"Продолжить — проверить сведения"}).click();
+  await expect(page.getByText(/Анкета была обновлена/)).toBeVisible();
+  await expect(actions.getByRole("button",{name:"Скачать PDF"})).toBeDisabled();
+  await expect(actions.getByRole("button",{name:"Отправить на проверку юристу"})).toBeDisabled();
+  await expect(actions.getByRole("button",{name:"Сохранить в мои документы"})).toBeDisabled();
+  await page.getByRole("button",{name:"Сформировать проект документа"}).click();
+  await expect(actions.getByRole("button",{name:"Скачать PDF"})).toBeEnabled();
+  await expect(page.getByTestId("credit-debt-document-editor")).toHaveValue(/Исправленные обстоятельства/);
+});
+
 test("bankruptcy through MFC produces only checklist with safe PDF and no false court application",async ({page})=>{
   test.setTimeout(120000);
   await page.goto("/kredity-dolgi/bankruptcy/out-of-court-mfc/");
