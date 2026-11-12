@@ -251,9 +251,9 @@ export const CREDIT_DEBT_CHECKED_CONTEXT:readonly CreditDebtCheckedContext[]=[
       {publisher:"Арбитражный суд Удмуртской Республики",type:"OFFICIAL_EXPLANATION",
         url:"https://udmurtiya.arbitr.ru/process/duty/amount_of_duty",
         supports:"Отсутствие пошлины для собственного заявления должника"},
-      {publisher:"Арбитражная практика по делу А68-15029/2024",type:"AUTHORITY_ACT",
-        url:"https://www.zakonrf.info/arbsud/doc-53525b79-1747-508d-b111-0f9de9173905/",
-        supports:"Применение освобождения должника"}
+      {publisher:"Арбитражный суд Пермского края",type:"OFFICIAL_EXPLANATION",
+        url:"https://perm.arbitr.ru/process/duty/commission",
+        supports:"Действующее освобождение должника от пошлины по собственному заявлению"}
     ]
   },
   {
