@@ -82,7 +82,7 @@ jobs:
         run: npx tsx src/data/credit-debt-acceptance-matrix.test.ts
       - name: Verify 60 unique SEO targets stay noindex until approval
         run: npx tsx src/data/credit-debt-seo.test.ts
-      - name: Confirm ten legal context principles remain non-filing only
+      - name: Confirm thirteen legal context principles remain non-filing only
         run: npx tsx src/data/credit-debt-verified-context.test.ts
       - name: Check draft SEO canonical and metadata integrity for 71 route levels
         run: npx tsx src/lib/credit-debt-metadata.test.ts
