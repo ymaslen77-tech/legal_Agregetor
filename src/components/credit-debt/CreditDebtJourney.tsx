@@ -1,3 +1,4 @@
+import { getCreditDebtAcceptanceItem } from "@/data/credit-debt-acceptance-matrix";
 "use client";
 
 import Link from "next/link";
@@ -25,6 +26,7 @@ export function CreditDebtJourney({spec,related,backHref}:Readonly<{
 }>){
   const plan=getCreditDebtDocumentPlan(spec.groupId,spec.situationId);
   const checkedContext=getCreditDebtCheckedContext(spec.groupId,spec.situationId);
+  const legalGate=getCreditDebtAcceptanceItem(spec.groupId,spec.situationId);
   const [intake,setIntake]=useState<CreditDebtRouteSnapshot|null>(null);
   const [values,setValues]=useState<Record<string,string>>({});
   const [generated,setGenerated]=useState<CreditDebtDocumentOutput|null>(null);
@@ -195,6 +197,25 @@ export function CreditDebtJourney({spec,related,backHref}:Readonly<{
         </div>)}
       </div>:null}
     </section>
+    {legalGate?<section className="mt-9 rounded-lg border border-line bg-zinc-50 p-5 sm:p-6"
+      aria-labelledby="credit-individual-review-heading" data-testid="credit-debt-legal-acceptance">
+      <p className="text-sm font-semibold uppercase tracking-wide text-amber-900">Юридическая приёмка · ожидает проверки</p>
+      <h2 id="credit-individual-review-heading" className="mt-2 text-xl font-semibold text-ink">
+        Что проверить именно в этой ситуации
+      </h2>
+      <p className="mt-3 text-sm leading-6 text-zinc-800" data-testid="credit-debt-legal-focus">{legalGate.reviewFocus}</p>
+      <p className="mt-3 text-sm leading-6 text-zinc-700">
+        Требуется подтвердить каждое существенное правовое утверждение минимум по трём независимым источникам,
+        сопоставить их с действующей официальной редакцией закона и проверить реквизиты и доказательства по делу.
+        В частности, указанный выше предполагаемый адресат не считается подтверждённым: {legalGate.recipientCandidate}.
+      </p>
+      <details className="mt-4 text-sm text-zinc-800">
+        <summary className="cursor-pointer font-semibold text-trust">Полный перечень условий юридической приёмки</summary>
+        <ul className="mt-3 list-disc space-y-2 pl-5">
+          {legalGate.mandatoryChecks.map(item=><li key={item}>{item}</li>)}
+        </ul>
+      </details>
+    </section>:null}
     <section className="mt-9 border-t border-line pt-7" aria-labelledby="credit-related-heading">
       <h2 id="credit-related-heading" className="text-2xl font-semibold text-ink">Связанные вопросы и следующие действия</h2>
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
