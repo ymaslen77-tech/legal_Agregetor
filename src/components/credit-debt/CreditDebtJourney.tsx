@@ -77,7 +77,7 @@ export function CreditDebtJourney({spec,related,backHref}:Readonly<{
     setError("");
   }
   async function download(type:"pdf"|"docx"){
-    if(!generated||busy)return;
+    if(!generated||busy||intakeVersion!==intake?.number)return;
     setBusy(true);setError("");
     try{
       const result=generated.documentResult;
@@ -95,6 +95,9 @@ export function CreditDebtJourney({spec,related,backHref}:Readonly<{
     finally{setBusy(false);}
   }
   const changed=!!generated&&text!==generated.documentResult.documentText;
+  // Once the intake changes, neither editing nor export may silently turn an old
+  // result into an apparently current document. The questionnaire must be regenerated.
+  const stale=!!generated&&intakeVersion!==intake?.number;
   const title=plan.resultKind==="DRAFT"?"Сформировать проект документа":
     plan.resultKind==="URGENT_INSTRUCTION"?"Подготовить памятку безопасности":
     plan.resultKind==="PREPARED_DATA"?"Подготовить лист сведений":"Сформировать предварительный чек-лист";
@@ -119,7 +122,11 @@ export function CreditDebtJourney({spec,related,backHref}:Readonly<{
               maxLength={f.key==="facts"?5000:f.key==="attachments"?1800:1200}
               minLength={f.required?f.key==="facts"?15:3:undefined}
               placeholder="В тестовом режиме используйте только вымышленные сведения"
-              data-field-key={f.key} onChange={e=>setValues(prev=>({...prev,[f.key]:e.currentTarget.value}))}/>
+              data-field-key={f.key} onChange={e=>{
+                // React clears currentTarget after dispatch. Never read it from a queued updater.
+                const value=e.currentTarget.value;
+                setValues(prev=>({...prev,[f.key]:value}));
+              }}/>
           </label>)}
           {error?<p className="text-sm text-red-800" role="alert">{error}</p>:null}
           <button type="submit" className="min-h-11 rounded-md bg-trust px-5 py-3 font-semibold text-white hover:bg-ink">{title}</button>
@@ -128,7 +135,7 @@ export function CreditDebtJourney({spec,related,backHref}:Readonly<{
         <p className="text-sm font-semibold uppercase tracking-wide text-amber-800">
           Черновик · не готов к подаче · версия {generated.documentResult.versionId.slice(0,8)}
         </p>
-        {intakeVersion!==null&&intake?.number!==intakeVersion?<p role="status" className="mt-2 text-sm text-amber-900">
+        {stale?<p role="status" className="mt-2 text-sm text-amber-900">
           Анкета была обновлена. Предыдущий документ не меняется автоматически — для новой версии повторно сформируйте результат.
         </p>:null}
         <label className="mt-5 block text-sm font-semibold text-ink">
@@ -139,7 +146,7 @@ export function CreditDebtJourney({spec,related,backHref}:Readonly<{
         {changed?<p className="mt-2 text-sm text-amber-800">
           Есть несохранённые изменения. Для скачивания или передачи этой редакции сохраните новую версию.
         </p>:null}
-        <button type="button" onClick={revise} disabled={!changed||busy}
+        <button type="button" onClick={revise} disabled={!changed||busy||stale}
           className="mt-4 min-h-11 rounded-md border border-trust px-4 py-2 text-sm font-semibold text-trust disabled:opacity-50">
           Сохранить новую версию
         </button>
@@ -211,16 +218,16 @@ export function CreditDebtJourney({spec,related,backHref}:Readonly<{
         <button type="button" disabled className="min-h-11 rounded-md border border-line bg-zinc-50 px-5 py-3 text-sm font-semibold text-zinc-600">Отправить на проверку юристу</button>
       </div>:
         <div className="mt-5">
-          <SaveLegalDocumentButton key={generated.documentResult.versionId} result={generated.documentResult} disabled={changed}/>
+          <SaveLegalDocumentButton key={generated.documentResult.versionId} result={generated.documentResult} disabled={changed||stale}/>
           <details className="mt-4 text-sm text-zinc-700">
             <summary className="cursor-pointer font-semibold text-trust">Дополнительные форматы и технический экспорт</summary>
-            <button type="button" disabled={changed||busy} onClick={()=>void download("docx")}
+            <button type="button" disabled={changed||busy||stale} onClick={()=>void download("docx")}
               className="mt-3 min-h-11 rounded-md border border-line px-4 py-2 font-semibold text-trust disabled:opacity-50">
               Скачать DOCX-черновик
             </button>
           </details>
           <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-start">
-            <button type="button" disabled={changed||busy} onClick={()=>void download("pdf")}
+            <button type="button" disabled={changed||busy||stale} onClick={()=>void download("pdf")}
               className="min-h-11 rounded-md bg-trust px-5 py-3 text-sm font-semibold text-white hover:bg-ink disabled:opacity-50">
               {busy?"Готовим PDF…":"Скачать PDF"}
             </button>
@@ -228,7 +235,7 @@ export function CreditDebtJourney({spec,related,backHref}:Readonly<{
               result={generated.documentResult}
               createPdf={()=>createCreditDebtPdfBlob(generated.documentResult)}
               pdfFileName={creditDebtFileName(generated.documentResult,"pdf")}
-              disabled={changed||busy}/>
+              disabled={changed||busy||stale}/>
           </div>
         </div>}
     </section>
