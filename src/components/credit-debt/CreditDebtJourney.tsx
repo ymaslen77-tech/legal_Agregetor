@@ -36,6 +36,7 @@ export function CreditDebtJourney({spec,related,backHref}:Readonly<{
   const [error,setError]=useState("");
   const [busy,setBusy]=useState(false);
   const [intakeVersion,setIntakeVersion]=useState<number|null>(null);
+  const [versionIntakeNumbers,setVersionIntakeNumbers]=useState<Record<string,number>>({});
   const intakeReady=!!intake&&(
     intake.assessment.complete||
     intake.assessment.status==="URGENT_SAFETY_FIRST"
@@ -55,6 +56,8 @@ export function CreditDebtJourney({spec,related,backHref}:Readonly<{
     setVersions(previous=>addCreditDebtDocumentVersion(previous,result));
     setError("");
     setIntakeVersion(intake?.number??null);
+    if(intake)setVersionIntakeNumbers(previous=>({...previous,
+      [result.documentResult.versionId]:intake.number}));
   }
   function generate(event:FormEvent<HTMLFormElement>){
     event.preventDefault();
@@ -77,6 +80,7 @@ export function CreditDebtJourney({spec,related,backHref}:Readonly<{
     setGenerated({documentResult:found.documentResult,formData:{...found.payload}});
     setValues({...found.payload});
     setText(found.documentResult.documentText);
+    setIntakeVersion(versionIntakeNumbers[found.documentResult.versionId]??null);
     setError("");
   }
   async function download(type:"pdf"|"docx"){
@@ -156,7 +160,7 @@ export function CreditDebtJourney({spec,related,backHref}:Readonly<{
         {versions.length>1?<div className="mt-5 border-t border-line pt-4">
           <p className="text-sm font-semibold">Предыдущие версии в этой вкладке</p>
           <div className="mt-3 flex flex-wrap gap-2">{versions.map(entry=><button type="button"
-            key={entry.documentResult.versionId} onClick={()=>restore(entry)}
+            key={entry.documentResult.versionId} data-testid="credit-debt-version" onClick={()=>restore(entry)}
             aria-current={entry.documentResult.versionId===generated.documentResult.versionId?"true":undefined}
             className="rounded-md border border-line px-3 py-2 text-xs text-trust hover:border-trust">
             {entry.documentResult.versionId.slice(0,8)}
