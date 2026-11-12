@@ -15,7 +15,7 @@ for(const group of CREDIT_DEBT_GROUPS){
     assert.equal(review.legallyReady,false);
     assert.equal(review.acceptedLegalClaims.length,0);
     assert.equal(review.officialVersionPriority,true);
-    assert.equal(review.minIndependentSources,2);
+    assert.equal(review.minIndependentSources,3);
     assert.deepEqual(review.candidateSources,sourceList);
     cases++;
   }
