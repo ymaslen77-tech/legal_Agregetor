@@ -1,3 +1,4 @@
+import { getCreditDebtAcceptanceItem } from "@/data/credit-debt-acceptance-matrix";
 import { CREDIT_DEBT_DOCUMENT_TARGETS, getCreditDebtDocumentTarget, type CreditDebtDocumentTarget } from "@/data/credit-debt-document-targets";
 import { CREDIT_DEBT_GROUPS } from "@/data/credit-debt-route-plan";
 import { getCreditDebtSkeletonSpec,evaluateCreditDebtSkeleton } from "@/lib/credit-debt-full-route";
@@ -92,6 +93,8 @@ export function listCreditDebtDocumentPlans():readonly CreditDebtDocumentPlan[]{
 function formatPlan(plan:CreditDebtDocumentPlan,formData:Readonly<Record<string,string>>,
   intake:Readonly<Record<string,string|undefined>>):string{
   const t=plan.target;
+  const legalGate=getCreditDebtAcceptanceItem(t.groupId,t.situationId);
+  if(!legalGate)throw new Error("Missing individual legal review checklist: "+t.key);
   const draft=plan.resultKind==="DRAFT";
   const introduction=draft?"ПРОЕКТ ОБРАЩЕНИЯ — НЕ ГОТОВ К ПОДАЧЕ":
     plan.resultKind==="URGENT_INSTRUCTION"?"ПЕРВООЧЕРЕДНЫЕ ДЕЙСТВИЯ — НЕ ЮРИДИЧЕСКОЕ ЗАКЛЮЧЕНИЕ":
@@ -136,6 +139,7 @@ function formatPlan(plan:CreditDebtDocumentPlan,formData:Readonly<Record<string,
       "Приложения: "+(formData.attachments||"уточняются; прилагаются только фактически имеющиеся документы"),
       "","Дата: __________________","Подпись: ______________","",
       litigationWarning,
+      "Юридическая проверка данной ситуации: "+legalGate.reviewFocus,
       "Перед подачей требуется индивидуальная проверка применимых норм, компетенции адресата, процессуальной формы, сроков, пошлины и обязательных приложений."
     ].filter(x=>x!==undefined).join("\n");
   }
@@ -151,6 +155,7 @@ function formatPlan(plan:CreditDebtDocumentPlan,formData:Readonly<Record<string,
     ...fields,"",
     "Порядок предварительной проверки:",...checks,"",
     "Необходимо собрать:",...assessment.documentsToGather.map((v,i)=>`${i+1}. ${v}`),"",
+    "Индивидуальная юридическая проверка: "+legalGate.reviewFocus,
     "Ситуация требует самостоятельной проверки правовых условий по действующим официальным источникам.",
     "Этот результат не является судебным заявлением, официальным бланком, признанием права на льготу или подтверждением освобождения от долгов."
   ].join("\n");
