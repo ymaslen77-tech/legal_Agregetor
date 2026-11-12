@@ -109,6 +109,14 @@ function formatPlan(plan:CreditDebtDocumentPlan,formData:Readonly<Record<string,
   ].filter(Boolean);
   const spec=getCreditDebtSkeletonSpec(t.groupId,t.situationId);
   if(!spec)throw new Error("Unknown credit/debt case");
+  // Snapshot the questionnaire in the generated version, so a changed answer
+  // cannot be silently omitted when the applicant regenerates the document.
+  const intakeLines=spec.fields.map(field=>{
+    const answer=safe(intake[field.key],2000);
+    return answer?field.label+": "+answer:"";
+  }).filter(Boolean);
+  const intakeBlock=intakeLines.length?
+    ["Ответы анкеты на момент формирования документа:",...intakeLines].join("\n"):"";
   const assessment=evaluateCreditDebtSkeleton(spec,intake);
   const checks=assessment.checklist.map((v,i)=>`${i+1}. ${v}`);
   if(draft){
@@ -134,7 +142,7 @@ function formatPlan(plan:CreditDebtDocumentPlan,formData:Readonly<Record<string,
       introduction,"ТРЕБУЕТСЯ ЮРИДИЧЕСКАЯ ПРОВЕРКА","",
       "Кому: "+formData.recipient,"От: "+formData.applicant,
       formData.counterparty?"Другая сторона: "+formData.counterparty:"",
-      "",heading,"По вопросу: "+t.title,"",introductory,"",factual,"",
+      "",heading,"По вопросу: "+t.title,"",introductory,"",intakeBlock,"",factual,"",
       "ПРОШУ:",t.objective,"",
       "Приложения: "+(formData.attachments||"уточняются; прилагаются только фактически имеющиеся документы"),
       "","Дата: __________________","Подпись: ______________","",
@@ -152,7 +160,7 @@ function formatPlan(plan:CreditDebtDocumentPlan,formData:Readonly<Record<string,
   return [
     introduction,"","Ситуация: "+t.title,"",
     "Предмет предварительной проверки:",t.objective,"",
-    ...fields,"",
+    ...fields,"",intakeBlock,"",
     "Порядок предварительной проверки:",...checks,"",
     "Необходимо собрать:",...assessment.documentsToGather.map((v,i)=>`${i+1}. ${v}`),"",
     "Индивидуальная юридическая проверка: "+legalGate.reviewFocus,
