@@ -31,7 +31,13 @@ export const CREDIT_DEBT_CHECKED_CONTEXT:readonly CreditDebtCheckedContext[]=[
         url:"https://www.nalog.gov.ru/rn38/news/activities_fts/16640726/",supports:"Диапазон суммы и обращение в МФЦ"},
       {publisher:"КонсультантПлюс",type:"LEGAL_TEXT",
         url:"https://www.consultant.ru/document/cons_doc_LAW_39331/c48290d39215783e73f0899bb1026b14cb221eff/",
-        supports:"Статья 223.2 закона № 127-ФЗ: сумма, дополнительные основания и процедура"}
+        supports:"Статья 223.2 закона № 127-ФЗ: сумма, дополнительные основания и процедура"},
+      {publisher:"Социальный фонд России",type:"OFFICIAL_EXPLANATION",
+        url:"https://sfr.gov.ru/press_center/news/~2026/04/06/280163",
+        supports:"Актуальный диапазон 25 000–1 000 000 рублей (06.04.2026)"},
+      {publisher:"МФЦ Орловской области",type:"OFFICIAL_EXPLANATION",
+        url:"https://www.mfc-orel.ru/vbank/",
+        supports:"Региональная карточка государственной услуги: диапазон задолженности и необходимость специального основания"}
     ]
   },
   {
