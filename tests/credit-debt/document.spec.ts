@@ -102,6 +102,11 @@ test("a changed questionnaire invalidates existing PDF, saved draft and legal re
   await page.getByRole("button",{name:"Сформировать проект документа"}).click();
   await expect(actions.getByRole("button",{name:"Скачать PDF"})).toBeEnabled();
   await expect(page.getByTestId("credit-debt-document-editor")).toHaveValue(/Исправленные обстоятельства/);
+  await page.getByTestId("credit-debt-version").last().click();
+  await expect(page.getByText(/Анкета была обновлена/)).toBeVisible();
+  await expect(actions.getByRole("button",{name:"Скачать PDF"})).toBeDisabled();
+  await page.getByTestId("credit-debt-version").first().click();
+  await expect(actions.getByRole("button",{name:"Скачать PDF"})).toBeEnabled();
 });
 
 test("bankruptcy through MFC produces only checklist with safe PDF and no false court application",async ({page})=>{
