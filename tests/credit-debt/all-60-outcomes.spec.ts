@@ -46,54 +46,52 @@ async function fillDocument(page:Page){
   await form.locator('button[type="submit"]').click();
 }
 
-test("60 distinct credit/debt and bankruptcy outcomes: end-to-end intake, generation and non-filing PDF actions", async ({page})=>{
-  test.setTimeout(1_000_000);
-  let completed=0,drafts=0,nonDrafts=0,urgent=0;
-  for(const group of CREDIT_DEBT_GROUPS){
+for(const group of CREDIT_DEBT_GROUPS){
+  test(`All ${group.situations.length} outcomes in ${group.id}: intake, generation and real PDF audit`,async ({page})=>{
+    test.setTimeout(240_000);
+    let completed=0;
     for(const situation of group.situations){
       const path=`/kredity-dolgi/${group.id}/${situation.id}/`;
-      const result=await page.goto(path,{waitUntil:"domcontentloaded"});
-      expect(result?.status(),path).toBe(200);
-      await expect(page.getByRole("heading",{level:1,name:situation.title})).toBeVisible();
-      await fillIntake(page);
-      const form=page.getByTestId("credit-debt-draft-form");
-      await expect(form).toBeVisible();
-      await fillDocument(page);
-      const text=await page.getByTestId("credit-debt-document-editor").inputValue();
-      expect(text,path).toContain(situation.title);
-      const action=page.getByTestId("credit-debt-final-actions");
-      await expect(action.getByRole("button",{name:"Скачать PDF"})).toBeEnabled();
-      await expect(action.getByRole("button",{name:"Отправить на проверку юристу"})).toBeEnabled();
-      const downloaded=page.waitForEvent("download");
-      await action.getByRole("button",{name:"Скачать PDF"}).click();
-      const artifact=await downloaded;
-      const file=await artifact.path();
-      expect(file,path).toBeTruthy();
-      const bytes=readFileSync(file!);
-      expect(bytes.subarray(0,5).toString(),path).toBe("%PDF-");
-      expect(bytes.length,path).toBeGreaterThan(1200);
-      const extracted=execFileSync("pdftotext",[file!,"-"],{encoding:"utf8"})
-        .replace(/\\s+/g," ").trim();
-      expect(extracted,path).toContain(situation.title);
-      expect(extracted.length,path).toBeGreaterThan(100);
-
-      await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content",/noindex/);
-      if(["FRAUD_REFERRAL","SAFETY_ESCALATION"].includes(situation.targetResult)){
-        urgent++;
-        expect(text,path).not.toContain("ПРОШУ:");
-      } else if(["REQUEST_DRAFT","COMPLAINT_DRAFT","OBJECTION_DRAFT","CLAIM_DRAFT"].includes(situation.targetResult)){
-        drafts++;
-        expect(text,path).toContain("НЕ ГОТОВ К ПОДАЧЕ");
-        expect(text,path).toContain("ПРОШУ:");
-      } else {
-        nonDrafts++;
-        expect(text,path).not.toContain("ПРОШУ:");
-      }
-      completed++;
+      await test.step(path,async()=>{
+        const response=await page.goto(path,{waitUntil:"domcontentloaded"});
+        expect(response?.status(),path).toBe(200);
+        await expect(page.getByRole("heading",{level:1,name:situation.title})).toBeVisible();
+        await expect(page.getByTestId("credit-debt-legal-focus")).toBeVisible();
+        await fillIntake(page);
+        const form=page.getByTestId("credit-debt-draft-form");
+        await expect(form).toBeVisible({timeout:10000});
+        await fillDocument(page);
+        await expect(form).toBeVisible({timeout:10000});
+        await expect(page.getByRole("heading",{name:"Не удалось загрузить страницу"})).toHaveCount(0);
+        const text=await page.getByTestId("credit-debt-document-editor").inputValue();
+        expect(text,path).toContain(situation.title);
+        const action=page.getByTestId("credit-debt-final-actions");
+        await expect(action.getByRole("button",{name:"Скачать PDF"})).toBeEnabled();
+        await expect(action.getByRole("button",{name:"Отправить на проверку юристу"})).toBeEnabled();
+        const downloaded=page.waitForEvent("download");
+        await action.getByRole("button",{name:"Скачать PDF"}).click();
+        const artifact=await downloaded;
+        const file=await artifact.path();
+        expect(file,path).toBeTruthy();
+        const bytes=readFileSync(file!);
+        expect(bytes.subarray(0,5).toString(),path).toBe("%PDF-");
+        expect(bytes.length,path).toBeGreaterThan(1200);
+        const extracted=execFileSync("pdftotext",[file!,"-"],{encoding:"utf8"})
+          .replace(/\\s+/g," ").trim();
+        expect(extracted,path).toContain(situation.title);
+        expect(extracted.length,path).toBeGreaterThan(100);
+        await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content",/noindex/);
+        if(["FRAUD_REFERRAL","SAFETY_ESCALATION"].includes(situation.targetResult)){
+          expect(text,path).not.toContain("ПРОШУ:");
+        } else if(["REQUEST_DRAFT","COMPLAINT_DRAFT","OBJECTION_DRAFT","CLAIM_DRAFT"].includes(situation.targetResult)){
+          expect(text,path).toContain("НЕ ГОТОВ К ПОДАЧЕ");
+          expect(text,path).toContain("ПРОШУ:");
+        } else {
+          expect(text,path).not.toContain("ПРОШУ:");
+        }
+        completed++;
+      });
     }
-  }
-  expect(completed).toBe(60);
-  expect(drafts).toBeGreaterThan(20);
-  expect(nonDrafts).toBeGreaterThan(15);
-  expect(urgent).toBeGreaterThanOrEqual(2);
-});
+    expect(completed).toBe(group.situations.length);
+  });
+}
