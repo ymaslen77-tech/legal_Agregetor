@@ -68,7 +68,8 @@ for(const group of CREDIT_DEBT_GROUPS){
     if(plan.target.targetResult==="OBJECTION_DRAFT"){
       assert.ok(plan.inputs.some(f=>f.key==="counterparty"&&f.required),key);
       assert.ok(plan.inputs.some(f=>f.key==="proceduralDate"&&f.required),key);
-      assert.ok(doc.documentText.includes("ВНИМАНИЕ: до подачи возражений"),key);
+      assert.ok(doc.documentText.includes("ВНИМАНИЕ: по статьям 128–129 ГПК РФ"),key);
+      assert.ok(doc.documentText.includes("Подача поздних возражений не гарантирует их принятия"),key);
     }
     if(plan.resultKind==="DRAFT"){
       assert.ok(doc.documentText.includes("Излагаю обстоятельства для проверки"),key);
