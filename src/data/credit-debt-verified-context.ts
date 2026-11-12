@@ -9,7 +9,7 @@ export type CreditDebtCheckedContext=Readonly<{
   appliesTo:readonly string[];
   proposition:string;
   status:"CONTEXT_ONLY_VERIFIED_NOT_SCENARIO_READY";
-  asOf:"2026-11-10";
+  asOf:"2026-11-10"|"2026-11-12";
   limitations:string;
   /** Divergent publisher summaries never override the effective statutory wording. */
   officialTextPriorityNote?:string;
@@ -236,7 +236,64 @@ export const CREDIT_DEBT_CHECKED_CONTEXT:readonly CreditDebtCheckedContext[]=[
   ],
   "status": "CONTEXT_ONLY_VERIFIED_NOT_SCENARIO_READY",
   "asOf": "2026-11-10"
-}
+},
+  {
+    id:"bankruptcy-court-debtor-no-duty-2026",
+    appliesTo:["bankruptcy/bankruptcy-court"],
+    proposition:"По подпункту 8 пункта 1 статьи 333.21 НК РФ при обращении самого должника с заявлением о признании его банкротом государственная пошлина не взимается.",
+    status:"CONTEXT_ONLY_VERIFIED_NOT_SCENARIO_READY",
+    asOf:"2026-11-12",
+    limitations:"Не переносить освобождение должника на заявление кредитора, обособленные споры и расходы на финансового управляющего. Проверить заявителя, редакцию НК РФ на дату обращения и иные расходы.",
+    sources:[
+      {publisher:"КонсультантПлюс",type:"LEGAL_TEXT",
+        url:"https://www.consultant.ru/document/cons_doc_LAW_52444/afc6f34df07a642bc66902eb48f253bcbc13797b/",
+        supports:"Подпункт 8 пункта 1 статьи 333.21 НК РФ"},
+      {publisher:"Арбитражный суд Удмуртской Республики",type:"OFFICIAL_EXPLANATION",
+        url:"https://udmurtiya.arbitr.ru/process/duty/amount_of_duty",
+        supports:"Отсутствие пошлины для собственного заявления должника"},
+      {publisher:"Арбитражная практика по делу А68-15029/2024",type:"AUTHORITY_ACT",
+        url:"https://www.zakonrf.info/arbsud/doc-53525b79-1747-508d-b111-0f9de9173905/",
+        supports:"Применение освобождения должника"}
+    ]
+  },
+  {
+    id:"bankruptcy-court-deposit-2026",
+    appliesTo:["bankruptcy/bankruptcy-court"],
+    proposition:"С 9 января 2026 года средства на вознаграждение финансовому управляющему вносятся в депозит арбитражного суда после определения о принятии заявления о банкротстве гражданина и до заседания по проверке его обоснованности, с указанием номера дела.",
+    status:"CONTEXT_ONLY_VERIFIED_NOT_SCENARIO_READY",
+    asOf:"2026-11-12",
+    limitations:"Правило относится к судебному банкротству. Не путать депозит с государственной пошлиной; размер вознаграждения и другие расходы требуют отдельной проверки.",
+    sources:[
+      {publisher:"ГАРАНТ",type:"LEGAL_TEXT",
+        url:"https://base.garant.ru/185181/549fa6616cad4410333212ee85d05347/",
+        supports:"Статья 213.4 закона №127-ФЗ после закона №544-ФЗ"},
+      {publisher:"Арбитражный суд Ивановской области",type:"OFFICIAL_EXPLANATION",
+        url:"https://ivanovo.arbitr.ru/preview/382148",
+        supports:"Изменения, вступившие в силу 09.01.2026"},
+      {publisher:"Арбитражный суд города Москвы",type:"OFFICIAL_EXPLANATION",
+        url:"https://msk.arbitr.ru/process/duty/deposit_info",
+        supports:"Депозит вносится после принятия заявления, до заседания"}
+    ]
+  },
+  {
+    id:"mfc-bankruptcy-unlisted-creditors",
+    appliesTo:["bankruptcy/out-of-court-mfc","bankruptcy/creditor-list","bankruptcy/bankruptcy-completion"],
+    proposition:"После завершения внесудебного банкротства освобождение гражданина от обязательств не распространяется на требования кредиторов, не указанные в заявлении; при заниженной сумме долга действуют специальные ограничения освобождения.",
+    status:"CONTEXT_ONLY_VERIFIED_NOT_SCENARIO_READY",
+    asOf:"2026-11-12",
+    limitations:"Проверить список, суммы по каждому кредитору и исключения из освобождения. Не переносить эти специальные последствия автоматически на судебное банкротство.",
+    sources:[
+      {publisher:"КонсультантПлюс",type:"LEGAL_TEXT",
+        url:"https://www.consultant.ru/document/cons_doc_LAW_39331/e5cb50d09c1b7740b5ce84bc51ef2c6de9510bbd/",
+        supports:"Пункты 1–2 статьи 223.6 закона №127-ФЗ"},
+      {publisher:"ФНС России",type:"OFFICIAL_EXPLANATION",
+        url:"https://www.nalog.gov.ru/rn39/taxation/bankruptcy/10370052/",
+        supports:"Неуказанные кредиторы не охватываются освобождением"},
+      {publisher:"ГАРАНТ",type:"LEGAL_TEXT",
+        url:"https://base.garant.ru/185181/0fcd3286b73e5f729c54fd3f8f6a4eac/",
+        supports:"Статья 223.6, ограничения при заниженной сумме"}
+    ]
+  }
 ];
 export function getCreditDebtCheckedContext(groupId:string,situationId:string):readonly CreditDebtCheckedContext[]{
   const key=groupId+"/"+situationId;
