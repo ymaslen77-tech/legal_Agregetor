@@ -2,7 +2,7 @@
  * Legal context facts cross-checked on 10 Nov 2026. These facts are relevant
  * starting points, not adjudication, not exhaustive statutory conditions and
  * NEVER a filing-readiness flag for an individual 60-situation branch.
- * Two independent publishers must support each exact core proposition.
+ * Two independent publishers supported preliminary context; release now requires three per material claim.
  */
 export type CreditDebtCheckedContext=Readonly<{
   id:string;
