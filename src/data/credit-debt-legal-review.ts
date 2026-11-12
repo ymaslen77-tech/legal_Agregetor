@@ -19,7 +19,7 @@ export type CreditDebtLegalReview=Readonly<{
   acceptedLegalClaims:readonly [];
   legallyReady:false;
   officialVersionPriority:true;
-  minIndependentSources:2;
+  minIndependentSources:3;
   lastCandidateReview:"2026-11-10";
 }>;
 const SOURCES:Readonly<Record<string,readonly CreditDebtLegalSource[]>>={
@@ -208,7 +208,7 @@ export function getCreditDebtLegalReview(groupId:string,situationId:string):Cred
     groupId,situationId,reviewStatus:"PENDING",
     candidateSources:getCreditDebtLegalSourceCandidates(groupId),
     acceptedLegalClaims:[],
-    legallyReady:false,officialVersionPriority:true,minIndependentSources:2,
+    legallyReady:false,officialVersionPriority:true,minIndependentSources:3,
     lastCandidateReview:"2026-11-10"
   };
 }
