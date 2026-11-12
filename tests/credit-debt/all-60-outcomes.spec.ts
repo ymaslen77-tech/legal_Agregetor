@@ -77,7 +77,7 @@ for(const group of CREDIT_DEBT_GROUPS){
         expect(bytes.subarray(0,5).toString(),path).toBe("%PDF-");
         expect(bytes.length,path).toBeGreaterThan(1200);
         const extracted=execFileSync("pdftotext",[file!,"-"],{encoding:"utf8"})
-          .replace(/\\s+/g," ").trim();
+          .replace(/\s+/g," ").trim();
         expect(extracted,path).toContain(situation.title);
         expect(extracted.length,path).toBeGreaterThan(100);
         await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content",/noindex/);
