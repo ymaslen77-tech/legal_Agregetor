@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { CreditDebtJourney } from "@/components/credit-debt/CreditDebtJourney";
 import { getCreditDebtSkeletonGroups,getCreditDebtSkeletonSpec } from "@/lib/credit-debt-full-route";
-import { isCreditDebtPreviewEnabled } from "@/lib/credit-debt-preview-access";
 import { getCreditDebtSeoEntry } from "@/data/credit-debt-seo";
 
 type Props={params:Promise<{group:string;situation:string}>};
@@ -15,11 +14,10 @@ export async function generateMetadata({params}:Props):Promise<Metadata>{
   const {group,situation}=await params;
   const spec=getCreditDebtSkeletonSpec(group,situation);
   const seo=getCreditDebtSeoEntry(group,situation);
-  if(!isCreditDebtPreviewEnabled(process.env)||!spec||!seo)notFound();
+  if(!spec||!seo)notFound();
   return creditDebtDraftMetadata({title:seo.title,description:seo.description,path:seo.canonicalPath});
 }
 export default async function CreditDebtSituationPage({params}:Props){
-  if(!isCreditDebtPreviewEnabled(process.env))notFound();
   const {group:groupId,situation:situationId}=await params;
   const group=getCreditDebtSkeletonGroups().find(item=>item.id===groupId);
   const spec=getCreditDebtSkeletonSpec(groupId,situationId);
@@ -46,7 +44,7 @@ export default async function CreditDebtSituationPage({params}:Props){
           Результаты ещё не подтверждены в качестве готовых к подаче документов.
         </p>
         <p className="mt-3 rounded-md border-l-4 border-amber-400 bg-amber-50 p-4 text-sm leading-6 text-amber-950">
-          Тестовый правовой маршрут. Любой документ здесь остаётся проектом для проверки, даже после скачивания PDF.
+          Предварительный правовой маршрут. Скачанный PDF — проект для индивидуальной проверки, а не готовый к подаче документ.
         </p>
       </header>
       <section className="mt-7" aria-labelledby="credit-short-answer">
