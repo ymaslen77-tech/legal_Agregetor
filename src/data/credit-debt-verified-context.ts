@@ -184,10 +184,10 @@ export const CREDIT_DEBT_CHECKED_CONTEXT:readonly CreditDebtCheckedContext[]=[
       "supports": "Разъяснение порядка приказного производства после поправок 2024 года и десятидневного срока"
     },
     {
-      "publisher": "Первый кассационный суд общей юрисдикции",
+      "publisher": "Конституционный Суд РФ",
       "type": "AUTHORITY_ACT",
-      "url": "https://1kas.sudrf.ru/modules.php?case_type=0&delo_id=2800001&name=sud_delo&name_op=doc&new=2800001&number=34281201&srv_num=1&text_number=1",
-      "supports": "Применение срока и оценка объективных препятствий поздней подаче в судебном деле; практика не заменяет действующий текст статьи 129"
+      "url": "https://www.consultant.ru/document/cons_doc_LAW_462338/",
+      "supports": "Постановление от 20.11.2023 № 53-П: судебная защита, восстановление срока и возможность обжалования отмены приказа при поздних возражениях. Приоритет действующей редакции ГПК"
     }
   ],
   "status": "CONTEXT_ONLY_VERIFIED_NOT_SCENARIO_READY",
