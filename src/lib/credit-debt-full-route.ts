@@ -1,5 +1,5 @@
 import {
-  CREDIT_DEBT_GROUPS,CREDIT_DEBT_PUBLICATION_GATE,
+  CREDIT_DEBT_GROUPS,
   type CreditDebtGroup, type CreditDebtSituation
 } from "@/data/credit-debt-route-plan";
 import { getCreditDebtLegalSourceCandidates } from "@/data/credit-debt-legal-review";
@@ -72,8 +72,10 @@ export function getCreditDebtSkeletonSpec(groupId:string,situationId:string):Cre
     risk:situation.risk,targetResult:situation.targetResult,fields,
     linkedArea:situation.crossLinkArea,
     sourceCandidates:getCreditDebtLegalSourceCandidates(groupId).map(x=>({label:x.title,url:x.url})),
-    publicationEnabled:CREDIT_DEBT_PUBLICATION_GATE.publicUrlsEnabled,
-    documentGenerationAllowed:CREDIT_DEBT_PUBLICATION_GATE.documentGenerationAllowed
+    // The intake specification itself never grants legal filing approval.
+    // The separate versioned draft generator is available on public routes.
+    publicationEnabled:false,
+    documentGenerationAllowed:false
   };
 }
 function isDate(value:string):boolean{
