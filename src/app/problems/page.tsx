@@ -8,7 +8,7 @@ import { legalCategories } from "@/data/legal-categories";
 
 export const metadata: Metadata = buildMetadata({
   title: "Юридические ситуации — правовой навигатор",
-  description: "Маршруты по семейным ситуациям: уточняющие вопросы, порядок действий, документы и проверенные правовые источники.",
+  description: "Правовой навигатор: семейные и трудовые споры, военное право, кредиты, долги, ипотека и банкротство. Анкеты, документы и правовые источники.",
   path: "/problems/",
   isIndexable: true
 });
