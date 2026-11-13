@@ -84,9 +84,10 @@ for(const group of CREDIT_DEBT_GROUPS){
       assert.ok(!doc.documentText.includes("ПРОШУ:"),key);
       assert.notEqual(doc.resultKind,"DRAFT");
     }
-    assert.equal(validateSavedDocument(doc,prod),null,"Production archive must reject an unverified section");
+    assert.deepEqual(validateSavedDocument(doc,prod),doc,"Production archive accepts strictly non-filing drafts");
     assert.deepEqual(validateSavedDocument(doc,dev),doc);
     assert.equal(validateSavedDocument({...doc,filingReady:true},dev),null);
+    assert.equal(validateSavedDocument({...doc,filingReady:true},prod),null);
     assert.equal(validateSavedDocument({...doc,usedRuleIds:["invented-rule"]},dev),null);
     assert.equal(validateSavedDocument({...doc,legalRegistryReviewedAt:"2026-11-10"},dev),null);
     assert.equal(validateSavedDocument({...doc,documentSlug:"wrong"},dev),null);
