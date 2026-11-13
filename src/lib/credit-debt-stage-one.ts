@@ -1,7 +1,5 @@
 import {
-  CREDIT_DEBT_COMMON_FACTS,
   CREDIT_DEBT_GROUPS,
-  CREDIT_DEBT_PUBLICATION_GATE,
   type CreditDebtGroup,
   type CreditDebtSituation
 } from "@/data/credit-debt-route-plan";
@@ -9,7 +7,7 @@ import { getCreditDebtLegalSourceCandidates } from "@/data/credit-debt-legal-rev
 import { getCreditDebtDocumentTarget } from "@/data/credit-debt-document-targets";
 
 /**
- * Stage 1 of the credit/debt program: 35 non-public, deterministic intake paths.
+ * Legacy 35-scenario development-only intake sandbox, separate from the public 60-case navigator.
  * Not a legal opinion, not a document generator, not an eligibility calculation.
  * Does not import Prisma, write to a database, or perform a network request.
  */
@@ -120,8 +118,9 @@ export function getCreditDebtIntakeSpec(groupId:string,situationId:string):Credi
     groupId,groupTitle:group.title,situationId,situationTitle:situation.title,
     risk:situation.risk,targetResult:situation.targetResult,fields,
     linkedArea,sourceCandidates,
-    publicationEnabled:CREDIT_DEBT_PUBLICATION_GATE.publicUrlsEnabled,
-    documentGenerationAllowed:CREDIT_DEBT_PUBLICATION_GATE.documentGenerationAllowed
+    // The isolated 35-scenario intake sandbox never publishes or generates documents.
+    publicationEnabled:false,
+    documentGenerationAllowed:false
   };
 }
 function validDate(value:string):boolean {
