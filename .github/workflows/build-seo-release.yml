@@ -6,6 +6,13 @@ on:
       - infra/coolify-russian-vps
     paths:
       - ".github/workflows/build-seo-release.yml"
+      - "src/**"
+      - "prisma/**"
+      - "public/**"
+      - "package.json"
+      - "package-lock.json"
+      - "Dockerfile"
+      - "next.config.*"
   workflow_dispatch:
 
 permissions:
@@ -37,6 +44,12 @@ jobs:
         run: npm run test:seo-core
       - name: Check military publication constraints
         run: npm run test:military
+      - name: Verify public credit route and draft safeguards before building image
+        run: |
+          npx tsx src/data/credit-debt-route-plan.test.ts
+          npx tsx src/lib/credit-debt-route-path-guard.test.ts
+          npx tsx src/lib/credit-debt-document-core.test.ts
+          npx tsx src/data/credit-debt-release-audit.test.ts
       - name: Check Q&A and synthetic lawyer eligibility
         run: npx tsx src/lib/qna-publication-rules.test.ts
       - name: Reject unsafe scripts that can convert synthetic profiles to real identities
