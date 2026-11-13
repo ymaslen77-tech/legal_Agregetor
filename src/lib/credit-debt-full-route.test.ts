@@ -10,7 +10,7 @@ assert.equal(isCreditDebtPreviewEnabled({NODE_ENV:"production",ENABLE_CREDIT_DEB
 assert.equal(isCreditDebtPreviewEnabled({NODE_ENV:"development",ENABLE_CREDIT_DEBT_PREVIEW:"false"}),false);
 assert.equal(isCreditDebtPreviewEnabled({NODE_ENV:"development",ENABLE_CREDIT_DEBT_PREVIEW:"true"}),true);
 assert.equal(getCreditDebtSkeletonGroups().length,10);
-assert.equal(CREDIT_DEBT_PUBLICATION_GATE.publicUrlsEnabled,false);
+assert.equal(CREDIT_DEBT_PUBLICATION_GATE.publicUrlsEnabled,true);
 
 const keys=new Set<string>();
 let checked=0, bankruptcy=0, emergency=0,linked=0;
