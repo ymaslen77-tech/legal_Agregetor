@@ -1,10 +1,10 @@
 /**
- * INTERNAL DEVELOPMENT BLUEPRINT, not a published route catalog.
+ * Public informational credit-debt taxonomy with draft-only outputs.
  * Q&A baseline: 12,783 imported questions mapped from legacy Service.slug
  * (Neon snapshot 2026-10-15). Not sessions, searches, or legally reviewed cases.
- * All proposed documents remain disabled pending claim-level source verification,
+ * Filing-ready documents remain disabled pending claim-level source verification,
  * scenario-specific legal checks, privacy review and automated acceptance.
- * Do NOT import this module in a public route, sitemap or navigation directly.
+ * Public taxonomy is permitted; unreviewed individual claims stay nonindexable.
  */
 export type CreditDebtResult =
   | "CHECKLIST" | "ELIGIBILITY_CHECK" | "CALCULATION_REVIEW"
@@ -132,10 +132,10 @@ export const CREDIT_DEBT_BASELINE = {
   isTrafficMetric: false
 } as const;
 export const CREDIT_DEBT_PUBLICATION_GATE = {
-  stage: "DESIGN_ONLY",
-  publicNavigatorEnabled: false,
-  publicUrlsEnabled: false,
-  documentGenerationAllowed: false,
+  stage: "PUBLIC_INFORMATION_AND_DRAFTS",
+  publicNavigatorEnabled: true,
+  publicUrlsEnabled: true,
+  documentGenerationAllowed: true,
   filingReady: false,
   claimVerification: "PENDING_THREE_INDEPENDENT_SOURCES_AND_OFFICIAL_VERSION",
   rule: "One verified claim requires exact matching scope/effective date in three independent sources; if non-official sources disagree, official effective text has priority, and the claim must be corrected before approval.",
