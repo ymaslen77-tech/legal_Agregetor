@@ -1,16 +1,13 @@
 import type { Metadata } from "next";
 import { creditDebtDraftMetadata } from "@/lib/credit-debt-metadata";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { SectionHeading } from "@/components/navigator/NavigatorBlocks";
 import { CREDIT_DEBT_BASELINE } from "@/data/credit-debt-route-plan";
 import { getCreditDebtSkeletonGroups } from "@/lib/credit-debt-full-route";
-import { isCreditDebtPreviewEnabled } from "@/lib/credit-debt-preview-access";
 
 export const dynamic="force-dynamic";
 export function generateMetadata():Metadata{
-  if(!isCreditDebtPreviewEnabled(process.env))notFound();
   return creditDebtDraftMetadata({
     title:"Кредиты, долги, ипотека и банкротство — юридические ситуации",
     description:"Правовой навигатор: кредитные договоры, МФО, коллекторы, судебные споры, ипотека и банкротство. 10 тем, 60 ситуаций.",
@@ -34,8 +31,8 @@ export default function CreditDebtTopicsPage(){
           предварительный порядок действий и подготовка к формированию юридического результата.
         </p>
         <p className="mt-3 rounded-md border border-amber-300 bg-amber-50 p-4 text-sm leading-6 text-amber-950">
-          Раздел доступен только в локальном режиме разработки. Правовые основания и генераторы документов проверяются;
-          публиковать этот материал или вводить личные финансовые сведения нельзя.
+          Раздел открыт для ознакомления с ситуациями, подготовки черновиков и обращения за юридической проверкой.
+          Результаты не являются готовыми к подаче документами: применимые нормы, сроки, реквизиты и доказательства требуют проверки перед использованием.
         </p>
       </header>
       <section className="mt-9" aria-label="Темы кредитов и банкротства">
@@ -58,7 +55,7 @@ export default function CreditDebtTopicsPage(){
           <li>Выберите жизненную ситуацию.</li>
           <li>Уточните роль, дату события, документы и обстоятельства.</li>
           <li>Получите предварительный чек-лист и список необходимых подтверждений.</li>
-          <li>После правовой приёмки появится юридический документ с PDF и проверкой юристом.</li>
+          <li>Сформируйте редактируемый проект или чек-лист, скачайте PDF и при необходимости направьте на проверку юристу.</li>
         </ol>
       </section>
     </main>
