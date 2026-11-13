@@ -128,7 +128,7 @@ export function CreditDebtJourney({spec,related,backHref}:Readonly<{
             <textarea className={fieldClass} rows={f.rows} value={values[f.key]??""} required={f.required}
               maxLength={f.key==="facts"?5000:f.key==="attachments"?1800:1200}
               minLength={f.required?f.key==="facts"?15:3:undefined}
-              placeholder="В тестовом режиме используйте только вымышленные сведения"
+              placeholder="Укажите обстоятельства; не вводите пароли, коды подтверждения и лишние персональные данные"
               data-field-key={f.key} onChange={e=>{
                 // React clears currentTarget after dispatch. Never read it from a queued updater.
                 const value=e.currentTarget.value;
@@ -233,7 +233,7 @@ export function CreditDebtJourney({spec,related,backHref}:Readonly<{
     </section>
     <section className="mt-9 border-t border-line pt-7" aria-labelledby="credit-lawyers-heading">
       <h2 id="credit-lawyers-heading" className="text-2xl font-semibold text-ink">Профильные юристы</h2>
-      <p className="mt-3 text-sm leading-6 text-zinc-700">Подтверждённые специалисты для этого тестового раздела пока не подключены. Вымышленные профили не отображаются.</p>
+      <p className="mt-3 text-sm leading-6 text-zinc-700">Профили специалистов выводятся только после подтверждения их данных. Для проверки проекта используйте кнопку передачи документа ниже с отдельным согласием.</p>
     </section>
     <section className="mt-9 border-t border-line pt-7" aria-labelledby="credit-final-heading" data-testid="credit-debt-final-actions">
       <p className="text-sm font-semibold uppercase tracking-wide text-trust">Итоговые действия</p>
