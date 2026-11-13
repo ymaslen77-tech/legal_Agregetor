@@ -3,7 +3,6 @@ import { getLegalRouteV1 } from "@/data/legal-route-standard";
 import { getNavigatorDocument } from "@/data/documents";
 import { getMilitaryDraftPlan, MILITARY_DOCUMENT_CORE_VERSION } from "@/data/military-document-core";
 import { isMilitaryDraftWorkbenchEnabled, type MilitaryDraftEnvironment } from "@/data/military-preview-access";
-import { isCreditDebtPreviewEnabled } from "@/lib/credit-debt-preview-access";
 import { isCreditDebtDraftResult } from "@/lib/credit-debt-document-core";
 
 /** A client-side draft is always unverified. Do not accept arbitrary route links. */
@@ -16,7 +15,7 @@ export function validateSavedDocument(
   const result = parsed.data;
   // Server and form must agree on opt-in. The legal status never becomes verified.
   if(result.categorySlug==="kredity-dolgi"){
-    if(!isCreditDebtPreviewEnabled(environment))return null;
+    // Public drafts may be saved, but are strictly validated as non-filing versions.
     return isCreditDebtDraftResult(result)?result:null;
   }
   if (result.categorySlug === "voennoe-pravo") {
