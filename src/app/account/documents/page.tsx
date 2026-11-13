@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { AccountPageHeader } from "@/components/account/AccountShell";
 import { SavedLegalDocumentsCabinet } from "@/components/account/SavedLegalDocumentsCabinet";
 import { isMilitaryDraftWorkbenchEnabled } from "@/data/military-preview-access";
-import { isCreditDebtPreviewEnabled } from "@/lib/credit-debt-preview-access";
 
 export const metadata: Metadata = {
   title: "Мои документы",
@@ -19,7 +18,7 @@ export default function AccountDocumentsPage() {
         title="Мои документы"
         description="Зашифрованный архив сформированных версий: открыть, скачать копию, удалить."
       />
-      <SavedLegalDocumentsCabinet allowMilitaryEditing={isMilitaryDraftWorkbenchEnabled(process.env)} allowCreditDebtEditing={isCreditDebtPreviewEnabled(process.env)} />
+      <SavedLegalDocumentsCabinet allowMilitaryEditing={isMilitaryDraftWorkbenchEnabled(process.env)} allowCreditDebtEditing />
     </div>
   );
 }
