@@ -123,7 +123,7 @@ export async function middleware(request: NextRequest, event: NextFetchEvent) {
     trackBotVisit(request,event,userAgent,404,denied);
     return denied;
   }
-  if(creditRoute==="ALLOW_PREVIEW"){
+  if(creditRoute==="ALLOW_PUBLIC_DRAFT"){
     response.headers.set("x-robots-tag","noindex, nofollow");
     return response;
   }
