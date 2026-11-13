@@ -53,7 +53,9 @@ for(const group of CREDIT_DEBT_GROUPS){
     for(const situation of group.situations){
       const path=`/kredity-dolgi/${group.id}/${situation.id}/`;
       await test.step(path,async()=>{
-        const response=await page.goto(path,{waitUntil:"domcontentloaded"});
+        // Wait for Next.js client hydration before clicking zero-field emergency forms.
+        // Otherwise a native pre-hydration submit can navigate without React handling it.
+        const response=await page.goto(path,{waitUntil:"networkidle"});
         expect(response?.status(),path).toBe(200);
         await expect(page.getByRole("heading",{level:1,name:situation.title})).toBeVisible();
         await expect(page.getByTestId("credit-debt-legal-focus")).toBeVisible();
