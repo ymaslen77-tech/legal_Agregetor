@@ -2,4 +2,4 @@
 # Change only after its image build and catalog/unit/browser tests have passed.
 # The production app in Coolify uses the permanent mutable tag "production";
 # this file selects which immutable release is promoted into that channel.
-rc-seo-dc966b8f07f6
+rc-seo-8a75d4830029
