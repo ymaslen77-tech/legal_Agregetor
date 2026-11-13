@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { AUTH_COOKIE_NAME, verifySessionToken } from "@/lib/auth";
 import { canonicalizePublicPathSegments } from "@/lib/canonical-slugs";
 import { isUnknownNavigatorPath } from "@/lib/navigator-paths";
+import { getCreditDebtPathDisposition } from "@/lib/credit-debt-route-path-guard";
 
 const botPattern = /(googlebot|yandexbot|bingbot|duckduckbot|slurp|baiduspider)/i;
 
@@ -108,6 +109,23 @@ export async function middleware(request: NextRequest, event: NextFetchEvent) {
     if (technicalNoindexPath) trailingSlashResponse.headers.set("x-robots-tag", "noindex, nofollow");
     trackBotVisit(request, event, userAgent, trailingSlashResponse.status, trailingSlashResponse);
     return trailingSlashResponse;
+  }
+
+  // Only the new credit/debt section is gated here. Existing routes and
+  // canonical redirects remain unchanged. A direct response avoids Next.js
+  // streaming a soft-404 HTML page with HTTP 200 for unknown preview slugs.
+  const creditRoute=getCreditDebtPathDisposition(request.nextUrl.pathname,process.env);
+  if(creditRoute==="BLOCK_404"){
+    const denied=new NextResponse("Not Found",{
+      status:404,
+      headers:{"content-type":"text/plain; charset=utf-8","x-robots-tag":"noindex, nofollow"}
+    });
+    trackBotVisit(request,event,userAgent,404,denied);
+    return denied;
+  }
+  if(creditRoute==="ALLOW_PUBLIC_DRAFT"){
+    response.headers.set("x-robots-tag","noindex, nofollow");
+    return response;
   }
 
   if (isUnknownNavigatorPath(request.nextUrl.pathname)) {

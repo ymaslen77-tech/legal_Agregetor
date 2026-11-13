@@ -18,7 +18,7 @@ export default function AccountDocumentsPage() {
         title="Мои документы"
         description="Зашифрованный архив сформированных версий: открыть, скачать копию, удалить."
       />
-      <SavedLegalDocumentsCabinet allowMilitaryEditing={isMilitaryDraftWorkbenchEnabled(process.env)} />
+      <SavedLegalDocumentsCabinet allowMilitaryEditing={isMilitaryDraftWorkbenchEnabled(process.env)} allowCreditDebtEditing />
     </div>
   );
 }

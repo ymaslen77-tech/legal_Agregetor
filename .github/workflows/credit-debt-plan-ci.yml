@@ -1,0 +1,131 @@
+name: Credit and debt planning quality gate
+
+on:
+  pull_request:
+    branches:
+      - infra/coolify-russian-vps
+    paths:
+      - "src/data/credit-debt-route-plan.ts"
+      - "src/data/credit-debt-route-plan.test.ts"
+      - "src/lib/credit-debt-stage-one.ts"
+      - "src/lib/credit-debt-stage-one.test.ts"
+      - "src/lib/credit-debt-qna-matcher.ts"
+      - "src/lib/credit-debt-qna-matcher.test.ts"
+      - "src/lib/credit-debt-full-route.ts"
+      - "src/lib/credit-debt-full-route.test.ts"
+      - "src/lib/credit-debt-preview-access.ts"
+      - "src/lib/credit-debt-route-path-guard.ts"
+      - "src/lib/credit-debt-route-path-guard.test.ts"
+      - "src/data/credit-debt-legal-review.ts"
+      - "src/data/credit-debt-legal-review.test.ts"
+      - "src/data/credit-debt-acceptance-matrix.ts"
+      - "src/data/credit-debt-acceptance-matrix.test.ts"
+      - "src/data/credit-debt-verified-context.ts"
+      - "src/data/credit-debt-verified-context.test.ts"
+      - "src/data/credit-debt-release-audit.test.ts"
+      - "src/components/account/SavedLegalDocumentsCabinet.tsx"
+      - "src/app/account/documents/page.tsx"
+      - "src/data/credit-debt-seo.ts"
+      - "src/data/credit-debt-seo.test.ts"
+      - "src/lib/credit-debt-metadata.ts"
+      - "src/lib/credit-debt-metadata.test.ts"
+      - "src/data/credit-debt-document-targets.ts"
+      - "src/lib/credit-debt-document-core.ts"
+      - "src/lib/credit-debt-document-core.test.ts"
+      - "src/lib/credit-debt-document-export.ts"
+      - "src/lib/saved-document-validation.ts"
+      - "src/middleware.ts"
+      - "src/app/kredity-dolgi/**"
+      - "tests/e2e/credit-debt-production-gate.spec.ts"
+      - "src/components/credit-debt/**"
+      - "src/app/dev/credit-debt/**"
+      - "tests/credit-debt/**"
+      - "playwright.credit-debt.config.ts"
+      - "docs/CREDIT_DEBT_ROUTE_DEVELOPMENT_PLAN_20261110.md"
+      - ".github/workflows/credit-debt-plan-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: credit-debt-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify-plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Validate 10 sections, 60 situations, source candidates, cross-links, and no public release
+        run: npx tsx src/data/credit-debt-route-plan.test.ts
+      - name: Verify all 35 stage-one intake paths and guards
+        run: npx tsx src/lib/credit-debt-stage-one.test.ts
+      - name: Confirm Q&A match requires real topic evidence and never rewrites imported data
+        run: npx tsx src/lib/credit-debt-qna-matcher.test.ts
+      - name: Verify all 60 complete route and bankruptcy skeleton scenarios
+        run: npx tsx src/lib/credit-debt-full-route.test.ts
+      - name: Check middleware hard-404 production gate and exact 60 dev paths
+        run: npx tsx src/lib/credit-debt-route-path-guard.test.ts
+      - name: Verify all 60 scenario-specific documents, PDF/DOCX contracts and archive validation
+        run: npx tsx src/lib/credit-debt-document-core.test.ts
+      - name: Verify legally reviewed source status does not falsely approve any of 60 cases
+        run: npx tsx src/data/credit-debt-legal-review.test.ts
+      - name: Ensure 60 distinct individual legal review tasks and triple-source approval requirement
+        run: npx tsx src/data/credit-debt-acceptance-matrix.test.ts
+      - name: Verify 60 unique SEO targets stay noindex until approval
+        run: npx tsx src/data/credit-debt-seo.test.ts
+      - name: Confirm thirteen legal context principles remain non-filing only
+        run: npx tsx src/data/credit-debt-verified-context.test.ts
+      - name: Audit all 60 legal release gates and publisher coverage
+        run: npx tsx src/data/credit-debt-release-audit.test.ts
+      - name: Check draft SEO canonical and metadata integrity for 71 route levels
+        run: npx tsx src/lib/credit-debt-metadata.test.ts
+      - name: TypeScript check against current site
+        run: npm run typecheck
+      - name: Lint only the planning files
+        run: npx eslint src/data/credit-debt-route-plan.ts src/data/credit-debt-route-plan.test.ts src/lib/credit-debt-stage-one.ts src/lib/credit-debt-stage-one.test.ts src/lib/credit-debt-qna-matcher.ts src/lib/credit-debt-qna-matcher.test.ts src/lib/credit-debt-full-route.ts src/lib/credit-debt-full-route.test.ts src/lib/credit-debt-preview-access.ts src/lib/credit-debt-route-path-guard.ts src/lib/credit-debt-route-path-guard.test.ts src/data/credit-debt-legal-review.ts src/data/credit-debt-legal-review.test.ts src/data/credit-debt-acceptance-matrix.ts src/data/credit-debt-acceptance-matrix.test.ts src/data/credit-debt-verified-context.ts src/data/credit-debt-verified-context.test.ts src/data/credit-debt-release-audit.test.ts src/data/credit-debt-seo.ts src/data/credit-debt-seo.test.ts src/lib/credit-debt-metadata.ts src/lib/credit-debt-metadata.test.ts src/data/credit-debt-document-targets.ts src/lib/credit-debt-document-core.ts src/lib/credit-debt-document-core.test.ts src/lib/credit-debt-document-export.ts src/lib/saved-document-validation.ts src/components/credit-debt/CreditDebtPreview.tsx src/components/credit-debt/CreditDebtScenarioFlow.tsx src/components/credit-debt/CreditDebtJourney.tsx src/components/account/SavedLegalDocumentsCabinet.tsx src/app/account/documents/page.tsx src/app/dev/credit-debt/page.tsx tests/credit-debt/preview.spec.ts playwright.credit-debt.config.ts src/app/kredity-dolgi/page.tsx 'src/app/kredity-dolgi/[group]/page.tsx' 'src/app/kredity-dolgi/[group]/[situation]/page.tsx'
+      - name: Install PDF/OOXML audit tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils unzip
+      - name: Install Chromium for local preview test
+        run: npx playwright install --with-deps chromium
+      - name: Browser-test isolated development preview only
+        shell: bash
+        env:
+          ENABLE_CREDIT_DEBT_PREVIEW: "true"
+          NEXT_TELEMETRY_DISABLED: "1"
+        run: |
+          set -euo pipefail
+          npm run dev -- -p 3703 > /tmp/credit-debt-preview.log 2>&1 &
+          pid=$!
+          trap 'kill "$pid" 2>/dev/null || true' EXIT
+          ready=0
+          for i in $(seq 1 90); do
+            if curl --silent --fail http://127.0.0.1:3703/dev/credit-debt/ >/dev/null; then
+              ready=1
+              break
+            fi
+            sleep 2
+          done
+          if [ "$ready" -ne 1 ]; then cat /tmp/credit-debt-preview.log; exit 1; fi
+          npx playwright test --config=playwright.credit-debt.config.ts --workers=1
+      - name: Save preview browser failures
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: credit-debt-preview-failures
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+          retention-days: 7

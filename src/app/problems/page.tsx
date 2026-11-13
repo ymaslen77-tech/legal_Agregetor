@@ -8,7 +8,7 @@ import { legalCategories } from "@/data/legal-categories";
 
 export const metadata: Metadata = buildMetadata({
   title: "Юридические ситуации — правовой навигатор",
-  description: "Маршруты по семейным ситуациям: уточняющие вопросы, порядок действий, документы и проверенные правовые источники.",
+  description: "Правовой навигатор: семейные и трудовые споры, военное право, кредиты, долги, ипотека и банкротство. Анкеты, документы и правовые источники.",
   path: "/problems/",
   isIndexable: true
 });
@@ -42,6 +42,10 @@ export default function ProblemsPage() {
                   <p className="mt-2 text-sm leading-6 text-zinc-600">{category.description}</p>
                 </Link>
               ))}
+              <Link href="/kredity-dolgi/" className="rounded-lg border border-line bg-white p-5 shadow-sm hover:border-trust" data-testid="credit-debt-navigator-link">
+                <h3 className="text-lg font-semibold text-ink">Кредиты, долги, ипотека и банкротство</h3>
+                <p className="mt-2 text-sm leading-6 text-zinc-600">10 направлений, 60 ситуаций: анкеты, предварительные документы и безопасные следующие шаги. Проекты требуют индивидуальной юридической проверки.</p>
+              </Link>
               <Link href="/voennoe-pravo/" className="rounded-lg border border-line bg-white p-5 shadow-sm hover:border-trust">
                 <h3 className="text-lg font-semibold text-ink">Военное право</h3>
                 <p className="mt-2 text-sm leading-6 text-zinc-600">Контракт, увольнение, выплаты, ВВК, командование, призыв и мобилизация. 18 тем; юридические генераторы пока на проверке.</p>
@@ -62,13 +66,19 @@ function collectionJsonLd() {
     url: absoluteUrl("/problems/"),
     mainEntity: {
       "@type": "ItemList",
-      numberOfItems: legalCategories.length,
-      itemListElement: legalCategories.map((category, index) => ({
-        "@type": "ListItem",
-        position: index + 1,
-        name: category.title,
-        url: absoluteUrl(`/problems/${category.slug}/`)
-      }))
+      numberOfItems: legalCategories.length + 2,
+      itemListElement: [
+        ...legalCategories.map((category, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          name: category.title,
+          url: absoluteUrl(`/problems/${category.slug}/`)
+        })),
+        { "@type": "ListItem", position: legalCategories.length + 1,
+          name: "Кредиты, долги, ипотека и банкротство", url: absoluteUrl("/kredity-dolgi/") },
+        { "@type": "ListItem", position: legalCategories.length + 2,
+          name: "Военное право", url: absoluteUrl("/voennoe-pravo/") }
+      ]
     }
   };
 }

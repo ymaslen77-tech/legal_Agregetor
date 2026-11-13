@@ -61,6 +61,18 @@ jobs:
       - name: Verify migration history
         run: npx prisma migrate status
       - run: npm run typecheck
+      - name: Check public credit-debt taxonomy and individual non-filing legal gates
+        run: npx tsx src/data/credit-debt-route-plan.test.ts
+      - name: Verify complete 60-case credit/debt skeleton with draft-only results
+        run: npx tsx src/lib/credit-debt-full-route.test.ts
+      - name: Ensure public credit/debt draft routes work and unknown pages remain 404
+        run: npx tsx src/lib/credit-debt-route-path-guard.test.ts
+      - name: Confirm 60 individual document outcomes are safely versioned and archive-gated
+        run: npx tsx src/lib/credit-debt-document-core.test.ts
+      - name: Confirm unverified legal content and 60 SEO pages remain noindex
+        run: |
+          npx tsx src/data/credit-debt-legal-review.test.ts
+          npx tsx src/data/credit-debt-seo.test.ts
       - run: npm run lint
       - run: npm test
       - name: Verify all 50 labor questionnaires against the API form contract

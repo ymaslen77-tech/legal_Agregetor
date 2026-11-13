@@ -1,0 +1,144 @@
+import {test,expect} from "@playwright/test";
+import {readFileSync} from "node:fs";
+import {execFileSync} from "node:child_process";
+
+async function fillQuestions(page:import("@playwright/test").Page){
+  const section=page.getByTestId("credit-debt-scenario-flow");
+  const fields=section.locator("select,input,textarea");
+  for(let i=0;i<await fields.count();i++){
+    const field=fields.nth(i);
+    if(await field.evaluate(el=>el.tagName==="SELECT")){
+      const choices=await field.locator("option").evaluateAll(options=>
+        options.map(x=>(x as HTMLOptionElement).value).filter(value=>value!==""));
+      await field.selectOption(choices.find(value=>value!=="да")??choices[0]);
+    }else if(await field.getAttribute("type")==="date")await field.fill("2026-11-10");
+    else await field.fill("Условная ситуация для тестирования без реальных персональных данных");
+  }
+  await page.getByRole("button",{name:"Продолжить — проверить сведения"}).click();
+  await expect(page.getByRole("heading",{name:"Предварительный чек-лист"})).toBeVisible();
+}
+async function fillDocument(page:import("@playwright/test").Page){
+  const fields=page.getByTestId("credit-debt-draft-form").locator("textarea");
+  const n=await fields.count();
+  expect(n).toBeGreaterThanOrEqual(6);
+  for(let i=0;i<n;i++){
+    const field=fields.nth(i);
+    const key=await field.getAttribute("data-field-key");
+    if(key==="facts")await field.fill("Условное описание фактических обстоятельств, даты обращения и обстоятельств исполнения обязательства.");
+    else if(key==="applicant")await field.fill("Тестовый заявитель, без личных данных");
+    else if(key==="recipient")await field.fill("Условная финансовая организация, компетенция требует проверки");
+    else if(key==="attachments")await field.fill("Копия условного договора, условная выписка");
+    else if(key==="evidence")await field.fill("Выписка и договор для тестирования");
+    else await field.fill("Условный номер договора без персональных данных");
+  }
+}
+test("credit draft: original navigator actions, editable revisions, PDF/DOCX and review consent",async ({page})=>{
+  test.setTimeout(150000);
+  await page.goto("/kredity-dolgi/contract-terms/early-repayment/");
+  await fillQuestions(page);
+  await expect(page.getByTestId("credit-debt-document-workbench")).toBeVisible();
+  await fillDocument(page);
+  await page.getByRole("button",{name:"Сформировать проект документа"}).click();
+  const editor=page.getByTestId("credit-debt-document-editor");
+  await expect(editor).toBeVisible();
+  await expect(editor).toHaveValue(/ПРОЕКТ ОБРАЩЕНИЯ/);
+  await expect(editor).toHaveValue(/Досрочное погашение и перерасчёт процентов/);
+  const actions=page.getByTestId("credit-debt-final-actions");
+  await expect(actions.getByRole("button",{name:"Скачать PDF"})).toBeEnabled();
+  await expect(actions.getByRole("button",{name:"Отправить на проверку юристу"})).toBeEnabled();
+  await expect(actions.getByRole("button",{name:"Сохранить в мои документы"})).toBeVisible();
+  await expect(actions.getByText(/Дополнительные форматы/)).toBeVisible();
+
+  await editor.fill((await editor.inputValue())+"\nДополнение к условным обстоятельствам.");
+  await expect(actions.getByRole("button",{name:"Скачать PDF"})).toBeDisabled();
+  await expect(actions.getByRole("button",{name:"Отправить на проверку юристу"})).toBeDisabled();
+  await page.getByRole("button",{name:"Сохранить новую версию"}).click();
+  await expect(actions.getByRole("button",{name:"Скачать PDF"})).toBeEnabled();
+  await expect(page.getByText("Предыдущие версии в этой вкладке")).toBeVisible();
+
+  const pdfEvent=page.waitForEvent("download");
+  await actions.getByRole("button",{name:"Скачать PDF"}).click();
+  const pdf=await pdfEvent;
+  expect(pdf.suggestedFilename()).toMatch(/^proekt-credit-debt-.*\.pdf$/);
+  const raw=readFileSync(await pdf.path());
+  expect(raw.subarray(0,5).toString()).toBe("%PDF-");
+  expect(raw.length).toBeGreaterThan(1500);
+  const pdfText=execFileSync("pdftotext",[await pdf.path(),"-"],{encoding:"utf8"});
+  expect(pdfText).toContain("Досрочное погашение");
+  expect(pdfText).toContain("НЕ ГОТОВ К ПОДАЧЕ");
+  await actions.getByText(/Дополнительные форматы/).click();
+  const docxEvent=page.waitForEvent("download");
+  await actions.getByRole("button",{name:"Скачать DOCX-черновик"}).click();
+  const docx=await docxEvent;
+  expect(docx.suggestedFilename()).toMatch(/\.docx$/);
+  const docxBytes=readFileSync(await docx.path());
+  expect(docxBytes.subarray(0,2).toString()).toBe("PK");
+  expect(docxBytes.length).toBeGreaterThan(1500);
+  const wordXml=execFileSync("unzip",["-p",await docx.path(),"word/document.xml"],{encoding:"utf8"});
+  expect(wordXml).toContain("Досрочное погашение");
+  expect(wordXml).toContain("НЕ ГОТОВ К ПОДАЧЕ");
+  await actions.getByRole("button",{name:"Отправить на проверку юристу"}).click();
+  await expect(actions.getByTestId("document-review-form")).toBeVisible();
+  await expect(actions.getByRole("checkbox")).toHaveCount(2);
+});
+
+test("a changed questionnaire invalidates existing PDF, saved draft and legal review until regenerated",async ({page})=>{
+  await page.goto("/kredity-dolgi/contract-terms/early-repayment/");
+  await fillQuestions(page);
+  await expect(page.getByTestId("credit-debt-draft-form")).toBeVisible();
+  await fillDocument(page); // Regression: onChange must not crash when React batches an update.
+  await expect(page.getByRole("heading",{name:"Не удалось загрузить страницу"})).toHaveCount(0);
+  await page.getByRole("button",{name:"Сформировать проект документа"}).click();
+  const actions=page.getByTestId("credit-debt-final-actions");
+  await expect(actions.getByRole("button",{name:"Скачать PDF"})).toBeEnabled();
+  await page.getByRole("button",{name:"Изменить ответы"}).click();
+  const summary=page.getByTestId("credit-debt-scenario-flow").locator('textarea[name="summary"]');
+  await summary.fill("Исправленные обстоятельства для второй версии синтетического тестового обращения.");
+  await page.getByRole("button",{name:"Продолжить — проверить сведения"}).click();
+  await expect(page.getByText(/Анкета была обновлена/)).toBeVisible();
+  await expect(actions.getByRole("button",{name:"Скачать PDF"})).toBeDisabled();
+  await expect(actions.getByRole("button",{name:"Отправить на проверку юристу"})).toBeDisabled();
+  await expect(actions.getByRole("button",{name:"Сохранить в мои документы"})).toBeDisabled();
+  await page.getByRole("button",{name:"Сформировать проект документа"}).click();
+  await expect(actions.getByRole("button",{name:"Скачать PDF"})).toBeEnabled();
+  await expect(page.getByTestId("credit-debt-document-editor")).toHaveValue(/Исправленные обстоятельства/);
+  await page.getByTestId("credit-debt-version").last().click();
+  await expect(page.getByText(/Анкета была обновлена/)).toBeVisible();
+  await expect(actions.getByRole("button",{name:"Скачать PDF"})).toBeDisabled();
+  await page.getByTestId("credit-debt-version").first().click();
+  await expect(actions.getByRole("button",{name:"Скачать PDF"})).toBeEnabled();
+});
+
+test("bankruptcy through MFC produces only checklist with safe PDF and no false court application",async ({page})=>{
+  test.setTimeout(120000);
+  await page.goto("/kredity-dolgi/bankruptcy/out-of-court-mfc/");
+  await fillQuestions(page);
+  await fillDocument(page);
+  await page.getByRole("button",{name:"Сформировать предварительный чек-лист"}).click();
+  const editor=page.getByTestId("credit-debt-document-editor");
+  await expect(editor).toHaveValue(/ПРЕДВАРИТЕЛЬНЫЙ ЧЕК-ЛИСТ/);
+  await expect(editor).toHaveValue(/МФЦ/);
+  await expect(editor).not.toHaveValue(/ИСКОВОЕ ЗАЯВЛЕНИЕ/);
+  await expect(page.getByTestId("credit-debt-final-actions").getByRole("button",{name:"Скачать PDF"})).toBeEnabled();
+  await expect(page.locator("meta[name='robots']")).toHaveAttribute("content",/noindex/);
+});
+
+test("an incomplete questionnaire cannot produce a legal draft",async ({page})=>{
+  await page.goto("/kredity-dolgi/contract-terms/early-repayment/");
+  await page.getByRole("button",{name:"Продолжить — проверить сведения"}).click();
+  await expect(page.getByRole("heading",{name:"Нужны уточнения"})).toBeVisible();
+  await expect(page.getByText(/необходимо заполнить обязательные сведения анкеты/)).toBeVisible();
+  await expect(page.getByTestId("credit-debt-draft-form")).toHaveCount(0);
+  await expect(page.getByTestId("credit-debt-final-actions").getByRole("button",{name:"Скачать PDF"})).toBeDisabled();
+});
+
+test("immediate collector threat shows urgent instructions before collecting financial data",async ({page})=>{
+  await page.goto("/kredity-dolgi/collectors/threats-and-pressure/");
+  await expect(page.getByTestId("credit-debt-scenario-flow").locator("textarea,input")).toHaveCount(0);
+  await page.getByRole("button",{name:"Показать первоочередные действия"}).click();
+  await expect(page.getByRole("heading",{name:"Приоритет безопасности"})).toBeVisible();
+  await expect(page.getByRole("button",{name:"Подготовить памятку безопасности"})).toBeVisible();
+  await page.getByRole("button",{name:"Подготовить памятку безопасности"}).click();
+  await expect(page.getByTestId("credit-debt-document-editor")).toHaveValue(/ПЕРВООЧЕРЕДНЫЕ ДЕЙСТВИЯ/);
+  await expect(page.getByTestId("credit-debt-document-editor")).not.toHaveValue(/ПРОШУ:/);
+});
