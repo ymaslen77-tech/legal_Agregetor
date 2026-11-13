@@ -14,7 +14,10 @@ test("public credit/debt catalog and draft routes render without indexing unrevi
     await expect(page.locator("meta[name='robots']")).toHaveAttribute("content",/noindex/);
     expect(r?.headers()["x-robots-tag"],path).toContain("noindex");
   }
-  await expect(page.getByText("Черновик", {exact:false}).first()).toBeVisible().catch(()=>{});
+  await page.goto("/problems/");
+  await expect(page.getByTestId("credit-debt-navigator-link")).toBeVisible();
+  await page.getByTestId("credit-debt-navigator-link").click();
+  await expect(page.getByTestId("credit-debt-root")).toBeVisible();
   for(const path of ["/kredity-dolgi/unknown/","/kredity-dolgi/bankruptcy/unknown/"]){
     const r=await page.goto(path);
     expect(r?.status(),path).toBe(404);
