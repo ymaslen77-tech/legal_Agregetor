@@ -11,9 +11,9 @@ assert.deepEqual(groups.map(g=>g.id),CREDIT_DEBT_STAGE_ONE_GROUP_IDS);
 const stageOneCaseCount=groups.reduce((n,g)=>n+g.situations.length,0);
 assert.equal(stageOneCaseCount,35);
 assert.equal(CREDIT_DEBT_GROUPS.reduce((n,g)=>n+g.situations.length,0),60);
-assert.equal(CREDIT_DEBT_PUBLICATION_GATE.publicNavigatorEnabled,false);
-assert.equal(CREDIT_DEBT_PUBLICATION_GATE.publicUrlsEnabled,false);
-assert.equal(CREDIT_DEBT_PUBLICATION_GATE.documentGenerationAllowed,false);
+assert.equal(CREDIT_DEBT_PUBLICATION_GATE.publicNavigatorEnabled,true);
+assert.equal(CREDIT_DEBT_PUBLICATION_GATE.publicUrlsEnabled,true);
+assert.equal(CREDIT_DEBT_PUBLICATION_GATE.documentGenerationAllowed,true);
 
 let evaluated=0,urgentCases=0,crossLinks=0;
 for(const group of groups){
