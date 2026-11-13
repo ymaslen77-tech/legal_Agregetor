@@ -16,7 +16,6 @@ export function generateMetadata():Metadata{
 }
 const path="/kredity-dolgi/";
 export default function CreditDebtTopicsPage(){
-  if(!isCreditDebtPreviewEnabled(process.env))notFound();
   const groups=getCreditDebtSkeletonGroups();
   const ordered=[...groups].sort((a,b)=>Number(b.id==="bankruptcy")-Number(a.id==="bankruptcy"));
   const breadcrumbs=[{name:"Главная",path:"/"},{name:"Правовой навигатор",path:"/problems/"},{name:"Кредиты, долги и банкротство",path}];
