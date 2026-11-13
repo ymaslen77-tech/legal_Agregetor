@@ -21,8 +21,8 @@ const status:Record<CreditDebtSkeletonAssessment["status"],string>={
 
 /**
  * Reuses navigator field/button styles and the same two final action slots
- * as the established document routes. Buttons remain disabled until a
- * real, versioned legally reviewed PDF and referral exist.
+ * as the established document routes. The separate generator only creates
+ * explicitly non-filing drafts until individual legal approval exists.
  */
 export function CreditDebtScenarioFlow({spec,onSnapshot}:Readonly<{
   spec:CreditDebtSkeletonSpec;
@@ -63,7 +63,7 @@ export function CreditDebtScenarioFlow({spec,onSnapshot}:Readonly<{
       {field.kind==="choice"?
         <select {...properties}><option value="">Выберите ответ</option>{field.choices?.map(c=><option key={c} value={c}>{c}</option>)}</select>
         :field.kind==="textarea"?
-        <textarea {...properties} rows={3} maxLength={2000} placeholder="Только условные тестовые сведения"/>
+        <textarea {...properties} rows={3} maxLength={2000} placeholder="Опишите обстоятельства без паспортных данных и реквизитов"/>
         :<input {...properties} type={field.kind==="date"?"date":"text"} maxLength={field.kind==="text"?250:undefined} autoComplete="off"/>}
     </div>;
   }
@@ -123,9 +123,9 @@ export function CreditDebtScenarioFlow({spec,onSnapshot}:Readonly<{
         Для этой ситуации предусмотрен переход к профильному маршруту «{output.linkedArea}». Автоматический переход без сверки обстоятельств не выполняется.
       </p>:null}
       <p className="mt-8 border-t border-line pt-6 text-sm leading-6 text-zinc-700">
-        Итоговый юридический документ и передача юристу станут доступны только после проверки применимых норм,
-        адресата, сроков, состава приложений, PDF и согласия пользователя.
-        В тестовой версии формируется исключительно предварительный чек-лист.
+        На следующем шаге можно сформировать предварительный проект или чек-лист, скачать PDF
+        и по отдельному согласию направить его на проверку юристу. Документ не готов к подаче,
+        пока не проверены применимые нормы, адресат, сроки и приложения.
       </p>
     </section>:null}
   </div>;
