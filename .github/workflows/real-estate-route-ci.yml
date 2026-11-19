@@ -9,6 +9,8 @@ on:
       - "src/lib/real-estate-**"
       - "src/components/real-estate/**"
       - "src/app/dev/real-estate/**"
+      - "tests/real-estate/**"
+      - "playwright.real-estate.config.ts"
       - "docs/REAL_ESTATE_LAND_ROUTE_PLAN_20261120.md"
       - ".github/workflows/real-estate-route-ci.yml"
   workflow_dispatch:
@@ -45,4 +47,36 @@ jobs:
       - name: Verify integration types
         run: npm run typecheck
       - name: Targeted ESLint
-        run: npx eslint src/data/real-estate-route-plan.ts src/data/real-estate-route-plan.test.ts src/data/real-estate-legal-review.ts src/data/real-estate-legal-review.test.ts src/lib/real-estate-intake.ts src/lib/real-estate-intake.test.ts src/lib/real-estate-preview-access.ts src/lib/real-estate-preview-access.test.ts src/components/real-estate/RealEstatePreview.tsx src/app/dev/real-estate/page.tsx
+        run: npx eslint src/data/real-estate-route-plan.ts src/data/real-estate-route-plan.test.ts src/data/real-estate-legal-review.ts src/data/real-estate-legal-review.test.ts src/lib/real-estate-intake.ts src/lib/real-estate-intake.test.ts src/lib/real-estate-preview-access.ts src/lib/real-estate-preview-access.test.ts src/components/real-estate/RealEstatePreview.tsx src/app/dev/real-estate/page.tsx 'src/app/dev/real-estate/[group]/page.tsx' 'src/app/dev/real-estate/[group]/[situation]/page.tsx' tests/real-estate/preview.spec.ts playwright.real-estate.config.ts
+      - name: Install Chromium for closed route preview
+        run: npx playwright install --with-deps chromium
+      - name: Browser-test all 60 dev-only route URLs and intake without production changes
+        shell: bash
+        env:
+          ENABLE_REAL_ESTATE_PREVIEW: "true"
+          NEXT_TELEMETRY_DISABLED: "1"
+        run: |
+          set -euo pipefail
+          npm run dev -- -p 3903 > /tmp/real-estate-preview.log 2>&1 &
+          pid=$!
+          trap 'kill "$pid" 2>/dev/null || true' EXIT
+          ready=0
+          for i in $(seq 1 90); do
+            if curl --silent --fail http://127.0.0.1:3903/dev/real-estate/ >/dev/null; then
+              ready=1
+              break
+            fi
+            sleep 2
+          done
+          if [ "$ready" -ne 1 ]; then cat /tmp/real-estate-preview.log; exit 1; fi
+          npx playwright test --config=playwright.real-estate.config.ts --workers=1
+      - name: Save failed preview screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: real-estate-browser-failures
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+          retention-days: 7
