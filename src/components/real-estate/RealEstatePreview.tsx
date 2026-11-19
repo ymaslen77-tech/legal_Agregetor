@@ -5,9 +5,12 @@ import { evaluateRealEstateIntake, getRealEstateIntakeSpec } from "@/lib/real-es
 import type { RealEstateField, RealEstateIntakeResult } from "@/lib/real-estate-intake";
 
 /** Local-only development prototype. No server actions, persistence or PDF. */
-export function RealEstatePreview(){
-  const [groupId,setGroupId]=useState<string>(REAL_ESTATE_GROUPS[0]?.id??"");
-  const [situationId,setSituationId]=useState<string>(REAL_ESTATE_GROUPS[0]?.situations[0]?.id??"");
+type PreviewProps=Readonly<{initialGroupId?:string;initialSituationId?:string}>;
+export function RealEstatePreview({initialGroupId,initialSituationId}:PreviewProps={}){
+  const initialGroup=REAL_ESTATE_GROUPS.find(g=>g.id===initialGroupId)??REAL_ESTATE_GROUPS[0];
+  const initialSituation=initialGroup?.situations.find(s=>s.id===initialSituationId)??initialGroup?.situations[0];
+  const [groupId,setGroupId]=useState<string>(initialGroup?.id??"");
+  const [situationId,setSituationId]=useState<string>(initialSituation?.id??"");
   const [answers,setAnswers]=useState<Record<string,string>>({});
   const [result,setResult]=useState<RealEstateIntakeResult|null>(null);
   const group=REAL_ESTATE_GROUPS.find(x=>x.id===groupId);
