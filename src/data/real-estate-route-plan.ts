@@ -55,7 +55,7 @@ export const REAL_ESTATE_PUBLICATION_GATE = {
   sourceVersionReview: "PENDING_EFFECTIVE_OFFICIAL_TEXT",
   personalDataCollectionAllowed: false
 } as const;
-export const REAL_ESTATE_GROUPS = [
+export const REAL_ESTATE_GROUPS: readonly RealEstateGroup[] = [
   {
     "id": "ownership-register",
     "title": "Право собственности и регистрация в ЕГРН",
@@ -703,7 +703,7 @@ export const REAL_ESTATE_GROUPS = [
       }
     ]
   }
-] as const satisfies readonly RealEstateGroup[];
+] as const;
 
 export function getRealEstateGroup(groupId:string):RealEstateGroup|null{
   return REAL_ESTATE_GROUPS.find(group=>group.id===groupId)??null;
