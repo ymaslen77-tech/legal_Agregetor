@@ -1,0 +1,65 @@
+name: Public credit and debt route post-deploy smoke
+
+on:
+  push:
+    branches:
+      - infra/coolify-russian-vps
+    paths:
+      - ".github/workflows/credit-debt-live-smoke.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-credit-debt:
+    name: Read-only public route and navigation check
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Verify public catalog, bankruptcy routes and SEO safety
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://pravopoisk.ru"
+          dir="$(mktemp -d)"
+          trap 'rm -rf "$dir"' EXIT
+
+          check() {
+            local path="$1" expected="$2" label="$3"
+            local slug
+            slug="$(printf '%s' "$path" | tr '/?' '__')"
+            local status
+            status="$(curl --retry 2 --retry-delay 2 --silent --show-error --location \
+              --connect-timeout 12 --max-time 45 --dump-header "$dir/$slug.headers" \
+              --output "$dir/$slug.html" --write-out '%{http_code}' "$base$path")"
+            echo "LIVE_HTTP $path status=$status bytes=$(wc -c < "$dir/$slug.html")"
+            if [ "$status" != "$expected" ]; then
+              echo "::error::Expected HTTP $expected for $path, got $status"
+              exit 1
+            fi
+            if [ "$expected" = "200" ] && [ "$(wc -c < "$dir/$slug.html")" -lt 100 ]; then
+              echo "::error::Unexpectedly short page $path"
+              exit 1
+            fi
+          }
+
+          check "/problems/" "200" "Navigation"
+          if ! grep -Fq "/kredity-dolgi/" "$dir/_problems_.html"; then
+            echo "::error::Credit/debt card link missing in the public navigator"
+            exit 1
+          fi
+          check "/kredity-dolgi/" "200" "Credit-debt root"
+          if ! grep -Fq "Кредиты, долги, ипотека и банкротство" "$dir/_kredity-dolgi_.html"; then
+            echo "::error::Credit-debt root heading absent"
+            exit 1
+          fi
+          check "/kredity-dolgi/bankruptcy/" "200" "Bankruptcy group"
+          check "/kredity-dolgi/bankruptcy/out-of-court-mfc/" "200" "MFC situation"
+          check "/kredity-dolgi/nonexistent-route/" "404" "Unknown category"
+          if ! grep -Eiq '^x-robots-tag:.*noindex' "$dir/_kredity-dolgi_.headers"; then
+            echo "::error::Draft credit/debt catalog is not protected by X-Robots-Tag: noindex"
+            exit 1
+          fi
+          echo "LIVE_CREDIT_DEBT_PASS: catalog card, root, bankruptcy group, situation, strict 404 and noindex"
+          echo "READ_ONLY: no Coolify or VPS changes, no database or personal data, no forms submitted"
