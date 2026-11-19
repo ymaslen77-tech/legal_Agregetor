@@ -1,0 +1,48 @@
+name: Real estate route design and safety gate
+
+on:
+  pull_request:
+    branches:
+      - infra/coolify-russian-vps
+    paths:
+      - "src/data/real-estate-**"
+      - "src/lib/real-estate-**"
+      - "src/components/real-estate/**"
+      - "src/app/dev/real-estate/**"
+      - "docs/REAL_ESTATE_LAND_ROUTE_PLAN_20261120.md"
+      - ".github/workflows/real-estate-route-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: real-estate-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-design:
+    name: Audit 60 private draft-only scenarios
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Validate Q&A baseline, ten sections and sixty case slugs
+        run: npx tsx src/data/real-estate-route-plan.test.ts
+      - name: Confirm no case is legally approved or filing-ready
+        run: npx tsx src/data/real-estate-legal-review.test.ts
+      - name: Verify all sixty local intake paths and negative cases
+        run: npx tsx src/lib/real-estate-intake.test.ts
+      - name: Prevent exposure of local preview in production
+        run: npx tsx src/lib/real-estate-preview-access.test.ts
+      - name: Verify integration types
+        run: npm run typecheck
+      - name: Targeted ESLint
+        run: npx eslint src/data/real-estate-route-plan.ts src/data/real-estate-route-plan.test.ts src/data/real-estate-legal-review.ts src/data/real-estate-legal-review.test.ts src/lib/real-estate-intake.ts src/lib/real-estate-intake.test.ts src/lib/real-estate-preview-access.ts src/lib/real-estate-preview-access.test.ts src/components/real-estate/RealEstatePreview.tsx src/app/dev/real-estate/page.tsx
