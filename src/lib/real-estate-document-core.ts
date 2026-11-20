@@ -42,6 +42,12 @@ export type RealEstateDocumentPlan = Readonly<{
 
 const requestTypes = new Set<RealEstateResult>(["REQUEST_DRAFT", "COMPLAINT_DRAFT"]);
 const reviewTypes = new Set<RealEstateResult>(["SPECIALIST_REFERRAL", "CROSS_LINK"]);
+const requiredNotices: Readonly<Record<RealEstateDocumentKind,string>> = {
+  DRAFT: "ПРОЕКТ — НЕ ГОТОВ К ПОДАЧЕ",
+  CHECKLIST: "ПРЕДВАРИТЕЛЬНЫЙ ЧЕК-ЛИСТ — НЕ ДОКУМЕНТ ДЛЯ ПОДАЧИ",
+  PREPARED_DATA: "ЛИСТ ПОДГОТОВЛЕННЫХ СВЕДЕНИЙ — НЕ ДОКУМЕНТ ДЛЯ ПОДАЧИ",
+  LEGAL_REVIEW_ONLY: "ПАМЯТКА ДЛЯ ЮРИДИЧЕСКОЙ ПРОВЕРКИ — НЕ ДОКУМЕНТ ДЛЯ ПОДАЧИ"
+};
 const titlePrefix = {
   DRAFT: "Проект обращения",
   CHECKLIST: "Предварительный чек-лист",
@@ -195,7 +201,7 @@ export function isRealEstateDraftResult(input: unknown): input is DocumentResult
     && !result.filingReady && result.requiresLegalReview
     && result.legalRegistryReviewedAt === null
     && result.usedRuleIds.length === 0
-    && /^(ПРОЕКТ|ПАМЯТКА|ЛИСТ ПОДГОТОВЛЕННЫХ|ПРЕДВАРИТЕЛЬНЫЙ)/.test(result.documentText);
+    && result.documentText.startsWith(requiredNotices[plan.resultKind]);
 }
 /** User edits do not modify the previous immutable version. */
 export function reviseRealEstateDraft(
@@ -204,7 +210,7 @@ export function reviseRealEstateDraft(
 ): RealEstateDraftOutput {
   if (!isRealEstateDraftResult(previous.documentResult)) throw new Error("Несовместимый проект.");
   const safeText = clean(editedText, 35000);
-  if (safeText.length < 120 || !/^(ПРОЕКТ|ПАМЯТКА|ЛИСТ ПОДГОТОВЛЕННЫХ|ПРЕДВАРИТЕЛЬНЫЙ)/.test(safeText)) {
+  if (safeText.length < 120 || !safeText.startsWith(requiredNotices[previous.documentResult.resultKind as RealEstateDocumentKind])) {
     throw new Error("Сохраните предупреждение о статусе проекта и содержательный текст.");
   }
   const result = documentResultSchema.parse({
