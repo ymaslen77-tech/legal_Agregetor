@@ -90,6 +90,17 @@ function formatResult(plan: RealEstateDocumentPlan, data: Readonly<Record<string
   const situation = getRealEstateSituation(plan.groupId, plan.situationId);
   const task = getRealEstateLegalReviewTask(plan.groupId, plan.situationId);
   if (!situation || !task || task.status !== "PENDING") throw new Error("Юридическая матрица не найдена.");
+  const intakeSpec = getRealEstateIntakeSpec(plan.groupId, plan.situationId);
+  if(!intakeSpec) throw new Error("Анкета ситуации не найдена.");
+  const baseKeys=new Set(["role","propertyType","stage","summary","eventDate","documents","goal","caseDetails"]);
+  const specialAnswers=intakeSpec.fields
+    .filter(field=>!baseKeys.has(field.key)&&Boolean(data[field.key]))
+    .map(field=>field.label+": "+data[field.key]);
+  const assessment=evaluateRealEstateIntake(intakeSpec,data);
+  const specificWarnings=assessment.manualReviewFlags.length?[
+    "ОБСТОЯТЕЛЬСТВА, ТРЕБУЮЩИЕ ИНДИВИДУАЛЬНОЙ ПРОВЕРКИ",
+    ...assessment.manualReviewFlags.map((value,index)=>String(index+1)+". "+value)
+  ]:[];
   const facts = [
     "Участник ситуации (по сведениям анкеты): " + data.role + ".",
     "Тип объекта: " + data.propertyType + ".",
@@ -98,7 +109,8 @@ function formatResult(plan: RealEstateDocumentPlan, data: Readonly<Record<string
     "Обстоятельства со слов заполняющего: " + data.summary,
     "Сведения, относящиеся к выбранной ситуации: " + data.caseDetails,
     "Имеющиеся подтверждения со слов заполняющего: " + data.documents,
-    "Желаемый результат со слов заполняющего: " + data.goal
+    "Желаемый результат со слов заполняющего: " + data.goal,
+    ...specialAnswers
   ].filter(Boolean);
   const check = [
     "Сопоставить описанные обстоятельства с первичными документами и записью о праве.",
@@ -129,6 +141,8 @@ function formatResult(plan: RealEstateDocumentPlan, data: Readonly<Record<string
       "Дата: __________________",
       "Подпись: __________________",
       "",
+      ...specificWarnings,
+      "",
       "ДО ПОДАЧИ НЕОБХОДИМО",
       ...check.map((v, i) => String(i + 1) + ". " + v),
       "Ни подсудность, ни правовое основание, ни госпошлина, ни срок подачи автоматически не установлены."
@@ -145,6 +159,8 @@ function formatResult(plan: RealEstateDocumentPlan, data: Readonly<Record<string
     "",
     "СВЕДЕНИЯ ДЛЯ ИНДИВИДУАЛЬНОЙ ПРОВЕРКИ",
     ...facts,
+    "",
+    ...specificWarnings,
     "",
     "СЛЕДУЮЩИЕ ДЕЙСТВИЯ",
     ...check.map((v, i) => String(i + 1) + ". " + v),
