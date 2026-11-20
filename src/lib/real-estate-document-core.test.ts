@@ -50,6 +50,10 @@ for (const group of REAL_ESTATE_GROUPS) for (const s of group.situations) {
   assert.throws(()=>createRealEstateDraftPrototype({groupId:group.id,situationId:s.id,values:{}}),/обязательные сведения/);
   const forbidden={...out,filingReady:true};
   assert.equal(isRealEstateDraftResult(forbidden),false,key);
+  const firstLine=out.documentText.split("\n")[0];
+  const falseReady={...out,documentText:out.documentText.replace(firstLine,"ПРОЕКТ — ГОТОВ К ПОДАЧЕ")};
+  assert.equal(isRealEstateDraftResult(falseReady),false,key);
+  assert.throws(()=>reviseRealEstateDraft(original,falseReady.documentText),/Сохраните предупреждение/,key);
   assert.throws(()=>validateRealEstateExport(forbidden as typeof out),/Нельзя экспортировать/);
   if(!versionsVerified){
     const altered=reviseRealEstateDraft(original,out.documentText+"\n\nПроверочная редакторская пометка.",{
