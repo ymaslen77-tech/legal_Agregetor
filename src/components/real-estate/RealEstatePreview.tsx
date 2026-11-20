@@ -3,6 +3,7 @@ import { useState } from "react";
 import { REAL_ESTATE_GROUPS } from "@/data/real-estate-route-plan";
 import { evaluateRealEstateIntake, getRealEstateIntakeSpec } from "@/lib/real-estate-intake";
 import type { RealEstateField, RealEstateIntakeResult } from "@/lib/real-estate-intake";
+import { RealEstateDocumentWorkbench } from "@/components/real-estate/RealEstateDocumentWorkbench";
 
 /** Local-only development prototype. No server actions, persistence or PDF. */
 type PreviewProps=Readonly<{initialGroupId?:string;initialSituationId?:string}>;
@@ -13,19 +14,28 @@ export function RealEstatePreview({initialGroupId,initialSituationId}:PreviewPro
   const [situationId,setSituationId]=useState<string>(initialSituation?.id??"");
   const [answers,setAnswers]=useState<Record<string,string>>({});
   const [result,setResult]=useState<RealEstateIntakeResult|null>(null);
+  const [inputRevision,setInputRevision]=useState(0);
   const group=REAL_ESTATE_GROUPS.find(x=>x.id===groupId);
   const spec=getRealEstateIntakeSpec(groupId,situationId);
   const onGroupChange=(next:string)=>{
     setGroupId(next);
     setSituationId(REAL_ESTATE_GROUPS.find(x=>x.id===next)?.situations[0]?.id??"");
-    setAnswers({});setResult(null);
+    setAnswers({});setResult(null);setInputRevision(0);
   };
   const onSituationChange=(next:string)=>{
-    setSituationId(next);setAnswers({});setResult(null);
+    setSituationId(next);setAnswers({});setResult(null);setInputRevision(0);
   };
   const onAnswerChange=(key:string,value:string)=>{
     setAnswers(previous=>({...previous,[key]:value}));
     setResult(null);
+    setInputRevision(previous=>previous+1);
+  };
+  const restoreAnswers=(restored:Readonly<Record<string,string>>)=>{
+    if(!spec)return;
+    const copy={...restored};
+    setAnswers(copy);
+    setResult(evaluateRealEstateIntake(spec,copy));
+    setInputRevision(previous=>previous+1);
   };
   function renderField(field:RealEstateField){
     const id="real-estate-"+field.key;
@@ -54,7 +64,8 @@ export function RealEstatePreview({initialGroupId,initialSituationId}:PreviewPro
       <p className="mt-3 text-sm leading-6 text-zinc-800">
         10 тематических подразделов и 60 предварительных ситуаций. Анкеты выполняются только в браузере;
         ничего не сохраняется и не передаётся юристу. Не вводите ФИО, адреса, кадастровые номера,
-        контактные данные или документы. Генерация юридических документов и публичная индексация отключены.
+        контактные данные или документы. В закрытом тестовом режиме можно сформировать проект PDF/DOCX. Готовые к подаче документы, кабинет,
+        передача юристу и публичная индексация отключены.
       </p>
     </header>
     <div className="mt-7 grid gap-4 sm:grid-cols-2">
@@ -107,9 +118,12 @@ export function RealEstatePreview({initialGroupId,initialSituationId}:PreviewPro
             <ul className="list-disc space-y-2 pl-5 text-sm text-zinc-700">
               {result.checklist.map(x=><li key={x}>{x}</li>)}
             </ul>
-            <p className="text-sm text-zinc-700">Подготовка PDF/DOCX, юридическая квалификация и отправка на проверку юристу пока недоступны.</p>
+            <p className="text-sm text-zinc-700">Юридическая квалификация, сохранение в кабинете и отправка юристу пока недоступны. Ниже можно сформировать только тестовый черновик.</p>
           </div>}
       </section>
     </div>:null}
+    {spec?<RealEstateDocumentWorkbench key={groupId+"/"+situationId}
+      spec={spec} answers={answers} assessment={result}
+      inputRevision={inputRevision} restoreAnswers={restoreAnswers}/>:null}
   </main>;
 }
