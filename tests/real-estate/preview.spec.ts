@@ -67,7 +67,7 @@ test("document workbench keeps versions immutable and exports an actual draft PD
   await page.getByRole("button",{name:"Проверить полноту тестовых сведений"}).click();
   await page.getByRole("button",{name:"Сформировать предварительный проект"}).click();
   const editor=page.getByTestId("real-estate-document-editor");
-  await expect(editor).toContainText("ПРОЕКТ — НЕ ГОТОВ К ПОДАЧЕ");
+  await expect(editor).toHaveValue(/ПРОЕКТ — НЕ ГОТОВ К ПОДАЧЕ/);
   const pdf=page.getByRole("button",{name:"Скачать PDF"});
   await expect(pdf).toBeEnabled();
   const downloadPromise=page.waitForEvent("download");
@@ -92,6 +92,6 @@ test("document workbench keeps versions immutable and exports an actual draft PD
   await page.getByRole("button",{name:"Проверить полноту тестовых сведений"}).click();
   await page.getByRole("button",{name:"Сформировать новую версию по анкете"}).click();
   await expect(pdf).toBeEnabled();
-  await expect(editor).toContainText("Обновлены исходные тестовые сведения");
+  await expect(editor).toHaveValue(/Обновлены исходные тестовые сведения/);
   await expect(page.getByTestId("real-estate-version")).toHaveCount(3);
 });
