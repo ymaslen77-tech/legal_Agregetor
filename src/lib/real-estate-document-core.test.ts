@@ -42,6 +42,9 @@ for (const group of REAL_ESTATE_GROUPS) for (const s of group.situations) {
   assert.ok(out.documentText.includes(s.title),key);
   assert.ok(out.documentText.includes(answers.caseDetails),key);
   assert.ok(out.documentText.includes(answers.goal),key);
+  for(const field of spec.fields.filter(field=>!["role","propertyType","stage","summary","eventDate","documents","goal","caseDetails"].includes(field.key))){
+    if(answers[field.key]) assert.ok(out.documentText.includes(field.label+": "+answers[field.key]),key+" "+field.key);
+  }
   assert.ok(out.documentText.includes("не") || out.documentText.includes("НЕ"),key);
   assert.equal(validateRealEstateExport(out),out,key);
   assert.ok(realEstateFileName(out,"pdf").startsWith("proekt-"),key);
@@ -78,6 +81,24 @@ for (const group of REAL_ESTATE_GROUPS) for (const s of group.situations) {
   }
   checked++;
 }
+const saleSpec=getRealEstateIntakeSpec("shared-ownership","share-sale");
+assert.ok(saleSpec);
+const saleValues:Record<string,string>={};
+for(const field of saleSpec.fields)if(field.required){
+  saleValues[field.key]=field.kind==="choice"?field.choices![0]:"Обезличенное описание обстоятельств сделки для тестового проекта";
+}
+saleValues.transactionKind="публичные торги";
+saleValues.specialLandStatus="земля сельскохозяйственного назначения";
+saleValues.shareNotice="не знаю";
+const auctionDraft=createRealEstateDraftPrototype({
+  groupId:"shared-ownership",situationId:"share-sale",values:saleValues,
+  versionId:"00000000-0000-4000-8000-000000000003",
+  createdAt:"2026-11-20T17:15:00.000Z"
+}).documentResult;
+assert.match(auctionDraft.documentText,/Специальный режим продажи/);
+assert.match(auctionDraft.documentText,/земля сельскохозяйственного назначения/);
+assert.match(auctionDraft.documentText,/публичные торги/);
+assert.equal(auctionDraft.filingReady,false);
 assert.equal(checked,60);
 assert.deepEqual([...seenKinds].sort(),["CHECKLIST","DRAFT","LEGAL_REVIEW_ONLY","PREPARED_DATA"]);
 assert.equal(getRealEstateDocumentPlan("invalid","invalid"),null);
