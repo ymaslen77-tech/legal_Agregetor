@@ -4,6 +4,8 @@ import { REAL_ESTATE_GROUPS } from "@/data/real-estate-route-plan";
 import { evaluateRealEstateIntake, getRealEstateIntakeSpec } from "@/lib/real-estate-intake";
 import type { RealEstateField, RealEstateIntakeResult } from "@/lib/real-estate-intake";
 import { RealEstateDocumentWorkbench } from "@/components/real-estate/RealEstateDocumentWorkbench";
+import { getRealEstateLegalReviewTask } from "@/data/real-estate-legal-review";
+import { getRealEstateCheckedContext } from "@/data/real-estate-checked-context";
 
 /** Local-only development prototype. No server actions, persistence or PDF. */
 type PreviewProps=Readonly<{initialGroupId?:string;initialSituationId?:string}>;
@@ -17,6 +19,8 @@ export function RealEstatePreview({initialGroupId,initialSituationId}:PreviewPro
   const [inputRevision,setInputRevision]=useState(0);
   const group=REAL_ESTATE_GROUPS.find(x=>x.id===groupId);
   const spec=getRealEstateIntakeSpec(groupId,situationId);
+  const legalReview=getRealEstateLegalReviewTask(groupId,situationId);
+  const checkedContext=getRealEstateCheckedContext(groupId,situationId);
   const onGroupChange=(next:string)=>{
     setGroupId(next);
     setSituationId(REAL_ESTATE_GROUPS.find(x=>x.id===next)?.situations[0]?.id??"");
@@ -125,5 +129,32 @@ export function RealEstatePreview({initialGroupId,initialSituationId}:PreviewPro
     {spec?<RealEstateDocumentWorkbench key={groupId+"/"+situationId}
       spec={spec} answers={answers} assessment={result}
       inputRevision={inputRevision} restoreAnswers={restoreAnswers}/>:null}
+    {legalReview?<section className="mt-8 rounded-lg border border-line bg-zinc-50 p-5 sm:p-6"
+      aria-label="Юридическая приёмка и проверка источников">
+      <p className="text-sm font-bold uppercase tracking-wide text-amber-900">Юридическая приёмка: ожидает проверки</p>
+      <h2 className="mt-2 text-xl font-semibold text-ink">Правовые вопросы по этой ситуации</h2>
+      <p className="mt-3 text-sm leading-6 text-zinc-800">{legalReview.issueToVerify}</p>
+      <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-zinc-700">
+        {legalReview.requiredChecks.map(check=><li key={check}>{check}</li>)}
+      </ul>
+      <p className="mt-4 text-sm text-zinc-700">
+        Нормативные акты-кандидаты: {legalReview.candidateActNames.join("; ")}.
+        До индивидуальной сверки точных норм, сроков, адресата и приложений проект не подлежит подаче.
+      </p>
+      {checkedContext.length?checkedContext.map(item=><div key={item.id} className="mt-5 border-t border-line pt-4">
+        <h3 className="font-semibold text-ink">Проверенное общее положение (не одобрение документа)</h3>
+        <p className="mt-2 text-sm leading-6 text-zinc-800">{item.proposition}</p>
+        <p className="mt-2 text-sm leading-6 text-zinc-700">{item.limitations}</p>
+        <ul className="mt-3 list-disc space-y-2 pl-5 text-sm">
+          {item.sources.map(source=><li key={source.url}>
+            <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-trust underline">
+              {source.publisher}: {source.supports}
+            </a>
+          </li>)}
+        </ul>
+      </div>):<p className="mt-4 text-sm text-zinc-600">
+        Предметные источники для этой ситуации ещё не сопоставлены. Названия кодексов не считаются юридической проверкой.
+      </p>}
+    </section>:null}
   </main>;
 }
