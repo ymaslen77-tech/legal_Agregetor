@@ -7,6 +7,7 @@ on:
     paths:
       - "src/data/real-estate-**"
       - "src/lib/real-estate-**"
+      - "src/lib/saved-document-validation.ts"
       - "src/components/real-estate/**"
       - "src/app/dev/real-estate/**"
       - "tests/real-estate/**"
@@ -50,10 +51,12 @@ jobs:
         run: npx tsx src/lib/real-estate-document-core.test.ts
       - name: Audit 71 nonindexable future SEO metadata entries
         run: npx tsx src/data/real-estate-seo.test.ts
+      - name: Verify unreleased documents cannot enter encrypted persistence
+        run: npx tsx src/lib/real-estate-service-gate.test.ts
       - name: Verify integration types
         run: npm run typecheck
       - name: Targeted ESLint
-        run: npx eslint src/data/real-estate-route-plan.ts src/data/real-estate-route-plan.test.ts src/data/real-estate-legal-review.ts src/data/real-estate-legal-review.test.ts src/lib/real-estate-intake.ts src/lib/real-estate-intake.test.ts src/lib/real-estate-preview-access.ts src/lib/real-estate-preview-access.test.ts src/components/real-estate/RealEstatePreview.tsx src/components/real-estate/RealEstateDocumentWorkbench.tsx src/data/real-estate-checked-context.ts src/data/real-estate-checked-context.test.ts src/data/real-estate-seo.ts src/data/real-estate-seo.test.ts src/lib/real-estate-document-core.ts src/lib/real-estate-document-core.test.ts src/lib/real-estate-document-export.ts src/app/dev/real-estate/page.tsx 'src/app/dev/real-estate/[group]/page.tsx' 'src/app/dev/real-estate/[group]/[situation]/page.tsx' tests/real-estate/preview.spec.ts playwright.real-estate.config.ts
+        run: npx eslint src/data/real-estate-route-plan.ts src/data/real-estate-route-plan.test.ts src/data/real-estate-legal-review.ts src/data/real-estate-legal-review.test.ts src/lib/real-estate-intake.ts src/lib/real-estate-intake.test.ts src/lib/real-estate-preview-access.ts src/lib/real-estate-preview-access.test.ts src/components/real-estate/RealEstatePreview.tsx src/components/real-estate/RealEstateDocumentWorkbench.tsx src/data/real-estate-checked-context.ts src/data/real-estate-checked-context.test.ts src/data/real-estate-seo.ts src/data/real-estate-seo.test.ts src/lib/real-estate-document-core.ts src/lib/real-estate-document-core.test.ts src/lib/real-estate-document-export.ts src/lib/real-estate-service-gate.ts src/lib/real-estate-service-gate.test.ts src/lib/saved-document-validation.ts src/app/dev/real-estate/page.tsx 'src/app/dev/real-estate/[group]/page.tsx' 'src/app/dev/real-estate/[group]/[situation]/page.tsx' tests/real-estate/preview.spec.ts playwright.real-estate.config.ts
       - name: Install independent PDF and DOCX content inspectors
         run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends poppler-utils unzip
       - name: Install Chromium for closed route preview
