@@ -22,6 +22,7 @@ export type RealEstateIntakeResult = Readonly<{
   status:"NEEDS_DETAILS"|"FACTS_COLLECTED"|"SPECIALIST_ROUTE";
   missing:readonly string[];
   invalid:readonly string[];
+  manualReviewFlags:readonly string[];
   checklist:readonly string[];
   requiresLegalReview:true;
   canGenerateDocument:false;
@@ -40,6 +41,53 @@ const BASE_FIELDS:readonly RealEstateField[]=[
   {key:"documents",label:"Какие документы и доказательства есть (без реквизитов)?",kind:"textarea",required:true},
   {key:"goal",label:"Какого результата вы хотите добиться?",kind:"textarea",required:true}
 ];
+const specialFields:Readonly<Record<string,readonly RealEstateField[]>>={
+  "shared-ownership/share-sale":[
+    {key:"transactionKind",label:"Что известно о характере сделки с долей?",kind:"choice",required:true,
+      choices:["продажа постороннему лицу","продажа другому сособственнику","публичные торги","мена","другое или не знаю"]},
+    {key:"shareNotice",label:"Направлялось ли письменное извещение остальным сособственникам?",kind:"choice",required:true,
+      choices:["направлено, есть доказательства","извещение не направлялось","не знаю"]},
+    {key:"specialLandStatus",label:"Есть ли особый режим объекта или земли?",kind:"choice",required:true,
+      choices:["обычная недвижимость","земля сельскохозяйственного назначения","доля в общем имуществе","не знаю"]},
+    {key:"noticeEventDate",label:"Дата документально подтверждённого извещения, если известна",kind:"date",required:false}
+  ],
+  "ownership-register/record-inaccurate":[
+    {key:"registryErrorOrigin",label:"Где впервые обнаружено расхождение сведений?",kind:"choice",required:true,
+      choices:["только запись ЕГРН","исходный документ или технический план","не установлено"]},
+    {key:"thirdPartyRights",label:"Может ли исправление затронуть права других лиц?",kind:"choice",required:true,
+      choices:["да","нет","не знаю"]}
+  ],
+  "land-boundaries/registry-boundary-error":[
+    {key:"registryErrorOrigin",label:"Где впервые обнаружено расхождение сведений?",kind:"choice",required:true,
+      choices:["только запись ЕГРН","исходный документ или межевой план","не установлено"]},
+    {key:"thirdPartyRights",label:"Может ли исправление затронуть права других лиц?",kind:"choice",required:true,
+      choices:["да","нет","не знаю"]}
+  ],
+  "cadastral-valuation/wrong-object-area":[
+    {key:"registryErrorOrigin",label:"Какие документы подтверждают площадь?",kind:"choice",required:true,
+      choices:["исходный документ отличается от ЕГРН","расхождение уже в техническом плане","не установлено"]},
+    {key:"thirdPartyRights",label:"Может ли исправление затронуть права других лиц?",kind:"choice",required:true,
+      choices:["да","нет","не знаю"]}
+  ]
+};
+function manualReviewFlags(groupId:string,situationId:string,values:Readonly<Record<string,string|undefined>>):string[]{
+  const result:string[]=[];
+  if(groupId==="shared-ownership"&&situationId==="share-sale"){
+    if(["публичные торги","другое или не знаю"].includes(values.transactionKind??""))
+      result.push("Специальный режим продажи или неустановленный вид сделки: требуется индивидуальная проверка и учёт решений Конституционного Суда.");
+    if(values.specialLandStatus==="земля сельскохозяйственного назначения")
+      result.push("Земля сельскохозяйственного назначения: проверить специальные правила оборота и преимущественной покупки.");
+    if(values.specialLandStatus==="доля в общем имуществе")
+      result.push("Доля в общем имуществе: проверить применимость исключений статьи 250 ГК РФ.");
+    if(["извещение не направлялось","не знаю"].includes(values.shareNotice??""))
+      result.push("Не подтверждено извещение сособственников: проверить документы о направлении и вручении.");
+  }
+  if(values.registryErrorOrigin==="не установлено"||values.thirdPartyRights==="не знаю")
+    result.push("Нельзя определить порядок исправления записи ЕГРН без первичных документов и проверки прав других лиц.");
+  if(values.thirdPartyRights==="да")
+    result.push("Возможное затрагивание прав третьих лиц требует отдельной проверки допустимого способа исправления.");
+  return result;
+}
 function isValidDate(v:string){
   if(!/^\d{4}-\d{2}-\d{2}$/.test(v))return false;
   const [y,m,d]=v.split("-").map(Number);
@@ -56,7 +104,7 @@ export function getRealEstateIntakeSpec(groupId:string,situationId:string):RealE
     fields:[...BASE_FIELDS,{
       key:"caseDetails",label:"Дополнительные сведения по ситуации: "+situation.caseFacts,
       kind:"textarea",required:true
-    }],
+    },...(specialFields[groupId+"/"+situationId]??[])],
     legalReviewRequired:true,canGenerateDocument:false
   };
 }
@@ -71,11 +119,12 @@ export function evaluateRealEstateIntake(
       (field.kind==="choice" && !field.choices?.includes(value)) ||
       (field.kind==="date" && !isValidDate(value)))invalid.push(field.key);
   }
+  const reviewFlags=manualReviewFlags(spec.groupId,spec.situationId,values);
   const status=missing.length||invalid.length?"NEEDS_DETAILS":
     spec.targetResult==="SPECIALIST_REFERRAL"||spec.targetResult==="CROSS_LINK"?
       "SPECIALIST_ROUTE":"FACTS_COLLECTED";
   return {
-    status,missing,invalid,
+    status,missing,invalid,manualReviewFlags:reviewFlags,
     checklist:[
       "Сопоставить сведения с исходными документами об объекте и праве.",
       "Установить дату события, участников, возможные сроки и компетентный орган.",
