@@ -116,3 +116,28 @@ test("document workbench keeps versions immutable and exports an actual draft PD
   await expect(pdf).toBeEnabled();
   await expect(editor).not.toHaveValue(/Обновлены исходные тестовые сведения/);
 });
+
+test("a share sale by auction with agricultural land is flagged for manual legal review",async ({page})=>{
+  await page.goto("/dev/real-estate/shared-ownership/share-sale/");
+  await page.locator("#real-estate-role").selectOption("собственник");
+  await page.locator("#real-estate-propertyType").selectOption("земельный участок");
+  await page.locator("#real-estate-stage").selectOption("переговоры и претензия");
+  for(const field of ["summary","documents","goal","caseDetails"]){
+    await page.locator("#real-estate-"+field).fill("Обезличенные тестовые обстоятельства сделки с долей");
+  }
+  await page.locator("#real-estate-transactionKind").selectOption("публичные торги");
+  await page.locator("#real-estate-shareNotice").selectOption("извещение не направлялось");
+  await page.locator("#real-estate-specialLandStatus").selectOption("земля сельскохозяйственного назначения");
+  await page.getByRole("button",{name:"Проверить полноту тестовых сведений"}).click();
+  const warnings=page.getByTestId("real-estate-review-flags");
+  await expect(warnings).toBeVisible();
+  await expect(warnings).toContainText("публичных");
+  await expect(warnings).toContainText("сельскохозяйственного");
+  await expect(warnings).toContainText("извещение");
+  await page.getByRole("button",{name:"Сформировать предварительный проект"}).click();
+  const editor=page.getByTestId("real-estate-document-editor");
+  await expect(editor).toHaveValue(/публичные торги/);
+  await expect(editor).toHaveValue(/сельскохозяйственного/);
+  await expect(editor).toHaveValue(/НЕ ДОКУМЕНТ ДЛЯ ПОДАЧИ/);
+  await expect(page.getByRole("button",{name:"Отправить на проверку юристу"})).toBeDisabled();
+});
