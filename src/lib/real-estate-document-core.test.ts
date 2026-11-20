@@ -95,7 +95,7 @@ const auctionDraft=createRealEstateDraftPrototype({
   versionId:"00000000-0000-4000-8000-000000000003",
   createdAt:"2026-11-20T17:15:00.000Z"
 }).documentResult;
-assert.match(auctionDraft.documentText,/Специальный режим продажи/);
+assert.match(auctionDraft.documentText,/Продажа с публичных торгов/);
 assert.match(auctionDraft.documentText,/земля сельскохозяйственного назначения/);
 assert.match(auctionDraft.documentText,/публичные торги/);
 assert.equal(auctionDraft.filingReady,false);
