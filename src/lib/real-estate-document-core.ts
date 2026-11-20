@@ -27,12 +27,13 @@ export type RealEstateDraftOutput = Readonly<{
   documentResult: DocumentResultV1;
   formData: Readonly<Record<string, string>>;
 }>;
+type RealEstateDocumentKind = "DRAFT" | "CHECKLIST" | "PREPARED_DATA" | "LEGAL_REVIEW_ONLY";
 export type RealEstateDocumentPlan = Readonly<{
   groupId: string;
   situationId: string;
   documentSlug: string;
   documentTitle: string;
-  resultKind: DocumentResultV1["resultKind"];
+  resultKind: RealEstateDocumentKind;
   targetResult: RealEstateResult;
   filingReady: false;
   requiresLegalReview: true;
