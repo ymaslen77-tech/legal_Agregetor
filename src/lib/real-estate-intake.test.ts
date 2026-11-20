@@ -35,6 +35,33 @@ for(const group of REAL_ESTATE_GROUPS) for(const situation of group.situations){
   assert.ok(evaluateRealEstateIntake(spec,oversized).invalid.includes("summary"),key);
   checked++;
 }
+const shareSpec=getRealEstateIntakeSpec("shared-ownership","share-sale");
+assert.ok(shareSpec);
+for(const key of ["transactionKind","shareNotice","specialLandStatus","noticeEventDate"])
+  assert.ok(shareSpec.fields.some(x=>x.key===key),"Missing share-sale branch: "+key);
+const sharedAnswers:Record<string,string>={};
+for(const field of shareSpec.fields)if(field.required){
+  sharedAnswers[field.key]=field.kind==="choice"?field.choices![0]:"Тестовые безличные обстоятельства";
+}
+sharedAnswers.transactionKind="публичные торги";
+sharedAnswers.shareNotice="извещение не направлялось";
+sharedAnswers.specialLandStatus="земля сельскохозяйственного назначения";
+const sharedCheck=evaluateRealEstateIntake(shareSpec,sharedAnswers);
+assert.equal(sharedCheck.status,"FACTS_COLLECTED");
+assert.equal(sharedCheck.manualReviewFlags.length,3);
+assert.ok(sharedCheck.manualReviewFlags.some(x=>x.includes("Конституционного Суда")));
+assert.ok(sharedCheck.manualReviewFlags.some(x=>x.includes("сельскохозяйственного")));
+assert.ok(sharedCheck.manualReviewFlags.some(x=>x.includes("извещение")));
+for(const [group,caseId] of [
+  ["ownership-register","record-inaccurate"],
+  ["land-boundaries","registry-boundary-error"],
+  ["cadastral-valuation","wrong-object-area"]
+]){
+  const spec=getRealEstateIntakeSpec(group,caseId);
+  assert.ok(spec);
+  assert.ok(spec.fields.some(field=>field.key==="registryErrorOrigin"));
+  assert.ok(spec.fields.some(field=>field.key==="thirdPartyRights"));
+}
 assert.equal(checked,getRealEstatePlanStats().situations);
 assert.equal(getRealEstateIntakeSpec("bad","bad"),null);
 console.log("Real estate intake PASS: 60 case-specific forms, required fields, date checks, privacy-safe draft restrictions");
