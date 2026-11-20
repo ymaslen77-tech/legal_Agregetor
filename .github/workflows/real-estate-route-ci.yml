@@ -44,10 +44,14 @@ jobs:
         run: npx tsx src/lib/real-estate-intake.test.ts
       - name: Prevent exposure of local preview in production
         run: npx tsx src/lib/real-estate-preview-access.test.ts
+      - name: Verify independently sourced context stays outside filing approvals
+        run: npx tsx src/data/real-estate-checked-context.test.ts
+      - name: Audit all sixty draft document types and immutable version snapshots
+        run: npx tsx src/lib/real-estate-document-core.test.ts
       - name: Verify integration types
         run: npm run typecheck
       - name: Targeted ESLint
-        run: npx eslint src/data/real-estate-route-plan.ts src/data/real-estate-route-plan.test.ts src/data/real-estate-legal-review.ts src/data/real-estate-legal-review.test.ts src/lib/real-estate-intake.ts src/lib/real-estate-intake.test.ts src/lib/real-estate-preview-access.ts src/lib/real-estate-preview-access.test.ts src/components/real-estate/RealEstatePreview.tsx src/app/dev/real-estate/page.tsx 'src/app/dev/real-estate/[group]/page.tsx' 'src/app/dev/real-estate/[group]/[situation]/page.tsx' tests/real-estate/preview.spec.ts playwright.real-estate.config.ts
+        run: npx eslint src/data/real-estate-route-plan.ts src/data/real-estate-route-plan.test.ts src/data/real-estate-legal-review.ts src/data/real-estate-legal-review.test.ts src/lib/real-estate-intake.ts src/lib/real-estate-intake.test.ts src/lib/real-estate-preview-access.ts src/lib/real-estate-preview-access.test.ts src/components/real-estate/RealEstatePreview.tsx src/components/real-estate/RealEstateDocumentWorkbench.tsx src/data/real-estate-checked-context.ts src/data/real-estate-checked-context.test.ts src/lib/real-estate-document-core.ts src/lib/real-estate-document-core.test.ts src/lib/real-estate-document-export.ts src/app/dev/real-estate/page.tsx 'src/app/dev/real-estate/[group]/page.tsx' 'src/app/dev/real-estate/[group]/[situation]/page.tsx' tests/real-estate/preview.spec.ts playwright.real-estate.config.ts
       - name: Install Chromium for closed route preview
         run: npx playwright install --with-deps chromium
       - name: Browser-test all 60 dev-only route URLs and intake without production changes
