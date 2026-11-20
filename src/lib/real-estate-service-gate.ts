@@ -12,6 +12,6 @@ export type RealEstateServiceEnvironment=Readonly<{
 export function canUseRealEstateServerServices(env:RealEstateServiceEnvironment):boolean{
   if(!REAL_ESTATE_PUBLICATION_GATE.publicUrlsEnabled
      || !REAL_ESTATE_PUBLICATION_GATE.personalDataCollectionAllowed
-     || REAL_ESTATE_PUBLICATION_GATE.stage!=="PUBLISHED_VERIFIED")return false;
+     || String(REAL_ESTATE_PUBLICATION_GATE.stage)!=="PUBLISHED_VERIFIED")return false;
   return env.NODE_ENV==="production"&&env.ENABLE_REAL_ESTATE_PERSISTENCE==="true";
 }
