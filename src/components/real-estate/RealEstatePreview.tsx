@@ -118,6 +118,12 @@ export function RealEstatePreview({initialGroupId,initialSituationId}:PreviewPro
                 {result.invalid.map(k=><li key={k}>{spec.fields.find(f=>f.key===k)?.label??k}</li>)}
               </ul>
             </div>:null}
+            {result.manualReviewFlags.length>0?<div className="rounded-md border border-amber-300 bg-amber-50 p-3" data-testid="real-estate-review-flags">
+              <h3 className="font-semibold text-amber-950">Отдельная юридическая проверка</h3>
+              <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-amber-950">
+                {result.manualReviewFlags.map(note=><li key={note}>{note}</li>)}
+              </ul>
+            </div>:null}
             <h3 className="font-semibold">Что потребуется проверить</h3>
             <ul className="list-disc space-y-2 pl-5 text-sm text-zinc-700">
               {result.checklist.map(x=><li key={x}>{x}</li>)}
