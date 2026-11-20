@@ -1,4 +1,5 @@
 import { readFile } from "node:fs/promises";
+import { execFileSync } from "node:child_process";
 import {expect,test} from "@playwright/test";
 import { REAL_ESTATE_GROUPS } from "../../src/data/real-estate-route-plan";
 
@@ -50,7 +51,7 @@ test("first-stage intake never generates a legal document and invalidates stale 
   }
   await submit.click();
   await expect(page.getByText("Статус анкеты: FACTS_COLLECTED")).toBeVisible();
-  await expect(page.getByText(/Подготовка PDF\/DOCX/)).toBeVisible();
+  await expect(page.getByText(/Ниже можно сформировать только тестовый черновик/)).toBeVisible();
   await page.locator("#real-estate-summary").fill("Обновленные искусственные обстоятельства");
   await expect(page.getByText("Статус анкеты: FACTS_COLLECTED")).toHaveCount(0);
 });
@@ -79,6 +80,20 @@ test("document workbench keeps versions immutable and exports an actual draft PD
   const bytes=await readFile(local!);
   expect(bytes.subarray(0,4).toString()).toBe("%PDF");
   expect(bytes.length).toBeGreaterThan(500);
+  const extracted=execFileSync("pdftotext",[local!,"-"],{encoding:"utf8"});
+  expect(extracted).toContain("Росреестр отказал");
+  expect(extracted).toContain("НЕ ГОТОВ К ПОДАЧЕ");
+  await page.getByText("Дополнительные форматы (тестовый DOCX)").click();
+  const docxPromise=page.waitForEvent("download");
+  await page.getByRole("button",{name:"Скачать DOCX-черновик"}).click();
+  const docx=await docxPromise;
+  expect(docx.suggestedFilename()).toMatch(/\.docx$/);
+  const docxPath=await docx.path();
+  expect(docxPath).toBeTruthy();
+  const docxBytes=await readFile(docxPath!);
+  expect(docxBytes.subarray(0,2).toString()).toBe("PK");
+  const xml=execFileSync("unzip",["-p",docxPath!,"word/document.xml"],{encoding:"utf8"});
+  expect(xml).toContain("Росреестр отказал");
   await editor.fill((await editor.inputValue())+"\nТестовая редакторская пометка.");
   await expect(pdf).toBeDisabled();
   await page.getByRole("button",{name:"Сохранить новую редакцию"}).click();
@@ -94,4 +109,10 @@ test("document workbench keeps versions immutable and exports an actual draft PD
   await expect(pdf).toBeEnabled();
   await expect(editor).toHaveValue(/Обновлены исходные тестовые сведения/);
   await expect(page.getByTestId("real-estate-version")).toHaveCount(3);
+  await page.getByTestId("real-estate-version").last().click();
+  await expect(page.locator("#real-estate-summary")).toHaveValue(
+    "Искусственные сведения для теста версии, без персональных данных и реквизитов"
+  );
+  await expect(pdf).toBeEnabled();
+  await expect(editor).not.toHaveValue(/Обновлены исходные тестовые сведения/);
 });
