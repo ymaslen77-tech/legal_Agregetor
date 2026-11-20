@@ -4,16 +4,22 @@ import { getNavigatorDocument } from "@/data/documents";
 import { getMilitaryDraftPlan, MILITARY_DOCUMENT_CORE_VERSION } from "@/data/military-document-core";
 import { isMilitaryDraftWorkbenchEnabled, type MilitaryDraftEnvironment } from "@/data/military-preview-access";
 import { isCreditDebtDraftResult } from "@/lib/credit-debt-document-core";
+import { isRealEstateDraftResult } from "@/lib/real-estate-document-core";
+import { canUseRealEstateServerServices } from "@/lib/real-estate-service-gate";
 
 /** A client-side draft is always unverified. Do not accept arbitrary route links. */
 export function validateSavedDocument(
   input: unknown,
-  environment:MilitaryDraftEnvironment & Readonly<{ ENABLE_CREDIT_DEBT_PREVIEW?:string }>=process.env
+  environment:MilitaryDraftEnvironment & Readonly<{ ENABLE_CREDIT_DEBT_PREVIEW?:string; ENABLE_REAL_ESTATE_PERSISTENCE?:string }>=process.env
 ): DocumentResultV1 | null {
   const parsed = documentResultSchema.safeParse(input);
   if (!parsed.success) return null;
   const result = parsed.data;
   // Server and form must agree on opt-in. The legal status never becomes verified.
+  if(result.categorySlug==="nedvizhimost-i-zemlya"){
+    if(!canUseRealEstateServerServices(environment))return null;
+    return isRealEstateDraftResult(result)?result:null;
+  }
   if(result.categorySlug==="kredity-dolgi"){
     // Public drafts may be saved, but are strictly validated as non-filing versions.
     return isCreditDebtDraftResult(result)?result:null;
