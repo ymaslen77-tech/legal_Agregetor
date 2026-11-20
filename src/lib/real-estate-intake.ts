@@ -74,7 +74,7 @@ function manualReviewFlags(groupId:string,situationId:string,values:Readonly<Rec
   const result:string[]=[];
   if(groupId==="shared-ownership"&&situationId==="share-sale"){
     if(["публичные торги","другое или не знаю"].includes(values.transactionKind??""))
-      result.push("Специальный режим продажи или неустановленный вид сделки: требуется индивидуальная проверка и учёт решений Конституционного Суда.");
+      result.push("Продажа с публичных торгов или неустановленный вид сделки: требуется индивидуальная проверка применимого режима и решений Конституционного Суда.");
     if(values.specialLandStatus==="земля сельскохозяйственного назначения")
       result.push("Земля сельскохозяйственного назначения: проверить специальные правила оборота и преимущественной покупки.");
     if(values.specialLandStatus==="доля в общем имуществе")
