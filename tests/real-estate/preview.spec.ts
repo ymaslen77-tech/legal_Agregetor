@@ -3,6 +3,14 @@ import { execFileSync } from "node:child_process";
 import {expect,test} from "@playwright/test";
 import { REAL_ESTATE_GROUPS } from "../../src/data/real-estate-route-plan";
 
+async function completeRegistrationRefusalFacts(page:import("@playwright/test").Page){
+  await page.locator("#real-estate-registrationDecision").selectOption("есть решение с основаниями");
+  await page.locator("#real-estate-priorSuspension").selectOption("есть уведомление, причины известны");
+  await page.locator("#real-estate-correctionEvidence").selectOption("да, есть доказательства подачи");
+  await page.locator("#real-estate-registrationGround").fill("условное основание в тестовом уведомлении");
+}
+
+
 test("private root contains all ten groups and is noindex",async ({page})=>{
   const response=await page.goto("/dev/real-estate/");
   expect(response?.status()).toBe(200);
@@ -51,6 +59,7 @@ test("first-stage intake never generates a legal document and invalidates stale 
   for(const key of ["summary","documents","goal","caseDetails"]){
     await page.locator("#real-estate-"+key).fill("Искусственное описание для теста без персональных данных");
   }
+  await completeRegistrationRefusalFacts(page);
   await submit.click();
   await expect(page.getByText("Статус анкеты: FACTS_COLLECTED")).toBeVisible();
   await expect(page.getByText(/Ниже можно сформировать только тестовый черновик/)).toBeVisible();
@@ -67,6 +76,7 @@ test("document workbench keeps versions immutable and exports an actual draft PD
   for(const key of ["summary","documents","goal","caseDetails"]){
     await page.locator("#real-estate-"+key).fill("Искусственные сведения для теста версии, без персональных данных и реквизитов");
   }
+  await completeRegistrationRefusalFacts(page);
   await page.getByRole("button",{name:"Проверить полноту тестовых сведений"}).click();
   await page.getByRole("button",{name:"Сформировать предварительный проект"}).click();
   const editor=page.getByTestId("real-estate-document-editor");
