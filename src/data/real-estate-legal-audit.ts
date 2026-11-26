@@ -11,7 +11,7 @@ export type RealEstateCaseAuditRow=Readonly<{
   candidateActCount:number;
   contextualClaimIds:readonly string[];
   contextualPublisherCount:number;
-  acceptedIndividualClaims:0;
+  acceptedIndividualClaims:number;
   reviewStatus:"PENDING";
   filingReady:false;
   indexable:false;
@@ -29,7 +29,7 @@ export const REAL_ESTATE_CASE_AUDIT:readonly RealEstateCaseAuditRow[] =
       candidateActCount:task.candidateActNames.length,
       contextualClaimIds:context.map(claim=>claim.id),
       contextualPublisherCount:new Set(context.flatMap(claim=>claim.sources.map(source=>source.publisher))).size,
-      acceptedIndividualClaims:0 as const,
+      acceptedIndividualClaims:task.acceptedClaims.length,
       reviewStatus:task.status,
       filingReady:task.filingReady,
       indexable:REAL_ESTATE_PUBLICATION_GATE.indexable,
