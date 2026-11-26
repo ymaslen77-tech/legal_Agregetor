@@ -41,7 +41,29 @@ const BASE_FIELDS:readonly RealEstateField[]=[
   {key:"documents",label:"Какие документы и доказательства есть (без реквизитов)?",kind:"textarea",required:true},
   {key:"goal",label:"Какого результата вы хотите добиться?",kind:"textarea",required:true}
 ];
+const registrationSuspensionFields:readonly RealEstateField[]=[
+  {key:"registrationDecision",label:"Какие сведения есть о приостановлении учёта или регистрации?",kind:"choice",required:true,
+    choices:["есть уведомление с основаниями","только статус без текста уведомления","документов нет или не знаю"]},
+  {key:"registrationGround",label:"Указанный в уведомлении пункт статьи 26, если известен (без реквизитов и персональных данных)",kind:"text",required:false},
+  {key:"correctionEvidence",label:"Представляли ли дополнительные документы для устранения причин?",kind:"choice",required:true,
+    choices:["да, есть доказательства подачи","нет","не знаю"]},
+  {key:"registrationDecisionDate",label:"Дата уведомления о приостановлении, если известна",kind:"date",required:false}
+];
+const registrationRefusalFields:readonly RealEstateField[]=[
+  {key:"registrationDecision",label:"Имеется ли письменное решение об отказе?",kind:"choice",required:true,
+    choices:["есть решение с основаниями","только статус без текста решения","документов нет или не знаю"]},
+  {key:"priorSuspension",label:"Было ли до отказа уведомление о приостановлении?",kind:"choice",required:true,
+    choices:["есть уведомление, причины известны","не было или не получено","не знаю"]},
+  {key:"correctionEvidence",label:"Представляли ли документы для устранения причин приостановления?",kind:"choice",required:true,
+    choices:["да, есть доказательства подачи","нет","не знаю"]},
+  {key:"registrationGround",label:"Указанный пункт статьи 26, если известен (без личных реквизитов)",kind:"text",required:false},
+  {key:"registrationDecisionDate",label:"Дата отказа, если известна",kind:"date",required:false}
+];
 const specialFields:Readonly<Record<string,readonly RealEstateField[]>>={
+  "ownership-register/suspension-registration":registrationSuspensionFields,
+  "cadastral-valuation/cadastre-suspension":registrationSuspensionFields,
+  "ownership-register/registration-refusal":registrationRefusalFields,
+  "build-renovation/building-register-refusal":registrationRefusalFields,
   "shared-ownership/share-sale":[
     {key:"transactionKind",label:"Что известно о характере сделки с долей?",kind:"choice",required:true,
       choices:["продажа постороннему лицу","продажа другому сособственнику","публичные торги","мена","другое или не знаю"]},
@@ -81,6 +103,18 @@ function manualReviewFlags(groupId:string,situationId:string,values:Readonly<Rec
       result.push("Доля в общем имуществе: проверить применимость исключений статьи 250 ГК РФ.");
     if(["извещение не направлялось","не знаю"].includes(values.shareNotice??""))
       result.push("Не подтверждено извещение сособственников: проверить документы о направлении и вручении.");
+  }
+  if(["ownership-register/suspension-registration","cadastral-valuation/cadastre-suspension",
+      "ownership-register/registration-refusal","build-renovation/building-register-refusal"].includes(groupId+"/"+situationId)){
+    if(values.registrationDecision!=="есть уведомление с основаниями"
+       && values.registrationDecision!=="есть решение с основаниями")
+      result.push("Точный текст уведомления или решения отсутствует: нельзя проверить пункт статьи 26 или условия статьи 27 по одному статусу в кабинете.");
+    if(values.priorSuspension==="не было или не получено"||values.priorSuspension==="не знаю")
+      result.push("Не установлено предыдущее приостановление и его основания: необходимо проверить всю последовательность регистрационного производства.");
+    if(values.correctionEvidence==="нет"||values.correctionEvidence==="не знаю")
+      result.push("Не подтверждена подача документов для устранения причин: проверить историю обращений и сроки по конкретному делу.");
+    if(!values.registrationGround?.trim())
+      result.push("Не указан конкретный пункт статьи 26 закона № 218-ФЗ: правовое основание требует проверки по уведомлению.");
   }
   if(values.registryErrorOrigin==="не установлено"||values.thirdPartyRights==="не знаю")
     result.push("Нельзя определить порядок исправления записи ЕГРН без первичных документов и проверки прав других лиц.");
