@@ -10,6 +10,8 @@ test("private root contains all ten groups and is noindex",async ({page})=>{
   await expect(page.getByRole("heading",{name:"Недвижимость и земельные споры"})).toBeVisible();
   await expect(page.locator('section[aria-label="Подразделы маршрута"] a')).toHaveCount(10);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content",/noindex/);
+  await expect(page.getByTestId("real-estate-legal-coverage")).toContainText("9 из 60");
+  await expect(page.getByTestId("real-estate-legal-coverage")).toContainText("51");
 });
 
 test("all 60 individual dev-only routes resolve and show their intended situation",async ({page,request})=>{
@@ -140,4 +142,38 @@ test("a share sale by auction with agricultural land is flagged for manual legal
   await expect(editor).toHaveValue(/сельскохозяйственного/);
   await expect(editor).toHaveValue(/НЕ ДОКУМЕНТ ДЛЯ ПОДАЧИ/);
   await expect(page.getByRole("button",{name:"Отправить на проверку юристу"})).toBeDisabled();
+});
+
+test("suspension and refusal lead to separate source-backed fact checks, never automatic legal conclusions",async ({page})=>{
+  const scenarios=[
+    {path:"/dev/real-estate/ownership-register/suspension-registration/",
+      evidence:"только статус без текста уведомления",notice:"Проверенное общее положение"},
+    {path:"/dev/real-estate/ownership-register/registration-refusal/",
+      evidence:"только статус без текста решения",notice:"Проверенное общее положение"}
+  ];
+  for(const s of scenarios){
+    await page.goto(s.path);
+    await page.locator("#real-estate-role").selectOption("собственник");
+    await page.locator("#real-estate-propertyType").selectOption("квартира");
+    await page.locator("#real-estate-stage").selectOption("получен отказ");
+    for(const key of ["summary","documents","goal","caseDetails"]){
+      await page.locator("#real-estate-"+key).fill("Синтетические обстоятельства для проверки решения регистратора без личных реквизитов");
+    }
+    await page.locator("#real-estate-registrationDecision").selectOption(s.evidence);
+    await page.locator("#real-estate-correctionEvidence").selectOption("не знаю");
+    if(s.path.includes("registration-refusal")){
+      await page.locator("#real-estate-priorSuspension").selectOption("не знаю");
+    }
+    await page.getByRole("button",{name:"Проверить полноту тестовых сведений"}).click();
+    const flags=page.getByTestId("real-estate-review-flags");
+    await expect(flags).toContainText("статьи 26");
+    await expect(flags).toContainText("статьи 27");
+    await expect(flags).toContainText("историю обращений");
+    await page.getByRole("button",{name:"Сформировать предварительный проект"}).click();
+    const editor=page.getByTestId("real-estate-document-editor");
+    await expect(editor).toHaveValue(/НЕ ГОТОВ К ПОДАЧЕ/);
+    await expect(editor).toHaveValue(/статьи 26/);
+    await expect(page.getByRole("heading",{name:s.notice})).toBeVisible();
+    await expect(page.getByRole("button",{name:"Отправить на проверку юристу"})).toBeDisabled();
+  }
 });
