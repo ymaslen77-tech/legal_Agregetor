@@ -62,6 +62,35 @@ for(const [group,caseId] of [
   assert.ok(spec.fields.some(field=>field.key==="registryErrorOrigin"));
   assert.ok(spec.fields.some(field=>field.key==="thirdPartyRights"));
 }
+for(const [group,scenario] of [
+  ["ownership-register","suspension-registration"],
+  ["cadastral-valuation","cadastre-suspension"],
+  ["ownership-register","registration-refusal"],
+  ["build-renovation","building-register-refusal"]
+]){
+  const spec=getRealEstateIntakeSpec(group,scenario);
+  assert.ok(spec,group+"/"+scenario);
+  assert.ok(spec.fields.some(x=>x.key==="registrationDecision"&&x.required));
+  assert.ok(spec.fields.some(x=>x.key==="registrationGround"&&!x.required));
+  assert.ok(spec.fields.some(x=>x.key==="correctionEvidence"&&x.required));
+  assert.ok(spec.fields.some(x=>x.key==="registrationDecisionDate"&&!x.required));
+  const values:Record<string,string>={};
+  for(const field of spec.fields)if(field.required){
+    values[field.key]=field.kind==="choice"?field.choices![0]:
+      "Тестовые обезличенные обстоятельства регистрационного производства";
+  }
+  values.registrationDecision="только статус без текста уведомления";
+  if(scenario.includes("refusal"))values.registrationDecision="только статус без текста решения";
+  values.correctionEvidence="не знаю";
+  values.registrationGround="";
+  const result=evaluateRealEstateIntake(spec,values);
+  assert.equal(result.invalid.length,0);
+  assert.equal(result.missing.length,0);
+  assert.ok(result.manualReviewFlags.some(x=>x.includes("статьи 26")),group+"/"+scenario);
+  assert.ok(result.manualReviewFlags.some(x=>x.includes("статьи 27")),group+"/"+scenario);
+  assert.ok(result.manualReviewFlags.some(x=>x.includes("историю обращений")),group+"/"+scenario);
+  assert.ok(spec.fields.some(x=>x.key==="priorSuspension")===scenario.includes("refusal"));
+}
 assert.equal(checked,getRealEstatePlanStats().situations);
 assert.equal(getRealEstateIntakeSpec("bad","bad"),null);
 console.log("Real estate intake PASS: 60 case-specific forms, required fields, date checks, privacy-safe draft restrictions");
