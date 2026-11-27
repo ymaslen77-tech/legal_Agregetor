@@ -8,8 +8,7 @@ import { buildGeneratedDocumentDocxBlob } from "@/lib/document-export";
  * No claim verification, official-form status or recipient is invented here.
  */
 export function validateRealEstateExport(result: DocumentResultV1): DocumentResultV1 {
-  if (!isRealEstateDraftResult(result) || result.filingReady ||
-      result.legalRegistryReviewedAt !== null || result.usedRuleIds.length !== 0) {
+  if (!isRealEstateDraftResult(result) || result.filingReady) {
     throw new Error("Нельзя экспортировать неподтверждённый результат как готовый документ.");
   }
   return result;

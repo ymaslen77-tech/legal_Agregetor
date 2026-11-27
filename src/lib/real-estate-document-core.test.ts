@@ -122,12 +122,18 @@ for(const scenario of ["seller-no-transfer","buyer-payment-delay"]){
   const generate=(overrides:Record<string,string>={})=>createRealEstateDraftPrototype({groupId:"property-transactions",situationId:scenario,values:{...values,...overrides}}).documentResult;
   const result=generate();
   assert.match(result.documentText,/ПРЕТЕНЗИЯ о/);
+  assert.equal(result.legalRegistryReviewedAt,"2026-11-27");
+  assert.deepEqual(result.usedRuleIds,[scenario==="seller-no-transfer"?"sale-transfer-556-1":"sale-payment-486-3"]);
+  assert.equal(validateRealEstateExport(result),result);
+  assert.equal(isRealEstateDraftResult({...result,usedRuleIds:["invented-law"]}),false);
+  assert.equal(isRealEstateDraftResult({...result,source:"USER_EDITED"}),false);
   assert.match(result.documentText,scenario==="seller-no-transfer"?/статьи 556 ГК РФ/:/статьи 486 ГК РФ/);
   assert.match(result.documentText,/договор от 01.10.2026/);
   assert.doesNotMatch(result.documentText,/ИЗЛОЖЕНИЕ ОБСТОЯТЕЛЬСТВ|ДО ПОДАЧИ НЕОБХОДИМО|Предварительный результат|Вопросы для проверки/);
   if(scenario==="buyer-payment-delay")assert.match(result.documentText,/125000,50 руб\./);
   assert.doesNotMatch(generate({saleBreachConfirmed:"нет или не знаю"}).documentText,/ПРЕТЕНЗИЯ о/);
   assert.doesNotMatch(generate({role:"не знаю"}).documentText,/ПРЕТЕНЗИЯ о/);
+  assert.doesNotMatch(generate({saleDueDate:"2099-12-31"}).documentText,/ПРЕТЕНЗИЯ о/);
   assert.equal(result.filingReady,false);
   assert.ok(isRealEstateDraftResult(result));
 }

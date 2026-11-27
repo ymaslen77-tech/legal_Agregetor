@@ -86,19 +86,31 @@ export function listRealEstateDocumentPlans(): readonly RealEstateDocumentPlan[]
     return plan;
   }));
 }
+/** Accepted legal text, not approval of individual facts or filing readiness. */
+export const REAL_ESTATE_ACCEPTED_DRAFT_RULES=[
+  {id:"sale-transfer-556-1",scenario:"seller-no-transfer",asOf:"2026-11-27",
+   statement:"В соответствии с пунктом 1 статьи 556 ГК РФ передача недвижимости оформляется передаточным актом или иным документом о передаче; уклонение продавца от подписания документа на договорных условиях признаётся отказом от исполнения обязанности по передаче.",
+   sources:["https://www.consultant.ru/document/cons_doc_LAW_9027/3e859336194c50096387c5694f99883bed271e78/","https://base.garant.ru/483424196/7de16aeb618604b5f2bbfc08695b1044/","https://sudact.ru/law/gk-rf-chast2/razdel-iv/glava-30/ss-7/statia-556/"]},
+  {id:"sale-payment-486-3",scenario:"buyer-payment-delay",asOf:"2026-11-27",
+   statement:"Согласно пункту 3 статьи 486 ГК РФ при просрочке оплаты переданного по договору товара продавец вправе требовать его оплаты.",
+   sources:["https://www.consultant.ru/document/cons_doc_LAW_9027/2120e9b039b6f15a3d1c793f412f7df3ffcfbd33/","https://base.garant.ru/3961443/76f6f285769ca3565678381da7f4c707/","https://sudact.ru/law/gk-rf-chast2/razdel-iv/glava-30/ss-1/statia-486/"]}
+] as const;
+function acceptedSaleRule(scenario:string){
+  return REAL_ESTATE_ACCEPTED_DRAFT_RULES.find(rule=>rule.scenario===scenario);
+}
 /** A claim is composed only where the facts expressly support this type of demand.
  * No assumed deadline, amount, personal identity or consumer-law penalty. */
-function formatSaleClaim(plan:RealEstateDocumentPlan,data:Readonly<Record<string,string>>):string|null{
+function formatSaleClaim(plan:RealEstateDocumentPlan,data:Readonly<Record<string,string>>,createdAt:string):string|null{
   const transfer=plan.situationId==="seller-no-transfer";
   const payment=plan.situationId==="buyer-payment-delay";
   if(plan.groupId!=="property-transactions"||(!transfer&&!payment))return null;
-  if(!data.saleContract?.trim()||!data.saleObject?.trim()||!data.saleDueDate||!data.saleBreachConfirmed||data.saleBreachConfirmed!=="да")return null;
+  if(!data.saleContract?.trim()||!data.saleObject?.trim()||!data.saleDueDate||data.saleDueDate>=createdAt.slice(0,10)||data.saleBreachConfirmed!=="да")return null;
+  const rule=acceptedSaleRule(plan.situationId);
+  if(!rule)return null;
   if(transfer&&(data.role!=="покупатель"||data.handoverPossession!=="нет"||data.handoverAct!=="нет"))return null;
   if(payment&&(data.role!=="продавец"||data.paymentEvidence!=="есть документы"||data.paymentTerms!=="единовременно"||data.saleTransferred!=="да"||!/^\d{1,12}(?:[.,]\d{1,2})?$/.test(data.saleDebt??"")||Number(data.saleDebt.replace(",","."))<=0))return null;
   const title=transfer?"ПРЕТЕНЗИЯ о передаче недвижимого имущества":"ПРЕТЕНЗИЯ об оплате недвижимого имущества";
-  const basis=transfer
-    ?"В соответствии с пунктом 1 статьи 556 ГК РФ передача недвижимости оформляется передаточным актом или иным документом о передаче; уклонение продавца от подписания документа на договорных условиях признаётся отказом от исполнения обязанности по передаче."
-    :"Согласно пункту 3 статьи 486 ГК РФ при просрочке оплаты переданного по договору товара продавец вправе требовать его оплаты.";
+  const basis=rule.statement;
   const demand=transfer
     ?"Прошу исполнить предусмотренную договором обязанность по передаче указанного объекта и согласовать дату подписания передаточного документа."
     :"Прошу погасить задолженность по договору в размере "+data.saleDebt.replace(".",",")+" руб.";
@@ -109,13 +121,11 @@ function formatSaleClaim(plan:RealEstateDocumentPlan,data:Readonly<Record<string
     "Согласованный срок "+(transfer?"передачи":"оплаты")+": "+data.saleDueDate+".",
     data.summary,data.caseDetails,
     transfer?"На момент составления претензии объект не передан, передаточный документ не подписан.":"На момент составления претензии объект передан, согласованный срок оплаты истёк, задолженность не погашена.",
-    "",basis,"",demand,"Дополнительно: "+data.goal,"Прошу направить письменный ответ по указанному адресу.","",
+    "",basis,"",demand,"Прошу направить письменный ответ по указанному адресу.","",
     "Приложения: "+data.documents,"","Дата: ____________________","Подпись: ____________________"
   ].join("\n");
 }
 function formatResult(plan: RealEstateDocumentPlan, data: Readonly<Record<string, string>>): string {
-  const saleClaim=formatSaleClaim(plan,data);
-  if(saleClaim)return saleClaim;
   const situation = getRealEstateSituation(plan.groupId, plan.situationId);
   const task = getRealEstateLegalReviewTask(plan.groupId, plan.situationId);
   if (!situation || !task || task.status !== "PENDING") throw new Error("Юридическая матрица не найдена.");
@@ -207,11 +217,14 @@ export function createRealEstateDraftPrototype(input: RealEstateDraftInput): Rea
   if (assessment.missing.length || assessment.invalid.length) {
     throw new Error("Сначала заполните обязательные сведения и исправьте ошибки анкеты.");
   }
-  const documentText = formatResult(plan, normalized);
+  const createdAt=input.createdAt??new Date().toISOString();
+  const saleClaim=formatSaleClaim(plan,normalized,createdAt);
+  const rule=saleClaim?acceptedSaleRule(plan.situationId):undefined;
+  const documentText=saleClaim??formatResult(plan,normalized);
   const result = documentResultSchema.parse({
     contractVersion: DOCUMENT_RESULT_CONTRACT_VERSION,
     versionId: input.versionId ?? crypto.randomUUID(),
-    createdAt: input.createdAt ?? new Date().toISOString(),
+    createdAt,
     categorySlug: "nedvizhimost-i-zemlya",
     routeSlug: plan.groupId,
     scenarioKey: plan.situationId,
@@ -220,9 +233,9 @@ export function createRealEstateDraftPrototype(input: RealEstateDraftInput): Rea
     source: "DETERMINISTIC",
     documentTitle: plan.documentTitle,
     documentText,
-    usedRuleIds: [],
+    usedRuleIds: rule?[rule.id]:[],
     placeholders: [],
-    legalRegistryReviewedAt: null,
+    legalRegistryReviewedAt: rule?.asOf??null,
     generatorVersion: REAL_ESTATE_GENERATOR_VERSION,
     filingReady: false,
     requiresLegalReview: true
@@ -235,6 +248,9 @@ export function isRealEstateDraftResult(input: unknown): input is DocumentResult
   if (!parsed.success) return false;
   const result = parsed.data;
   const plan = getRealEstateDocumentPlan(result.routeSlug, result.scenarioKey);
+  const rule=result.routeSlug==="property-transactions"?acceptedSaleRule(result.scenarioKey):undefined;
+  const provenanceValid=(result.legalRegistryReviewedAt===null&&result.usedRuleIds.length===0)||
+    (result.source==="DETERMINISTIC"&&!!rule&&result.usedRuleIds.length===1&&result.usedRuleIds[0]===rule.id&&result.legalRegistryReviewedAt===rule.asOf&&result.documentText.includes(rule.statement));
   return !!plan && result.categorySlug === "nedvizhimost-i-zemlya"
     && result.documentSlug === plan.documentSlug
     && result.documentTitle === plan.documentTitle
@@ -242,8 +258,7 @@ export function isRealEstateDraftResult(input: unknown): input is DocumentResult
     && result.generatorVersion === REAL_ESTATE_GENERATOR_VERSION
     && (result.source === "DETERMINISTIC" || result.source === "USER_EDITED")
     && !result.filingReady && result.requiresLegalReview
-    && result.legalRegistryReviewedAt === null
-    && result.usedRuleIds.length === 0
+    && provenanceValid
     && result.documentText.startsWith(requiredNotices[plan.resultKind]);
 }
 /** User edits do not modify the previous immutable version. */
