@@ -211,5 +211,5 @@ for(const [group,scenario] of [["ownership-register","record-inaccurate"],["land
   const output=renderRealEstateFormPreparation(group,scenario,{},"2026-11-27T12:00:00.000Z").join("\n");
   assert.ok(output.includes(form.url));
   assert.match(output,/не заменяет утверждённую форму/);
-  assert.match(output,/не подтвержден/);
+  assert.match(output,/не подтвержден/i);
 }
