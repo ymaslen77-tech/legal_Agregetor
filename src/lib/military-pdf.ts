@@ -1,10 +1,10 @@
 import type {Content,TDocumentDefinitions} from "pdfmake/interfaces";
 /** Client-side PDF generation. No applicant data leaves the browser. */
-export async function createMilitaryPdfBlob(title:string,text:string):Promise<Blob>{
+export async function createMilitaryPdfBlob(title:string,text:string,options:Readonly<{bodyOnly?:boolean}>={}):Promise<Blob>{
  const [mod,vfs]=await Promise.all([import("pdfmake/build/pdfmake"),import("pdfmake/build/vfs_fonts")]);
  const pdfMake=mod.default;
  (pdfMake as typeof pdfMake & {addVirtualFileSystem:(files:Record<string,string>)=>void}).addVirtualFileSystem(vfs.default as unknown as Record<string,string>);
- const content:Content[]=[
+ const content:Content[]=options.bodyOnly?[{text,style:"body"}]:[
    {text:"ЧЕРНОВИК — НЕ ГОТОВ К ПОДАЧЕ",style:"warning"},
    {text:title,style:"title"},
    {text,style:"body"}

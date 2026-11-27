@@ -1,0 +1,129 @@
+name: Real estate route design and safety gate
+
+on:
+  pull_request:
+    branches:
+      - infra/coolify-russian-vps
+    paths:
+      - "src/data/real-estate-**"
+      - "src/lib/real-estate-**"
+      - "src/lib/saved-document-validation.ts"
+      - "src/components/real-estate/**"
+      - "src/app/dev/real-estate/**"
+      - "tests/real-estate/**"
+      - "playwright.real-estate.config.ts"
+      - "docs/REAL_ESTATE_LAND_ROUTE_PLAN_20261120.md"
+      - ".github/workflows/real-estate-route-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: real-estate-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-design:
+    name: Audit 60 private draft-only scenarios
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: archive_test
+          POSTGRES_PASSWORD: local_archive_test_only
+          POSTGRES_DB: real_estate_archive_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U archive_test -d real_estate_archive_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      DATABASE_URL: postgresql://archive_test:local_archive_test_only@127.0.0.1:5432/real_estate_archive_test?schema=public
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Initialize isolated test database and ephemeral keys
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "$DATABASE_URL" in *"@127.0.0.1:5432/real_estate_archive_test?schema=public") ;; *) exit 1 ;; esac
+          npx prisma generate
+          npx prisma db push --skip-generate
+          jwt=$(openssl rand -hex 32)
+          storage=$(openssl rand -base64 32)
+          echo "::add-mask::$jwt"
+          echo "::add-mask::$storage"
+          echo "JWT_SECRET=$jwt" >> "$GITHUB_ENV"
+          echo "DOCUMENT_STORAGE_KEY=$storage" >> "$GITHUB_ENV"
+          echo "ENABLE_REAL_ESTATE_ARCHIVE_E2E=true" >> "$GITHUB_ENV"
+      - name: Validate Q&A baseline, ten sections and sixty case slugs
+        run: npx tsx src/data/real-estate-route-plan.test.ts
+      - name: Confirm no case is legally approved or filing-ready
+        run: npx tsx src/data/real-estate-legal-review.test.ts
+      - name: Verify all sixty local intake paths and negative cases
+        run: npx tsx src/lib/real-estate-intake.test.ts
+      - name: Prevent exposure of local preview in production
+        run: npx tsx src/lib/real-estate-preview-access.test.ts
+      - name: Verify independently sourced context stays outside filing approvals
+        run: npx tsx src/data/real-estate-checked-context.test.ts
+      - name: Audit all sixty draft document types and immutable version snapshots
+        run: npx tsx src/lib/real-estate-document-core.test.ts
+      - name: Evaluate actual generated text and record acceptance per scenario
+        run: npx tsx src/lib/real-estate-document-acceptance.test.ts
+      - name: Audit case-by-case legal source coverage without premature approvals
+        run: npx tsx src/data/real-estate-legal-audit.test.ts
+      - name: Audit 71 nonindexable future SEO metadata entries
+        run: npx tsx src/data/real-estate-seo.test.ts
+      - name: Verify unreleased documents cannot enter encrypted persistence
+        run: npx tsx src/lib/real-estate-service-gate.test.ts
+      - name: Verify encrypted archive roundtrip and real estate version isolation
+        run: npx tsx src/lib/saved-document-crypto.test.ts
+      - name: Verify integration types
+        run: npm run typecheck
+      - name: Targeted ESLint
+        run: npx eslint src/data/real-estate-route-plan.ts src/data/real-estate-route-plan.test.ts src/data/real-estate-legal-review.ts src/data/real-estate-legal-review.test.ts src/lib/real-estate-intake.ts src/lib/real-estate-intake.test.ts src/lib/real-estate-preview-access.ts src/lib/real-estate-preview-access.test.ts src/components/real-estate/RealEstatePreview.tsx src/components/real-estate/RealEstateDocumentWorkbench.tsx src/data/real-estate-checked-context.ts src/data/real-estate-checked-context.test.ts src/data/real-estate-legal-audit.ts src/data/real-estate-legal-audit.test.ts src/data/real-estate-seo.ts src/data/real-estate-seo.test.ts src/lib/real-estate-document-core.ts src/lib/real-estate-document-core.test.ts src/lib/real-estate-document-export.ts src/lib/real-estate-service-gate.ts src/lib/real-estate-service-gate.test.ts src/lib/saved-document-validation.ts src/lib/saved-document-crypto.test.ts src/components/account/SavedLegalDocumentsCabinet.tsx src/app/dev/real-estate/page.tsx 'src/app/dev/real-estate/[group]/page.tsx' 'src/app/dev/real-estate/[group]/[situation]/page.tsx' tests/real-estate/preview.spec.ts tests/real-estate/archive.spec.ts tests/real-estate/all-exports.spec.ts src/lib/real-estate-document-acceptance.test.ts src/data/real-estate-reviewed-guidance.ts playwright.real-estate.config.ts
+      - name: Install independent PDF and DOCX content inspectors
+        run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends poppler-utils unzip
+      - name: Install Chromium for closed route preview
+        run: npx playwright install --with-deps chromium
+      - name: Browser-test all 60 dev-only route URLs and intake without production changes
+        shell: bash
+        env:
+          ENABLE_REAL_ESTATE_PREVIEW: "true"
+          NEXT_TELEMETRY_DISABLED: "1"
+        run: |
+          set -euo pipefail
+          npm run dev -- -p 3903 > /tmp/real-estate-preview.log 2>&1 &
+          pid=$!
+          trap 'kill "$pid" 2>/dev/null || true' EXIT
+          ready=0
+          for i in $(seq 1 90); do
+            if curl --silent --fail http://127.0.0.1:3903/dev/real-estate/ >/dev/null; then
+              ready=1
+              break
+            fi
+            sleep 2
+          done
+          if [ "$ready" -ne 1 ]; then cat /tmp/real-estate-preview.log; exit 1; fi
+          npx playwright test --config=playwright.real-estate.config.ts --workers=1
+      - name: Save failed preview screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: real-estate-browser-failures
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+          retention-days: 7
