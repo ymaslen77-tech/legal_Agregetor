@@ -113,3 +113,21 @@ assert.match(appealDraft("2026-11-20").documentText,/15 рабочих дней/
 assert.match(appealDraft("2026-11-20").documentText,/Судебное обжалование препятствует/);
 assert.doesNotMatch(appealDraft("2025-12-31").documentText,/15 рабочих дней/);
 assert.equal(appealDraft("2026-11-20").filingReady,false);
+
+for(const scenario of ["seller-no-transfer","buyer-payment-delay"]){
+  const spec=getRealEstateIntakeSpec("property-transactions",scenario);assert.ok(spec);
+  const values:Record<string,string>={};
+  for(const field of spec.fields)if(field.required)values[field.key]=field.kind==="choice"?field.choices![0]:"Тестовое описание обстоятельств и подтверждающих документов";
+  Object.assign(values,{role:scenario==="seller-no-transfer"?"покупатель":"продавец",saleContract:"договор от 01.10.2026",saleObject:"условный объект",saleDueDate:"2026-10-15",saleBreachConfirmed:"да",handoverAct:"нет",handoverPossession:"нет",paymentEvidence:"есть документы",paymentTerms:"единовременно",saleTransferred:"да",saleDebt:"125000,50"});
+  const generate=(overrides:Record<string,string>={})=>createRealEstateDraftPrototype({groupId:"property-transactions",situationId:scenario,values:{...values,...overrides}}).documentResult;
+  const result=generate();
+  assert.match(result.documentText,/ПРЕТЕНЗИЯ о/);
+  assert.match(result.documentText,scenario==="seller-no-transfer"?/статьи 556 ГК РФ/:/статьи 486 ГК РФ/);
+  assert.match(result.documentText,/договор от 01.10.2026/);
+  assert.doesNotMatch(result.documentText,/ИЗЛОЖЕНИЕ ОБСТОЯТЕЛЬСТВ|ДО ПОДАЧИ НЕОБХОДИМО|Предварительный результат|Вопросы для проверки/);
+  if(scenario==="buyer-payment-delay")assert.match(result.documentText,/125000,50 руб\./);
+  assert.doesNotMatch(generate({saleBreachConfirmed:"нет или не знаю"}).documentText,/ПРЕТЕНЗИЯ о/);
+  assert.doesNotMatch(generate({role:"не знаю"}).documentText,/ПРЕТЕНЗИЯ о/);
+  assert.equal(result.filingReady,false);
+  assert.ok(isRealEstateDraftResult(result));
+}

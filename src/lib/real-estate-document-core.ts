@@ -86,7 +86,36 @@ export function listRealEstateDocumentPlans(): readonly RealEstateDocumentPlan[]
     return plan;
   }));
 }
+/** A claim is composed only where the facts expressly support this type of demand.
+ * No assumed deadline, amount, personal identity or consumer-law penalty. */
+function formatSaleClaim(plan:RealEstateDocumentPlan,data:Readonly<Record<string,string>>):string|null{
+  const transfer=plan.situationId==="seller-no-transfer";
+  const payment=plan.situationId==="buyer-payment-delay";
+  if(plan.groupId!=="property-transactions"||(!transfer&&!payment))return null;
+  if(!data.saleContract?.trim()||!data.saleObject?.trim()||!data.saleDueDate||!data.saleBreachConfirmed||data.saleBreachConfirmed!=="да")return null;
+  if(transfer&&(data.role!=="покупатель"||data.handoverPossession!=="нет"||data.handoverAct!=="нет"))return null;
+  if(payment&&(data.role!=="продавец"||data.paymentEvidence!=="есть документы"||data.paymentTerms!=="единовременно"||data.saleTransferred!=="да"||!/^\d{1,12}(?:[.,]\d{1,2})?$/.test(data.saleDebt??"")||Number(data.saleDebt.replace(",","."))<=0))return null;
+  const title=transfer?"ПРЕТЕНЗИЯ о передаче недвижимого имущества":"ПРЕТЕНЗИЯ об оплате недвижимого имущества";
+  const basis=transfer
+    ?"В соответствии с пунктом 1 статьи 556 ГК РФ передача недвижимости оформляется передаточным актом или иным документом о передаче; уклонение продавца от подписания документа на договорных условиях признаётся отказом от исполнения обязанности по передаче."
+    :"Согласно пункту 3 статьи 486 ГК РФ при просрочке оплаты переданного по договору товара продавец вправе требовать его оплаты.";
+  const demand=transfer
+    ?"Прошу исполнить предусмотренную договором обязанность по передаче указанного объекта и согласовать дату подписания передаточного документа."
+    :"Прошу погасить задолженность по договору в размере "+data.saleDebt.replace(".",",")+" руб.";
+  return [
+    requiredNotices.DRAFT,"","Кому: ____________________","От кого: ____________________","Адрес для ответа: ____________________","",title,"",
+    "Договор купли-продажи: "+data.saleContract+".",
+    "Объект недвижимости: "+data.saleObject+".",
+    "Согласованный срок "+(transfer?"передачи":"оплаты")+": "+data.saleDueDate+".",
+    data.summary,data.caseDetails,
+    transfer?"На момент составления претензии объект не передан, передаточный документ не подписан.":"На момент составления претензии объект передан, согласованный срок оплаты истёк, задолженность не погашена.",
+    "",basis,"",demand,"Дополнительно: "+data.goal,"Прошу направить письменный ответ по указанному адресу.","",
+    "Приложения: "+data.documents,"","Дата: ____________________","Подпись: ____________________"
+  ].join("\n");
+}
 function formatResult(plan: RealEstateDocumentPlan, data: Readonly<Record<string, string>>): string {
+  const saleClaim=formatSaleClaim(plan,data);
+  if(saleClaim)return saleClaim;
   const situation = getRealEstateSituation(plan.groupId, plan.situationId);
   const task = getRealEstateLegalReviewTask(plan.groupId, plan.situationId);
   if (!situation || !task || task.status !== "PENDING") throw new Error("Юридическая матрица не найдена.");
@@ -98,7 +127,7 @@ function formatResult(plan: RealEstateDocumentPlan, data: Readonly<Record<string
     .map(field=>field.label+": "+data[field.key]);
   const assessment=evaluateRealEstateIntake(intakeSpec,data);
   const specificWarnings=assessment.manualReviewFlags.length?[
-    "ОБСТОЯТЕЛЬСТВА, ТРЕБУЮЩИЕ ИНДИВИДУАЛЬНОЙ ПРОВЕРКИ",
+    "Вопросы для проверки:",
     ...assessment.manualReviewFlags.map((value,index)=>String(index+1)+". "+value)
   ]:[];
   const facts = [
@@ -130,10 +159,8 @@ function formatResult(plan: RealEstateDocumentPlan, data: Readonly<Record<string
       draftLabel,
       "По вопросу: " + situation.title,
       "",
-      "ИЗЛОЖЕНИЕ ОБСТОЯТЕЛЬСТВ",
       ...facts,
       "",
-      "ПРЕДМЕТ ПРЕДПОЛАГАЕМОГО ОБРАЩЕНИЯ",
       "Прошу рассмотреть описанные обстоятельства и проверить возможность разрешения вопроса, обозначенного заявителем: " + data.goal,
       "Конкретный адресат и юридически допустимая просительная часть подлежат отдельной проверке.",
       "",
@@ -143,7 +170,7 @@ function formatResult(plan: RealEstateDocumentPlan, data: Readonly<Record<string
       "",
       ...specificWarnings,
       "",
-      "ДО ПОДАЧИ НЕОБХОДИМО",
+      "Примечания к предварительному проекту (не часть заявления):",
       ...check.map((v, i) => String(i + 1) + ". " + v),
       "Ни подсудность, ни правовое основание, ни госпошлина, ни срок подачи автоматически не установлены."
     ].join("\n");

@@ -116,10 +116,20 @@ const specialFields:Readonly<Record<string,readonly RealEstateField[]>>={
     {key:"purchaseRights",label:"Известны ли права третьих лиц?",kind:"choice",required:true,choices:["есть сведения","не установлены","не знаю"]}
   ],
   "property-transactions/seller-no-transfer":[
+    {key:"saleContract",label:"Дата и обозначение договора (только обезличенные данные в тестовом режиме)",kind:"text",required:false},
+    {key:"saleObject",label:"Описание объекта по договору (без адреса и кадастрового номера в тестовом режиме)",kind:"text",required:false},
+    {key:"saleDueDate",label:"Согласованный срок исполнения",kind:"date",required:false},
+    {key:"saleBreachConfirmed",label:"Подтверждаете, что согласованный срок истёк и обязанность не исполнена?",kind:"choice",required:false,choices:["да","нет или не знаю"]},
     {key:"handoverAct",label:"Подписан ли передаточный документ?",kind:"choice",required:true,choices:["да","нет","не знаю"]},
     {key:"handoverPossession",label:"Передан ли фактический доступ?",kind:"choice",required:true,choices:["да","нет","не знаю"]}
   ],
   "property-transactions/buyer-payment-delay":[
+    {key:"saleContract",label:"Дата и обозначение договора (только обезличенные данные в тестовом режиме)",kind:"text",required:false},
+    {key:"saleObject",label:"Описание объекта по договору (без адреса и кадастрового номера в тестовом режиме)",kind:"text",required:false},
+    {key:"saleDueDate",label:"Согласованный срок исполнения",kind:"date",required:false},
+    {key:"saleBreachConfirmed",label:"Подтверждаете, что согласованный срок истёк и обязанность не исполнена?",kind:"choice",required:false,choices:["да","нет или не знаю"]},
+    {key:"saleTransferred",label:"Передан ли объект покупателю?",kind:"choice",required:false,choices:["да","нет или не знаю"]},
+    {key:"saleDebt",label:"Подтверждённый остаток долга в рублях (число без пробелов)",kind:"text",required:false},
     {key:"paymentTerms",label:"Как предусмотрена оплата?",kind:"choice",required:true,choices:["единовременно","аванс или рассрочка","не знаю"]},
     {key:"paymentEvidence",label:"Есть ли подтверждение суммы и срока оплаты?",kind:"choice",required:true,choices:["есть документы","нет или не знаю"]}
   ],

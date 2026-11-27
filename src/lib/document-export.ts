@@ -4,6 +4,7 @@ type DownloadGeneratedDocumentDocxParams = {
   title: string;
   fileName: string;
   content: string;
+  bodyOnly?: boolean;
 };
 
 type DownloadGeneratedDocumentPdfParams = {
@@ -26,9 +27,9 @@ export async function downloadGeneratedDocumentDocx({ title, fileName, content }
   URL.revokeObjectURL(url);
 }
 
-export async function buildGeneratedDocumentDocxBlob({ title, content }: DownloadGeneratedDocumentDocxParams): Promise<Blob> {
+export async function buildGeneratedDocumentDocxBlob({ title, content, bodyOnly = false }: DownloadGeneratedDocumentDocxParams): Promise<Blob> {
   const paragraphs = [
-    new Paragraph({
+    ...(bodyOnly ? [] : [new Paragraph({
       spacing: { after: 240 },
       children: [
         new TextRun({
@@ -37,7 +38,7 @@ export async function buildGeneratedDocumentDocxBlob({ title, content }: Downloa
           size: 28
         })
       ]
-    }),
+    })]),
     ...content.split(/\r?\n/).map((line) => buildParagraph(line))
   ];
 

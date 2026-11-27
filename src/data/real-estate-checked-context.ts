@@ -674,7 +674,7 @@ export const REAL_ESTATE_CHECKED_CONTEXT = [
       {
         "publisher": "ГАРАНТ",
         "type": "LAW_TEXT",
-        "url": "https://base.garant.ru/10164072/81061ff9bf70f479ad7cde3ebcba1999/",
+        "url": "https://base.garant.ru/3961443/76f6f285769ca3565678381da7f4c707/",
         "supports": "Общее положение статьи 486"
       },
       {
@@ -1277,7 +1277,7 @@ export const REAL_ESTATE_CHECKED_CONTEXT = [
       {
         "publisher": "КонсультантПлюс",
         "type": "LAW_TEXT",
-        "url": "https://www.consultant.ru/document/cons_doc_LAW_481299/3d0cac60971a511280cbba229d9b6329c07731f7/",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_182661/83295bf0f5e516b936afd4c1a22990e4e41c4d3d/",
         "supports": "Закон № 207-ФЗ, статья 1: введение главы 3.1 и изменение статьи 29 закона № 218-ФЗ; правила дополнительно сверены по действующей статье 31.2 в редакции от 04.08.2026"
       },
       {

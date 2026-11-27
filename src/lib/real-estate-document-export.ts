@@ -20,13 +20,14 @@ export function realEstateFileName(result: DocumentResultV1, ext: "pdf" | "docx"
 }
 export async function createRealEstatePdfBlob(result: DocumentResultV1): Promise<Blob> {
   const valid = validateRealEstateExport(result);
-  return createMilitaryPdfBlob(valid.documentTitle, valid.documentText);
+  return createMilitaryPdfBlob(valid.documentTitle, valid.documentText, {bodyOnly:true});
 }
 export async function createRealEstateDocxBlob(result: DocumentResultV1): Promise<Blob> {
   const valid = validateRealEstateExport(result);
   return buildGeneratedDocumentDocxBlob({
     title: valid.documentTitle,
     fileName: realEstateFileName(valid, "docx"),
-    content: valid.documentText
+    content: valid.documentText,
+    bodyOnly: true
   });
 }

@@ -95,6 +95,8 @@ test("document workbench keeps versions immutable and exports an actual draft PD
   const extracted=execFileSync("pdftotext",[local!,"-"],{encoding:"utf8"});
   expect(extracted).toContain("Росреестр отказал");
   expect(extracted).toContain("НЕ ГОТОВ К ПОДАЧЕ");
+  expect(extracted.match(/НЕ ГОТОВ К ПОДАЧЕ/g)).toHaveLength(1);
+  expect(extracted).not.toContain("ИЗЛОЖЕНИЕ ОБСТОЯТЕЛЬСТВ");
   await page.getByText("Дополнительные форматы (тестовый DOCX)").click();
   const docxPromise=page.waitForEvent("download");
   await page.getByRole("button",{name:"Скачать DOCX-черновик"}).click();
@@ -106,6 +108,8 @@ test("document workbench keeps versions immutable and exports an actual draft PD
   expect(docxBytes.subarray(0,2).toString()).toBe("PK");
   const xml=execFileSync("unzip",["-p",docxPath!,"word/document.xml"],{encoding:"utf8"});
   expect(xml).toContain("Росреестр отказал");
+  expect(xml.match(/НЕ ГОТОВ К ПОДАЧЕ/g)).toHaveLength(1);
+  expect(xml).not.toContain("ИЗЛОЖЕНИЕ ОБСТОЯТЕЛЬСТВ");
   await editor.fill((await editor.inputValue())+"\nТестовая редакторская пометка.");
   await expect(pdf).toBeDisabled();
   await page.getByRole("button",{name:"Сохранить новую редакцию"}).click();
