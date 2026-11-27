@@ -60,6 +60,26 @@ const registrationRefusalFields:readonly RealEstateField[]=[
   {key:"registrationDecisionDate",label:"Дата отказа, если известна",kind:"date",required:false}
 ];
 const specialFields:Readonly<Record<string,readonly RealEstateField[]>>={
+  "build-renovation/house-notification":[
+    {key:"buildKind",label:"Какой вид объекта планируется?",kind:"choice",required:true,choices:["жилой или садовый дом","иной объект","не знаю"]},
+    {key:"buildNotice",label:"Что известно об уведомлении?",kind:"choice",required:true,choices:["есть ответ органа","направлено без ответа","не направлялось или не знаю"]}
+  ],
+  "build-renovation/reconstruction-docs":[
+    {key:"buildKind",label:"Какой объект реконструируется?",kind:"choice",required:true,choices:["жилой или садовый дом","иной объект","не знаю"]},
+    {key:"rebuildParams",label:"Что изменяется при работах?",kind:"choice",required:true,choices:["площадь или параметры объекта","характер работ не установлен","не знаю"]}
+  ],
+  "build-renovation/unauthorized-building":[
+    {key:"buildLandRight",label:"Имеются ли документы о праве на землю?",kind:"choice",required:true,choices:["есть документы","нет документов или не знаю"]},
+    {key:"buildRisk",label:"Что известно о нарушениях и безопасности?",kind:"choice",required:true,choices:["есть акт или заключение","только устные сведения","не знаю"]}
+  ],
+  "build-renovation/demolition-order":[
+    {key:"demolitionAuthority",label:"Кем предъявлено требование?",kind:"choice",required:true,choices:["суд","орган власти","другое или не знаю"]},
+    {key:"demolitionEvidence",label:"Есть ли текст требования и основание?",kind:"choice",required:true,choices:["есть письменный документ","нет документа или не знаю"]}
+  ],
+  "build-renovation/unfinished-property":[
+    {key:"unfinishedLand",label:"Зарегистрировано ли право на землю?",kind:"choice",required:true,choices:["есть запись ЕГРН","нет записи","не знаю"]},
+    {key:"unfinishedPlan",label:"Имеются ли технический план и документы о строительстве?",kind:"choice",required:true,choices:["есть документы","часть документов","не знаю"]}
+  ],
   "land-boundaries/boundary-survey":[
     {key:"boundaryRecord",label:"Есть ли координаты границ в выписке ЕГРН?",kind:"choice",required:true,choices:["есть координаты","нет координат","не знаю"]},
     {key:"boundaryPlan",label:"Имеется ли межевой план или документы образования участка?",kind:"choice",required:true,choices:["есть документы","нет документов","не знаю"]}
@@ -198,6 +218,11 @@ function manualReviewFlags(groupId:string,situationId:string,values:Readonly<Rec
   if((groupId==="land-boundaries"&&situationId==="land-access")||(groupId==="neighbors-servitudes"&&["blocked-drive","servitude-agreement","utilities-neighbor"].includes(situationId))){
     result.push("Проверить необходимость частного сервитута и альтернативный доступ по статье 274 ГК РФ; автоматически право доступа не устанавливается.");
     if(values.burdenedLand!=="частный собственник")result.push("Проверить собственника участка и специальные правила публичной земли.");
+  }
+  if(groupId==="build-renovation"){
+    if(situationId==="house-notification"||situationId==="reconstruction-docs")result.push("Проверить применимость уведомительного порядка и специальной регистрации по части 12 статьи 70 закона № 218-ФЗ; не считать один режим универсальным.");
+    if(situationId==="unauthorized-building"||situationId==="demolition-order")result.push("Проверить признаки самовольной постройки, даты, компетенцию и возможность приведения в соответствие по статье 222 ГК РФ; автоматически снос или признание права не утверждаются.");
+    if(situationId==="unfinished-property")result.push("Проверить право на землю, состояние объекта, документы и исключения статьи 40 закона № 218-ФЗ.");
   }
   if(values.registryErrorOrigin==="не установлено"||values.thirdPartyRights==="не знаю")
     result.push("Нельзя определить порядок исправления записи ЕГРН без первичных документов и проверки прав других лиц.");

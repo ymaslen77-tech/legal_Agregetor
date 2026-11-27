@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { REAL_ESTATE_CHECKED_CONTEXT,getRealEstateCheckedContext } from "./real-estate-checked-context";
 import { getRealEstateLegalReviewTask } from "./real-estate-legal-review";
-assert.equal(REAL_ESTATE_CHECKED_CONTEXT.length,12);
+assert.equal(REAL_ESTATE_CHECKED_CONTEXT.length,16);
 for(const item of REAL_ESTATE_CHECKED_CONTEXT){
   assert.equal(item.status,"CONTEXT_ONLY_NOT_DOCUMENT_READY");
   const legalArticle:Record<string,RegExp>={
@@ -16,12 +16,16 @@ for(const item of REAL_ESTATE_CHECKED_CONTEXT){
     "boundary-plan-article22":/статьи 22/,
     "boundary-consent-article39":/Статья 39/,
     "boundary-act-article40":/статьи 40/,
-    "private-servitude-article274":/статьи 274/
+    "private-servitude-article274":/статьи 274/,
+    "build-notice-article51-1":/Статья 51\.1/,
+    "build-simple-article70":/статьи 70/,
+    "build-unauthorized-article222":/Статья 222/,
+    "build-registration-article40":/Статья 40/
   };
   assert.match(item.proposition,legalArticle[item.id],"Unrecognized context entry "+item.id);
   assert.equal(item.sources.length,3);
   assert.equal(new Set(item.sources.map(x=>x.publisher)).size,3);
-  if(item.id.startsWith("registration-")||item.id.startsWith("ddu-")||item.id.startsWith("boundary-")||item.id.startsWith("private-servitude-"))assert.equal(
+  if(item.id.startsWith("registration-")||item.id.startsWith("ddu-")||item.id.startsWith("boundary-")||item.id.startsWith("private-servitude-")||item.id.startsWith("build-"))assert.equal(
     new Set(item.sources.map(x=>new URL(x.url).hostname)).size,3
   );
   assert.ok(item.sources.every(x=>new URL(x.url).protocol==="https:"));
@@ -46,12 +50,12 @@ for(const [group,situation,article] of [
   ["build-renovation","building-register-refusal","registration-refusal-article27"]
 ]){
   const context=getRealEstateCheckedContext(group,situation);
-  assert.equal(context.length,1,group+"/"+situation);
+  assert.equal(context.length,group==="build-renovation"?2:1,group+"/"+situation);
   assert.equal(context[0].id,article);
   assert.equal(getRealEstateLegalReviewTask(group,situation)?.filingReady,false);
 }
 assert.deepEqual(getRealEstateCheckedContext("none","none"),[]);
-console.log("Real estate legal context PASS: 12 contexts, 3 publishers each, 22 covered situations but zero filing approvals");
+console.log("Real estate legal context PASS: 16 contexts, 3 publishers each, 27 covered situations but zero filing approvals");
 
 for(const [scenario,id] of [["ddu-signing","ddu-contract-article4"],["area-mismatch","ddu-contract-article4"],["developer-delay","ddu-delay-article6"],["quality-defects","ddu-quality-article7"],["act-acceptance-dispute","ddu-acceptance-article8"]]){
   const context=getRealEstateCheckedContext("newbuild-ddu",scenario);
@@ -70,3 +74,8 @@ for(const group of ["land-boundaries","neighbors-servitudes"]){
   }
 }
 assert.equal(getRealEstateCheckedContext("land-boundaries","registry-boundary-error").length,2);
+
+for(const scenario of ["house-notification","reconstruction-docs","unauthorized-building","demolition-order","unfinished-property","building-register-refusal"]){
+  assert.ok(getRealEstateCheckedContext("build-renovation",scenario).length>0,scenario);
+  assert.equal(getRealEstateLegalReviewTask("build-renovation",scenario)?.filingReady,false);
+}

@@ -122,3 +122,16 @@ for(const [caseKey,keys] of [["land-boundaries/boundary-survey",["boundaryRecord
   assert.ok(result.manualReviewFlags.length>0,caseKey);
   assert.equal(result.filingReady,false,caseKey);
 }
+
+for(const [scenario,keys] of [["house-notification",["buildKind","buildNotice"]],["reconstruction-docs",["buildKind","rebuildParams"]],["unauthorized-building",["buildLandRight","buildRisk"]],["demolition-order",["demolitionAuthority","demolitionEvidence"]],["unfinished-property",["unfinishedLand","unfinishedPlan"]]] as const){
+  const spec=getRealEstateIntakeSpec("build-renovation",scenario);
+  assert.ok(spec,scenario);
+  for(const key of keys)assert.ok(spec.fields.some(f=>f.key===key&&f.required),key);
+  const values:Record<string,string>={};
+  for(const field of spec.fields)if(field.required)values[field.key]=field.kind==="choice"?field.choices![field.choices!.length-1]:"Обезличенные тестовые сведения";
+  const result=evaluateRealEstateIntake(spec,values);
+  assert.equal(result.invalid.length,0,scenario);
+  assert.equal(result.missing.length,0,scenario);
+  assert.ok(result.manualReviewFlags.length>0,scenario);
+  assert.equal(result.filingReady,false,scenario);
+}

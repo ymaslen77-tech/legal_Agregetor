@@ -377,6 +377,130 @@ export const REAL_ESTATE_CHECKED_CONTEXT = [
         "supports": "Статья 274, основания, соглашение, суд и регистрация"
       }
     ]
+  },
+  {
+    "id": "build-notice-article51-1",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "build-renovation/house-notification",
+      "build-renovation/reconstruction-docs"
+    ],
+    "proposition": "Статья 51.1 ГрК РФ предусматривает уведомление о планируемом строительстве или реконструкции ИЖС или садового дома с установленным набором сведений и проверкой допустимости параметров и размещения.",
+    "limitations": "Проверить вид объекта и работ, права на землю, ВРИ, отступы, ограничения, дату и ответ органа; учесть исключения, в том числе строительство ИЖС с привлечением средств по № 214-ФЗ и отдельный порядок части 12 статьи 70 № 218-ФЗ. Не считать уведомительный порядок универсальным.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_51040/fe0cad704c69e3b97bf615f0437ecf1996a57677/",
+        "supports": "Статья 51.1, сведения и проверка параметров"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/12138258/d737ac68a72553c64d7b4303bf980638/",
+        "supports": "Статья 51.1, сведения и проверка параметров"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/gradostroitelnyi-kodeks/glava-6/statia-51.1/",
+        "supports": "Статья 51.1, сведения и проверка параметров"
+      }
+    ]
+  },
+  {
+    "id": "build-simple-article70",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "build-renovation/house-notification",
+      "build-renovation/reconstruction-docs"
+    ],
+    "proposition": "Часть 12 статьи 70 закона № 218-ФЗ предусматривает до 1 марта 2031 года специальный порядок учёта и регистрации отвечающих установленным условиям жилых и садовых домов на участках указанных в норме видов использования.",
+    "limitations": "Сверить вид и параметры дома, назначение участка, права, технический план, ограничения и условия частей 12–13. Не распространять упрощённую процедуру на все здания, виды реконструкции и земельные участки.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_182661/aec996e2d81cfc470e7bb25a5d57100b8a3cd106/",
+        "supports": "Часть 12 статьи 70, специальная регистрация домов"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/71129192/2c2bb927757944432208533b3ff87c36/",
+        "supports": "Часть 12 статьи 70, специальная регистрация домов"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/federalnyi-zakon-ot-13072015-n-218-fz-o/glava-11/statia-70_1/",
+        "supports": "Часть 12 статьи 70, специальная регистрация домов"
+      }
+    ]
+  },
+  {
+    "id": "build-unauthorized-article222",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "build-renovation/unauthorized-building",
+      "build-renovation/demolition-order"
+    ],
+    "proposition": "Статья 222 ГК РФ определяет признаки самовольной постройки, условия признания права и случаи сноса или приведения в соответствие; полномочия органа местного самоуправления ограничены законом.",
+    "limitations": "Проверить даты строительства и выявления, права на землю, ВРИ, параметры, согласования, угрозу жизни и здоровью, чужие права, ранее принятые судебные акты и компетенцию органа. Не утверждать автоматически самовольность, законность сноса или возможность признания права. Учитывать постановление Пленума ВС РФ от 12.12.2023 № 44 и специальные режимы.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_5142/f670878d88ab83726bd1804b82668b84b027802e/",
+        "supports": "Статья 222, признаки и способы разрешения"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/10164072/563198f2b81e68dd907ddc26c916e9b0/",
+        "supports": "Статья 222, признаки и способы разрешения"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/gk-rf-chast1/razdel-ii/glava-14/statia-222/",
+        "supports": "Статья 222, признаки и способы разрешения"
+      }
+    ]
+  },
+  {
+    "id": "build-registration-article40",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "build-renovation/unfinished-property",
+      "build-renovation/building-register-refusal"
+    ],
+    "proposition": "Статья 40 закона № 218-ФЗ устанавливает особенности кадастрового учёта и регистрации созданных объектов и незавершённого строительства, включая связь с регистрацией права на землю при отсутствии записи ЕГРН и предусмотренные законом исключения.",
+    "limitations": "Проверить статус объекта, право на участок, запись ЕГРН, технический план, разрешительные документы и специальные исключения статьи 40, включая отдельный режим реестров незавершённых объектов. Не считать любой недостроенный объект подлежащим регистрации.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_182661/2a1d75c2e35cd634aba9fb73737750a657ce0525/",
+        "supports": "Статья 40, связь регистрации здания и земли"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/71129192/f9b0119a4fce7561a213cdc9af189098/",
+        "supports": "Статья 40, связь регистрации здания и земли"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/federalnyi-zakon-ot-13072015-n-218-fz-o/glava-6/statia-40_1/",
+        "supports": "Статья 40, связь регистрации здания и земли"
+      }
+    ]
   }
 ] as const;
 
