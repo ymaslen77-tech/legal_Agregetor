@@ -2,6 +2,7 @@ import {
   REAL_ESTATE_GROUPS, getRealEstateSituation,
   type RealEstateResult
 } from "@/data/real-estate-route-plan";
+import { getReviewedRealEstateGuidance,renderReviewedRealEstateGuidance } from "@/data/real-estate-reviewed-guidance";
 import { getRealEstateLegalReviewTask } from "@/data/real-estate-legal-review";
 import { getRealEstateIntakeSpec, evaluateRealEstateIntake } from "@/lib/real-estate-intake";
 import {
@@ -178,6 +179,7 @@ function formatResult(plan: RealEstateDocumentPlan, data: Readonly<Record<string
     "Желаемый результат со слов заполняющего: " + data.goal,
     ...specialAnswers
   ].filter(Boolean);
+  const reviewedGuidance=renderReviewedRealEstateGuidance(plan.groupId,plan.situationId,data);
   const check = [
     "Сопоставить описанные обстоятельства с первичными документами и записью о праве.",
     "Проверить применимую редакцию нормативных актов на даты событий и возможные исключения.",
@@ -224,10 +226,10 @@ function formatResult(plan: RealEstateDocumentPlan, data: Readonly<Record<string
     "СВЕДЕНИЯ ДЛЯ ИНДИВИДУАЛЬНОЙ ПРОВЕРКИ",
     ...facts,
     "",
+    ...(reviewedGuidance.length?["Правовая оценка и дальнейшие действия:",...reviewedGuidance,""]:[]),
     ...specificWarnings,
     "",
-    "СЛЕДУЮЩИЕ ДЕЙСТВИЯ",
-    ...check.map((v, i) => String(i + 1) + ". " + v),
+    ...(reviewedGuidance.length?[]:["СЛЕДУЮЩИЕ ДЕЙСТВИЯ",...check.map((v, i) => String(i + 1) + ". " + v)]),
     "",
     "Не используйте этот результат как правовое заключение, иск или официальную форму."
   ].join("\n");
@@ -246,7 +248,7 @@ export function createRealEstateDraftPrototype(input: RealEstateDraftInput): Rea
   }
   const createdAt=input.createdAt??new Date().toISOString();
   const specificClaim=formatSaleClaim(plan,normalized,createdAt)??formatDduDefectClaim(plan,normalized,createdAt);
-  const rule=specificClaim?acceptedDraftRule(plan.groupId,plan.situationId):undefined;
+  const rule=specificClaim?acceptedDraftRule(plan.groupId,plan.situationId):getReviewedRealEstateGuidance(plan.groupId,plan.situationId);
   const documentText=specificClaim??formatResult(plan,normalized);
   const result = documentResultSchema.parse({
     contractVersion: DOCUMENT_RESULT_CONTRACT_VERSION,
@@ -275,7 +277,7 @@ export function isRealEstateDraftResult(input: unknown): input is DocumentResult
   if (!parsed.success) return false;
   const result = parsed.data;
   const plan = getRealEstateDocumentPlan(result.routeSlug, result.scenarioKey);
-  const rule=acceptedDraftRule(result.routeSlug,result.scenarioKey);
+  const rule=acceptedDraftRule(result.routeSlug,result.scenarioKey)??getReviewedRealEstateGuidance(result.routeSlug,result.scenarioKey);
   const provenanceValid=(result.legalRegistryReviewedAt===null&&result.usedRuleIds.length===0)||
     (result.source==="DETERMINISTIC"&&!!rule&&result.usedRuleIds.length===1&&result.usedRuleIds[0]===rule.id&&result.legalRegistryReviewedAt===rule.asOf&&result.documentText.includes(rule.statement));
   return !!plan && result.categorySlug === "nedvizhimost-i-zemlya"

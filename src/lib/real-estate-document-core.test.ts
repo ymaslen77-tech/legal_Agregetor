@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { REAL_ESTATE_GROUPS } from "@/data/real-estate-route-plan";
+import { getReviewedRealEstateGuidance,REAL_ESTATE_REVIEWED_GUIDANCE } from "@/data/real-estate-reviewed-guidance";
 import { getRealEstateIntakeSpec } from "@/lib/real-estate-intake";
 import {
   REAL_ESTATE_GENERATOR_VERSION, createRealEstateDraftPrototype,
@@ -36,8 +37,10 @@ for (const group of REAL_ESTATE_GROUPS) for (const s of group.situations) {
   assert.equal(out.categorySlug,"nedvizhimost-i-zemlya",key);
   assert.equal(out.filingReady,false,key);
   assert.equal(out.requiresLegalReview,true,key);
-  assert.equal(out.legalRegistryReviewedAt,null,key);
-  assert.deepEqual(out.usedRuleIds,[],key);
+  const guidance=getReviewedRealEstateGuidance(group.id,s.id);
+  assert.equal(out.legalRegistryReviewedAt,guidance?.asOf??null,key);
+  assert.deepEqual(out.usedRuleIds,guidance?[guidance.id]:[],key);
+  if(guidance){assert.ok(out.documentText.includes(guidance.statement),key);assert.match(out.documentText,/Правовая оценка и дальнейшие действия/);assert.doesNotMatch(out.documentText,/Каждый материальный правовой вывод подтвердить/);}
   assert.ok(isRealEstateDraftResult(out),key);
   assert.ok(out.documentText.includes(s.title),key);
   assert.ok(out.documentText.includes(answers.caseDetails),key);
@@ -156,3 +159,14 @@ assert.equal(defectClaim.filingReady,false);
 assert.ok(isRealEstateDraftResult(defectClaim));
 assert.doesNotMatch(defectClaim.documentText,/Вопросы для проверки|Примечания к предварительному проекту|штраф|неустойк/i);
 for(const changes of [{defectWarranty:"нет или не знаю"},{defectContractRemedy:"нет или не знаю"},{defectAttribution:"нет или не знаю"},{defectRemedy:"уменьшение цены"},{defectTransferDate:"2025-12-01"},{defectFoundDate:"2026-08-01"},{defectFoundDate:"2027-01-01"},{defectStage:"до подписания акта"}])assert.deepEqual(defectResult(changes).usedRuleIds,[]);
+
+assert.equal(REAL_ESTATE_REVIEWED_GUIDANCE.length,6);
+for(const rule of REAL_ESTATE_REVIEWED_GUIDANCE)assert.ok(new Set(rule.sources.map(u=>new URL(u).hostname)).size>=3);
+const compensationSpec=getRealEstateIntakeSpec("shared-ownership","compensation-share");assert.ok(compensationSpec);
+const compensationValues:Record<string,string>={};
+for(const field of compensationSpec.fields)if(field.required)compensationValues[field.key]=field.kind==="choice"?field.choices![0]:"Синтетические обстоятельства";
+const compensation=(kind:string,consent:string)=>createRealEstateDraftPrototype({groupId:"shared-ownership",situationId:"compensation-share",values:{...compensationValues,compensationKind:kind,compensationConsent:consent}}).documentResult;
+assert.match(compensation("за пользование имуществом","есть согласие").documentText,/фактическое пользование этой частью/);
+assert.match(compensation("вместо выдела или за прекращение доли","согласия нет").documentText,/трёх условий одновременно/);
+assert.match(compensation("не знаю","не знаю").documentText,/Сначала определите цель/);
+assert.equal(compensation("за пользование имуществом","есть согласие").filingReady,false);

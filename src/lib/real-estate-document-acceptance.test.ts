@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { REAL_ESTATE_GROUPS } from "@/data/real-estate-route-plan";
 import { getRealEstateCheckedContext } from "@/data/real-estate-checked-context";
 import { createRealEstateDraftPrototype, REAL_ESTATE_ACCEPTED_DRAFT_RULES } from "@/lib/real-estate-document-core";
+import { getReviewedRealEstateGuidance } from "@/data/real-estate-reviewed-guidance";
 import { getRealEstateIntakeSpec } from "@/lib/real-estate-intake";
 
 /** Acceptance is based on actual output, not on the number of registered routes. */
@@ -36,15 +37,18 @@ const rows=REAL_ESTATE_GROUPS.flatMap(group=>group.situations.map(situation=>{
     assert.doesNotMatch(result.documentText,/Вопросы для проверки|Сведения для индивидуальной проверки|Примечания к предварительному проекту/i,key);
     assert.equal(new Set(rule.sources.map(url=>new URL(url).hostname)).size,3,key);
   }
+  const guidance=getReviewedRealEstateGuidance(group.id,situation.id);
+  if(guidance){assert.deepEqual(result.usedRuleIds,[guidance.id],key);assert.ok(result.documentText.includes(guidance.statement),key);assert.match(result.documentText,/Правовая оценка и дальнейшие действия/);assert.ok(new Set(guidance.sources.map(url=>new URL(url).hostname)).size>=3,key);}
   const reason=rule?"Условный шаблон и правовой тезис приняты; необходимы реквизиты сторон, проверка договорных исключений и успешное сохранение пользователем":
-    officialForms[key]??claimProblems[key]??"Результат является памяткой или листом сведений, не юридическим документом; требуется предметная правовая оценка и проверка применимости норм/доказательств";
+    guidance?"Принят информационный шаблон с проверенной нормой и условной правовой оценкой; публичные интеграции ещё не приняты":officialForms[key]??claimProblems[key]??"Результат является памяткой или листом сведений, не юридическим документом; требуется предметная правовая оценка и проверка применимости норм/доказательств";
   return {key,title:situation.title,resultKind:result.resultKind,contextIds:context.map(c=>c.id),usedRuleIds:result.usedRuleIds,
-    textStatus:rule?"CONDITIONAL_TEMPLATE_PASS":"REWORK_REQUIRED",releaseStatus:"BLOCKED",reason};
+    textStatus:rule?"CONDITIONAL_TEMPLATE_PASS":guidance?"CONDITIONAL_GUIDANCE_PASS":"REWORK_REQUIRED",releaseStatus:"BLOCKED",reason};
 }));
 assert.equal(rows.length,60);
 assert.equal(rows.filter(r=>r.textStatus==="CONDITIONAL_TEMPLATE_PASS").length,3);
-assert.equal(rows.filter(r=>r.textStatus==="REWORK_REQUIRED").length,57);
+assert.equal(rows.filter(r=>r.textStatus==="CONDITIONAL_GUIDANCE_PASS").length,6);
+assert.equal(rows.filter(r=>r.textStatus==="REWORK_REQUIRED").length,51);
 assert.ok(rows.every(r=>r.releaseStatus==="BLOCKED"));
 assert.equal(rows.filter(r=>r.resultKind==="DRAFT").length,10);
 console.log("REAL_ESTATE_DOCUMENT_ACCEPTANCE="+JSON.stringify(rows));
-console.log("3 conditional claim templates; 7 other draft routes require rework; 50 informational outputs require substantive acceptance; no public release approval.");
+console.log("3 conditional claim templates; 6 conditional informational templates; 7 other draft and 44 informational routes require rework; no public release approval.");
