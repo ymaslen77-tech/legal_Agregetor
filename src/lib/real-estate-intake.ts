@@ -60,6 +60,78 @@ const registrationRefusalFields:readonly RealEstateField[]=[
   {key:"registrationDecisionDate",label:"Дата отказа, если известна",kind:"date",required:false}
 ];
 const specialFields:Readonly<Record<string,readonly RealEstateField[]>>={
+  "ownership-register/ownership-transfer":[
+    {key:"transferStage",label:"Что препятствует регистрации?",kind:"choice",required:true,choices:["уклонение стороны","решение регистратора","не установлено"]},
+    {key:"transferEvidence",label:"Есть ли договор и документы об исполнении?",kind:"choice",required:true,choices:["есть документы","неполный комплект","не знаю"]}
+  ],
+  "property-transactions/prepurchase-check":[
+    {key:"purchaseRegister",label:"Изучена ли актуальная выписка ЕГРН?",kind:"choice",required:true,choices:["да","нет или не знаю"]},
+    {key:"purchaseRights",label:"Известны ли права третьих лиц?",kind:"choice",required:true,choices:["есть сведения","не установлены","не знаю"]}
+  ],
+  "property-transactions/seller-no-transfer":[
+    {key:"handoverAct",label:"Подписан ли передаточный документ?",kind:"choice",required:true,choices:["да","нет","не знаю"]},
+    {key:"handoverPossession",label:"Передан ли фактический доступ?",kind:"choice",required:true,choices:["да","нет","не знаю"]}
+  ],
+  "property-transactions/buyer-payment-delay":[
+    {key:"paymentTerms",label:"Как предусмотрена оплата?",kind:"choice",required:true,choices:["единовременно","аванс или рассрочка","не знаю"]},
+    {key:"paymentEvidence",label:"Есть ли подтверждение суммы и срока оплаты?",kind:"choice",required:true,choices:["есть документы","нет или не знаю"]}
+  ],
+  "property-transactions/hidden-encumbrance":[
+    {key:"thirdRightKnown",label:"Было ли известно о праве третьего лица до сделки?",kind:"choice",required:true,choices:["да","нет","не знаю"]},
+    {key:"thirdRightEvidence",label:"Есть ли документ о праве или притязании?",kind:"choice",required:true,choices:["есть","нет или не знаю"]}
+  ],
+  "property-transactions/preliminary-contract":[
+    {key:"preliminaryEvidence",label:"Есть ли подписанный договор и условие о сроке?",kind:"choice",required:true,choices:["есть","частично","не знаю"]},
+    {key:"mainOffer",label:"Направлялось ли предложение заключить основной договор?",kind:"choice",required:true,choices:["есть доказательство","нет или не знаю"]}
+  ],
+  "property-transactions/invalidate-property-deal":[
+    {key:"invalidityBasis",label:"Указано ли конкретное предполагаемое основание недействительности?",kind:"choice",required:true,choices:["есть документы","только предположение","не знаю"]},
+    {key:"invalidityStage",label:"Есть ли судебный акт по сделке?",kind:"choice",required:true,choices:["есть","нет","не знаю"]}
+  ],
+  "ownership-register/title-documents":[
+    {key:"titleBasis",label:"Какое основание права предполагается?",kind:"choice",required:true,choices:["сделка или акт","наследство или решение суда","иное или неизвестно"]},
+    {key:"titleEvidence",label:"Есть ли исходные правоустанавливающие документы?",kind:"choice",required:true,choices:["есть","частично","не знаю"]}
+  ],
+  "shared-ownership/share-registration":[
+    {key:"shareBasis",label:"Как возникла доля?",kind:"choice",required:true,choices:["сделка","наследство или судебный акт","иное или неизвестно"]},
+    {key:"shareRegistrationEvidence",label:"Есть ли документ об основании доли?",kind:"choice",required:true,choices:["есть","нет или не знаю"]}
+  ],
+  "ownership-register/encumbrance-record":[
+    {key:"encumbranceBasis",label:"Есть ли документ-основание записи?",kind:"choice",required:true,choices:["есть","нет или не знаю"]},
+    {key:"encumbranceKind",label:"Какого вида ограничение указано?",kind:"choice",required:true,choices:["ипотека или сервитут","арест или запрет","иное или неизвестно"]}
+  ],
+  "cadastral-valuation/object-no-record":[
+    {key:"objectBasis",label:"Есть ли документы об объекте?",kind:"choice",required:true,choices:["есть","частично","не знаю"]},
+    {key:"objectPlan",label:"Есть ли технический или межевой план?",kind:"choice",required:true,choices:["есть","нет или не знаю"]}
+  ],
+  "property-litigation/recognition-of-right":[
+    {key:"recognitionBasis",label:"На каком основании заявляется право?",kind:"choice",required:true,choices:["документ или сделка","иное основание","не знаю"]},
+    {key:"recognitionContest",label:"Оспаривает ли другое лицо право?",kind:"choice",required:true,choices:["да","нет или не знаю"]}
+  ],
+  "property-litigation/contested-register-right":[
+    {key:"contestedRecord",label:"Есть ли актуальная запись и документ-основание?",kind:"choice",required:true,choices:["есть","частично","не знаю"]},
+    {key:"contestedClaim",label:"Кто оспаривает право?",kind:"choice",required:true,choices:["участник сделки или правообладатель","другое лицо","не знаю"]}
+  ],
+  "property-litigation/property-recovery":[
+    {key:"recoveryPossession",label:"Кто фактически владеет объектом?",kind:"choice",required:true,choices:["другое лицо","заявитель","не установлено"]},
+    {key:"recoveryBasis",label:"Есть ли документы о праве и обстоятельствах выбытия?",kind:"choice",required:true,choices:["есть","нет или не знаю"]}
+  ],
+  "property-litigation/property-obstacle":[
+    {key:"obstaclePossession",label:"Сохраняется ли фактическое владение?",kind:"choice",required:true,choices:["да","нет","не знаю"]},
+    {key:"obstacleEvidence",label:"Есть ли доказательства препятствий?",kind:"choice",required:true,choices:["есть","нет или не знаю"]}
+  ],
+  "neighbors-servitudes/fence-dispute":[
+    {key:"fenceCoordinates",label:"Есть ли координаты и измерения забора?",kind:"choice",required:true,choices:["есть","нет или не знаю"]},
+    {key:"fenceObstacle",label:"В чём выражается нарушение?",kind:"choice",required:true,choices:["препятствия или спор о границе","иное или не знаю"]}
+  ],
+  "neighbors-servitudes/water-runoff":[
+    {key:"runoffEvidence",label:"Есть ли акт осмотра или заключение?",kind:"choice",required:true,choices:["есть","нет или не знаю"]},
+    {key:"runoffDamage",label:"Зафиксирован ли вред?",kind:"choice",required:true,choices:["есть документы","не зафиксирован или не знаю"]}
+  ],
+  "neighbors-servitudes/damage-neighbor-build":[
+    {key:"damageEvidence",label:"Есть ли акт повреждений и оценка?",kind:"choice",required:true,choices:["есть","часть документов","не знаю"]},
+    {key:"damageCause",label:"Есть ли заключение о причине повреждений?",kind:"choice",required:true,choices:["есть","нет или не знаю"]}
+  ],
   "shared-ownership/use-arrangement":[
     {key:"useAgreement",label:"Есть ли соглашение или решение суда о пользовании?",kind:"choice",required:true,choices:["есть документ","нет или не знаю"]},
     {key:"useAccess",label:"Что известно о фактическом доступе?",kind:"choice",required:true,choices:["пользуемся совместно","есть препятствия","не знаю"]}
@@ -246,6 +318,28 @@ function manualReviewFlags(groupId:string,situationId:string,values:Readonly<Rec
     if(situationId==="share-division"||situationId==="compensation-share")result.push("Проверить возможность выдела, согласие и существенный интерес; принудительная компенсация по статье 252 ГК РФ не определяется автоматически.");
     if(situationId==="compensation-share")result.push("Разграничить компенсацию за пользование по статье 247 и компенсацию вместо выдела по статье 252 ГК РФ.");
   }
+  const transactionChecks:Readonly<Record<string,string>>={
+  "ownership-register/ownership-transfer": "Проверить заключённость договора, исполнение, права продавца, причину отсутствия записи и документы регистратора. Уклонение стороны не равно отказу Росреестра; не выбирать способ защиты автоматически.",
+  "property-transactions/prepurchase-check": "Проверить заключённость договора, исполнение, права продавца, причину отсутствия записи и документы регистратора. Уклонение стороны не равно отказу Росреестра; не выбирать способ защиты автоматически. Проверить вид права или притязания, момент его возникновения, осведомлённость покупателя, договор, ЕГРН и применимость специальных норм. Отсутствие записи не гарантирует отсутствия прав третьих лиц.",
+  "property-transactions/seller-no-transfer": "Проверить фактическую передачу, условия договора, ключи, акт, уведомления и поведение сторон. Отделить передачу от регистрации перехода права.",
+  "property-transactions/buyer-payment-delay": "Проверить договорные сроки, аванс, кредит, рассрочку, фактическое исполнение и специальные условия. Не рассчитывать проценты или выбирать расторжение автоматически.",
+  "property-transactions/hidden-encumbrance": "Проверить вид права или притязания, момент его возникновения, осведомлённость покупателя, договор, ЕГРН и применимость специальных норм. Отсутствие записи не гарантирует отсутствия прав третьих лиц.",
+  "property-transactions/preliminary-contract": "Проверить квалификацию договора, предмет, форму, сроки, предложение заключить основной договор и доказательства его отправки. Не квалифицировать любой аванс как задаток; не вычислять срок автоматически.",
+  "property-transactions/invalidate-property-deal": "Сначала установить конкретное основание недействительности, применимую редакцию, круг лиц и сроки; проверить статьи 166–181, права третьих лиц и судебные разъяснения. Не считать сделку недействительной из одного описания и не обещать реституцию.",
+  "ownership-register/encumbrance-record": "Установить запись, документ-основание, лицо, чьи права затронуты, и характер спора. Не считать спор о праве технической ошибкой; отдельно проверить способ защиты и надлежащих участников.",
+  "property-litigation/contested-register-right": "Установить запись, документ-основание, лицо, чьи права затронуты, и характер спора. Не считать спор о праве технической ошибкой; отдельно проверить способ защиты и надлежащих участников.",
+  "ownership-register/title-documents": "Проверить конкретное основание права, комплект документов, вид объекта, необходимость отдельного учёта и специальные требования. Для признания права судебный акт является возможным регистрационным основанием, а не самостоятельным материальным основанием удовлетворения иска.",
+  "shared-ownership/share-registration": "Проверить конкретное основание права, комплект документов, вид объекта, необходимость отдельного учёта и специальные требования. Для признания права судебный акт является возможным регистрационным основанием, а не самостоятельным материальным основанием удовлетворения иска.",
+  "cadastral-valuation/object-no-record": "Проверить конкретное основание права, комплект документов, вид объекта, необходимость отдельного учёта и специальные требования. Для признания права судебный акт является возможным регистрационным основанием, а не самостоятельным материальным основанием удовлетворения иска.",
+  "property-litigation/recognition-of-right": "Проверить конкретное основание права, комплект документов, вид объекта, необходимость отдельного учёта и специальные требования. Для признания права судебный акт является возможным регистрационным основанием, а не самостоятельным материальным основанием удовлетворения иска.",
+  "property-litigation/property-recovery": "Установить право истца, фактического владельца, основания владения и выбытия, добросовестность, условия статьи 302 и сроки. Не смешивать с договорным возвратом и устранением препятствий.",
+  "property-litigation/property-obstacle": "Проверить право, сохранение владения, конкретные нарушения и доказательства связи с действиями другого лица. Для забора и стока установить границы, фактические обстоятельства и технические нормы; не определять автоматически перенос забора или обязанность устранить сток.",
+  "neighbors-servitudes/fence-dispute": "Проверить право, сохранение владения, конкретные нарушения и доказательства связи с действиями другого лица. Для забора и стока установить границы, фактические обстоятельства и технические нормы; не определять автоматически перенос забора или обязанность устранить сток.",
+  "neighbors-servitudes/water-runoff": "Проверить право, сохранение владения, конкретные нарушения и доказательства связи с действиями другого лица. Для забора и стока установить границы, фактические обстоятельства и технические нормы; не определять автоматически перенос забора или обязанность устранить сток. Проверить наличие и размер вреда, причинную связь, действия причинителя, вину и специальные режимы ответственности. Не рассчитывать возмещение по одной анкете; необходимы акты и доказательства.",
+  "neighbors-servitudes/damage-neighbor-build": "Проверить наличие и размер вреда, причинную связь, действия причинителя, вину и специальные режимы ответственности. Не рассчитывать возмещение по одной анкете; необходимы акты и доказательства."
+};
+  const transactionCheck=transactionChecks[groupId+"/"+situationId];
+  if(transactionCheck)result.push(transactionCheck);
   if(values.registryErrorOrigin==="не установлено"||values.thirdPartyRights==="не знаю")
     result.push("Нельзя определить порядок исправления записи ЕГРН без первичных документов и проверки прав других лиц.");
   if(values.thirdPartyRights==="да")

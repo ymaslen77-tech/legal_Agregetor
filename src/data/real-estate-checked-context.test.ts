@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { REAL_ESTATE_CHECKED_CONTEXT,getRealEstateCheckedContext } from "./real-estate-checked-context";
 import { getRealEstateLegalReviewTask } from "./real-estate-legal-review";
-assert.equal(REAL_ESTATE_CHECKED_CONTEXT.length,19);
+assert.equal(REAL_ESTATE_CHECKED_CONTEXT.length,30);
 for(const item of REAL_ESTATE_CHECKED_CONTEXT){
   assert.equal(item.status,"CONTEXT_ONLY_NOT_DOCUMENT_READY");
   const legalArticle:Record<string,RegExp>={
@@ -23,12 +23,23 @@ for(const item of REAL_ESTATE_CHECKED_CONTEXT){
     "build-registration-article40":/Статья 40/,
     "share-use-article247":/Статья 247/,
     "share-cost-article249":/Статья 249/,
-    "share-division-article252":/Статья 252/
+    "share-division-article252":/Статья 252/,
+    "transaction-protection-551":/Статья 551/,
+    "transaction-protection-556":/Статья 556/,
+    "transaction-protection-486":/Статья 486/,
+    "transaction-protection-460":/Статья 460/,
+    "transaction-protection-429":/Статья 429/,
+    "transaction-protection-167":/Статья 167/,
+    "transaction-protection-8.1":/Статья 8\.1/,
+    "transaction-protection-14":/Статья 14/,
+    "transaction-protection-301":/Статья 301/,
+    "transaction-protection-304":/Статья 304/,
+    "transaction-protection-1064":/Статья 1064/
   };
   assert.match(item.proposition,legalArticle[item.id],"Unrecognized context entry "+item.id);
   assert.equal(item.sources.length,3);
   assert.equal(new Set(item.sources.map(x=>x.publisher)).size,3);
-  if(item.id.startsWith("registration-")||item.id.startsWith("ddu-")||item.id.startsWith("boundary-")||item.id.startsWith("private-servitude-")||item.id.startsWith("build-")||(item.id.startsWith("share-")&&item.id!=="share-sale-preemption"))assert.equal(
+  if(item.id.startsWith("registration-")||item.id.startsWith("ddu-")||item.id.startsWith("boundary-")||item.id.startsWith("private-servitude-")||item.id.startsWith("build-")||item.id.startsWith("transaction-protection-")||(item.id.startsWith("share-")&&item.id!=="share-sale-preemption"))assert.equal(
     new Set(item.sources.map(x=>new URL(x.url).hostname)).size,3
   );
   assert.ok(item.sources.every(x=>new URL(x.url).protocol==="https:"));
@@ -58,7 +69,7 @@ for(const [group,situation,article] of [
   assert.equal(getRealEstateLegalReviewTask(group,situation)?.filingReady,false);
 }
 assert.deepEqual(getRealEstateCheckedContext("none","none"),[]);
-console.log("Real estate legal context PASS: 19 contexts, 3 publishers each, 31 covered situations but zero filing approvals");
+console.log("Real estate legal context PASS: 30 contexts, 3 publishers each, 49 covered situations but zero filing approvals");
 
 for(const [scenario,id] of [["ddu-signing","ddu-contract-article4"],["area-mismatch","ddu-contract-article4"],["developer-delay","ddu-delay-article6"],["quality-defects","ddu-quality-article7"],["act-acceptance-dispute","ddu-acceptance-article8"]]){
   const context=getRealEstateCheckedContext("newbuild-ddu",scenario);
@@ -88,3 +99,9 @@ for(const scenario of ["use-arrangement","shared-costs","share-division","compen
   assert.equal(getRealEstateLegalReviewTask("shared-ownership",scenario)?.filingReady,false);
 }
 assert.equal(getRealEstateCheckedContext("shared-ownership","compensation-share").length,2);
+
+for(const key of ["ownership-register/ownership-transfer","property-transactions/prepurchase-check","property-transactions/seller-no-transfer","property-transactions/buyer-payment-delay","property-transactions/hidden-encumbrance","property-transactions/preliminary-contract","property-transactions/invalidate-property-deal","ownership-register/encumbrance-record","property-litigation/contested-register-right","ownership-register/title-documents","shared-ownership/share-registration","cadastral-valuation/object-no-record","property-litigation/recognition-of-right","property-litigation/property-recovery","property-litigation/property-obstacle","neighbors-servitudes/fence-dispute","neighbors-servitudes/water-runoff","neighbors-servitudes/damage-neighbor-build"]){
+  const [group,scenario]=key.split("/");
+  assert.ok(getRealEstateCheckedContext(group,scenario).length>0,key);
+  assert.equal(getRealEstateLegalReviewTask(group,scenario)?.filingReady,false,key);
+}

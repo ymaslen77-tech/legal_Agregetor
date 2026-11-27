@@ -148,3 +148,17 @@ for(const [scenario,keys] of [["use-arrangement",["useAgreement","useAccess"]],[
   assert.ok(result.manualReviewFlags.length>0,scenario);
   assert.equal(result.filingReady,false,scenario);
 }
+
+for(const [caseKey,keys] of [["ownership-register/ownership-transfer",["transferStage","transferEvidence"]],["property-transactions/prepurchase-check",["purchaseRegister","purchaseRights"]],["property-transactions/seller-no-transfer",["handoverAct","handoverPossession"]],["property-transactions/buyer-payment-delay",["paymentTerms","paymentEvidence"]],["property-transactions/hidden-encumbrance",["thirdRightKnown","thirdRightEvidence"]],["property-transactions/preliminary-contract",["preliminaryEvidence","mainOffer"]],["property-transactions/invalidate-property-deal",["invalidityBasis","invalidityStage"]],["ownership-register/title-documents",["titleBasis","titleEvidence"]],["shared-ownership/share-registration",["shareBasis","shareRegistrationEvidence"]],["ownership-register/encumbrance-record",["encumbranceBasis","encumbranceKind"]],["cadastral-valuation/object-no-record",["objectBasis","objectPlan"]],["property-litigation/recognition-of-right",["recognitionBasis","recognitionContest"]],["property-litigation/contested-register-right",["contestedRecord","contestedClaim"]],["property-litigation/property-recovery",["recoveryPossession","recoveryBasis"]],["property-litigation/property-obstacle",["obstaclePossession","obstacleEvidence"]],["neighbors-servitudes/fence-dispute",["fenceCoordinates","fenceObstacle"]],["neighbors-servitudes/water-runoff",["runoffEvidence","runoffDamage"]],["neighbors-servitudes/damage-neighbor-build",["damageEvidence","damageCause"]]] as const){
+  const [group,scenario]=caseKey.split("/");
+  const spec=getRealEstateIntakeSpec(group,scenario);
+  assert.ok(spec,caseKey);
+  for(const key of keys)assert.ok(spec.fields.some(f=>f.key===key&&f.required),key);
+  const values:Record<string,string>={};
+  for(const field of spec.fields)if(field.required)values[field.key]=field.kind==="choice"?field.choices![field.choices!.length-1]:"Обезличенные тестовые сведения";
+  const result=evaluateRealEstateIntake(spec,values);
+  assert.equal(result.invalid.length,0,caseKey);
+  assert.equal(result.missing.length,0,caseKey);
+  assert.ok(result.manualReviewFlags.length>0,caseKey);
+  assert.equal(result.filingReady,false,caseKey);
+}

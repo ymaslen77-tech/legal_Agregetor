@@ -18,8 +18,8 @@ test("private root contains all ten groups and is noindex",async ({page})=>{
   await expect(page.getByRole("heading",{name:"Недвижимость и земельные споры"})).toBeVisible();
   await expect(page.locator('section[aria-label="Подразделы маршрута"] a')).toHaveCount(10);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content",/noindex/);
-  await expect(page.getByTestId("real-estate-legal-coverage")).toContainText("31 из 60");
-  await expect(page.getByTestId("real-estate-legal-coverage")).toContainText("29");
+  await expect(page.getByTestId("real-estate-legal-coverage")).toContainText("49 из 60");
+  await expect(page.getByTestId("real-estate-legal-coverage")).toContainText("11");
 });
 
 test("all 60 individual dev-only routes resolve and show their intended situation",async ({page,request})=>{

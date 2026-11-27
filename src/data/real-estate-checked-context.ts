@@ -593,6 +593,345 @@ export const REAL_ESTATE_CHECKED_CONTEXT = [
         "supports": "Статья 252, выдел и условия компенсации"
       }
     ]
+  },
+  {
+    "id": "transaction-protection-551",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "ownership-register/ownership-transfer",
+      "property-transactions/prepurchase-check"
+    ],
+    "proposition": "Статья 551 ГК РФ требует государственной регистрации перехода собственности при продаже недвижимости. При уклонении стороны от регистрации другая сторона может требовать судебного решения о регистрации при условиях нормы.",
+    "limitations": "Проверить заключённость договора, исполнение, права продавца, причину отсутствия записи и документы регистратора. Уклонение стороны не равно отказу Росреестра; не выбирать способ защиты автоматически.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_9027/15de7d7f32ed75647dd8e11602ce7fa8c4b5bb8b/",
+        "supports": "Общее положение статьи 551"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/10164072/fbac239d206e52f103b4c2e3cb5d01df/",
+        "supports": "Общее положение статьи 551"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/gk-rf-chast2/razdel-iv/glava-30/ss-7/statia-551/",
+        "supports": "Общее положение статьи 551"
+      }
+    ]
+  },
+  {
+    "id": "transaction-protection-556",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "property-transactions/seller-no-transfer"
+    ],
+    "proposition": "Статья 556 ГК РФ регулирует передачу недвижимости по акту или иному передаточному документу; уклонение от его подписания на договорных условиях квалифицируется как отказ от соответствующей обязанности.",
+    "limitations": "Проверить фактическую передачу, условия договора, ключи, акт, уведомления и поведение сторон. Отделить передачу от регистрации перехода права.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_9027/3e859336194c50096387c5694f99883bed271e78/",
+        "supports": "Общее положение статьи 556"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/483424196/7de16aeb618604b5f2bbfc08695b1044/",
+        "supports": "Общее положение статьи 556"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/gk-rf-chast2/razdel-iv/glava-30/ss-7/statia-556/",
+        "supports": "Общее положение статьи 556"
+      }
+    ]
+  },
+  {
+    "id": "transaction-protection-486",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "property-transactions/buyer-payment-delay"
+    ],
+    "proposition": "Статья 486 ГК РФ устанавливает общие правила оплаты по купле-продаже и допускает требование оплаты и процентов при несвоевременной оплате переданного товара.",
+    "limitations": "Проверить договорные сроки, аванс, кредит, рассрочку, фактическое исполнение и специальные условия. Не рассчитывать проценты или выбирать расторжение автоматически.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_9027/2120e9b039b6f15a3d1c793f412f7df3ffcfbd33/",
+        "supports": "Общее положение статьи 486"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/10164072/81061ff9bf70f479ad7cde3ebcba1999/",
+        "supports": "Общее положение статьи 486"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/gk-rf-chast2/razdel-iv/glava-30/ss-1/statia-486/",
+        "supports": "Общее положение статьи 486"
+      }
+    ]
+  },
+  {
+    "id": "transaction-protection-460",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "property-transactions/hidden-encumbrance",
+      "property-transactions/prepurchase-check"
+    ],
+    "proposition": "Статья 460 ГК РФ регулирует обязанность продавца передавать имущество без прав третьих лиц, кроме согласованных покупателем обременений, и предусматривает условные способы защиты.",
+    "limitations": "Проверить вид права или притязания, момент его возникновения, осведомлённость покупателя, договор, ЕГРН и применимость специальных норм. Отсутствие записи не гарантирует отсутствия прав третьих лиц.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_9027/89e42f0ef51adc5ffd2dfbf59f64714aa9502408/",
+        "supports": "Общее положение статьи 460"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/483424196/6fa2486d2912c9fb92498309da1d87e5/",
+        "supports": "Общее положение статьи 460"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/gk-rf-chast2/razdel-iv/glava-30/ss-1/statia-460/",
+        "supports": "Общее положение статьи 460"
+      }
+    ]
+  },
+  {
+    "id": "transaction-protection-429",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "property-transactions/preliminary-contract"
+    ],
+    "proposition": "Статья 429 ГК РФ регулирует обязанность заключения основного договора в будущем, форму, условия, срок и возможность судебного понуждения при предусмотренных законом обстоятельствах.",
+    "limitations": "Проверить квалификацию договора, предмет, форму, сроки, предложение заключить основной договор и доказательства его отправки. Не квалифицировать любой аванс как задаток; не вычислять срок автоматически.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_5142/97b643126817ac88d7d189c4e90a598045ca555c/",
+        "supports": "Общее положение статьи 429"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/10164072/2a63961ca10f446f15ae39332e88fd3c/",
+        "supports": "Общее положение статьи 429"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/gk-rf-chast1/razdel-iii/podrazdel-2_1/glava-27/statia-429/",
+        "supports": "Общее положение статьи 429"
+      }
+    ]
+  },
+  {
+    "id": "transaction-protection-167",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "property-transactions/invalidate-property-deal"
+    ],
+    "proposition": "Статья 167 ГК РФ определяет общие последствия недействительности сделки, включая возврат полученного или возмещение стоимости с установленными законом исключениями.",
+    "limitations": "Сначала установить конкретное основание недействительности, применимую редакцию, круг лиц и сроки; проверить статьи 166–181, права третьих лиц и судебные разъяснения. Не считать сделку недействительной из одного описания и не обещать реституцию.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_5142/c18778732f1e820875bb79a8f634f706940f0142/",
+        "supports": "Общее положение статьи 167"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/10164072/bb6d500b8f60186b09506f1befdf6687/",
+        "supports": "Общее положение статьи 167"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/gk-rf-chast1/razdel-i/podrazdel-4/glava-9/ss-2_2/statia-167/",
+        "supports": "Общее положение статьи 167"
+      }
+    ]
+  },
+  {
+    "id": "transaction-protection-8.1",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "ownership-register/encumbrance-record",
+      "property-litigation/contested-register-right"
+    ],
+    "proposition": "Статья 8.1 ГК РФ устанавливает общие правила государственной регистрации прав, ограничений и обременений в предусмотренных законом случаях, включая проверку оснований регистрации и достоверность реестра.",
+    "limitations": "Установить запись, документ-основание, лицо, чьи права затронуты, и характер спора. Не считать спор о праве технической ошибкой; отдельно проверить способ защиты и надлежащих участников.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_5142/0357f6ec88e3d6d7616956dbeb6b6a07e2b393dd/",
+        "supports": "Общее положение статьи 8.1"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/10164072/c39b8e96ec0008b1c62ae7ad768077a2/",
+        "supports": "Общее положение статьи 8.1"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/gk-rf-chast1/razdel-i/podrazdel-1/glava-2/statia-8.1/?page=9",
+        "supports": "Общее положение статьи 8.1"
+      }
+    ]
+  },
+  {
+    "id": "transaction-protection-14",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "ownership-register/title-documents",
+      "shared-ownership/share-registration",
+      "cadastral-valuation/object-no-record",
+      "property-litigation/recognition-of-right"
+    ],
+    "proposition": "Статья 14 закона № 218-ФЗ устанавливает общие основания кадастрового учёта и регистрации прав, в том числе сделки, акты органов, наследственные документы и вступившие в силу судебные акты.",
+    "limitations": "Проверить конкретное основание права, комплект документов, вид объекта, необходимость отдельного учёта и специальные требования. Для признания права судебный акт является возможным регистрационным основанием, а не самостоятельным материальным основанием удовлетворения иска.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_182661/cec950b7d67461cec8418d349b532c4574a9db11/",
+        "supports": "Общее положение статьи 14"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/71129192/888134b28b1397ffae87a0ab1e117954/",
+        "supports": "Общее положение статьи 14"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/federalnyi-zakon-ot-13072015-n-218-fz-o/glava-3/statia-14/",
+        "supports": "Общее положение статьи 14"
+      }
+    ]
+  },
+  {
+    "id": "transaction-protection-301",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "property-litigation/property-recovery"
+    ],
+    "proposition": "Статья 301 ГК РФ предусматривает возможность собственника истребовать имущество из чужого незаконного владения.",
+    "limitations": "Установить право истца, фактического владельца, основания владения и выбытия, добросовестность, условия статьи 302 и сроки. Не смешивать с договорным возвратом и устранением препятствий.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_5142/b2a84889a81c92096e09bef00d500570aba6cda2/",
+        "supports": "Общее положение статьи 301"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "PROFESSIONAL_GUIDANCE",
+        "url": "https://base.garant.ru/1795065/",
+        "supports": "Постановление Пленумов ВС и ВАС № 10/22, применение статьи 301"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/gk-rf-chast1/razdel-ii/glava-20/statia-301/",
+        "supports": "Общее положение статьи 301"
+      }
+    ]
+  },
+  {
+    "id": "transaction-protection-304",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "property-litigation/property-obstacle",
+      "neighbors-servitudes/fence-dispute",
+      "neighbors-servitudes/water-runoff"
+    ],
+    "proposition": "Статья 304 ГК РФ предусматривает устранение нарушений права собственника без лишения владения.",
+    "limitations": "Проверить право, сохранение владения, конкретные нарушения и доказательства связи с действиями другого лица. Для забора и стока установить границы, фактические обстоятельства и технические нормы; не определять автоматически перенос забора или обязанность устранить сток.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_5142/3a820582b0e614ab5534769b7bd207bd095cbe8e/",
+        "supports": "Общее положение статьи 304"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/10164072/993c3a2906ab5bd456be72d3a536e841/",
+        "supports": "Общее положение статьи 304"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/gk-rf-chast1/razdel-ii/glava-20/statia-304/",
+        "supports": "Общее положение статьи 304"
+      }
+    ]
+  },
+  {
+    "id": "transaction-protection-1064",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "neighbors-servitudes/damage-neighbor-build",
+      "neighbors-servitudes/water-runoff"
+    ],
+    "proposition": "Статья 1064 ГК РФ устанавливает общие основания ответственности за причинение вреда имуществу и предусматривает исключения и специальные случаи.",
+    "limitations": "Проверить наличие и размер вреда, причинную связь, действия причинителя, вину и специальные режимы ответственности. Не рассчитывать возмещение по одной анкете; необходимы акты и доказательства.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_9027/c511835e25e63740cf185038b1ad056526f814e9/",
+        "supports": "Общее положение статьи 1064"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/10164072/e640be677a214338f242b81d3746dbe5/",
+        "supports": "Общее положение статьи 1064"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/gk-rf-chast2/razdel-iv/glava-59/ss-1_7/statia-1064/",
+        "supports": "Общее положение статьи 1064"
+      }
+    ]
   }
 ] as const;
 
