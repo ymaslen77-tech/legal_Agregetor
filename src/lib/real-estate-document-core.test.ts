@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { REAL_ESTATE_GROUPS } from "@/data/real-estate-route-plan";
+import { REAL_ESTATE_PREPARED_GUIDANCE,renderPreparedRealEstateGuidance } from "@/data/real-estate-prepared-guidance";
 import { getReviewedRealEstateGuidance,REAL_ESTATE_REVIEWED_GUIDANCE } from "@/data/real-estate-reviewed-guidance";
 import { getRealEstateIntakeSpec } from "@/lib/real-estate-intake";
 import {
@@ -187,4 +188,19 @@ for(const [group,scenario] of [["ownership-register","registration-refusal"],["b
   assert.ok(isRealEstateDraftResult(result));
   const negatives:Record<string,string>[]=[{refusalScope:"не установлено"},{refusalProcedure:"не подтверждено"},{refusalCourt:""},{refusalKnownDate:"2026-10-31"},{correctionEvidence:"нет"}];
   for(const negative of negatives)assert.deepEqual(generate(negative).usedRuleIds,[]);
+}
+
+assert.equal(Object.keys(REAL_ESTATE_PREPARED_GUIDANCE).length,40);
+for(const [key,item] of Object.entries(REAL_ESTATE_PREPARED_GUIDANCE)){
+  const [group,scenario]=key.split("/");
+  const spec=getRealEstateIntakeSpec(group,scenario);assert.ok(spec,key);
+  for(const [field,expected,yes,no] of item.branches){
+    const definition=spec.fields.find(f=>f.key===field);
+    assert.ok(definition?.choices?.includes(expected),key+"/"+field);
+    const other=definition!.choices!.find(v=>v!==expected);assert.ok(other,key);
+    assert.ok(renderPreparedRealEstateGuidance(group,scenario,{[field]:expected}).includes(yes),key);
+    assert.ok(renderPreparedRealEstateGuidance(group,scenario,{[field]:other}).includes(no),key);
+    assert.notEqual(yes,no,key);
+  }
+  assert.ok(item.actions.length,key);
 }

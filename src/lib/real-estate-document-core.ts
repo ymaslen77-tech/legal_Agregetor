@@ -2,6 +2,7 @@ import {
   REAL_ESTATE_GROUPS, getRealEstateSituation,
   type RealEstateResult
 } from "@/data/real-estate-route-plan";
+import { renderPreparedRealEstateGuidance } from "@/data/real-estate-prepared-guidance";
 import { getReviewedRealEstateGuidance,renderReviewedRealEstateGuidance } from "@/data/real-estate-reviewed-guidance";
 import { getRealEstateLegalReviewTask } from "@/data/real-estate-legal-review";
 import { getRealEstateIntakeSpec, evaluateRealEstateIntake } from "@/lib/real-estate-intake";
@@ -199,6 +200,7 @@ function formatResult(plan: RealEstateDocumentPlan, data: Readonly<Record<string
     ...specialAnswers
   ].filter(Boolean);
   const reviewedGuidance=renderReviewedRealEstateGuidance(plan.groupId,plan.situationId,data);
+  const preparedGuidance=reviewedGuidance.length?[]:renderPreparedRealEstateGuidance(plan.groupId,plan.situationId,data);
   const check = [
     "Сопоставить описанные обстоятельства с первичными документами и записью о праве.",
     "Проверить применимую редакцию нормативных актов на даты событий и возможные исключения.",
@@ -245,10 +247,10 @@ function formatResult(plan: RealEstateDocumentPlan, data: Readonly<Record<string
     "СВЕДЕНИЯ ДЛЯ ИНДИВИДУАЛЬНОЙ ПРОВЕРКИ",
     ...facts,
     "",
-    ...(reviewedGuidance.length?["Правовая оценка и дальнейшие действия:",...reviewedGuidance,""]:[]),
+    ...(reviewedGuidance.length?["Правовая оценка и дальнейшие действия:",...reviewedGuidance,""]:preparedGuidance.length?["Предварительная правовая оценка и дальнейшие действия:",...preparedGuidance,""]:[]),
     ...specificWarnings,
     "",
-    ...(reviewedGuidance.length?[]:["СЛЕДУЮЩИЕ ДЕЙСТВИЯ",...check.map((v, i) => String(i + 1) + ". " + v)]),
+    ...(reviewedGuidance.length||preparedGuidance.length?[]:["СЛЕДУЮЩИЕ ДЕЙСТВИЯ",...check.map((v, i) => String(i + 1) + ". " + v)]),
     "",
     "Не используйте этот результат как правовое заключение, иск или официальную форму."
   ].join("\n");
