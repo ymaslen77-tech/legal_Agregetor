@@ -18,8 +18,8 @@ test("private root contains all ten groups and is noindex",async ({page})=>{
   await expect(page.getByRole("heading",{name:"Недвижимость и земельные споры"})).toBeVisible();
   await expect(page.locator('section[aria-label="Подразделы маршрута"] a')).toHaveCount(10);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content",/noindex/);
-  await expect(page.getByTestId("real-estate-legal-coverage")).toContainText("9 из 60");
-  await expect(page.getByTestId("real-estate-legal-coverage")).toContainText("51");
+  await expect(page.getByTestId("real-estate-legal-coverage")).toContainText("14 из 60");
+  await expect(page.getByTestId("real-estate-legal-coverage")).toContainText("46");
 });
 
 test("all 60 individual dev-only routes resolve and show their intended situation",async ({page,request})=>{
@@ -186,4 +186,26 @@ test("suspension and refusal lead to separate source-backed fact checks, never a
     await expect(page.getByRole("heading",{name:s.notice})).toBeVisible();
     await expect(page.getByRole("button",{name:"Отправить на проверку юристу"})).toBeDisabled();
   }
+});
+
+test("DDU delay distinguishes notice from agreement without calculating penalties",async ({page})=>{
+  await page.goto("/dev/real-estate/newbuild-ddu/developer-delay/");
+  await page.locator("#real-estate-role").selectOption("дольщик");
+  await page.locator("#real-estate-propertyType").selectOption("квартира");
+  await page.locator("#real-estate-stage").selectOption("переговоры и претензия");
+  for(const key of ["summary","documents","goal","caseDetails"]){
+    await page.locator("#real-estate-"+key).fill("Обезличенные сведения для проверки срока передачи");
+  }
+  await page.locator("#real-estate-dduAmendment").selectOption("только уведомление или предложения");
+  await page.locator("#real-estate-dduTransfer").selectOption("не передан");
+  await page.getByRole("button",{name:"Проверить полноту тестовых сведений"}).click();
+  const flags=page.getByTestId("real-estate-review-flags");
+  await expect(flags).toContainText("договорный срок");
+  await expect(flags).toContainText("временные правила");
+  await expect(page.getByRole("heading",{name:"Проверенное общее положение"})).toBeVisible();
+  await page.getByRole("button",{name:"Сформировать предварительный проект"}).click();
+  const editor=page.getByTestId("real-estate-document-editor");
+  await expect(editor).toHaveValue(/НЕ ГОТОВ К ПОДАЧЕ/);
+  await expect(editor).toHaveValue(/только уведомление или предложения/);
+  await expect(page.getByRole("button",{name:"Отправить на проверку юристу"})).toBeDisabled();
 });

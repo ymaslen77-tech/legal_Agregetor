@@ -94,3 +94,17 @@ for(const [group,scenario] of [
 assert.equal(checked,getRealEstatePlanStats().situations);
 assert.equal(getRealEstateIntakeSpec("bad","bad"),null);
 console.log("Real estate intake PASS: 60 case-specific forms, required fields, date checks, privacy-safe draft restrictions");
+
+for(const [scenario,keys] of [["ddu-signing",["dduDraft","dduObject"]],["area-mismatch",["areaEvidence","areaPriceTerms"]],["developer-delay",["dduAmendment","dduTransfer"]],["quality-defects",["defectEvidence","defectStage"]],["act-acceptance-dispute",["acceptanceNotice","acceptanceAct"]]]){
+  const spec=getRealEstateIntakeSpec("newbuild-ddu",scenario);
+  assert.ok(spec,scenario);
+  for(const key of keys)assert.ok(spec.fields.some(f=>f.key===key&&f.required),key);
+  const values:Record<string,string>={};
+  for(const field of spec.fields)if(field.required)values[field.key]=field.kind==="choice"?field.choices![field.choices!.length-1]:"Обезличенные тестовые обстоятельства";
+  const result=evaluateRealEstateIntake(spec,values);
+  assert.equal(result.invalid.length,0,scenario);
+  assert.equal(result.missing.length,0,scenario);
+  assert.ok(result.manualReviewFlags.length>0,scenario);
+  assert.equal(result.filingReady,false,scenario);
+  assert.equal(result.documentText,null,scenario);
+}

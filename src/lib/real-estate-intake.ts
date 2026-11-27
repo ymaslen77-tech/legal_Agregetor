@@ -60,6 +60,28 @@ const registrationRefusalFields:readonly RealEstateField[]=[
   {key:"registrationDecisionDate",label:"Дата отказа, если известна",kind:"date",required:false}
 ];
 const specialFields:Readonly<Record<string,readonly RealEstateField[]>>={
+  "newbuild-ddu/ddu-signing":[
+    {key:"dduDraft",label:"Имеется ли полный проект ДДУ с приложениями?",kind:"choice",required:true,choices:["есть полный проект","только часть документов","не знаю"]},
+    {key:"dduObject",label:"Какой вид объекта указан в договоре?",kind:"choice",required:true,choices:["квартира или помещение","дом в малоэтажном комплексе","не знаю"]}
+  ],
+  "newbuild-ddu/area-mismatch":[
+    {key:"areaEvidence",label:"Какие сведения о площади сопоставлялись?",kind:"choice",required:true,choices:["договор и документ об измерении","только устные сведения","не знаю"]},
+    {key:"areaPriceTerms",label:"Что известно об условиях изменения цены при расхождении площади?",kind:"choice",required:true,choices:["условия есть","условия не найдены","не знаю"]}
+  ],
+  "newbuild-ddu/developer-delay":[
+    {key:"dduAmendment",label:"Есть ли подписанное соглашение об изменении срока передачи?",kind:"choice",required:true,choices:["есть подписанное соглашение","только уведомление или предложения","нет или не знаю"]},
+    {key:"dduTransfer",label:"Передан ли объект?",kind:"choice",required:true,choices:["передан по акту","не передан","есть спор об акте или не знаю"]},
+    {key:"contractTransferDate",label:"Договорная дата передачи, если известна",kind:"date",required:false},
+    {key:"actualTransferDate",label:"Фактическая дата передачи, если известна",kind:"date",required:false}
+  ],
+  "newbuild-ddu/quality-defects":[
+    {key:"defectEvidence",label:"Как зафиксированы недостатки?",kind:"choice",required:true,choices:["акт или письменное заключение","только фото или устное описание","не знаю"]},
+    {key:"defectStage",label:"На какой стадии выявлены недостатки?",kind:"choice",required:true,choices:["до подписания акта","после передачи","не знаю"]}
+  ],
+  "newbuild-ddu/act-acceptance-dispute":[
+    {key:"acceptanceNotice",label:"Есть ли подтверждение получения уведомления о готовности?",kind:"choice",required:true,choices:["есть подтверждение","нет подтверждения или не знаю"]},
+    {key:"acceptanceAct",label:"Что известно о передаточном акте?",kind:"choice",required:true,choices:["двусторонний акт","односторонний акт","акт не подписан","не знаю"]}
+  ],
   "ownership-register/suspension-registration":registrationSuspensionFields,
   "cadastral-valuation/cadastre-suspension":registrationSuspensionFields,
   "ownership-register/registration-refusal":registrationRefusalFields,
@@ -115,6 +137,18 @@ function manualReviewFlags(groupId:string,situationId:string,values:Readonly<Rec
       result.push("Не подтверждена подача документов для устранения причин: проверить историю обращений и сроки по конкретному делу.");
     if(!values.registrationGround?.trim())
       result.push("Не указан конкретный пункт статьи 26 закона № 218-ФЗ: правовое основание требует проверки по уведомлению.");
+  }
+  if(groupId==="newbuild-ddu"){
+    if(situationId==="ddu-signing"&&(values.dduDraft!=="есть полный проект"||values.dduObject!=="квартира или помещение"))
+      result.push("Проверить полный проект ДДУ и применимость специальных условий для конкретного вида объекта.");
+    if(situationId==="area-mismatch")
+      result.push("Сопоставить документы об измерениях, условия цены и статью 5 закона № 214-ФЗ; автоматический расчёт не выполняется.");
+    if(situationId==="developer-delay"){
+      if(values.dduAmendment!=="есть подписанное соглашение")result.push("Установить договорный срок и проверить действительность его изменения.");
+      result.push("До расчёта неустойки проверить специальные временные правила и периоды начисления.");
+    }
+    if(situationId==="quality-defects")result.push("Проверить фиксацию недостатков, дату выявления, гарантийные условия и специальные правила приёмки.");
+    if(situationId==="act-acceptance-dispute")result.push("Проверить уведомление, осмотр и условия составления акта; не рекомендовать автоматически отказ от подписания.");
   }
   if(values.registryErrorOrigin==="не установлено"||values.thirdPartyRights==="не знаю")
     result.push("Нельзя определить порядок исправления записи ЕГРН без первичных документов и проверки прав других лиц.");
