@@ -135,3 +135,16 @@ for(const [scenario,keys] of [["house-notification",["buildKind","buildNotice"]]
   assert.ok(result.manualReviewFlags.length>0,scenario);
   assert.equal(result.filingReady,false,scenario);
 }
+
+for(const [scenario,keys] of [["use-arrangement",["useAgreement","useAccess"]],["shared-costs",["expenseKind","expenseProof"]],["share-division",["divisionEvidence","divisionAgreement"]],["compensation-share",["compensationKind","compensationConsent"]]] as const){
+  const spec=getRealEstateIntakeSpec("shared-ownership",scenario);
+  assert.ok(spec,scenario);
+  for(const key of keys)assert.ok(spec.fields.some(f=>f.key===key&&f.required),key);
+  const values:Record<string,string>={};
+  for(const field of spec.fields)if(field.required)values[field.key]=field.kind==="choice"?field.choices![field.choices!.length-1]:"Обезличенные тестовые сведения";
+  const result=evaluateRealEstateIntake(spec,values);
+  assert.equal(result.invalid.length,0,scenario);
+  assert.equal(result.missing.length,0,scenario);
+  assert.ok(result.manualReviewFlags.length>0,scenario);
+  assert.equal(result.filingReady,false,scenario);
+}

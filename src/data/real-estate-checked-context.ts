@@ -501,6 +501,98 @@ export const REAL_ESTATE_CHECKED_CONTEXT = [
         "supports": "Статья 40, связь регистрации здания и земли"
       }
     ]
+  },
+  {
+    "id": "share-use-article247",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "shared-ownership/use-arrangement",
+      "shared-ownership/compensation-share"
+    ],
+    "proposition": "Статья 247 ГК РФ устанавливает согласование владения и пользования общим долевым имуществом участниками, а при споре — судебный порядок. При невозможности предоставления соразмерной части в пользование предусмотрена компенсация при условиях нормы.",
+    "limitations": "Проверить доли, реальный порядок пользования, соглашения, доступ к имуществу и обстоятельства использования другими участниками. Компенсация за пользование не тождественна выкупу доли по статье 252.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_5142/fa1115a8e1086a097eb06c012bc2f5d5494b3756/",
+        "supports": "Статья 247, порядок пользования и компенсация"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/10164072/6be2d17d1f68853d8ca0afc174d241ad/",
+        "supports": "Статья 247, порядок пользования и компенсация"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/gk-rf-chast1/razdel-ii/glava-16/ss-1_9/statia-247/",
+        "supports": "Статья 247, порядок пользования и компенсация"
+      }
+    ]
+  },
+  {
+    "id": "share-cost-article249",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "shared-ownership/shared-costs"
+    ],
+    "proposition": "Статья 249 ГК РФ устанавливает участие сособственников соразмерно долям в обязательных платежах по общему имуществу и расходах на содержание и сохранение.",
+    "limitations": "Проверить правовой режим, периоды владения, виды расходов, их необходимость, подтверждения оплаты и соглашения. Не переносить автоматически правило на личное потребление коммунальных услуг или отношения социального найма; проверить специальные нормы и основания взыскания.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_5142/ce2c1649bd4a507adbf62f69a382f8fd74c9aec6/",
+        "supports": "Статья 249, участие в расходах"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/10164072/f7c79208d31d491b5ba6ce636759bbe9/",
+        "supports": "Статья 249, участие в расходах"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/gk-rf-chast1/razdel-ii/glava-16/ss-1_9/statia-249_1/?page=2",
+        "supports": "Статья 249, участие в расходах"
+      }
+    ]
+  },
+  {
+    "id": "share-division-article252",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "shared-ownership/share-division",
+      "shared-ownership/compensation-share"
+    ],
+    "proposition": "Статья 252 ГК РФ регулирует раздел общего долевого имущества, выдел доли и компенсацию; принудительная компенсация без согласия допускается судом при совокупности специальных условий о незначительности доли, невозможности её реального выдела и отсутствии существенного интереса.",
+    "limitations": "Проверить возможность выдела, характеристики объекта, права участников, согласие, оценку и существенный интерес; не определять автоматически незначительность доли по одному проценту, сумму компенсации или прекращение права.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_5142/ec91c6fa97b4dd2bc3449e91d0ca7d554253f6de/",
+        "supports": "Статья 252, выдел и условия компенсации"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/10164072/7f0762447f5457e0ca3b7fc5dfe1175f/",
+        "supports": "Статья 252, выдел и условия компенсации"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/gk-rf-chast1/razdel-ii/glava-16/ss-1_9/statia-252/",
+        "supports": "Статья 252, выдел и условия компенсации"
+      }
+    ]
   }
 ] as const;
 

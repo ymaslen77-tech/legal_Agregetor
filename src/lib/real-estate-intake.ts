@@ -60,6 +60,22 @@ const registrationRefusalFields:readonly RealEstateField[]=[
   {key:"registrationDecisionDate",label:"Дата отказа, если известна",kind:"date",required:false}
 ];
 const specialFields:Readonly<Record<string,readonly RealEstateField[]>>={
+  "shared-ownership/use-arrangement":[
+    {key:"useAgreement",label:"Есть ли соглашение или решение суда о пользовании?",kind:"choice",required:true,choices:["есть документ","нет или не знаю"]},
+    {key:"useAccess",label:"Что известно о фактическом доступе?",kind:"choice",required:true,choices:["пользуемся совместно","есть препятствия","не знаю"]}
+  ],
+  "shared-ownership/shared-costs":[
+    {key:"expenseKind",label:"Какого вида спорные расходы?",kind:"choice",required:true,choices:["содержание общего имущества","коммунальные услуги или личное потребление","иные или не знаю"]},
+    {key:"expenseProof",label:"Есть ли документы об оплате и периодах?",kind:"choice",required:true,choices:["есть документы","часть документов","не знаю"]}
+  ],
+  "shared-ownership/share-division":[
+    {key:"divisionEvidence",label:"Проверялась ли возможность выдела в натуре?",kind:"choice",required:true,choices:["есть заключение","нет заключения","не знаю"]},
+    {key:"divisionAgreement",label:"Есть ли согласие участников?",kind:"choice",required:true,choices:["есть согласие","есть спор","не знаю"]}
+  ],
+  "shared-ownership/compensation-share":[
+    {key:"compensationKind",label:"Какова цель компенсации?",kind:"choice",required:true,choices:["за пользование имуществом","вместо выдела или за прекращение доли","не знаю"]},
+    {key:"compensationConsent",label:"Что известно о согласии собственника?",kind:"choice",required:true,choices:["есть согласие","согласия нет","не знаю"]}
+  ],
   "build-renovation/house-notification":[
     {key:"buildKind",label:"Какой вид объекта планируется?",kind:"choice",required:true,choices:["жилой или садовый дом","иной объект","не знаю"]},
     {key:"buildNotice",label:"Что известно об уведомлении?",kind:"choice",required:true,choices:["есть ответ органа","направлено без ответа","не направлялось или не знаю"]}
@@ -223,6 +239,12 @@ function manualReviewFlags(groupId:string,situationId:string,values:Readonly<Rec
     if(situationId==="house-notification"||situationId==="reconstruction-docs")result.push("Проверить применимость уведомительного порядка и специальной регистрации по части 12 статьи 70 закона № 218-ФЗ; не считать один режим универсальным.");
     if(situationId==="unauthorized-building"||situationId==="demolition-order")result.push("Проверить признаки самовольной постройки, даты, компетенцию и возможность приведения в соответствие по статье 222 ГК РФ; автоматически снос или признание права не утверждаются.");
     if(situationId==="unfinished-property")result.push("Проверить право на землю, состояние объекта, документы и исключения статьи 40 закона № 218-ФЗ.");
+  }
+  if(groupId==="shared-ownership"){
+    if(situationId==="use-arrangement")result.push("Проверить соглашение и фактическое пользование по статье 247 ГК РФ.");
+    if(situationId==="shared-costs")result.push("Разделить содержание общего имущества и личное потребление; проверить документы, периоды и специальный правовой режим по статье 249 ГК РФ.");
+    if(situationId==="share-division"||situationId==="compensation-share")result.push("Проверить возможность выдела, согласие и существенный интерес; принудительная компенсация по статье 252 ГК РФ не определяется автоматически.");
+    if(situationId==="compensation-share")result.push("Разграничить компенсацию за пользование по статье 247 и компенсацию вместо выдела по статье 252 ГК РФ.");
   }
   if(values.registryErrorOrigin==="не установлено"||values.thirdPartyRights==="не знаю")
     result.push("Нельзя определить порядок исправления записи ЕГРН без первичных документов и проверки прав других лиц.");
