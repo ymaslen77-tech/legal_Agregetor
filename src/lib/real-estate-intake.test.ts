@@ -95,7 +95,7 @@ assert.equal(checked,getRealEstatePlanStats().situations);
 assert.equal(getRealEstateIntakeSpec("bad","bad"),null);
 console.log("Real estate intake PASS: 60 case-specific forms, required fields, date checks, privacy-safe draft restrictions");
 
-for(const [scenario,keys] of [["ddu-signing",["dduDraft","dduObject"]],["area-mismatch",["areaEvidence","areaPriceTerms"]],["developer-delay",["dduAmendment","dduTransfer"]],["quality-defects",["defectEvidence","defectStage"]],["act-acceptance-dispute",["acceptanceNotice","acceptanceAct"]]]){
+for(const [scenario,keys] of [["ddu-signing",["dduDraft","dduObject"]],["area-mismatch",["areaEvidence","areaPriceTerms"]],["developer-delay",["dduAmendment","dduTransfer"]],["quality-defects",["defectEvidence","defectStage"]],["act-acceptance-dispute",["acceptanceNotice","acceptanceAct"]]] as const){
   const spec=getRealEstateIntakeSpec("newbuild-ddu",scenario);
   assert.ok(spec,scenario);
   for(const key of keys)assert.ok(spec.fields.some(f=>f.key===key&&f.required),key);
