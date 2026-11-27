@@ -672,9 +672,9 @@ export const REAL_ESTATE_CHECKED_CONTEXT = [
         "supports": "Общее положение статьи 486"
       },
       {
-        "publisher": "ГАРАНТ",
+        "publisher": "Клерк (правовая система)",
         "type": "LAW_TEXT",
-        "url": "https://base.garant.ru/3961443/76f6f285769ca3565678381da7f4c707/",
+        "url": "https://klerk.systems/docs/gk_rf/article/486/date20260319/",
         "supports": "Общее положение статьи 486"
       },
       {

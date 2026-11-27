@@ -129,6 +129,9 @@ for(const scenario of ["seller-no-transfer","buyer-payment-delay"]){
   assert.equal(isRealEstateDraftResult({...result,source:"USER_EDITED"}),false);
   assert.match(result.documentText,scenario==="seller-no-transfer"?/статьи 556 ГК РФ/:/статьи 486 ГК РФ/);
   assert.match(result.documentText,/договор от 01.10.2026/);
+  assert.match(result.documentText,/Кому:|От кого:/);
+  assert.match(result.documentText,/Приложения:/);
+  assert.match(result.documentText,/Подпись:/);
   assert.doesNotMatch(result.documentText,/ИЗЛОЖЕНИЕ ОБСТОЯТЕЛЬСТВ|ДО ПОДАЧИ НЕОБХОДИМО|Предварительный результат|Вопросы для проверки/);
   if(scenario==="buyer-payment-delay")assert.match(result.documentText,/125000,50 руб\./);
   assert.doesNotMatch(generate({saleBreachConfirmed:"нет или не знаю"}).documentText,/ПРЕТЕНЗИЯ о/);

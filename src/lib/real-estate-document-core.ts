@@ -93,7 +93,7 @@ export const REAL_ESTATE_ACCEPTED_DRAFT_RULES=[
    sources:["https://www.consultant.ru/document/cons_doc_LAW_9027/3e859336194c50096387c5694f99883bed271e78/","https://base.garant.ru/483424196/7de16aeb618604b5f2bbfc08695b1044/","https://sudact.ru/law/gk-rf-chast2/razdel-iv/glava-30/ss-7/statia-556/"]},
   {id:"sale-payment-486-3",scenario:"buyer-payment-delay",asOf:"2026-11-27",
    statement:"Согласно пункту 3 статьи 486 ГК РФ при просрочке оплаты переданного по договору товара продавец вправе требовать его оплаты.",
-   sources:["https://www.consultant.ru/document/cons_doc_LAW_9027/2120e9b039b6f15a3d1c793f412f7df3ffcfbd33/","https://base.garant.ru/3961443/76f6f285769ca3565678381da7f4c707/","https://sudact.ru/law/gk-rf-chast2/razdel-iv/glava-30/ss-1/statia-486/"]}
+   sources:["https://www.consultant.ru/document/cons_doc_LAW_9027/2120e9b039b6f15a3d1c793f412f7df3ffcfbd33/","https://klerk.systems/docs/gk_rf/article/486/date20260319/","https://sudact.ru/law/gk-rf-chast2/razdel-iv/glava-30/ss-1/statia-486/"]}
 ] as const;
 function acceptedSaleRule(scenario:string){
   return REAL_ESTATE_ACCEPTED_DRAFT_RULES.find(rule=>rule.scenario===scenario);

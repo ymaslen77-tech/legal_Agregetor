@@ -53,6 +53,10 @@ test("real estate encrypted archive: two versions, owner-only access, PDF and DO
     }
     const page=await owner.newPage();
     await page.goto(origin+"/account/documents/");
+    const consent=page.getByRole("dialog",{name:"Настройки аналитики"});
+    await expect(consent).toBeVisible();
+    await consent.getByRole("button",{name:"Отклонить",exact:true}).click();
+    await expect(consent).toBeHidden();
     await expect(page.getByRole("button",{name:"Открыть версию"})).toHaveCount(2);
     await page.getByText("Версия: "+versions[0].versionId,{exact:true}).locator("..").getByRole("button",{name:"Открыть версию"}).click();
     await expect(page.getByText("ID версии: "+versions[0].versionId,{exact:true})).toBeVisible();
