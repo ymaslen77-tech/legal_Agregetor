@@ -18,8 +18,8 @@ test("private root contains all ten groups and is noindex",async ({page})=>{
   await expect(page.getByRole("heading",{name:"Недвижимость и земельные споры"})).toBeVisible();
   await expect(page.locator('section[aria-label="Подразделы маршрута"] a')).toHaveCount(10);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content",/noindex/);
-  await expect(page.getByTestId("real-estate-legal-coverage")).toContainText("14 из 60");
-  await expect(page.getByTestId("real-estate-legal-coverage")).toContainText("46");
+  await expect(page.getByTestId("real-estate-legal-coverage")).toContainText("22 из 60");
+  await expect(page.getByTestId("real-estate-legal-coverage")).toContainText("38");
 });
 
 test("all 60 individual dev-only routes resolve and show their intended situation",async ({page,request})=>{
@@ -205,7 +205,23 @@ test("DDU delay distinguishes notice from agreement without calculating penaltie
   await expect(page.getByRole("heading",{name:"Проверенное общее положение"})).toBeVisible();
   await page.getByRole("button",{name:"Сформировать предварительный проект"}).click();
   const editor=page.getByTestId("real-estate-document-editor");
-  await expect(editor).toHaveValue(/НЕ ГОТОВ К ПОДАЧЕ/);
+  await expect(editor).toHaveValue(/НЕ ДОКУМЕНТ ДЛЯ ПОДАЧИ/);
   await expect(editor).toHaveValue(/только уведомление или предложения/);
+  await expect(page.getByRole("button",{name:"Отправить на проверку юристу"})).toBeDisabled();
+});
+
+test("boundary consent without notice is not treated as consent",async ({page})=>{
+  await page.goto("/dev/real-estate/land-boundaries/boundary-approval/");
+  await page.locator("#real-estate-role").selectOption("собственник");
+  await page.locator("#real-estate-propertyType").selectOption("земельный участок");
+  await page.locator("#real-estate-stage").selectOption("переговоры и претензия");
+  for(const key of ["summary","documents","goal","caseDetails"])await page.locator("#real-estate-"+key).fill("Обезличенные сведения о границе участка");
+  await page.locator("#real-estate-boundaryNotice").selectOption("доказательств нет или не знаю");
+  await page.locator("#real-estate-boundaryObjection").selectOption("возражений нет или не знаю");
+  await page.locator("#real-estate-boundaryAct").selectOption("не знаю");
+  await page.getByRole("button",{name:"Проверить полноту тестовых сведений"}).click();
+  await expect(page.getByTestId("real-estate-review-flags")).toContainText("не означает автоматически согласие");
+  await page.getByRole("button",{name:"Сформировать предварительный проект"}).click();
+  await expect(page.getByTestId("real-estate-document-editor")).toHaveValue(/НЕ ДОКУМЕНТ ДЛЯ ПОДАЧИ/);
   await expect(page.getByRole("button",{name:"Отправить на проверку юристу"})).toBeDisabled();
 });

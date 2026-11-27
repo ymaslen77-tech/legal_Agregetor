@@ -108,3 +108,17 @@ for(const [scenario,keys] of [["ddu-signing",["dduDraft","dduObject"]],["area-mi
   assert.equal(result.filingReady,false,scenario);
   assert.equal(result.documentText,null,scenario);
 }
+
+for(const [caseKey,keys] of [["land-boundaries/boundary-survey",["boundaryRecord","boundaryPlan"]],["land-boundaries/neighbor-boundary-dispute",["boundaryNotice","boundaryObjection"]],["land-boundaries/boundary-overlap",["overlapEvidence","overlapRights"]],["land-boundaries/boundary-approval",["boundaryNotice","boundaryObjection","boundaryAct"]],["land-boundaries/land-access",["accessAlternative","accessAgreement","burdenedLand"]],["neighbors-servitudes/blocked-drive",["accessAlternative","accessAgreement","burdenedLand"]],["neighbors-servitudes/servitude-agreement",["accessAlternative","accessAgreement","burdenedLand"]],["neighbors-servitudes/utilities-neighbor",["accessAlternative","accessAgreement","burdenedLand"]]] as const){
+  const [group,scenario]=caseKey.split("/");
+  const spec=getRealEstateIntakeSpec(group,scenario);
+  assert.ok(spec,caseKey);
+  for(const key of keys)assert.ok(spec.fields.some(f=>f.key===key&&f.required),key);
+  const values:Record<string,string>={};
+  for(const field of spec.fields)if(field.required)values[field.key]=field.kind==="choice"?field.choices![field.choices!.length-1]:"Обезличенные тестовые обстоятельства";
+  const result=evaluateRealEstateIntake(spec,values);
+  assert.equal(result.invalid.length,0,caseKey);
+  assert.equal(result.missing.length,0,caseKey);
+  assert.ok(result.manualReviewFlags.length>0,caseKey);
+  assert.equal(result.filingReady,false,caseKey);
+}

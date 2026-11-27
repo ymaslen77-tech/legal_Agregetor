@@ -4,10 +4,10 @@ import { REAL_ESTATE_GROUPS } from "./real-estate-route-plan";
 import { REAL_ESTATE_CASE_AUDIT,getRealEstateAuditSummary } from "./real-estate-legal-audit";
 assert.equal(REAL_ESTATE_CASE_AUDIT.length,60);
 assert.equal(new Set(REAL_ESTATE_CASE_AUDIT.map(row=>row.key)).size,60);
-assert.equal(REAL_ESTATE_CHECKED_CONTEXT.length,8);
+assert.equal(REAL_ESTATE_CHECKED_CONTEXT.length,12);
 const summary=getRealEstateAuditSummary();
 assert.deepEqual(summary,{
-  scenarios:60,withGeneralContext:14,withoutGeneralContext:46,
+  scenarios:60,withGeneralContext:22,withoutGeneralContext:38,
   legallyApproved:0,filingReady:0,indexable:0
 });
 for(const group of REAL_ESTATE_GROUPS)for(const situation of group.situations){

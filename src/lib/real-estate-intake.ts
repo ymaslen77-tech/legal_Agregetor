@@ -60,6 +60,43 @@ const registrationRefusalFields:readonly RealEstateField[]=[
   {key:"registrationDecisionDate",label:"Дата отказа, если известна",kind:"date",required:false}
 ];
 const specialFields:Readonly<Record<string,readonly RealEstateField[]>>={
+  "land-boundaries/boundary-survey":[
+    {key:"boundaryRecord",label:"Есть ли координаты границ в выписке ЕГРН?",kind:"choice",required:true,choices:["есть координаты","нет координат","не знаю"]},
+    {key:"boundaryPlan",label:"Имеется ли межевой план или документы образования участка?",kind:"choice",required:true,choices:["есть документы","нет документов","не знаю"]}
+  ],
+  "land-boundaries/neighbor-boundary-dispute":[
+    {key:"boundaryNotice",label:"Что известно об извещении смежного правообладателя?",kind:"choice",required:true,choices:["есть доказательства извещения","доказательств нет или не знаю"]},
+    {key:"boundaryObjection",label:"Как зафиксированы возражения?",kind:"choice",required:true,choices:["письменные возражения","устные возражения","возражений нет или не знаю"]}
+  ],
+  "land-boundaries/boundary-overlap":[
+    {key:"overlapEvidence",label:"Чем подтверждается пересечение?",kind:"choice",required:true,choices:["выписки и заключение инженера","только изображение карты","не знаю"]},
+    {key:"overlapRights",label:"Затрагиваются ли права смежных владельцев?",kind:"choice",required:true,choices:["да","нет","не знаю"]}
+  ],
+  "land-boundaries/boundary-approval":[
+    {key:"boundaryNotice",label:"Что известно об извещении заинтересованных лиц?",kind:"choice",required:true,choices:["есть доказательства извещения","доказательств нет или не знаю"]},
+    {key:"boundaryObjection",label:"Как зафиксированы возражения?",kind:"choice",required:true,choices:["письменные возражения","устные возражения","возражений нет или не знаю"]},
+    {key:"boundaryAct",label:"Есть ли акт согласования с приложениями?",kind:"choice",required:true,choices:["есть акт и приложения","только часть документов","не знаю"]}
+  ],
+  "land-boundaries/land-access":[
+    {key:"accessAlternative",label:"Изучены ли альтернативные пути или способы доступа?",kind:"choice",required:true,choices:["есть иной доступ","альтернативы не найдены","не знаю"]},
+    {key:"accessAgreement",label:"Что известно о действующем праве доступа и переговорах?",kind:"choice",required:true,choices:["есть соглашение или зарегистрированное право","соглашение не достигнуто","не знаю"]},
+    {key:"burdenedLand",label:"Кому принадлежит участок, через который нужен доступ?",kind:"choice",required:true,choices:["частный собственник","государство или муниципалитет","не знаю"]}
+  ],
+  "neighbors-servitudes/blocked-drive":[
+    {key:"accessAlternative",label:"Изучены ли альтернативные пути или способы доступа?",kind:"choice",required:true,choices:["есть иной доступ","альтернативы не найдены","не знаю"]},
+    {key:"accessAgreement",label:"Что известно о действующем праве доступа и переговорах?",kind:"choice",required:true,choices:["есть соглашение или зарегистрированное право","соглашение не достигнуто","не знаю"]},
+    {key:"burdenedLand",label:"Кому принадлежит участок, через который нужен доступ?",kind:"choice",required:true,choices:["частный собственник","государство или муниципалитет","не знаю"]}
+  ],
+  "neighbors-servitudes/servitude-agreement":[
+    {key:"accessAlternative",label:"Изучены ли альтернативные пути или способы доступа?",kind:"choice",required:true,choices:["есть иной доступ","альтернативы не найдены","не знаю"]},
+    {key:"accessAgreement",label:"Что известно о действующем праве доступа и переговорах?",kind:"choice",required:true,choices:["есть соглашение или зарегистрированное право","соглашение не достигнуто","не знаю"]},
+    {key:"burdenedLand",label:"Кому принадлежит участок, через который нужен доступ?",kind:"choice",required:true,choices:["частный собственник","государство или муниципалитет","не знаю"]}
+  ],
+  "neighbors-servitudes/utilities-neighbor":[
+    {key:"accessAlternative",label:"Изучены ли альтернативные пути или способы доступа?",kind:"choice",required:true,choices:["есть иной доступ","альтернативы не найдены","не знаю"]},
+    {key:"accessAgreement",label:"Что известно о действующем праве доступа и переговорах?",kind:"choice",required:true,choices:["есть соглашение или зарегистрированное право","соглашение не достигнуто","не знаю"]},
+    {key:"burdenedLand",label:"Кому принадлежит участок, через который нужен доступ?",kind:"choice",required:true,choices:["частный собственник","государство или муниципалитет","не знаю"]}
+  ],
   "newbuild-ddu/ddu-signing":[
     {key:"dduDraft",label:"Имеется ли полный проект ДДУ с приложениями?",kind:"choice",required:true,choices:["есть полный проект","только часть документов","не знаю"]},
     {key:"dduObject",label:"Какой вид объекта указан в договоре?",kind:"choice",required:true,choices:["квартира или помещение","дом в малоэтажном комплексе","не знаю"]}
@@ -149,6 +186,18 @@ function manualReviewFlags(groupId:string,situationId:string,values:Readonly<Rec
     }
     if(situationId==="quality-defects")result.push("Проверить фиксацию недостатков, дату выявления, гарантийные условия и специальные правила приёмки.");
     if(situationId==="act-acceptance-dispute")result.push("Проверить уведомление, осмотр и условия составления акта; не рекомендовать автоматически отказ от подписания.");
+  }
+  if(groupId==="land-boundaries"){
+    if(situationId==="boundary-survey")result.push("Сопоставить координаты ЕГРН и исходные документы с межевым планом; проверить необходимость согласования.");
+    if(situationId==="boundary-overlap")result.push("Пересечение на карте не доказывает реестровую ошибку: необходима проверка координат, исходных документов и прав смежных владельцев.");
+    if(situationId==="neighbor-boundary-dispute"||situationId==="boundary-approval"){
+      if(values.boundaryNotice!=="есть доказательства извещения")result.push("Не подтверждено надлежащее извещение: отсутствие ответа или подписи не означает автоматически согласие.");
+      result.push("Проверить акт согласования, письменные возражения и приложения по статьям 39 и 40 закона № 221-ФЗ.");
+    }
+  }
+  if((groupId==="land-boundaries"&&situationId==="land-access")||(groupId==="neighbors-servitudes"&&["blocked-drive","servitude-agreement","utilities-neighbor"].includes(situationId))){
+    result.push("Проверить необходимость частного сервитута и альтернативный доступ по статье 274 ГК РФ; автоматически право доступа не устанавливается.");
+    if(values.burdenedLand!=="частный собственник")result.push("Проверить собственника участка и специальные правила публичной земли.");
   }
   if(values.registryErrorOrigin==="не установлено"||values.thirdPartyRights==="не знаю")
     result.push("Нельзя определить порядок исправления записи ЕГРН без первичных документов и проверки прав других лиц.");

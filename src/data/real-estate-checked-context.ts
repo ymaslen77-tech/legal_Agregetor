@@ -249,6 +249,134 @@ export const REAL_ESTATE_CHECKED_CONTEXT = [
         "supports": "Статья 8: Части 1, 4–6, передача, уведомление и односторонний акт"
       }
     ]
+  },
+  {
+    "id": "boundary-plan-article22",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "land-boundaries/boundary-survey",
+      "land-boundaries/boundary-overlap",
+      "land-boundaries/registry-boundary-error"
+    ],
+    "proposition": "Части 1, 2 и 6 статьи 22 закона № 218-ФЗ определяют назначение межевого плана: он опирается на кадастровый план территории или выписку ЕГРН, содержит необходимые новые сведения об участке, включая данные для исправления реестровой ошибки, и отображает границы и доступ к участку.",
+    "limitations": "Сопоставить актуальные выписки, исходные документы, координаты и заключение кадастрового инженера. Пересечение на публичной карте само по себе не доказывает реестровую ошибку. Условия уточнения, допустимые изменения площади, права смежных владельцев и порядок учёта проверять отдельно.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_182661/13b49306f5233839ddc86ec9961aa17b47a25e25/",
+        "supports": "Статья 22, назначение межевого плана, границы и доступ"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/71129192/94f5bf092e8d98af576ee351987de4f0/",
+        "supports": "Статья 22, назначение межевого плана, границы и доступ"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/federalnyi-zakon-ot-13072015-n-218-fz-o/glava-3/statia-22/",
+        "supports": "Статья 22, назначение межевого плана, границы и доступ"
+      }
+    ]
+  },
+  {
+    "id": "boundary-consent-article39",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "land-boundaries/boundary-survey",
+      "land-boundaries/neighbor-boundary-dispute",
+      "land-boundaries/boundary-approval"
+    ],
+    "proposition": "Статья 39 закона № 221-ФЗ регулирует обязательное согласование границ в предусмотренных частью 1 случаях, круг заинтересованных лиц, индивидуальное согласование или собрание, а также порядок извещения при собрании.",
+    "limitations": "Проверить вид кадастровых работ, какие именно смежные границы уточняются, права и полномочия участников, способ извещения и основания публикации. Не считать любое размещение объявления достаточным; комплексные кадастровые работы имеют отдельные правила.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_70088/4f1bebcfa021a0dc294282157b643f1cda962ff2/",
+        "supports": "Статья 39, условия согласования, заинтересованные лица и извещение"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/12154874/478b4d0990e492511bea1e634e90a7b7/",
+        "supports": "Статья 39, условия согласования, заинтересованные лица и извещение"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/federalnyi-zakon-ot-24072007-n-221-fz-o/glava-4/statia-39/",
+        "supports": "Статья 39, условия согласования, заинтересованные лица и извещение"
+      }
+    ]
+  },
+  {
+    "id": "boundary-act-article40",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "land-boundaries/neighbor-boundary-dispute",
+      "land-boundaries/boundary-approval"
+    ],
+    "proposition": "Части 2–5 статьи 40 закона № 221-ФЗ регулируют оформление согласования подписями, предусмотренный законом случай отсутствия возражений при надлежащем извещении, включение обоснованных письменных возражений в материалы и разрешение оставшихся споров.",
+    "limitations": "Отсутствие подписи или ответа не равно автоматически согласию: проверить надлежащее извещение, срок, записи в акте и приложения, наличие письменных возражений. При электронном согласовании проверить специальные требования. Не определять границу и способ судебной защиты без исследования документов.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_70088/30bc6b0757c17e6b066748aaa8e018cbbaea7911/",
+        "supports": "Статья 40, подписи, извещение и возражения"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/12154874/f9b0119a4fce7561a213cdc9af189098/",
+        "supports": "Статья 40, подписи, извещение и возражения"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/federalnyi-zakon-ot-24072007-n-221-fz-o/glava-4/statia-40/",
+        "supports": "Статья 40, подписи, извещение и возражения"
+      }
+    ]
+  },
+  {
+    "id": "private-servitude-article274",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "land-boundaries/land-access",
+      "neighbors-servitudes/blocked-drive",
+      "neighbors-servitudes/servitude-agreement",
+      "neighbors-servitudes/utilities-neighbor"
+    ],
+    "proposition": "Пункты 1, 3–6 статьи 274 ГК РФ регулируют установление частного сервитута для нужд, не обеспечиваемых иначе, соглашение и регистрацию, судебное разрешение спора при недостижении соглашения, круг управомоченных лиц и плату с предусмотренными законом исключениями.",
+    "limitations": "Проверить право заявителя, принадлежность обременяемого участка, цель и альтернативные маршруты, существующие права доступа, условия соглашения и последствия для собственника. Не смешивать частный и публичный сервитут; наличие забора или неудобство проезда не доказывает необходимость сервитута. Для публичной земли и линейных объектов проверять специальные нормы.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_5142/a6b643e62769c86f98c64d9ad628c0e5a2e92f3b/",
+        "supports": "Статья 274, основания, соглашение, суд и регистрация"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/10164072/1810d6858e6ded3ac189d590da994bae/",
+        "supports": "Статья 274, основания, соглашение, суд и регистрация"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/gk-rf-chast1/razdel-ii/glava-17/statia-274/?page=20",
+        "supports": "Статья 274, основания, соглашение, суд и регистрация"
+      }
+    ]
   }
 ] as const;
 
