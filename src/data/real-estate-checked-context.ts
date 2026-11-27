@@ -932,6 +932,336 @@ export const REAL_ESTATE_CHECKED_CONTEXT = [
         "supports": "Общее положение статьи 1064"
       }
     ]
+  },
+  {
+    "id": "land-vri-14.1",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "land-status-use/land-permitted-use"
+    ],
+    "proposition": "Статья 14.1 ЗК РФ определяет вид разрешённого использования земельного участка с учётом установленных ограничений и различает виды использования.",
+    "limitations": "Проверить дату установления ВРИ, категорию, регламент использования территории, действующие ограничения, вид права и переходные положения закона № 295-ФЗ от 31.07.2025. Для изменения отдельно исследовать статьи 14.2–14.4 ЗК РФ и применимые местные правила. Не применять автоматически прежний порядок до 01.03.2026.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_33773/017fdd2c55f65727e7bb9b81defa7109c620b4f9/",
+        "supports": "Общее положение статьи 14.1"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/483427119/4409e3d130a818a2b5323978ad10f4c3/",
+        "supports": "Общее положение статьи 14.1"
+      },
+      {
+        "publisher": "Клерк",
+        "type": "LAW_TEXT",
+        "url": "https://klerk.systems/docs/zk_rf/article/14.1/date20260901/",
+        "supports": "Общее положение статьи 14.1"
+      }
+    ]
+  },
+  {
+    "id": "land-zone-56",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "land-status-use/land-zone-limit"
+    ],
+    "proposition": "Статья 56 ЗК РФ предусматривает основания ограничения прав на землю, в том числе в зонах с особыми условиями использования территорий; ограничения могут сохраняться при переходе права.",
+    "limitations": "Установить точный вид зоны, акт, дату, карту границ и применимые переходные положения; отдельно проверить последствия для конкретного использования, возможное обжалование и компенсацию.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_33773/50be48f9f4b02e9d27511e0be03f24167b2f2e48/",
+        "supports": "Общее положение статьи 56"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/12124624/2b6ebde936316453fb0f8db9c6ad7e2c/",
+        "supports": "Общее положение статьи 56"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/zemelnyi-kodeks/glava-vii/statia-56/",
+        "supports": "Общее положение статьи 56"
+      }
+    ]
+  },
+  {
+    "id": "land-lease-39.6",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "land-status-use/public-land-lease"
+    ],
+    "proposition": "Статья 39.6 ЗК РФ различает предоставление публичных земельных участков в аренду на торгах и установленные законом случаи предоставления без торгов.",
+    "limitations": "Проверить право заявителя, цель, наличие действующей аренды, основание обращения, компетенцию и текст отказа; отдельно исследовать статьи 39.16, 39.18, 39.20 и специальные режимы по фактам. Не обещать аренду без торгов.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_33773/79da6e3bbbc8eb967db0714e8378269bfea9f83c/",
+        "supports": "Общее положение статьи 39.6"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/12124624/4477709aee548021b043184dadbd377a/",
+        "supports": "Общее положение статьи 39.6"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/zemelnyi-kodeks/glava-v.1/statia-39.6/?page=6",
+        "supports": "Общее положение статьи 39.6"
+      }
+    ]
+  },
+  {
+    "id": "land-redistribution-39.28",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "land-status-use/land-redistribution"
+    ],
+    "proposition": "Статья 39.28 ЗК РФ определяет случаи и основания перераспределения частных земельных участков и публичной земли или участков.",
+    "limitations": "Проверить принадлежность участков, проект межевания или схему, площадь, предельные размеры, ограничения и условия статьи 39.29; не обещать прирезку, бесплатность или отсутствие отказа. Учесть изменения 2026 года.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_33773/546c7822b4daa11f0b168895ce17a69ed978b5c9/",
+        "supports": "Общее положение статьи 39.28"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/483430145/e64b21ea59571b022b305c5af33eaa93/",
+        "supports": "Общее положение статьи 39.28"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/zemelnyi-kodeks/glava-v.4/statia-39.28/?page=2",
+        "supports": "Общее положение статьи 39.28"
+      }
+    ]
+  },
+  {
+    "id": "land-agricultural-8",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "land-status-use/agricultural-plot"
+    ],
+    "proposition": "Статья 8 закона № 101-ФЗ устанавливает специальное преимущественное право покупки сельскохозяйственного участка субъектом РФ или в установленных региональным законом случаях муниципальным образованием, с исключениями.",
+    "limitations": "Установить применимость закона, категорию, вид сделки, участок или долю, региональное правило, наличие публичных торгов, предписания земельного надзора. Для сделок с долями отдельно проверить статью 12; не переносить правила обычной продажи доли автоматически.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_37816/59a2ef022bd19494b0bc0e33c6414cbc3207a5ba/",
+        "supports": "Общее положение статьи 8"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/12127542/31de5683116b8d79b08fa2d768e33df6/",
+        "supports": "Общее положение статьи 8"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/federalnyi-zakon-ot-24072002-n-101-fz-ob/glava-ii/statia-8/",
+        "supports": "Общее положение статьи 8"
+      }
+    ]
+  },
+  {
+    "id": "land-withdrawal-49",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "land-status-use/land-withdrawal"
+    ],
+    "proposition": "Статья 49 ЗК РФ устанавливает исключительные основания изъятия земельных участков для государственных или муниципальных нужд.",
+    "limitations": "Различить изъятие для публичных нужд, резервирование, ограничение и изъятие по иным основаниям. Проверить акт, компетенцию, основания, даты, уведомления, оценку и процедуру главы VII.1 ЗК РФ. Не утверждать законность изъятия или размер возмещения автоматически.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_33773/a2d44013e12a0ad5697ee11f08686b38a6587ed8/",
+        "supports": "Общее положение статьи 49"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/12124624/07bdd21ab547687f72d1294bbd35ef3e/",
+        "supports": "Общее положение статьи 49"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/zemelnyi-kodeks/glava-vii/statia-49_1/?page=1",
+        "supports": "Общее положение статьи 49"
+      }
+    ]
+  },
+  {
+    "id": "valuation-error-21",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "cadastral-valuation/cadastral-value-check"
+    ],
+    "proposition": "Статья 21 закона № 237-ФЗ регулирует рассмотрение бюджетным учреждением заявлений об исправлении ошибок, допущенных при определении кадастровой стоимости.",
+    "limitations": "Установить отчёт оценки, исходные характеристики, дату внесения стоимости и содержание возможной ошибки. Отличить ошибку оценки от ошибки ЕГРН и установления рыночной стоимости; проверить статью 20 для разъяснений и сроки на дату дела.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_200504/88a489fde58bb11af446069f95e30d8622cbbd56/",
+        "supports": "Общее положение статьи 21"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/71433956/b5dae26bebf2908c0e8dd3b8a66868fe/",
+        "supports": "Общее положение статьи 21"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/federalnyi-zakon-ot-03072016-n-237-fz-o/",
+        "supports": "Общее положение статьи 21"
+      }
+    ]
+  },
+  {
+    "id": "valuation-market-22.1",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "cadastral-valuation/cadastral-value-challenge"
+    ],
+    "proposition": "Статья 22.1 закона № 237-ФЗ регулирует установление кадастровой стоимости в размере рыночной по заявлению в бюджетное учреждение и требования к отчёту об оценке.",
+    "limitations": "Проверить действующую или архивную стоимость, права заявителя, согласие собственника при применимости, даты и отчёт, предшествующее решение и региональный переходный порядок. Отдельно учесть постановление КС РФ от 14.07.2026 № 48-П: не применять прежнее ограничение сроков к архивной стоимости механически. Не гарантировать снижение.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_200504/135e0b9c50769c66cfa8e7e5fb71b918a70702e4/",
+        "supports": "Общее положение статьи 22.1"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/71433956/fb9a5d517b2b8a33a5b9aa3ee513ec85/",
+        "supports": "Общее положение статьи 22.1"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/federalnyi-zakon-ot-03072016-n-237-fz-o/",
+        "supports": "Общее положение статьи 22.1"
+      }
+    ]
+  },
+  {
+    "id": "developer-bankruptcy-201.4",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "newbuild-ddu/developer-bankruptcy"
+    ],
+    "proposition": "Статья 201.4 закона № 127-ФЗ устанавливает специальный порядок предъявления и рассмотрения требований участников строительства в деле о банкротстве застройщика, в том числе ведение реестра требований.",
+    "limitations": "Проверить судебный акт о стадии банкротства, публикацию, дату уведомления, вид договора, оплату, реестр, эскроу и возможные меры Фонда развития территорий. Не вычислять срок или обещать включение в реестр без проверки конкретного дела.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_39331/598c5dad9755936f4af45ac55ac31c2785f2d514/",
+        "supports": "Общее положение статьи 201.4"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/185181/cfdbc071fd32e8ba57d5c52b1519cf6b/",
+        "supports": "Общее положение статьи 201.4"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/federalnyi-zakon-ot-26102002-n-127-fz-o/glava-ix/ss-7/statia-201.4_1/?page=7",
+        "supports": "Общее положение статьи 201.4"
+      }
+    ]
+  },
+  {
+    "id": "property-lease-606",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "property-litigation/property-lease-dispute"
+    ],
+    "proposition": "Статья 606 ГК РФ определяет договор аренды как предоставление имущества за плату во временное владение и пользование или пользование.",
+    "limitations": "Проверить объект, договор, статус сторон, передачу, срок, оплату, регистрацию, характер нарушения и специальные нормы аренды земли и зданий. Отдельно определить применимые условия прекращения и возврата; не рассчитывать задолженность автоматически.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_9027/8e256230160d28d197e580c7b426efaffbb4e140/",
+        "supports": "Общее положение статьи 606"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/10164072/7569580fd338739c8c41fce45adf6d65/",
+        "supports": "Общее положение статьи 606"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/gk-rf-chast2/razdel-iv/glava-34/ss-1_2/statia-606/",
+        "supports": "Общее положение статьи 606"
+      }
+    ]
+  },
+  {
+    "id": "civil-procedure-30",
+    "asOf": "2026-11-27",
+    "status": "CONTEXT_ONLY_NOT_DOCUMENT_READY",
+    "appliesTo": [
+      "property-litigation/civil-court-procedure"
+    ],
+    "proposition": "Статья 30 ГПК РФ устанавливает исключительную территориальную подсудность исков о правах на недвижимое имущество по месту его нахождения.",
+    "limitations": "Сначала определить характер требования, компетенцию и вид производства (ГПК, АПК или КАС), затем применимость исключительной подсудности. Не считать каждый спор, связанный с недвижимостью, иском о праве на неё; проверить надлежащий суд, досудебный порядок, пошлину и сроки.",
+    "sources": [
+      {
+        "publisher": "КонсультантПлюс",
+        "type": "LAW_TEXT",
+        "url": "https://www.consultant.ru/document/cons_doc_LAW_39570/2ce784f541d31b9de0e4e54a3339de7d5200e76d/",
+        "supports": "Общее положение статьи 30"
+      },
+      {
+        "publisher": "ГАРАНТ",
+        "type": "LAW_TEXT",
+        "url": "https://base.garant.ru/12128809/7d6bbe1829627ce93319dc72963759a2/",
+        "supports": "Общее положение статьи 30"
+      },
+      {
+        "publisher": "СудАкт",
+        "type": "LAW_TEXT",
+        "url": "https://sudact.ru/law/gpk-rf/razdel-i/glava-3_1/statia-30/",
+        "supports": "Общее положение статьи 30"
+      }
+    ]
   }
 ] as const;
 

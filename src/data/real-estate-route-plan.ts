@@ -28,6 +28,9 @@ export type RealEstateGroup = Readonly<{
  * legally valid result is asserted by this preliminary inventory. */
 export const REAL_ESTATE_SOURCE_FAMILIES = {
   "214": "Федеральный закон № 214-ФЗ «Об участии в долевом строительстве»",
+  "101": "Федеральный закон № 101-ФЗ «Об обороте земель сельскохозяйственного назначения»",
+  "127": "Федеральный закон № 127-ФЗ «О несостоятельности (банкротстве)»",
+  "KAS": "Кодекс административного судопроизводства РФ",
   "218": "Федеральный закон № 218-ФЗ «О государственной регистрации недвижимости»",
   "221": "Федеральный закон № 221-ФЗ «О кадастровой деятельности»",
   "237": "Федеральный закон № 237-ФЗ «О государственной кадастровой оценке»",
@@ -259,6 +262,7 @@ export const REAL_ESTATE_GROUPS: readonly RealEstateGroup[] = [
       "акт осмотра или передачи"
     ],
     "sourceKeys": [
+      "127",
       "214",
       "GK",
       "218"
@@ -390,6 +394,7 @@ export const REAL_ESTATE_GROUPS: readonly RealEstateGroup[] = [
       "право на участок и ограничения"
     ],
     "sourceKeys": [
+      "101",
       "ZK",
       "GRK",
       "218"
@@ -585,6 +590,7 @@ export const REAL_ESTATE_GROUPS: readonly RealEstateGroup[] = [
     ],
     "sourceKeys": [
       "218",
+      "KAS",
       "237",
       "GK"
     ],
@@ -650,6 +656,7 @@ export const REAL_ESTATE_GROUPS: readonly RealEstateGroup[] = [
     ],
     "sourceKeys": [
       "GK",
+      "KAS",
       "GPK",
       "APK",
       "218"

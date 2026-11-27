@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { REAL_ESTATE_CHECKED_CONTEXT,getRealEstateCheckedContext } from "./real-estate-checked-context";
 import { getRealEstateLegalReviewTask } from "./real-estate-legal-review";
-assert.equal(REAL_ESTATE_CHECKED_CONTEXT.length,30);
+assert.equal(REAL_ESTATE_CHECKED_CONTEXT.length,41);
 for(const item of REAL_ESTATE_CHECKED_CONTEXT){
   assert.equal(item.status,"CONTEXT_ONLY_NOT_DOCUMENT_READY");
   const legalArticle:Record<string,RegExp>={
@@ -34,7 +34,18 @@ for(const item of REAL_ESTATE_CHECKED_CONTEXT){
     "transaction-protection-14":/Статья 14/,
     "transaction-protection-301":/Статья 301/,
     "transaction-protection-304":/Статья 304/,
-    "transaction-protection-1064":/Статья 1064/
+    "transaction-protection-1064":/Статья 1064/,
+    "land-vri-14.1":/Статья 14\.1/,
+    "land-zone-56":/Статья 56/,
+    "land-lease-39.6":/Статья 39\.6/,
+    "land-redistribution-39.28":/Статья 39\.28/,
+    "land-agricultural-8":/Статья 8/,
+    "land-withdrawal-49":/Статья 49/,
+    "valuation-error-21":/Статья 21/,
+    "valuation-market-22.1":/Статья 22\.1/,
+    "developer-bankruptcy-201.4":/Статья 201\.4/,
+    "property-lease-606":/Статья 606/,
+    "civil-procedure-30":/Статья 30/
   };
   assert.match(item.proposition,legalArticle[item.id],"Unrecognized context entry "+item.id);
   assert.equal(item.sources.length,3);
@@ -69,7 +80,7 @@ for(const [group,situation,article] of [
   assert.equal(getRealEstateLegalReviewTask(group,situation)?.filingReady,false);
 }
 assert.deepEqual(getRealEstateCheckedContext("none","none"),[]);
-console.log("Real estate legal context PASS: 30 contexts, 3 publishers each, 49 covered situations but zero filing approvals");
+console.log("Real estate legal context PASS: 41 contexts, 3 publishers each, 60 covered situations but zero filing approvals");
 
 for(const [scenario,id] of [["ddu-signing","ddu-contract-article4"],["area-mismatch","ddu-contract-article4"],["developer-delay","ddu-delay-article6"],["quality-defects","ddu-quality-article7"],["act-acceptance-dispute","ddu-acceptance-article8"]]){
   const context=getRealEstateCheckedContext("newbuild-ddu",scenario);
@@ -77,7 +88,7 @@ for(const [scenario,id] of [["ddu-signing","ddu-contract-article4"],["area-misma
   assert.equal(context[0].id,id);
   assert.equal(getRealEstateLegalReviewTask("newbuild-ddu",scenario)?.filingReady,false);
 }
-assert.deepEqual(getRealEstateCheckedContext("newbuild-ddu","developer-bankruptcy"),[]);
+assert.equal(getRealEstateCheckedContext("newbuild-ddu","developer-bankruptcy")[0]?.id,"developer-bankruptcy-201.4");
 
 for(const group of ["land-boundaries","neighbors-servitudes"]){
   const expected=group==="land-boundaries"?["boundary-survey","neighbor-boundary-dispute","boundary-overlap","boundary-approval","registry-boundary-error","land-access"]:["blocked-drive","servitude-agreement","utilities-neighbor"];
@@ -103,5 +114,13 @@ assert.equal(getRealEstateCheckedContext("shared-ownership","compensation-share"
 for(const key of ["ownership-register/ownership-transfer","property-transactions/prepurchase-check","property-transactions/seller-no-transfer","property-transactions/buyer-payment-delay","property-transactions/hidden-encumbrance","property-transactions/preliminary-contract","property-transactions/invalidate-property-deal","ownership-register/encumbrance-record","property-litigation/contested-register-right","ownership-register/title-documents","shared-ownership/share-registration","cadastral-valuation/object-no-record","property-litigation/recognition-of-right","property-litigation/property-recovery","property-litigation/property-obstacle","neighbors-servitudes/fence-dispute","neighbors-servitudes/water-runoff","neighbors-servitudes/damage-neighbor-build"]){
   const [group,scenario]=key.split("/");
   assert.ok(getRealEstateCheckedContext(group,scenario).length>0,key);
+  assert.equal(getRealEstateLegalReviewTask(group,scenario)?.filingReady,false,key);
+}
+
+for(const key of ["land-status-use/land-permitted-use","land-status-use/land-zone-limit","land-status-use/public-land-lease","land-status-use/land-redistribution","land-status-use/agricultural-plot","land-status-use/land-withdrawal","cadastral-valuation/cadastral-value-check","cadastral-valuation/cadastral-value-challenge","newbuild-ddu/developer-bankruptcy","property-litigation/property-lease-dispute","property-litigation/civil-court-procedure"]){
+  const [group,scenario]=key.split("/");
+  const context=getRealEstateCheckedContext(group,scenario);
+  assert.ok(context.length>0,key);
+  for(const entry of context)assert.equal(new Set(entry.sources.map(s=>new URL(s.url).hostname)).size,3,key);
   assert.equal(getRealEstateLegalReviewTask(group,scenario)?.filingReady,false,key);
 }

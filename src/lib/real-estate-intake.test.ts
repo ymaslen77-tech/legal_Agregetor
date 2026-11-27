@@ -162,3 +162,17 @@ for(const [caseKey,keys] of [["ownership-register/ownership-transfer",["transfer
   assert.ok(result.manualReviewFlags.length>0,caseKey);
   assert.equal(result.filingReady,false,caseKey);
 }
+
+for(const [caseKey,keys] of [["land-status-use/land-permitted-use",["vriEvidence","vriGoal"]],["land-status-use/land-zone-limit",["zoneEvidence","zoneImpact"]],["land-status-use/public-land-lease",["leaseRoute","leaseDecision"]],["land-status-use/land-redistribution",["redistributionLand","redistributionPlan"]],["land-status-use/agricultural-plot",["agriObject","agriOrder"]],["land-status-use/land-withdrawal",["withdrawalKind","withdrawalValue"]],["cadastral-valuation/cadastral-value-check",["valuationReport","valuationError"]],["cadastral-valuation/cadastral-value-challenge",["valuationPeriod","marketReport"]],["newbuild-ddu/developer-bankruptcy",["bankruptcyStage","bankruptcyRegister"]],["property-litigation/property-lease-dispute",["leaseDisputeKind","leaseContractEvidence"]],["property-litigation/civil-court-procedure",["courtClaimKind","courtParties"]]] as const){
+  const [group,scenario]=caseKey.split("/");
+  const spec=getRealEstateIntakeSpec(group,scenario);
+  assert.ok(spec,caseKey);
+  for(const key of keys)assert.ok(spec.fields.some(f=>f.key===key&&f.required),key);
+  const values:Record<string,string>={};
+  for(const field of spec.fields)if(field.required)values[field.key]=field.kind==="choice"?field.choices![field.choices!.length-1]:"Обезличенные тестовые сведения";
+  const result=evaluateRealEstateIntake(spec,values);
+  assert.equal(result.invalid.length,0,caseKey);
+  assert.equal(result.missing.length,0,caseKey);
+  assert.ok(result.manualReviewFlags.length>0,caseKey);
+  assert.equal(result.filingReady,false,caseKey);
+}
