@@ -5,6 +5,7 @@ import { evaluateRealEstateIntake, getRealEstateIntakeSpec } from "@/lib/real-es
 import type { RealEstateField, RealEstateIntakeResult } from "@/lib/real-estate-intake";
 import { RealEstateDocumentWorkbench } from "@/components/real-estate/RealEstateDocumentWorkbench";
 import { getRealEstateLegalReviewTask } from "@/data/real-estate-legal-review";
+import { getRealEstateFormGuidance } from "@/data/real-estate-form-guidance";
 import { getRealEstateCheckedContext } from "@/data/real-estate-checked-context";
 
 /** Local-only development prototype. No server actions, persistence or PDF. */
@@ -21,6 +22,7 @@ export function RealEstatePreview({initialGroupId,initialSituationId}:PreviewPro
   const spec=getRealEstateIntakeSpec(groupId,situationId);
   const legalReview=getRealEstateLegalReviewTask(groupId,situationId);
   const checkedContext=getRealEstateCheckedContext(groupId,situationId);
+  const officialForm=getRealEstateFormGuidance(groupId,situationId);
   const onGroupChange=(next:string)=>{
     setGroupId(next);
     setSituationId(REAL_ESTATE_GROUPS.find(x=>x.id===next)?.situations[0]?.id??"");
@@ -132,6 +134,7 @@ export function RealEstatePreview({initialGroupId,initialSituationId}:PreviewPro
           </div>}
       </section>
     </div>:null}
+    {officialForm?<section className="mt-6 rounded-lg border border-line bg-white p-5" data-testid="real-estate-official-form"><h2 className="font-semibold">Установленная форма обращения</h2><p className="mt-2 text-sm">{officialForm.title}. Результат анкеты помогает подготовить сведения, но не заменяет утверждённый бланк.</p><a className="mt-3 inline-block text-trust underline" href={officialForm.url} target="_blank" rel="noopener noreferrer">Открыть утверждённую форму</a></section>:null}
     {spec?<RealEstateDocumentWorkbench key={groupId+"/"+situationId}
       spec={spec} answers={answers} assessment={result}
       inputRevision={inputRevision} restoreAnswers={restoreAnswers}/>:null}

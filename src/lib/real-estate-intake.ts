@@ -50,7 +50,20 @@ const registrationSuspensionFields:readonly RealEstateField[]=[
   {key:"registrationDecisionDate",label:"Дата принятия решения о приостановлении (не дата получения уведомления), если известна",kind:"date",required:false},
   {key:"registrationReceivedDate",label:"Дата получения уведомления, если известна",kind:"date",required:false},
   {key:"suspensionAppealStage",label:"Обжаловалось ли именно это решение?",kind:"choice",required:true,
-    choices:["не обжаловалось","подано в комиссию","комиссия уже рассмотрела","обжаловано в суд","не знаю"]}
+    choices:["не обжаловалось","подано в комиссию","комиссия уже рассмотрела","обжаловано в суд","не знаю"]},
+  {key:"commissionName",label:"Наименование компетентной апелляционной комиссии (только вымышленные реквизиты в тесте)",kind:"textarea",required:false},
+  {key:"commissionChair",label:"ФИО председателя (только вымышленные реквизиты в тесте)",kind:"textarea",required:false},
+  {key:"commissionApplicant",label:"ФИО заявителя-гражданина (только вымышленные реквизиты в тесте)",kind:"textarea",required:false},
+  {key:"commissionPost",label:"Почтовый адрес (только вымышленные реквизиты в тесте)",kind:"textarea",required:false},
+  {key:"commissionEmail",label:"Электронная почта (только вымышленные реквизиты в тесте)",kind:"textarea",required:false},
+  {key:"commissionPhone",label:"Контактный телефон (только вымышленные реквизиты в тесте)",kind:"textarea",required:false},
+  {key:"commissionOrgan",label:"Наименование органа регистрации прав (только вымышленные реквизиты в тесте)",kind:"textarea",required:false},
+  {key:"commissionNotice",label:"Дата и номер уведомления (только вымышленные реквизиты в тесте)",kind:"textarea",required:false},
+  {key:"commissionApplication",label:"Дата и номер исходного заявления (только вымышленные реквизиты в тесте)",kind:"textarea",required:false},
+  {key:"commissionEngineer",label:"Вид кадастрового документа, ФИО и СНИЛС инженера при применимости или отметка «не применимо» (только вымышленные реквизиты в тесте)",kind:"textarea",required:false},
+  {key:"commissionReasons",label:"Конкретные основания несоответствия решения закону № 218-ФЗ (только вымышленные реквизиты в тесте)",kind:"textarea",required:false},
+  {key:"commissionAction",label:"Какое действие приостановлено?",kind:"choice",required:false,choices:["кадастровый учёт","государственная регистрация прав","одновременные учёт и регистрация"]},
+  {key:"commissionEligible",label:"Подтверждены полномочия заявителя-гражданина, срок 15 рабочих дней от решения, комиссия и допустимость обращения?",kind:"choice",required:false,choices:["не подтверждено","да"]}
 ];
 const registrationRefusalFields:readonly RealEstateField[]=[
   {key:"registrationDecision",label:"Имеется ли письменное решение об отказе?",kind:"choice",required:true,
@@ -76,6 +89,19 @@ const registrationRefusalFields:readonly RealEstateField[]=[
   {key:"refusalKnownDate",label:"Дата, когда стало известно об отказе",kind:"date",required:false},
   {key:"refusalScope",label:"Какой вид спора подтверждён?",kind:"choice",required:false,choices:["не установлено","личное обращение гражданина к органу без спора о праве и предпринимательской деятельности"]},
   {key:"refusalProcedure",label:"Проверены ли подсудность по КАС РФ, срок обращения, полномочия, состав участников, досудебный порядок и отсутствие препятствий к рассмотрению?",kind:"choice",required:false,choices:["не подтверждено","да"]}
+];
+const technicalPreparationFields:readonly RealEstateField[]=[
+  {key:"errorObjectType",label:"Вид объекта (только вымышленные реквизиты в тесте)",kind:"textarea",required:false},
+  {key:"errorObjectNumber",label:"Условный кадастровый номер (только вымышленные реквизиты в тесте)",kind:"textarea",required:false},
+  {key:"errorRightEntry",label:"Дата и номер записи реестра прав, если применимо (только вымышленные реквизиты в тесте)",kind:"textarea",required:false},
+  {key:"errorWrong",label:"Неверные сведения (только вымышленные реквизиты в тесте)",kind:"textarea",required:false},
+  {key:"errorCorrect",label:"Правильные сведения (только вымышленные реквизиты в тесте)",kind:"textarea",required:false},
+  {key:"errorBasis",label:"Документ, подтверждающий правильные сведения (только вымышленные реквизиты в тесте)",kind:"textarea",required:false},
+  {key:"errorApplicant",label:"Сведения заявителя и полномочия (только вымышленные реквизиты в тесте)",kind:"textarea",required:false},
+  {key:"errorChannel",label:"Способ подачи (только вымышленные реквизиты в тесте)",kind:"textarea",required:false},
+  {key:"errorDelivery",label:"Способ получения результата (только вымышленные реквизиты в тесте)",kind:"textarea",required:false},
+  {key:"errorRegister",label:"В каком разделе ЕГРН допущена техническая ошибка?",kind:"choice",required:false,choices:["кадастр недвижимости","реестр прав","иной раздел или неизвестно"]},
+  {key:"errorConfirmed",label:"Подтверждено, что правильный исходный документ искажён при внесении записи регистратором?",kind:"choice",required:false,choices:["не подтверждено","да"]}
 ];
 const specialFields:Readonly<Record<string,readonly RealEstateField[]>>={
   "land-status-use/land-permitted-use":[
@@ -331,18 +357,21 @@ const specialFields:Readonly<Record<string,readonly RealEstateField[]>>={
     {key:"noticeEventDate",label:"Дата документально подтверждённого извещения, если известна",kind:"date",required:false}
   ],
   "ownership-register/record-inaccurate":[
+    ...technicalPreparationFields,
     {key:"registryErrorOrigin",label:"Где впервые обнаружено расхождение сведений?",kind:"choice",required:true,
       choices:["только запись ЕГРН","исходный документ или технический план","не установлено"]},
     {key:"thirdPartyRights",label:"Может ли исправление затронуть права других лиц?",kind:"choice",required:true,
       choices:["да","нет","не знаю"]}
   ],
   "land-boundaries/registry-boundary-error":[
+    ...technicalPreparationFields,
     {key:"registryErrorOrigin",label:"Где впервые обнаружено расхождение сведений?",kind:"choice",required:true,
       choices:["только запись ЕГРН","исходный документ или межевой план","не установлено"]},
     {key:"thirdPartyRights",label:"Может ли исправление затронуть права других лиц?",kind:"choice",required:true,
       choices:["да","нет","не знаю"]}
   ],
   "cadastral-valuation/wrong-object-area":[
+    ...technicalPreparationFields,
     {key:"registryErrorOrigin",label:"Какие документы подтверждают площадь?",kind:"choice",required:true,
       choices:["исходный документ отличается от ЕГРН","расхождение уже в техническом плане","не установлено"]},
     {key:"thirdPartyRights",label:"Может ли исправление затронуть права других лиц?",kind:"choice",required:true,

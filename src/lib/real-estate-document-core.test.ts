@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { REAL_ESTATE_GROUPS } from "@/data/real-estate-route-plan";
+import { getRealEstateFormGuidance,renderRealEstateFormPreparation } from "@/data/real-estate-form-guidance";
 import { REAL_ESTATE_PREPARED_GUIDANCE,renderPreparedRealEstateGuidance } from "@/data/real-estate-prepared-guidance";
 import { getReviewedRealEstateGuidance,REAL_ESTATE_REVIEWED_GUIDANCE } from "@/data/real-estate-reviewed-guidance";
 import { getRealEstateIntakeSpec } from "@/lib/real-estate-intake";
@@ -203,4 +204,12 @@ for(const [key,item] of Object.entries(REAL_ESTATE_PREPARED_GUIDANCE)){
     assert.notEqual(yes,no,key);
   }
   assert.ok(item.actions.length,key);
+}
+
+for(const [group,scenario] of [["ownership-register","record-inaccurate"],["land-boundaries","registry-boundary-error"],["cadastral-valuation","wrong-object-area"],["ownership-register","suspension-registration"],["cadastral-valuation","cadastre-suspension"]]){
+  const form=getRealEstateFormGuidance(group,scenario);assert.ok(form);
+  const output=renderRealEstateFormPreparation(group,scenario,{},"2026-11-27T12:00:00.000Z").join("\n");
+  assert.ok(output.includes(form.url));
+  assert.match(output,/не заменяет утверждённую форму/);
+  assert.match(output,/не подтвержден/);
 }

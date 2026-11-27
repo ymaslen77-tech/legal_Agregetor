@@ -2,6 +2,7 @@ import {
   REAL_ESTATE_GROUPS, getRealEstateSituation,
   type RealEstateResult
 } from "@/data/real-estate-route-plan";
+import { renderRealEstateFormPreparation } from "@/data/real-estate-form-guidance";
 import { renderPreparedRealEstateGuidance } from "@/data/real-estate-prepared-guidance";
 import { getReviewedRealEstateGuidance,renderReviewedRealEstateGuidance } from "@/data/real-estate-reviewed-guidance";
 import { getRealEstateLegalReviewTask } from "@/data/real-estate-legal-review";
@@ -270,7 +271,8 @@ export function createRealEstateDraftPrototype(input: RealEstateDraftInput): Rea
   const createdAt=input.createdAt??new Date().toISOString();
   const specificClaim=formatSaleClaim(plan,normalized,createdAt)??formatDduDefectClaim(plan,normalized,createdAt)??formatRefusalClaim(plan,normalized,createdAt);
   const rule=specificClaim?acceptedDraftRule(plan.groupId,plan.situationId):getReviewedRealEstateGuidance(plan.groupId,plan.situationId);
-  const documentText=specificClaim??formatResult(plan,normalized);
+  const formPreparation=renderRealEstateFormPreparation(plan.groupId,plan.situationId,normalized,createdAt);
+  const documentText=specificClaim??(formPreparation.length?[...formPreparation,"","Ситуация: "+getRealEstateSituation(plan.groupId,plan.situationId)?.title,"","Дополнительные сведения: "+normalized.caseDetails,"Цель обращения: "+normalized.goal,...getRealEstateIntakeSpec(plan.groupId,plan.situationId)!.fields.filter(field=>!["role","propertyType","stage","summary","eventDate","documents","goal","caseDetails"].includes(field.key)&&Boolean(normalized[field.key])).map(field=>field.label+": "+normalized[field.key]),...evaluateRealEstateIntake(getRealEstateIntakeSpec(plan.groupId,plan.situationId)!,normalized).manualReviewFlags].join("\n"):formatResult(plan,normalized));
   const result = documentResultSchema.parse({
     contractVersion: DOCUMENT_RESULT_CONTRACT_VERSION,
     versionId: input.versionId ?? crypto.randomUUID(),
