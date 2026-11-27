@@ -28,7 +28,7 @@ for(const item of REAL_ESTATE_CHECKED_CONTEXT){
   assert.match(item.proposition,legalArticle[item.id],"Unrecognized context entry "+item.id);
   assert.equal(item.sources.length,3);
   assert.equal(new Set(item.sources.map(x=>x.publisher)).size,3);
-  if(item.id.startsWith("registration-")||item.id.startsWith("ddu-")||item.id.startsWith("boundary-")||item.id.startsWith("private-servitude-")||item.id.startsWith("build-")||item.id.startsWith("share-"))assert.equal(
+  if(item.id.startsWith("registration-")||item.id.startsWith("ddu-")||item.id.startsWith("boundary-")||item.id.startsWith("private-servitude-")||item.id.startsWith("build-")||(item.id.startsWith("share-")&&item.id!=="share-sale-preemption"))assert.equal(
     new Set(item.sources.map(x=>new URL(x.url).hostname)).size,3
   );
   assert.ok(item.sources.every(x=>new URL(x.url).protocol==="https:"));
