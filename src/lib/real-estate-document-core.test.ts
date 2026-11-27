@@ -170,3 +170,21 @@ assert.match(compensation("за пользование имуществом","е
 assert.match(compensation("вместо выдела или за прекращение доли","согласия нет").documentText,/трёх условий одновременно/);
 assert.match(compensation("не знаю","не знаю").documentText,/Сначала определите цель/);
 assert.equal(compensation("за пользование имуществом","есть согласие").filingReady,false);
+
+for(const [group,scenario] of [["ownership-register","registration-refusal"],["build-renovation","building-register-refusal"]]){
+  const spec=getRealEstateIntakeSpec(group,scenario);assert.ok(spec);
+  const values:Record<string,string>={};
+  for(const field of spec.fields)if(field.required)values[field.key]=field.kind==="choice"?field.choices![0]:field.kind==="date"?"2026-10-15":"Синтетические обстоятельства";
+  Object.assign(values,{"registrationDecision":"есть решение с основаниями","priorSuspension":"есть уведомление, причины известны","correctionEvidence":"да, есть доказательства подачи","registrationDecisionDate":"2026-11-01","refusalKnownDate":"2026-11-02","refusalScope":"личное обращение гражданина к органу без спора о праве и предпринимательской деятельности","refusalProcedure":"да","refusalCourt":"Тестовые сведения: Наименование и адрес компетентного суда","refusalClaimant":"Тестовые сведения: ФИО, дата и место рождения, место жительства, известный идентификатор и контакты истца (только вымышленные реквизиты)","refusalRespondent":"Тестовые сведения: Наименование, адрес и известные реквизиты административного ответчика","refusalParties":"Тестовые сведения: Заинтересованные лица и реквизиты либо сведения об их отсутствии","refusalDecisionNumber":"Тестовые сведения: Номер и наименование оспариваемого решения","refusalApplication":"Тестовые сведения: Номер и дата исходного заявления, объект и вид регистрационного действия","refusalReason":"Тестовые сведения: Основания отказа из решения","refusalObjection":"Тестовые сведения: Почему причины отказа устранены; доказательства и даты подачи","refusalRights":"Тестовые сведения: Какие права нарушены и какие препятствия возникли","refusalPretrial":"Тестовые сведения: Сведения о предыдущих жалобах, ответах или их отсутствии","refusalFee":"Тестовые сведения: Сведения об уплате пошлины, льготе либо соответствующем ходатайстве","refusalService":"Тестовые сведения: Сведения о направлении копий или представлении необходимых экземпляров"});
+  const generate=(overrides:Record<string,string>={})=>createRealEstateDraftPrototype({groupId:group,situationId:scenario,values:{...values,...overrides},createdAt:"2026-11-27T12:00:00.000Z"}).documentResult;
+  const result=generate();
+  assert.match(result.documentText,/АДМИНИСТРАТИВНОЕ ИСКОВОЕ ЗАЯВЛЕНИЕ/);
+  assert.match(result.documentText,/статья 227 КАС РФ/);
+  assert.match(result.documentText,/повторного рассмотрения/);
+  assert.doesNotMatch(result.documentText,/Вопросы для проверки|Примечания к предварительному проекту/);
+  assert.deepEqual(result.usedRuleIds,[scenario+"-27-29-kas"]);
+  assert.equal(result.filingReady,false);
+  assert.ok(isRealEstateDraftResult(result));
+  const negatives:Record<string,string>[]=[{refusalScope:"не установлено"},{refusalProcedure:"не подтверждено"},{refusalCourt:""},{refusalKnownDate:"2026-10-31"},{correctionEvidence:"нет"}];
+  for(const negative of negatives)assert.deepEqual(generate(negative).usedRuleIds,[]);
+}

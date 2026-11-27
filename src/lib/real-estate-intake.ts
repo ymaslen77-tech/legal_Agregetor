@@ -60,7 +60,22 @@ const registrationRefusalFields:readonly RealEstateField[]=[
   {key:"correctionEvidence",label:"Представляли ли документы для устранения причин приостановления?",kind:"choice",required:true,
     choices:["да, есть доказательства подачи","нет","не знаю"]},
   {key:"registrationGround",label:"Указанный пункт статьи 26, если известен (без личных реквизитов)",kind:"text",required:false},
-  {key:"registrationDecisionDate",label:"Дата отказа, если известна",kind:"date",required:false}
+  {key:"registrationDecisionDate",label:"Дата отказа, если известна",kind:"date",required:false},
+  {key:"refusalCourt",label:"Наименование и адрес компетентного суда",kind:"textarea",required:false},
+  {key:"refusalClaimant",label:"ФИО, дата и место рождения, место жительства, известный идентификатор и контакты истца (только вымышленные реквизиты)",kind:"textarea",required:false},
+  {key:"refusalRespondent",label:"Наименование, адрес и известные реквизиты административного ответчика",kind:"textarea",required:false},
+  {key:"refusalParties",label:"Заинтересованные лица и реквизиты либо сведения об их отсутствии",kind:"textarea",required:false},
+  {key:"refusalDecisionNumber",label:"Номер и наименование оспариваемого решения",kind:"textarea",required:false},
+  {key:"refusalApplication",label:"Номер и дата исходного заявления, объект и вид регистрационного действия",kind:"textarea",required:false},
+  {key:"refusalReason",label:"Основания отказа из решения",kind:"textarea",required:false},
+  {key:"refusalObjection",label:"Почему причины отказа устранены; доказательства и даты подачи",kind:"textarea",required:false},
+  {key:"refusalRights",label:"Какие права нарушены и какие препятствия возникли",kind:"textarea",required:false},
+  {key:"refusalPretrial",label:"Сведения о предыдущих жалобах, ответах или их отсутствии",kind:"textarea",required:false},
+  {key:"refusalFee",label:"Сведения об уплате пошлины, льготе либо соответствующем ходатайстве",kind:"textarea",required:false},
+  {key:"refusalService",label:"Сведения о направлении копий или представлении необходимых экземпляров",kind:"textarea",required:false},
+  {key:"refusalKnownDate",label:"Дата, когда стало известно об отказе",kind:"date",required:false},
+  {key:"refusalScope",label:"Какой вид спора подтверждён?",kind:"choice",required:false,choices:["не установлено","личное обращение гражданина к органу без спора о праве и предпринимательской деятельности"]},
+  {key:"refusalProcedure",label:"Проверены ли подсудность по КАС РФ, срок обращения, полномочия, состав участников, досудебный порядок и отсутствие препятствий к рассмотрению?",kind:"choice",required:false,choices:["не подтверждено","да"]}
 ];
 const specialFields:Readonly<Record<string,readonly RealEstateField[]>>={
   "land-status-use/land-permitted-use":[

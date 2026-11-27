@@ -99,6 +99,9 @@ export const REAL_ESTATE_ACCEPTED_DRAFT_RULES=[
   {id:"ddu-defect-remedy-7-2-6",group:"newbuild-ddu",scenario:"quality-defects",asOf:"2026-11-27",
    statement:"По части 1 статьи 7 Федерального закона от 30.12.2004 № 214-ФЗ качество объекта должно соответствовать договору и применимым обязательным требованиям. При предусмотренных частью 2 статьи 7 недостатках участник долевого строительства вправе, если договором не предусмотрено иное, потребовать их бесплатного устранения в разумный срок. Частью 6 статьи 7 предусмотрено письменное предъявление требований с указанием дефектов, выявленных в гарантийный период.",
    sources:["https://www.consultant.ru/document/cons_doc_LAW_51038/aeb9f2327f835ecc02fb71b9a0312ead0b844204/","https://base.garant.ru/12138267/e88847e78ccd9fdb54482c7fa15982bf/","https://zpp.rospotrebnadzor.ru/news/federal/573466"]}
+,
+{"id":"registration-refusal-27-29-kas","group":"ownership-register","scenario":"registration-refusal","asOf":"2026-11-27","statement":"Часть 1 статьи 27 Федерального закона от 13.07.2015 № 218-ФЗ связывает отказ с неустранением в срок приостановления причин, предусмотренных статьёй 26. Часть 12.2 статьи 29 этого закона предусматривает судебное обжалование отказа заинтересованным лицом. По статье 218 КАС РФ допускается оспаривание публичного решения, нарушающего права заявителя; статья 227 КАС РФ предусматривает признание незаконного решения и устранение нарушения при установлении судом соответствующих оснований.","sources":["https://www.consultant.ru/document/cons_doc_LAW_182661/57b5e78bd4909a6e15d4c3c0f17f15de22d885f5/","https://sudact.ru/law/federalnyi-zakon-ot-13072015-n-218-fz-o/glava-3/statia-27/","https://klerk.systems/docs/fz_218_2015/article/27/","https://www.consultant.ru/document/cons_doc_LAW_182661/02766c386c2ef725cc8490f38d46a143c994a039/","https://base.garant.ru/71129192/7a69fb6632f5876efd3160114758a106/","https://klerk.systems/docs/fz_218_2015/article/29/","https://www.consultant.ru/document/cons_doc_LAW_176147/98b69fee6357343965f5b57193fcaaa54b0f21e4/","https://sudact.ru/law/kas-rf/razdel-iv/glava-22/statia-218/?page=1","https://klerk.systems/docs/kas_rf/article/218/","https://www.consultant.ru/document/cons_doc_LAW_176147/16f896d97acce5061ac7b8840c57509292ae7859/","https://sudact.ru/law/kas-rf/razdel-iv/glava-22/statia-227/","https://klerk.systems/docs/kas_rf/article/227/"]},
+{"id":"building-register-refusal-27-29-kas","group":"build-renovation","scenario":"building-register-refusal","asOf":"2026-11-27","statement":"Часть 1 статьи 27 Федерального закона от 13.07.2015 № 218-ФЗ связывает отказ с неустранением в срок приостановления причин, предусмотренных статьёй 26. Часть 12.2 статьи 29 этого закона предусматривает судебное обжалование отказа заинтересованным лицом. По статье 218 КАС РФ допускается оспаривание публичного решения, нарушающего права заявителя; статья 227 КАС РФ предусматривает признание незаконного решения и устранение нарушения при установлении судом соответствующих оснований.","sources":["https://www.consultant.ru/document/cons_doc_LAW_182661/57b5e78bd4909a6e15d4c3c0f17f15de22d885f5/","https://sudact.ru/law/federalnyi-zakon-ot-13072015-n-218-fz-o/glava-3/statia-27/","https://klerk.systems/docs/fz_218_2015/article/27/","https://www.consultant.ru/document/cons_doc_LAW_182661/02766c386c2ef725cc8490f38d46a143c994a039/","https://base.garant.ru/71129192/7a69fb6632f5876efd3160114758a106/","https://klerk.systems/docs/fz_218_2015/article/29/","https://www.consultant.ru/document/cons_doc_LAW_176147/98b69fee6357343965f5b57193fcaaa54b0f21e4/","https://sudact.ru/law/kas-rf/razdel-iv/glava-22/statia-218/?page=1","https://klerk.systems/docs/kas_rf/article/218/","https://www.consultant.ru/document/cons_doc_LAW_176147/16f896d97acce5061ac7b8840c57509292ae7859/","https://sudact.ru/law/kas-rf/razdel-iv/glava-22/statia-227/","https://klerk.systems/docs/kas_rf/article/227/"]}
 ] as const;
 function acceptedDraftRule(group:string,scenario:string){
   return REAL_ESTATE_ACCEPTED_DRAFT_RULES.find(rule=>rule.group===group&&rule.scenario===scenario);
@@ -152,6 +155,22 @@ function formatDduDefectClaim(plan:RealEstateDocumentPlan,data:Readonly<Record<s
     "Прошу направить письменный ответ по указанному адресу.","",
     "Приложения: "+data.documents,"","Дата: ____________________","Подпись: ____________________"
   ].join("\n");
+}
+function formatRefusalClaim(plan:RealEstateDocumentPlan,data:Readonly<Record<string,string>>,createdAt:string):string|null{
+  if(!["ownership-register/registration-refusal","build-renovation/building-register-refusal"].includes(plan.groupId+"/"+plan.situationId))return null;
+  if(data.refusalScope!=="личное обращение гражданина к органу без спора о праве и предпринимательской деятельности"||data.refusalProcedure!=="да")return null;
+  if(data.registrationDecision!=="есть решение с основаниями"||data.priorSuspension!=="есть уведомление, причины известны"||data.correctionEvidence!=="да, есть доказательства подачи")return null;
+  if(!data.registrationDecisionDate||data.registrationDecisionDate<"2026-01-01"||!data.refusalKnownDate||data.refusalKnownDate<data.registrationDecisionDate||data.refusalKnownDate>createdAt.slice(0,10))return null;
+  if(!["refusalCourt","refusalClaimant","refusalRespondent","refusalParties","refusalDecisionNumber","refusalApplication","refusalReason","refusalObjection","refusalRights","refusalPretrial","refusalFee","refusalService"].every(key=>data[key]?.trim()))return null;
+  const rule=acceptedDraftRule(plan.groupId,plan.situationId);if(!rule)return null;
+  return [requiredNotices.DRAFT,"","В "+data.refusalCourt,"Административный истец: "+data.refusalClaimant,"Административный ответчик: "+data.refusalRespondent,"Заинтересованные лица: "+data.refusalParties,"",
+    "АДМИНИСТРАТИВНОЕ ИСКОВОЕ ЗАЯВЛЕНИЕ о признании незаконным решения об отказе в кадастровом учёте и (или) регистрации прав","",
+    "Исходное заявление: "+data.refusalApplication,"Оспариваемое решение: "+data.refusalDecisionNumber+" от "+data.registrationDecisionDate+". Об отказе стало известно "+data.refusalKnownDate+".",
+    data.summary,data.caseDetails,"Основания отказа согласно решению: "+data.refusalReason,"Возражения истца и доказательства: "+data.refusalObjection,"Нарушение прав и законных интересов: "+data.refusalRights,"Сведения о предыдущем обжаловании: "+data.refusalPretrial,"",rule.statement,"",
+    "На основании изложенного прошу суд:",
+    "1. Признать незаконным решение административного ответчика "+data.refusalDecisionNumber+" от "+data.registrationDecisionDate+".",
+    "2. Обязать административного ответчика устранить нарушение прав административного истца путём повторного рассмотрения исходного заявления с учётом установленных судом обстоятельств.",
+    "","Государственная пошлина: "+data.refusalFee,"Направление копий: "+data.refusalService,"Приложения: "+data.documents,"","Дата: ____________________","Подпись: ____________________"].join("\n");
 }
 function formatResult(plan: RealEstateDocumentPlan, data: Readonly<Record<string, string>>): string {
   const situation = getRealEstateSituation(plan.groupId, plan.situationId);
@@ -247,7 +266,7 @@ export function createRealEstateDraftPrototype(input: RealEstateDraftInput): Rea
     throw new Error("Сначала заполните обязательные сведения и исправьте ошибки анкеты.");
   }
   const createdAt=input.createdAt??new Date().toISOString();
-  const specificClaim=formatSaleClaim(plan,normalized,createdAt)??formatDduDefectClaim(plan,normalized,createdAt);
+  const specificClaim=formatSaleClaim(plan,normalized,createdAt)??formatDduDefectClaim(plan,normalized,createdAt)??formatRefusalClaim(plan,normalized,createdAt);
   const rule=specificClaim?acceptedDraftRule(plan.groupId,plan.situationId):getReviewedRealEstateGuidance(plan.groupId,plan.situationId);
   const documentText=specificClaim??formatResult(plan,normalized);
   const result = documentResultSchema.parse({

@@ -26,6 +26,7 @@ const rows=REAL_ESTATE_GROUPS.flatMap(group=>group.situations.map(situation=>{
   const rule=REAL_ESTATE_ACCEPTED_DRAFT_RULES.find(r=>r.group===group.id&&r.scenario===situation.id);
   if(rule&&group.id==="property-transactions")Object.assign(values,{role:situation.id==="seller-no-transfer"?"покупатель":"продавец",saleContract:"договор от 01.10.2026",saleObject:"условный объект",saleDueDate:"2026-10-15",saleBreachConfirmed:"да",handoverAct:"нет",handoverPossession:"нет",paymentEvidence:"есть документы",paymentTerms:"единовременно",saleTransferred:"да",saleDebt:"125000,50"});
   if(rule&&group.id==="newbuild-ddu")Object.assign(values,{role:"дольщик",defectStage:"после передачи",defectEvidence:"акт или письменное заключение",defectContract:"ДДУ от 01.02.2026",defectObject:"условная квартира",defectTransferDate:"2026-09-01",defectFoundDate:"2026-10-01",defectList:"Протечка оконного блока",defectBasis:"Несоответствие условиям договора о качестве окон",defectProof:"Акт осмотра от 01.10.2026",defectWarranty:"да",defectContractRemedy:"да",defectAttribution:"да",defectRemedy:"безвозмездное устранение"});
+  if(rule&&["registration-refusal","building-register-refusal"].includes(situation.id))Object.assign(values,{"registrationDecision":"есть решение с основаниями","priorSuspension":"есть уведомление, причины известны","correctionEvidence":"да, есть доказательства подачи","registrationDecisionDate":"2026-11-01","refusalKnownDate":"2026-11-02","refusalScope":"личное обращение гражданина к органу без спора о праве и предпринимательской деятельности","refusalProcedure":"да","refusalCourt":"Тестовые сведения: Наименование и адрес компетентного суда","refusalClaimant":"Тестовые сведения: ФИО, дата и место рождения, место жительства, известный идентификатор и контакты истца (только вымышленные реквизиты)","refusalRespondent":"Тестовые сведения: Наименование, адрес и известные реквизиты административного ответчика","refusalParties":"Тестовые сведения: Заинтересованные лица и реквизиты либо сведения об их отсутствии","refusalDecisionNumber":"Тестовые сведения: Номер и наименование оспариваемого решения","refusalApplication":"Тестовые сведения: Номер и дата исходного заявления, объект и вид регистрационного действия","refusalReason":"Тестовые сведения: Основания отказа из решения","refusalObjection":"Тестовые сведения: Почему причины отказа устранены; доказательства и даты подачи","refusalRights":"Тестовые сведения: Какие права нарушены и какие препятствия возникли","refusalPretrial":"Тестовые сведения: Сведения о предыдущих жалобах, ответах или их отсутствии","refusalFee":"Тестовые сведения: Сведения об уплате пошлины, льготе либо соответствующем ходатайстве","refusalService":"Тестовые сведения: Сведения о направлении копий или представлении необходимых экземпляров"});
   const result=createRealEstateDraftPrototype({groupId:group.id,situationId:situation.id,values,createdAt:"2026-11-27T12:00:00.000Z"}).documentResult;
   const context=getRealEstateCheckedContext(group.id,situation.id);
   assert.ok(context.length,key);
@@ -35,7 +36,7 @@ const rows=REAL_ESTATE_GROUPS.flatMap(group=>group.situations.map(situation=>{
     assert.deepEqual(result.usedRuleIds,[rule.id],key);
     assert.ok(result.documentText.includes(rule.statement),key);
     assert.doesNotMatch(result.documentText,/Вопросы для проверки|Сведения для индивидуальной проверки|Примечания к предварительному проекту/i,key);
-    assert.equal(new Set(rule.sources.map(url=>new URL(url).hostname)).size,3,key);
+    assert.equal(new Set(rule.sources.map(url=>new URL(url).hostname)).size>=3,true,key);
   }
   const guidance=getReviewedRealEstateGuidance(group.id,situation.id);
   if(guidance){assert.deepEqual(result.usedRuleIds,[guidance.id],key);assert.ok(result.documentText.includes(guidance.statement),key);assert.match(result.documentText,/Правовая оценка и дальнейшие действия/);assert.ok(new Set(guidance.sources.map(url=>new URL(url).hostname)).size>=3,key);}
@@ -45,10 +46,10 @@ const rows=REAL_ESTATE_GROUPS.flatMap(group=>group.situations.map(situation=>{
     textStatus:rule?"CONDITIONAL_TEMPLATE_PASS":guidance?"CONDITIONAL_GUIDANCE_PASS":"REWORK_REQUIRED",releaseStatus:"BLOCKED",reason};
 }));
 assert.equal(rows.length,60);
-assert.equal(rows.filter(r=>r.textStatus==="CONDITIONAL_TEMPLATE_PASS").length,3);
+assert.equal(rows.filter(r=>r.textStatus==="CONDITIONAL_TEMPLATE_PASS").length,5);
 assert.equal(rows.filter(r=>r.textStatus==="CONDITIONAL_GUIDANCE_PASS").length,6);
-assert.equal(rows.filter(r=>r.textStatus==="REWORK_REQUIRED").length,51);
+assert.equal(rows.filter(r=>r.textStatus==="REWORK_REQUIRED").length,49);
 assert.ok(rows.every(r=>r.releaseStatus==="BLOCKED"));
 assert.equal(rows.filter(r=>r.resultKind==="DRAFT").length,10);
 console.log("REAL_ESTATE_DOCUMENT_ACCEPTANCE="+JSON.stringify(rows));
-console.log("3 conditional claim templates; 6 conditional informational templates; 7 other draft and 44 informational routes require rework; no public release approval.");
+console.log("5 conditional claim templates; 6 conditional informational templates; 5 other draft and 44 informational routes require rework; no public release approval.");
