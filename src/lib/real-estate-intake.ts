@@ -277,6 +277,20 @@ const specialFields:Readonly<Record<string,readonly RealEstateField[]>>={
     {key:"actualTransferDate",label:"Фактическая дата передачи, если известна",kind:"date",required:false}
   ],
   "newbuild-ddu/quality-defects":[
+    {key:"defectContract",label:"Дата и обозначение ДДУ (только обезличенные данные)",kind:"text",required:false},
+    {key:"defectObject",label:"Описание объекта по ДДУ (без настоящего адреса)",kind:"text",required:false},
+    {key:"defectDeveloper",label:"Застройщик (условное наименование в тесте)",kind:"text",required:false},
+    {key:"defectApplicant",label:"Заявитель (условное имя в тесте)",kind:"text",required:false},
+    {key:"defectReplyAddress",label:"Адрес для ответа (условное значение в тесте)",kind:"text",required:false},
+    {key:"defectTransferDate",label:"Дата передачи объекта",kind:"date",required:false},
+    {key:"defectFoundDate",label:"Дата выявления недостатков",kind:"date",required:false},
+    {key:"defectList",label:"Конкретный перечень недостатков с указанием места",kind:"textarea",required:false},
+    {key:"defectBasis",label:"Какие условия ДДУ или обязательные требования нарушены?",kind:"textarea",required:false},
+    {key:"defectProof",label:"Акт осмотра или письменное заключение, подтверждающее недостатки",kind:"text",required:false},
+    {key:"defectWarranty",label:"Подтверждено выявление дефектов в применимый гарантийный срок?",kind:"choice",required:false,choices:["да","нет или не знаю"]},
+    {key:"defectContractRemedy",label:"Проверено, что договор не исключает выбранный способ защиты?",kind:"choice",required:false,choices:["да","нет или не знаю"]},
+    {key:"defectAttribution",label:"Подтверждены недостатки качества строительства, а не износ, нарушение эксплуатации или собственный ремонт?",kind:"choice",required:false,choices:["да","нет или не знаю"]},
+    {key:"defectRemedy",label:"Выбранное требование",kind:"choice",required:false,choices:["безвозмездное устранение","уменьшение цены","возмещение расходов","не знаю"]},
     {key:"defectEvidence",label:"Как зафиксированы недостатки?",kind:"choice",required:true,choices:["акт или письменное заключение","только фото или устное описание","не знаю"]},
     {key:"defectStage",label:"На какой стадии выявлены недостатки?",kind:"choice",required:true,choices:["до подписания акта","после передачи","не знаю"]}
   ],

@@ -88,15 +88,19 @@ export function listRealEstateDocumentPlans(): readonly RealEstateDocumentPlan[]
 }
 /** Accepted legal text, not approval of individual facts or filing readiness. */
 export const REAL_ESTATE_ACCEPTED_DRAFT_RULES=[
-  {id:"sale-transfer-556-1",scenario:"seller-no-transfer",asOf:"2026-11-27",
+  {id:"sale-transfer-556-1",group:"property-transactions",scenario:"seller-no-transfer",asOf:"2026-11-27",
    statement:"В соответствии с пунктом 1 статьи 556 ГК РФ передача недвижимости оформляется передаточным актом или иным документом о передаче; уклонение продавца от подписания документа на договорных условиях признаётся отказом от исполнения обязанности по передаче.",
    sources:["https://www.consultant.ru/document/cons_doc_LAW_9027/3e859336194c50096387c5694f99883bed271e78/","https://base.garant.ru/483424196/7de16aeb618604b5f2bbfc08695b1044/","https://sudact.ru/law/gk-rf-chast2/razdel-iv/glava-30/ss-7/statia-556/"]},
-  {id:"sale-payment-486-3",scenario:"buyer-payment-delay",asOf:"2026-11-27",
+  {id:"sale-payment-486-3",group:"property-transactions",scenario:"buyer-payment-delay",asOf:"2026-11-27",
    statement:"Согласно пункту 3 статьи 486 ГК РФ при просрочке оплаты переданного по договору товара продавец вправе требовать его оплаты.",
    sources:["https://www.consultant.ru/document/cons_doc_LAW_9027/2120e9b039b6f15a3d1c793f412f7df3ffcfbd33/","https://klerk.systems/docs/gk_rf/article/486/date20260319/","https://sudact.ru/law/gk-rf-chast2/razdel-iv/glava-30/ss-1/statia-486/"]}
+,
+  {id:"ddu-defect-remedy-7-2-6",group:"newbuild-ddu",scenario:"quality-defects",asOf:"2026-11-27",
+   statement:"По части 1 статьи 7 Федерального закона от 30.12.2004 № 214-ФЗ качество объекта должно соответствовать договору и применимым обязательным требованиям. При предусмотренных частью 2 статьи 7 недостатках участник долевого строительства вправе, если договором не предусмотрено иное, потребовать их бесплатного устранения в разумный срок. Частью 6 статьи 7 предусмотрено письменное предъявление требований с указанием дефектов, выявленных в гарантийный период.",
+   sources:["https://www.consultant.ru/document/cons_doc_LAW_51038/aeb9f2327f835ecc02fb71b9a0312ead0b844204/","https://base.garant.ru/12138267/e88847e78ccd9fdb54482c7fa15982bf/","https://zpp.rospotrebnadzor.ru/news/federal/573466"]}
 ] as const;
-function acceptedSaleRule(scenario:string){
-  return REAL_ESTATE_ACCEPTED_DRAFT_RULES.find(rule=>rule.scenario===scenario);
+function acceptedDraftRule(group:string,scenario:string){
+  return REAL_ESTATE_ACCEPTED_DRAFT_RULES.find(rule=>rule.group===group&&rule.scenario===scenario);
 }
 /** A claim is composed only where the facts expressly support this type of demand.
  * No assumed deadline, amount, personal identity or consumer-law penalty. */
@@ -105,7 +109,7 @@ function formatSaleClaim(plan:RealEstateDocumentPlan,data:Readonly<Record<string
   const payment=plan.situationId==="buyer-payment-delay";
   if(plan.groupId!=="property-transactions"||(!transfer&&!payment))return null;
   if(!data.saleContract?.trim()||!data.saleObject?.trim()||!data.saleDueDate||data.saleDueDate>=createdAt.slice(0,10)||data.saleBreachConfirmed!=="да")return null;
-  const rule=acceptedSaleRule(plan.situationId);
+  const rule=acceptedDraftRule(plan.groupId,plan.situationId);
   if(!rule)return null;
   if(transfer&&(data.role!=="покупатель"||data.handoverPossession!=="нет"||data.handoverAct!=="нет"))return null;
   if(payment&&(data.role!=="продавец"||data.paymentEvidence!=="есть документы"||data.paymentTerms!=="единовременно"||data.saleTransferred!=="да"||!/^\d{1,12}(?:[.,]\d{1,2})?$/.test(data.saleDebt??"")||Number(data.saleDebt.replace(",","."))<=0))return null;
@@ -122,6 +126,29 @@ function formatSaleClaim(plan:RealEstateDocumentPlan,data:Readonly<Record<string
     data.summary,data.caseDetails,
     transfer?"На момент составления претензии объект не передан, передаточный документ не подписан.":"На момент составления претензии объект передан, согласованный срок оплаты истёк, задолженность не погашена.",
     "",basis,"",demand,"Прошу направить письменный ответ по указанному адресу.","",
+    "Приложения: "+data.documents,"","Дата: ____________________","Подпись: ____________________"
+  ].join("\n");
+}
+function formatDduDefectClaim(plan:RealEstateDocumentPlan,data:Readonly<Record<string,string>>,createdAt:string):string|null{
+  if(plan.groupId!=="newbuild-ddu"||plan.situationId!=="quality-defects")return null;
+  if(data.role!=="дольщик"||data.defectStage!=="после передачи"||data.defectEvidence!=="акт или письменное заключение")return null;
+  if(!data.defectContract||!data.defectObject||!data.defectTransferDate||!data.defectFoundDate||!data.defectList||!data.defectBasis||!data.defectProof)return null;
+  if(data.defectTransferDate<"2026-01-01"||data.defectFoundDate<data.defectTransferDate||data.defectFoundDate>createdAt.slice(0,10))return null;
+  if(data.defectWarranty!=="да"||data.defectContractRemedy!=="да"||data.defectAttribution!=="да"||data.defectRemedy!=="безвозмездное устранение")return null;
+  const rule=acceptedDraftRule(plan.groupId,plan.situationId);if(!rule)return null;
+  return [
+    requiredNotices.DRAFT,"","Кому: "+(data.defectDeveloper||"____________________"),"От кого: "+(data.defectApplicant||"____________________"),
+    "Адрес для ответа: "+(data.defectReplyAddress||"____________________"),"",
+    "ПРЕТЕНЗИЯ об устранении недостатков объекта долевого строительства","",
+    "Договор участия в долевом строительстве: "+data.defectContract+".",
+    "Объект: "+data.defectObject+".",
+    "Дата передачи: "+data.defectTransferDate+". Дата выявления недостатков: "+data.defectFoundDate+".",
+    "Обнаруженные недостатки: "+data.defectList,
+    "Несоответствие договору или обязательным требованиям: "+data.defectBasis,
+    "Подтверждающие документы: "+data.defectProof+".",
+    data.summary,data.caseDetails,"",rule.statement,"",
+    "Прошу безвозмездно устранить указанные недостатки в разумный срок, согласовать со мной срок и порядок выполнения работ, а также дату осмотра объекта.",
+    "Прошу направить письменный ответ по указанному адресу.","",
     "Приложения: "+data.documents,"","Дата: ____________________","Подпись: ____________________"
   ].join("\n");
 }
@@ -218,9 +245,9 @@ export function createRealEstateDraftPrototype(input: RealEstateDraftInput): Rea
     throw new Error("Сначала заполните обязательные сведения и исправьте ошибки анкеты.");
   }
   const createdAt=input.createdAt??new Date().toISOString();
-  const saleClaim=formatSaleClaim(plan,normalized,createdAt);
-  const rule=saleClaim?acceptedSaleRule(plan.situationId):undefined;
-  const documentText=saleClaim??formatResult(plan,normalized);
+  const specificClaim=formatSaleClaim(plan,normalized,createdAt)??formatDduDefectClaim(plan,normalized,createdAt);
+  const rule=specificClaim?acceptedDraftRule(plan.groupId,plan.situationId):undefined;
+  const documentText=specificClaim??formatResult(plan,normalized);
   const result = documentResultSchema.parse({
     contractVersion: DOCUMENT_RESULT_CONTRACT_VERSION,
     versionId: input.versionId ?? crypto.randomUUID(),
@@ -248,7 +275,7 @@ export function isRealEstateDraftResult(input: unknown): input is DocumentResult
   if (!parsed.success) return false;
   const result = parsed.data;
   const plan = getRealEstateDocumentPlan(result.routeSlug, result.scenarioKey);
-  const rule=result.routeSlug==="property-transactions"?acceptedSaleRule(result.scenarioKey):undefined;
+  const rule=acceptedDraftRule(result.routeSlug,result.scenarioKey);
   const provenanceValid=(result.legalRegistryReviewedAt===null&&result.usedRuleIds.length===0)||
     (result.source==="DETERMINISTIC"&&!!rule&&result.usedRuleIds.length===1&&result.usedRuleIds[0]===rule.id&&result.legalRegistryReviewedAt===rule.asOf&&result.documentText.includes(rule.statement));
   return !!plan && result.categorySlug === "nedvizhimost-i-zemlya"

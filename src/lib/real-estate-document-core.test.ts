@@ -140,3 +140,19 @@ for(const scenario of ["seller-no-transfer","buyer-payment-delay"]){
   assert.equal(result.filingReady,false);
   assert.ok(isRealEstateDraftResult(result));
 }
+
+const defectsSpec=getRealEstateIntakeSpec("newbuild-ddu","quality-defects");assert.ok(defectsSpec);
+const defects:Record<string,string>={};
+for(const field of defectsSpec.fields)if(field.required)defects[field.key]=field.kind==="choice"?field.choices![0]:"Синтетическое описание обстоятельств";
+Object.assign(defects,{role:"дольщик",defectStage:"после передачи",defectEvidence:"акт или письменное заключение",defectContract:"ДДУ от 01.02.2026",defectObject:"условная квартира",defectDeveloper:"ООО Тест",defectApplicant:"Тестовый заявитель",defectReplyAddress:"Условный адрес",defectTransferDate:"2026-09-01",defectFoundDate:"2026-10-01",defectList:"Протечка оконного блока",defectBasis:"Несоответствие условиям ДДУ о качестве",defectProof:"Акт осмотра",defectWarranty:"да",defectContractRemedy:"да",defectAttribution:"да",defectRemedy:"безвозмездное устранение"});
+const defectResult=(changes:Record<string,string>={})=>createRealEstateDraftPrototype({groupId:"newbuild-ddu",situationId:"quality-defects",values:{...defects,...changes},createdAt:"2026-11-27T12:00:00.000Z"}).documentResult;
+const defectClaim=defectResult();
+assert.match(defectClaim.documentText,/ПРЕТЕНЗИЯ об устранении недостатков/);
+assert.match(defectClaim.documentText,/статьи 7 Федерального закона/);
+assert.match(defectClaim.documentText,/Протечка оконного блока/);
+assert.match(defectClaim.documentText,/ООО Тест/);
+assert.deepEqual(defectClaim.usedRuleIds,["ddu-defect-remedy-7-2-6"]);
+assert.equal(defectClaim.filingReady,false);
+assert.ok(isRealEstateDraftResult(defectClaim));
+assert.doesNotMatch(defectClaim.documentText,/Вопросы для проверки|Примечания к предварительному проекту|штраф|неустойк/i);
+for(const changes of [{defectWarranty:"нет или не знаю"},{defectContractRemedy:"нет или не знаю"},{defectAttribution:"нет или не знаю"},{defectRemedy:"уменьшение цены"},{defectTransferDate:"2025-12-01"},{defectFoundDate:"2026-08-01"},{defectFoundDate:"2027-01-01"},{defectStage:"до подписания акта"}])assert.deepEqual(defectResult(changes).usedRuleIds,[]);

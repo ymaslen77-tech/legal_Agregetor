@@ -213,10 +213,10 @@ export const REAL_ESTATE_CHECKED_CONTEXT = [
         "supports": "Части 1 и 2, требования к качеству и условные способы защиты"
       },
       {
-        "publisher": "СудАкт — закон № 214-ФЗ",
-        "type": "LAW_TEXT",
-        "url": "https://sudact.ru/law/federalnyi-zakon-ot-30122004-n-214-fz-ob/",
-        "supports": "Статья 7: Части 1 и 2, требования к качеству и условные способы защиты"
+        "publisher": "Роспотребнадзор — разъяснение от 20.04.2026",
+        "type": "PROFESSIONAL_GUIDANCE",
+        "url": "https://zpp.rospotrebnadzor.ru/news/federal/573466",
+        "supports": "Требования о качестве и безвозмездном устранении недостатков в разумный срок; гарантийный период"
       }
     ]
   },
