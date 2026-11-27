@@ -176,3 +176,17 @@ for(const [caseKey,keys] of [["land-status-use/land-permitted-use",["vriEvidence
   assert.ok(result.manualReviewFlags.length>0,caseKey);
   assert.equal(result.filingReady,false,caseKey);
 }
+
+for(const [group,scenario] of [["ownership-register","suspension-registration"],["cadastral-valuation","cadastre-suspension"]]){
+  const spec=getRealEstateIntakeSpec(group,scenario);assert.ok(spec);
+  const answers:Record<string,string>={};
+  for(const field of spec.fields)if(field.required)answers[field.key]=field.kind==="choice"?field.choices![0]:"Обезличенные тестовые сведения";
+  const check=(date:string,stage:string)=>evaluateRealEstateIntake(spec,{...answers,registrationDecisionDate:date,suspensionAppealStage:stage});
+  assert.ok(check("","не обжаловалось").manualReviewFlags.some(x=>x.includes("без неё нельзя")));
+  assert.ok(check("2025-12-31","не обжаловалось").manualReviewFlags.some(x=>x.includes("прежний порядок")));
+  assert.ok(!check("2025-12-31","не обжаловалось").manualReviewFlags.some(x=>x.includes("15 рабочих дней")));
+  assert.ok(check("2026-01-01","обжаловано в суд").manualReviewFlags.some(x=>x.includes("15 рабочих дней")));
+  assert.ok(check("2026-01-01","обжаловано в суд").manualReviewFlags.some(x=>x.includes("препятствует рассмотрению")));
+  assert.ok(check("2026-02-01","комиссия уже рассмотрела").manualReviewFlags.some(x=>x.includes("Повторная подача")));
+  assert.equal(check("2026-02-01","комиссия уже рассмотрела").filingReady,false);
+}

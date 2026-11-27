@@ -173,6 +173,9 @@ test("suspension and refusal lead to separate source-backed fact checks, never a
     await page.locator("#real-estate-correctionEvidence").selectOption("не знаю");
     if(s.path.includes("registration-refusal")){
       await page.locator("#real-estate-priorSuspension").selectOption("не знаю");
+    }else{
+      await page.locator("#real-estate-registrationDecisionDate").fill("2026-11-20");
+      await page.locator("#real-estate-suspensionAppealStage").selectOption("обжаловано в суд");
     }
     await page.getByRole("button",{name:"Проверить полноту тестовых сведений"}).click();
     const flags=page.getByTestId("real-estate-review-flags");
@@ -183,7 +186,14 @@ test("suspension and refusal lead to separate source-backed fact checks, never a
     const editor=page.getByTestId("real-estate-document-editor");
     await expect(editor).toHaveValue(/НЕ ГОТОВ К ПОДАЧЕ/);
     await expect(editor).toHaveValue(/статьи 26/);
-    await expect(page.getByRole("heading",{name:s.notice})).toBeVisible();
+    await expect(page.getByRole("heading",{name:s.notice}).first()).toBeVisible();
+    if(s.path.includes("suspension-registration")){
+      await expect(flags).toContainText("15 рабочих дней");
+      await expect(flags).toContainText("Судебное обжалование препятствует");
+      await expect(editor).toHaveValue(/15 рабочих дней/);
+    }else{
+      await expect(flags).not.toContainText("15 рабочих дней");
+    }
     await expect(page.getByRole("button",{name:"Отправить на проверку юристу"})).toBeDisabled();
   }
 });

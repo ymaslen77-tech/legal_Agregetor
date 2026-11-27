@@ -104,3 +104,12 @@ assert.deepEqual([...seenKinds].sort(),["CHECKLIST","DRAFT","LEGAL_REVIEW_ONLY",
 assert.equal(getRealEstateDocumentPlan("invalid","invalid"),null);
 assert.throws(()=>createRealEstateDraftPrototype({groupId:"invalid",situationId:"invalid",values:{}}),/Неизвестная ситуация/);
 console.log("REAL_ESTATE_DRAFT_PASS: 60 individually titled draft-only results, immutable edits, zero legal approvals, guarded PDF/DOCX exports");
+
+const suspensionSpec=getRealEstateIntakeSpec("ownership-register","suspension-registration");assert.ok(suspensionSpec);
+const appealAnswers:Record<string,string>={};
+for(const field of suspensionSpec.fields)if(field.required)appealAnswers[field.key]=field.kind==="choice"?field.choices![0]:"Обезличенные тестовые сведения";
+const appealDraft=(date:string)=>createRealEstateDraftPrototype({groupId:"ownership-register",situationId:"suspension-registration",values:{...appealAnswers,registrationDecisionDate:date,suspensionAppealStage:"обжаловано в суд"}}).documentResult;
+assert.match(appealDraft("2026-11-20").documentText,/15 рабочих дней/);
+assert.match(appealDraft("2026-11-20").documentText,/Судебное обжалование препятствует/);
+assert.doesNotMatch(appealDraft("2025-12-31").documentText,/15 рабочих дней/);
+assert.equal(appealDraft("2026-11-20").filingReady,false);

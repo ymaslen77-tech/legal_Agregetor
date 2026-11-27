@@ -47,7 +47,10 @@ const registrationSuspensionFields:readonly RealEstateField[]=[
   {key:"registrationGround",label:"Указанный в уведомлении пункт статьи 26, если известен (без реквизитов и персональных данных)",kind:"text",required:false},
   {key:"correctionEvidence",label:"Представляли ли дополнительные документы для устранения причин?",kind:"choice",required:true,
     choices:["да, есть доказательства подачи","нет","не знаю"]},
-  {key:"registrationDecisionDate",label:"Дата уведомления о приостановлении, если известна",kind:"date",required:false}
+  {key:"registrationDecisionDate",label:"Дата принятия решения о приостановлении (не дата получения уведомления), если известна",kind:"date",required:false},
+  {key:"registrationReceivedDate",label:"Дата получения уведомления, если известна",kind:"date",required:false},
+  {key:"suspensionAppealStage",label:"Обжаловалось ли именно это решение?",kind:"choice",required:true,
+    choices:["не обжаловалось","подано в комиссию","комиссия уже рассмотрела","обжаловано в суд","не знаю"]}
 ];
 const registrationRefusalFields:readonly RealEstateField[]=[
   {key:"registrationDecision",label:"Имеется ли письменное решение об отказе?",kind:"choice",required:true,
@@ -326,6 +329,18 @@ function manualReviewFlags(groupId:string,situationId:string,values:Readonly<Rec
       result.push("Не подтверждена подача документов для устранения причин: проверить историю обращений и сроки по конкретному делу.");
     if(!values.registrationGround?.trim())
       result.push("Не указан конкретный пункт статьи 26 закона № 218-ФЗ: правовое основание требует проверки по уведомлению.");
+  }
+  if(["ownership-register/suspension-registration","cadastral-valuation/cadastre-suspension"].includes(groupId+"/"+situationId)){
+    const decisionDate=values.registrationDecisionDate;
+    if(!decisionDate||!isValidDate(decisionDate))
+      result.push("Установить дату принятия решения: без неё нельзя выбрать редакцию порядка обжалования или проверить срок обращения в комиссию.");
+    else if(decisionDate<"2026-01-01")
+      result.push("Решение принято до 01.01.2026: проверить прежний порядок и переходные правила; новый режим статьи 31.2 автоматически не применяется.");
+    else {
+      result.push("Для решений нового периода сверить статью 31.2 закона № 218-ФЗ: 15 рабочих дней для обращения в комиссию отсчитываются от принятия решения, а не от получения уведомления. Комиссия не является обязательной перед судом. Конкретный срок не рассчитан.");
+      if(values.suspensionAppealStage==="обжаловано в суд")result.push("Судебное обжалование препятствует рассмотрению того же решения комиссией; не направлять параллельную жалобу автоматически.");
+      if(values.suspensionAppealStage==="комиссия уже рассмотрела")result.push("Повторная подача в комиссию по уже рассмотренному решению не допускается.");
+    }
   }
   if(groupId==="newbuild-ddu"){
     if(situationId==="ddu-signing"&&(values.dduDraft!=="есть полный проект"||values.dduObject!=="квартира или помещение"))

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { REAL_ESTATE_CHECKED_CONTEXT,getRealEstateCheckedContext } from "./real-estate-checked-context";
 import { getRealEstateLegalReviewTask } from "./real-estate-legal-review";
-assert.equal(REAL_ESTATE_CHECKED_CONTEXT.length,41);
+assert.equal(REAL_ESTATE_CHECKED_CONTEXT.length,42);
 for(const item of REAL_ESTATE_CHECKED_CONTEXT){
   assert.equal(item.status,"CONTEXT_ONLY_NOT_DOCUMENT_READY");
   const legalArticle:Record<string,RegExp>={
@@ -45,7 +45,8 @@ for(const item of REAL_ESTATE_CHECKED_CONTEXT){
     "valuation-market-22.1":/Статья 22\.1/,
     "developer-bankruptcy-201.4":/Статья 201\.4/,
     "property-lease-606":/Статья 606/,
-    "civil-procedure-30":/Статья 30/
+    "civil-procedure-30":/Статья 30/,
+    "registration-appeal-2026":/статьи 29/
   };
   assert.match(item.proposition,legalArticle[item.id],"Unrecognized context entry "+item.id);
   assert.equal(item.sources.length,3);
@@ -75,12 +76,12 @@ for(const [group,situation,article] of [
   ["build-renovation","building-register-refusal","registration-refusal-article27"]
 ]){
   const context=getRealEstateCheckedContext(group,situation);
-  assert.equal(context.length,group==="build-renovation"?2:1,group+"/"+situation);
+  assert.equal(context.length,group==="build-renovation"||situation.includes("suspension")?2:1,group+"/"+situation);
   assert.equal(context[0].id,article);
   assert.equal(getRealEstateLegalReviewTask(group,situation)?.filingReady,false);
 }
 assert.deepEqual(getRealEstateCheckedContext("none","none"),[]);
-console.log("Real estate legal context PASS: 41 contexts, 3 publishers each, 60 covered situations but zero filing approvals");
+console.log("Real estate legal context PASS: 42 contexts, 3 publishers each, 60 covered situations but zero filing approvals");
 
 for(const [scenario,id] of [["ddu-signing","ddu-contract-article4"],["area-mismatch","ddu-contract-article4"],["developer-delay","ddu-delay-article6"],["quality-defects","ddu-quality-article7"],["act-acceptance-dispute","ddu-acceptance-article8"]]){
   const context=getRealEstateCheckedContext("newbuild-ddu",scenario);
@@ -124,3 +125,12 @@ for(const key of ["land-status-use/land-permitted-use","land-status-use/land-zon
   for(const entry of context)assert.equal(new Set(entry.sources.map(s=>new URL(s.url).hostname)).size,3,key);
   assert.equal(getRealEstateLegalReviewTask(group,scenario)?.filingReady,false,key);
 }
+
+for(const [group,scenario] of [["ownership-register","suspension-registration"],["cadastral-valuation","cadastre-suspension"]]){
+  const entry=getRealEstateCheckedContext(group,scenario).find(x=>x.id==="registration-appeal-2026");
+  assert.ok(entry);
+  assert.match(entry.proposition,/15 рабочих дней/);
+  assert.match(entry.limitations,/до 01\.01\.2026/);
+  assert.match(entry.limitations,/окончательному отказу/);
+}
+assert.ok(!getRealEstateCheckedContext("ownership-register","registration-refusal").some(x=>x.id==="registration-appeal-2026"));
