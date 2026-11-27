@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { SaveLegalDocumentButton } from "@/components/documents/SaveLegalDocumentButton";
 import {
   createRealEstateDraftPrototype, reviseRealEstateDraft,
   addRealEstateDraftVersion, type RealEstateDraftOutput
@@ -17,6 +18,8 @@ type Props=Readonly<{
   assessment:RealEstateIntakeResult|null;
   inputRevision:number;
   restoreAnswers:(values:Readonly<Record<string,string>>)=>void;
+  /** Only a released server route may pass its evaluated service gate. */
+  allowArchiveSave?:boolean;
 }>;
 
 /**
@@ -24,7 +27,7 @@ type Props=Readonly<{
  * legal advice, fake lawyers, analytics, localStorage, or server actions.
  */
 export function RealEstateDocumentWorkbench({
-  spec,answers,assessment,inputRevision,restoreAnswers
+  spec,answers,assessment,inputRevision,restoreAnswers,allowArchiveSave=false
 }:Props){
   const [generated,setGenerated]=useState<RealEstateDraftOutput|null>(null);
   const [versions,setVersions]=useState<DocumentVersionEntry<Readonly<Record<string,string>>>[]>([]);
@@ -167,6 +170,7 @@ export function RealEstateDocumentWorkbench({
           Отправить на проверку юристу
         </button>
       </div>
+      {allowArchiveSave&&generated?<SaveLegalDocumentButton key={generated.documentResult.versionId} result={generated.documentResult} disabled={exportBlocked}/>:null}
       <details className="mt-4 text-sm text-zinc-700">
         <summary className="cursor-pointer font-semibold text-trust">
           Дополнительные форматы (тестовый DOCX)

@@ -239,3 +239,39 @@ test("boundary consent without notice is not treated as consent",async ({page})=
   await expect(page.getByTestId("real-estate-document-editor")).toHaveValue(/НЕ ДОКУМЕНТ ДЛЯ ПОДАЧИ/);
   await expect(page.getByRole("button",{name:"Отправить на проверку юристу"})).toBeDisabled();
 });
+
+
+test("a sale claim exports the exact text with verified statute and no questionnaire headings",async ({page})=>{
+  await page.goto("/dev/real-estate/property-transactions/seller-no-transfer/");
+  await page.locator("#real-estate-role").selectOption("покупатель");
+  await page.locator("#real-estate-propertyType").selectOption("квартира");
+  await page.locator("#real-estate-stage").selectOption("переговоры и претензия");
+  for(const key of ["summary","documents","goal","caseDetails"])await page.locator("#real-estate-"+key).fill("Синтетическое описание обстоятельств для проверки претензии");
+  await page.locator("#real-estate-saleContract").fill("договор от 01.10.2026");
+  await page.locator("#real-estate-saleObject").fill("условный объект");
+  await page.locator("#real-estate-saleDueDate").fill("2026-10-15");
+  await page.locator("#real-estate-saleBreachConfirmed").selectOption("да");
+  await page.locator("#real-estate-handoverAct").selectOption("нет");
+  await page.locator("#real-estate-handoverPossession").selectOption("нет");
+  await page.getByRole("button",{name:"Проверить полноту тестовых сведений"}).click();
+  await page.getByRole("button",{name:"Сформировать предварительный проект"}).click();
+  const editor=page.getByTestId("real-estate-document-editor");
+  await expect(editor).toHaveValue(/статьи 556 ГК РФ/);
+  await expect(editor).not.toHaveValue(/ИЗЛОЖЕНИЕ ОБСТОЯТЕЛЬСТВ|ДО ПОДАЧИ НЕОБХОДИМО|Вопросы для проверки/);
+  const pdfPromise=page.waitForEvent("download");
+  await page.getByRole("button",{name:"Скачать PDF"}).click();
+  const pdf=await pdfPromise;
+  const pdfPath=await pdf.path();expect(pdfPath).toBeTruthy();
+  const extracted=execFileSync("pdftotext",[pdfPath!,"-"],{encoding:"utf8"});
+  expect(extracted.replace(/\s+/g," ")).toContain("статьи 556 ГК РФ");
+  expect(extracted.match(/НЕ ГОТОВ К ПОДАЧЕ/g)).toHaveLength(1);
+  await page.getByText("Дополнительные форматы (тестовый DOCX)").click();
+  const docxPromise=page.waitForEvent("download");
+  await page.getByRole("button",{name:"Скачать DOCX-черновик"}).click();
+  const docx=await docxPromise;
+  const docxPath=await docx.path();expect(docxPath).toBeTruthy();
+  const xml=execFileSync("unzip",["-p",docxPath!,"word/document.xml"],{encoding:"utf8"});
+  expect(xml).toContain("статьи 556 ГК РФ");
+  expect(xml.match(/НЕ ГОТОВ К ПОДАЧЕ/g)).toHaveLength(1);
+  await expect(page.getByRole("button",{name:"Сохранить в мои документы"})).toHaveCount(0);
+});
