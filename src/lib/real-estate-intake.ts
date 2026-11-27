@@ -172,6 +172,10 @@ const specialFields:Readonly<Record<string,readonly RealEstateField[]>>={
     {key:"encumbranceBasis",label:"Есть ли документ-основание записи?",kind:"choice",required:true,choices:["есть","нет или не знаю"]},
     {key:"encumbranceKind",label:"Какого вида ограничение указано?",kind:"choice",required:true,choices:["ипотека или сервитут","арест или запрет","иное или неизвестно"]}
   ],
+  "cadastral-valuation/technical-plan-error":[
+    {key:"techErrorLocation",label:"Где обнаружено расхождение?",kind:"choice",required:true,choices:["ошибка только в ЕГРН","ошибка в техническом плане","не установлено"]},
+    {key:"techErrorRights",label:"Затрагиваются ли права других лиц?",kind:"choice",required:true,choices:["да","нет","не знаю"]}
+  ],
   "cadastral-valuation/object-no-record":[
     {key:"objectBasis",label:"Есть ли документы об объекте?",kind:"choice",required:true,choices:["есть","частично","не знаю"]},
     {key:"objectPlan",label:"Есть ли технический или межевой план?",kind:"choice",required:true,choices:["есть","нет или не знаю"]}

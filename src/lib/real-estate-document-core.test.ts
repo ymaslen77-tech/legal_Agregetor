@@ -160,7 +160,7 @@ assert.ok(isRealEstateDraftResult(defectClaim));
 assert.doesNotMatch(defectClaim.documentText,/Вопросы для проверки|Примечания к предварительному проекту|штраф|неустойк/i);
 for(const changes of ([{defectWarranty:"нет или не знаю"},{defectContractRemedy:"нет или не знаю"},{defectAttribution:"нет или не знаю"},{defectRemedy:"уменьшение цены"},{defectTransferDate:"2025-12-01"},{defectFoundDate:"2026-08-01"},{defectFoundDate:"2027-01-01"},{defectStage:"до подписания акта"}] as Record<string,string>[]))assert.deepEqual(defectResult(changes).usedRuleIds,[]);
 
-assert.equal(REAL_ESTATE_REVIEWED_GUIDANCE.length,6);
+assert.equal(REAL_ESTATE_REVIEWED_GUIDANCE.length,10);
 for(const rule of REAL_ESTATE_REVIEWED_GUIDANCE)assert.ok(new Set(rule.sources.map(u=>new URL(u).hostname)).size>=3);
 const compensationSpec=getRealEstateIntakeSpec("shared-ownership","compensation-share");assert.ok(compensationSpec);
 const compensationValues:Record<string,string>={};

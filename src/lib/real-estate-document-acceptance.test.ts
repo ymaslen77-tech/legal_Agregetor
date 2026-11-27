@@ -47,9 +47,9 @@ const rows=REAL_ESTATE_GROUPS.flatMap(group=>group.situations.map(situation=>{
 }));
 assert.equal(rows.length,60);
 assert.equal(rows.filter(r=>r.textStatus==="CONDITIONAL_TEMPLATE_PASS").length,5);
-assert.equal(rows.filter(r=>r.textStatus==="CONDITIONAL_GUIDANCE_PASS").length,6);
-assert.equal(rows.filter(r=>r.textStatus==="REWORK_REQUIRED").length,49);
+assert.equal(rows.filter(r=>r.textStatus==="CONDITIONAL_GUIDANCE_PASS").length,10);
+assert.equal(rows.filter(r=>r.textStatus==="REWORK_REQUIRED").length,45);
 assert.ok(rows.every(r=>r.releaseStatus==="BLOCKED"));
 assert.equal(rows.filter(r=>r.resultKind==="DRAFT").length,10);
 console.log("REAL_ESTATE_DOCUMENT_ACCEPTANCE="+JSON.stringify(rows));
-console.log("5 conditional claim templates; 6 conditional informational templates; 5 other draft and 44 informational routes require rework; no public release approval.");
+console.log("5 conditional claim templates; 10 conditional informational templates; 5 other draft and 40 informational routes require rework; no public release approval.");
