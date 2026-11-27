@@ -21,3 +21,7 @@ for(const group of REAL_ESTATE_GROUPS)for(const situation of group.situations){
 }
 assert.equal(getRealEstateLegalReviewTask("missing","missing"),null);
 console.log("Real estate legal gate PASS: 60 individual PENDING tasks, no accepted claims, no premature publication");
+
+for(const group of REAL_ESTATE_GROUPS.filter(group=>group.id==="land-boundaries"))for(const scenario of group.situations){
+  assert.ok(getRealEstateLegalReviewTask(group.id,scenario.id)?.candidateActNames.some(name=>name.includes("221-ФЗ")),scenario.id);
+}
