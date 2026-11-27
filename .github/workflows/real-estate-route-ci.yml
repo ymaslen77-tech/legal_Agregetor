@@ -27,7 +27,23 @@ jobs:
   validate-design:
     name: Audit 60 private draft-only scenarios
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 28
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: archive_test
+          POSTGRES_PASSWORD: local_archive_test_only
+          POSTGRES_DB: real_estate_archive_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U archive_test -d real_estate_archive_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      DATABASE_URL: postgresql://archive_test:local_archive_test_only@127.0.0.1:5432/real_estate_archive_test?schema=public
     steps:
       - uses: actions/checkout@v4
         with:
@@ -37,6 +53,16 @@ jobs:
           node-version: "22"
           cache: npm
       - run: npm ci
+      - name: Initialize isolated test database and ephemeral keys
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "$DATABASE_URL" in *"@127.0.0.1:5432/real_estate_archive_test?schema=public") ;; *) exit 1 ;; esac
+          npx prisma generate
+          npx prisma db push --skip-generate
+          echo "JWT_SECRET=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+          echo "DOCUMENT_STORAGE_KEY=$(openssl rand -base64 32)" >> "$GITHUB_ENV"
+          echo "ENABLE_REAL_ESTATE_ARCHIVE_E2E=true" >> "$GITHUB_ENV"
       - name: Validate Q&A baseline, ten sections and sixty case slugs
         run: npx tsx src/data/real-estate-route-plan.test.ts
       - name: Confirm no case is legally approved or filing-ready
@@ -60,7 +86,7 @@ jobs:
       - name: Verify integration types
         run: npm run typecheck
       - name: Targeted ESLint
-        run: npx eslint src/data/real-estate-route-plan.ts src/data/real-estate-route-plan.test.ts src/data/real-estate-legal-review.ts src/data/real-estate-legal-review.test.ts src/lib/real-estate-intake.ts src/lib/real-estate-intake.test.ts src/lib/real-estate-preview-access.ts src/lib/real-estate-preview-access.test.ts src/components/real-estate/RealEstatePreview.tsx src/components/real-estate/RealEstateDocumentWorkbench.tsx src/data/real-estate-checked-context.ts src/data/real-estate-checked-context.test.ts src/data/real-estate-legal-audit.ts src/data/real-estate-legal-audit.test.ts src/data/real-estate-seo.ts src/data/real-estate-seo.test.ts src/lib/real-estate-document-core.ts src/lib/real-estate-document-core.test.ts src/lib/real-estate-document-export.ts src/lib/real-estate-service-gate.ts src/lib/real-estate-service-gate.test.ts src/lib/saved-document-validation.ts src/lib/saved-document-crypto.test.ts src/components/account/SavedLegalDocumentsCabinet.tsx src/app/dev/real-estate/page.tsx 'src/app/dev/real-estate/[group]/page.tsx' 'src/app/dev/real-estate/[group]/[situation]/page.tsx' tests/real-estate/preview.spec.ts playwright.real-estate.config.ts
+        run: npx eslint src/data/real-estate-route-plan.ts src/data/real-estate-route-plan.test.ts src/data/real-estate-legal-review.ts src/data/real-estate-legal-review.test.ts src/lib/real-estate-intake.ts src/lib/real-estate-intake.test.ts src/lib/real-estate-preview-access.ts src/lib/real-estate-preview-access.test.ts src/components/real-estate/RealEstatePreview.tsx src/components/real-estate/RealEstateDocumentWorkbench.tsx src/data/real-estate-checked-context.ts src/data/real-estate-checked-context.test.ts src/data/real-estate-legal-audit.ts src/data/real-estate-legal-audit.test.ts src/data/real-estate-seo.ts src/data/real-estate-seo.test.ts src/lib/real-estate-document-core.ts src/lib/real-estate-document-core.test.ts src/lib/real-estate-document-export.ts src/lib/real-estate-service-gate.ts src/lib/real-estate-service-gate.test.ts src/lib/saved-document-validation.ts src/lib/saved-document-crypto.test.ts src/components/account/SavedLegalDocumentsCabinet.tsx src/app/dev/real-estate/page.tsx 'src/app/dev/real-estate/[group]/page.tsx' 'src/app/dev/real-estate/[group]/[situation]/page.tsx' tests/real-estate/preview.spec.ts tests/real-estate/archive.spec.ts playwright.real-estate.config.ts
       - name: Install independent PDF and DOCX content inspectors
         run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends poppler-utils unzip
       - name: Install Chromium for closed route preview
